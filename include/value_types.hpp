@@ -2,7 +2,7 @@
 
 namespace cxbqn::value_types {
 
-template<ValueType VT>
+template<typename VT>
 struct Value {
   uint64_t decode() {
     return VT::decode();

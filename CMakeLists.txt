@@ -15,6 +15,7 @@ include_directories(${PROJECT_BINARY_DIR})
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
 add_library(tpl INTERFACE)
+add_library(cxbqn::tpl ALIAS tpl)
 
 find_package(spdlog REQUIRED)
 

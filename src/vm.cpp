@@ -15,7 +15,7 @@ int run(Code &code, Objects &objs, Sections &sections) {
   spdlog::debug("init stack size={}", stack.capacity());
   Env e;
   std::size_t prog_counter = 0;
-  int ret = vm(e, code, objs, prog_counter, stack);
+  int ret = vm(e, code, prog_counter, stack);
   return ret;
 }
 

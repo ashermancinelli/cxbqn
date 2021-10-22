@@ -5,10 +5,10 @@ using namespace cxbqn;
 using namespace cxbqn::vm;
 
 int test_vm_5p5() {
-  Bytecode bc;
-  Objects objs;
+  Code c;
+  Objects objs{5};
   Sections scs;
-  return run(bc, objs, scs);
+  return run(c, objs, scs);
 }
 
 int main() {
