@@ -14,9 +14,12 @@ set(CXBQN_INIT_STACK_SIZE
     10000
     CACHE STRING "The size the VM stack is initialized with")
 
+set(CHECK_SUBMODULES ON CACHE BOOL "Check git submodules on every build")
+
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 include(cmake/Linters.cmake)
+include(cmake/CheckGitSubmodules.cmake)
 
 include_directories(${PROJECT_BINARY_DIR})
 include_directories(${PROJECT_SOURCE_DIR}/include)

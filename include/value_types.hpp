@@ -4,7 +4,12 @@
 #include <type_traits>
 #include <variant>
 
+
 namespace cxbqn {
+
+namespace vm {
+struct Env;
+}
 
 // template deduction guides to make std::visit feel better
 template <class... Ts> struct overload : Ts... { using Ts::operator()...; };

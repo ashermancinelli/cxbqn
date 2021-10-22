@@ -1,5 +1,6 @@
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 foreach(test test_vm test_op test_values)
   add_executable(${test} ${test}.cpp)
-  target_link_libraries(${test} PUBLIC cxbqn::cxbqn cxbqn::tpl)
+  target_link_libraries(${test} PUBLIC cxbqn::cxbqn cxbqn::tpl Catch2::Catch2)
   add_test(NAME ${test} COMMAND $<TARGET_FILE:${test}>)
 endforeach()

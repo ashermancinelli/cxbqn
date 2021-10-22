@@ -1,0 +1,8 @@
+[submodule "ext/catch"]
+	path = ext/catch
+	url = git@github.com:catchorg/Catch2.git
+	branch = v2.x
+[submodule "ext/bqn"]
+	path = ext/bqn
+	url = https://github.com/mlochbaum/BQN
+	branch = master

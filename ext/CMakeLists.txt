@@ -1,1 +1,1 @@
-# someday pull BQN repo here to get newest runtime etc
+add_subdirectory(catch)
