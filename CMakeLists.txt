@@ -25,6 +25,7 @@ configure_file(
   ${PROJECT_BINARY_DIR}/cxbqn_config.hpp
   )
 
+add_subdirectory(ext)
 add_subdirectory(include)
 add_subdirectory(src)
 add_subdirectory(test)
