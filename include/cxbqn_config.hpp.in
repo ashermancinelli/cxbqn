@@ -1,0 +1,19 @@
+#pragma once
+#include <cstddef>
+
+namespace cxbqn::config {
+
+#cmakedefine CXBQN_INIT_STACK_SIZE @CXBQN_INIT_STACK_SIZE@
+
+static constexpr const char * version() {
+  return "@CMAKE_PROJECT_VERSION@";
+}
+static constexpr std::size_t init_stack_size() {
+  return CXBQN_INIT_STACK_SIZE;
+}
+
+#undef CXBQN_VERSION
+#undef CXBQN_INIT_STACK_SIZE
+
+}
+
