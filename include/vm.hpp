@@ -1,13 +1,15 @@
 #pragma once
-#include <vector>
 #include <cstdint>
-#include <optional>
 #include <memory>
+#include <optional>
 #include <tuple>
 #include <variant>
+#include <vector>
 
 #include <value_types.hpp>
 
+// I want these types to be laid out in long-form for readability.
+// clang-format off
 namespace cxbqn {
 
 using u8 = uint8_t;
@@ -23,13 +25,14 @@ using Consts = std::vector<int>;
 
 /**
  *
- * Bodies in a block are separated by `;`. Each entry in bodies is a list containing:
- * 
+ * Bodies in a block are separated by `;`. Each entry in bodies is a list
+ * containing:
+ *
  * - Starting index in `code`
  * - Number of variables the block needs to allocate
  * - Variable names, as indices into the program's symbol list
  * - A mask indicating which variables are exported
- * 
+ *
  */
 using Body = std::pair<u64, u64>;
 using Bodies = std::vector<Body>;
@@ -37,18 +40,21 @@ using Bodies = std::vector<Body>;
 /**
  *
  * Each entry in `blocks` is a list of the following properties:
- * 
+ *
  * - Block type: (0) function/immediate, (1) 1-modifier, (2) 2-modifier
  * - Block immediateness: (1) immediate or (0) deferred
  * - Index or indices in `bodies`
- * 
+ *
  */
-enum BlockType { FunctionImmediate=0, Modifier1, Modifier2 };
-enum BlockImmediateness { Deferred=0, Immediate };
+enum BlockType { FunctionImmediate = 0, Modifier1, Modifier2 };
+enum BlockImmediateness { Deferred = 0, Immediate };
 using Block = std::tuple<
-  BlockType
-  , BlockImmediateness
-  , std::variant<uz, std::vector<uz>>
+  BlockType,
+  BlockImmediateness,
+  std::variant<
+    uz,
+    std::vector<uz>
+  >
 >;
 using Blocks = std::vector<Block>;
 
@@ -61,14 +67,14 @@ using TokenizationInfo = int;
  * \brief Holds all information for bytecode output from a bqn source generator.
  *
  * The complete bytecode for a program consists of the following:
- * 
+ *
  * - A bytecode sequence code
  * - A list consts of constants that can be loaded
  * - A list blocks of per-block information, described in the next section
  * - A list bodies of per-body information, described in the section after
  * - Optionally, source locations for each instruction
  * - Optionally, tokenization information
- * 
+ *
  * For example, the following snippet:
  * \code{.sh}
  * $ ./src/cjs.bqn '5‿5'
@@ -99,11 +105,12 @@ struct Code {
   Code() : sls{std::nullopt}, ti{std::nullopt} {}
 };
 
-struct Env { };
+struct Env {};
 struct Sections {};
 
-int vm(Env &e, Code& code, std::size_t &prog_counter, std::vector<int>& stack);
+int vm(Env &e, Code &code, std::size_t &prog_counter, std::vector<int> &stack);
 int run(Code &code, Objects &objects, Sections &sections);
 
-}
-}
+} // namespace vm
+} // namespace cxbqn
+// clang-format on
