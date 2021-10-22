@@ -6,9 +6,8 @@ using namespace cxbqn::vm;
 
 int test_vm_5p5() {
   Code c;
-  Objects objs{5};
   Sections scs;
-  return run(c, objs, scs);
+  return run(c, scs);
 }
 
 int main() {

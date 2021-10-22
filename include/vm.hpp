@@ -10,17 +10,13 @@
 
 // I want these types to be laid out in long-form for readability.
 // clang-format off
-namespace cxbqn {
 
-using u8 = uint8_t;
-using u64 = uint64_t;
-using uz = std::size_t;
+namespace cxbqn {
 
 namespace vm {
 
 using Value = u64;
 using Bytecode = std::vector<uz>;
-using Objects = std::vector<std::optional<Value>>;
 using Consts = std::vector<int>;
 
 /**
@@ -52,8 +48,8 @@ using Block = std::tuple<
   BlockType,
   BlockImmediateness,
   std::variant<
-    uz,
-    std::vector<uz>
+    uz,              // a single index
+    std::vector<uz>  // indices
   >
 >;
 using Blocks = std::vector<Block>;
@@ -96,7 +92,6 @@ using TokenizationInfo = int;
  */
 struct Code {
   Bytecode bc;
-  Objects objs;
   Consts consts;
   Blocks blks;
   Bodies bodies;
@@ -105,12 +100,21 @@ struct Code {
   Code() : sls{std::nullopt}, ti{std::nullopt} {}
 };
 
-struct Env {};
+struct RootEnv {
+  std::vector<value::Root> values;
+};
+
+struct Env {
+  std::vector<value::Root> values;
+  std::optional<std::shared_ptr<RootEnv>> parent;
+};
+
 struct Sections {};
 
 int vm(Env &e, Code &code, std::size_t &prog_counter, std::vector<int> &stack);
-int run(Code &code, Objects &objects, Sections &sections);
+int run(Code &code, Sections &sections);
 
 } // namespace vm
 } // namespace cxbqn
+
 // clang-format on

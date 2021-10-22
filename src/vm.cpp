@@ -8,7 +8,7 @@ int vm(Env &e, Code& code, std::size_t &prog_counter, std::vector<int>& stack) {
   return 0;
 }
 
-int run(Code &code, Objects &objs, Sections &sections) {
+int run(Code &code, Sections &sections) {
   spdlog::set_pattern("vm::run[%^%l%$]:%v");
   std::vector<int> stack;
   stack.resize(cxbqn::config::init_stack_size());

@@ -1,36 +1,43 @@
 #pragma once
+#include <functional>
+#include <type_traits>
+#include <variant>
+#include <scalar_types.hpp>
 
-namespace cxbqn::value_types {
+namespace cxbqn {
 
-template<typename VT>
-struct Value {
-  uint64_t decode() {
-    return VT::decode();
-  }
-};
+// template deduction guides to make std::visit feel better
+template <class... Ts> struct overload : Ts... { using Ts::operator()...; };
+template <class... Ts> overload(Ts...) -> overload<Ts...>;
 
-struct Scalar {
+namespace value {
 
-};
+// clang-format off
+using Scalar = f64;
+struct BlockInst { };
+struct Array { };
+struct Function { };
+struct Train2 { };
+struct Train3 { };
 
-struct BlockInst {
+using Root = std::variant<
+  Scalar,
+  BlockInst,
+  Array,
+  Function,
+  Train2,
+  Train3
+>;
 
-};
+using Ref = std::shared_ptr<Root>;
+using Opt = std::optional<Ref>;
 
-struct Array {
+// clang-format on
 
-};
+auto decode(Ref v) -> Scalar;
+auto decode(Root v) -> Scalar;
+auto decode(Opt v) -> Scalar;
 
-struct Function {
+} // namespace value
+} // namespace cxbqn
 
-};
-
-struct Train2 {
-
-};
-
-struct Train3 {
-
-};
-
-}
