@@ -35,4 +35,4 @@ auto decode(Root v) -> Scalar {
   return ret;
 }
 
-}
+} // namespace cxbqn::value
