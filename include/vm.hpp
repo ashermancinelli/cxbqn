@@ -6,7 +6,7 @@
 #include <variant>
 #include <vector>
 
-#include <value_types.hpp>
+#include <types.hpp>
 
 // I want these types to be laid out in long-form for readability.
 // clang-format off

@@ -36,7 +36,9 @@ namespace types {
  *
  */
 
-struct Value {};
+struct Value {
+  i32 refc;
+};
 
 struct Nothing : Value {};
 
@@ -54,7 +56,6 @@ enum class NumType {
 };
 
 struct Number : Value {
-  i32 refc;
   NumType t;
   union {
     i8 _i8;
@@ -93,16 +94,18 @@ struct Atop : Function {
 struct Md1 : Function {};
 
 struct Scope;
+struct Block;
+
 struct UserMd1 : Md1 {
-  Scope sc;
-  Block bl;
+  Scope *sc;
+  Block *bl;
 };
 
 struct Md2 : Function {};
 
 struct UserMd2 : Md2 {
-  Scope sc;
-  Block bl;
+  Scope *sc;
+  Block *bl;
 };
 
 struct Md1Derived : Function {
@@ -119,7 +122,7 @@ struct Scope {
 };
 
 struct CompilationResult {
-  uz *bc; /// bytecode
+  uz *bc;
   Value *objs;
 };
 
@@ -143,15 +146,6 @@ struct Block {
   Comp *comp;
   uz bc_offset;
   uz var_count;
-};
-
-/**
- * Block with multiple bodies
- */
-struct MbBlock {
-  BlockType type;
-  bool immediate;
-  Comp *comp;
 };
 
 } // namespace types
