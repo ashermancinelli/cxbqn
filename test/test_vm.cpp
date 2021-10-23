@@ -1,16 +1,9 @@
 #include <cxbqn.hpp>
+#define CATCH_CONFIG_MAIN
+#include <catch2/catch.hpp>
 
 using namespace cxbqn;
-using namespace cxbqn::vm;
 
-int test_vm_5p5() {
-  Code c;
-  Sections scs;
-  return run(c, scs);
-}
+TEST_CASE("test vm", "") {
 
-int main() {
-  int fail{0};
-  fail += test_vm_5p5();
-  return fail;
 }

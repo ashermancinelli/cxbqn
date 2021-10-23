@@ -1,8 +1,10 @@
 #pragma once
+#include <numeric>
 #include <functional>
-#include <scalar_types.hpp>
+#include <initializer_list>
 #include <type_traits>
 #include <variant>
+#include <scalar_types.hpp>
 
 namespace cxbqn {
 
@@ -68,10 +70,10 @@ struct Number : Value {
 template <typename T> struct Array : Value {
   std::vector<uz> shape;
   T *values;
-  ~Array() {
-    if (sh != nullptr)
-      delete[] sh;
-  }
+  Array(std::initializer_list<T> vs);
+  Array(std::initializer_list<uz> szs, std::initializer_list<T> vs);
+  Array();
+  ~Array();
 };
 
 struct Reference : Value {
@@ -81,9 +83,9 @@ struct Reference : Value {
 
 struct Function : Value {};
 
-struct UserFn : Function {};
+struct UserFn : Function{};
 
-struct Fork : Funciton {
+struct Fork : Function {
   Value *f, *g, *h;
 };
 
@@ -143,10 +145,12 @@ struct Body {
 struct Block {
   BlockType type;
   bool immediate;
-  Comp *comp;
+  CompilationResult *comp;
   uz bc_offset;
   uz var_count;
 };
 
 } // namespace types
 } // namespace cxbqn
+
+#include "types.hpp.inl"
