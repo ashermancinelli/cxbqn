@@ -6,3 +6,7 @@
 	path = ext/bqn
 	url = https://github.com/mlochbaum/BQN
 	branch = master
+[submodule "ext/spdlog"]
+	path = ext/spdlog
+	url = git@github.com:gabime/spdlog.git
+	branch = v1.x
