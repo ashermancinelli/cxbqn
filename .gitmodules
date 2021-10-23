@@ -10,3 +10,7 @@
 	path = ext/spdlog
 	url = git@github.com:gabime/spdlog.git
 	branch = v1.x
+[submodule "ext/cbqn"]
+	path = ext/cbqn
+	url = git@github.com:dzaima/CBQN.git
+	branch = master
