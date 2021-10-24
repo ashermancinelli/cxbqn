@@ -42,38 +42,26 @@ namespace types {
 
 struct Value {
   i32 refc;
+  virtual ~Value() = default;
 };
 
 struct Nothing : Value {};
 
-struct Character {
+struct Character : Value {
   char v;
-};
-
-// Using cbqn's enum
-enum class NumType {
-  bit = 0,
-  i8 = 1,
-  i16 = 2,
-  i32 = 3,
-  f64 = 4,
+  Character(char c) : v{c} {}
 };
 
 struct Number : Value {
-  NumType t;
-  union {
-    i8 _i8;
-    i16 _i16;
-    i32 _i32;
-    f64 _f64;
-  } v;
+  f64 v;
+  Number(f64 v) : v{v} {}
 };
 
-template <typename T> struct Array : Value {
+struct Array : Value {
   std::vector<uz> shape;
-  T *values;
-  Array(std::initializer_list<T> vs);
-  Array(std::initializer_list<uz> szs, std::initializer_list<T> vs);
+  f64 *values;
+  Array(initl<f64> vs);
+  Array(initl<uz> szs, initl<f64> vs);
   Array();
   ~Array();
 };
@@ -86,10 +74,8 @@ struct Reference : Value {
 struct Function : Value {};
 
 struct Builtin : Function {
-  i32 (*f1)(Value *x);
-  i32 (*f2)(Value *w, Value *x);
-  i32 operator()(Value *x) { return f1(x); }
-  i32 operator()(Value *w, Value *x) { return f2(w, x); }
+  virtual Value* operator()(Value *x) = 0;
+  virtual Value* operator()(Value *w, Value *x) = 0;
 };
 
 struct UserFn : Function {};
@@ -159,6 +145,23 @@ struct Block {
   Block(uz ty, uz immediate, uz idx);
   ~Block();
 };
+
+template<typename T> void is(Value* v);
+
+template<typename OS>
+OS& operator<<(OS& os, Number* f);
+
+template<typename OS>
+OS& operator<<(OS& os, Function* f);
+
+template<typename OS>
+OS& operator<<(OS& os, Builtin* f);
+
+template<typename OS, typename T>
+OS& operator<<(OS& os, Array* ar);
+
+template<typename OS, typename ValueType>
+OS& operator<<(OS& os, ValueType *v);
 
 } // namespace types
 } // namespace cxbqn

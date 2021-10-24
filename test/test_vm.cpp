@@ -26,7 +26,7 @@ TEST_CASE("test vm", "manual input") {
     std::vector<i32> bc{0,1,0,0,0,1,17,7};
 
     // B_2(inc(runtime[0]),m_f64(5))
-    std::vector<u64> consts;//{runtime[0], 5};
+    std::vector<Value*> consts;//{runtime[0], 5};
 
     // B_1(new B_3(m_f64(0),m_f64(1),m_f64(0)))
     std::vector<Block> blks{Block(0, 1, 0)};

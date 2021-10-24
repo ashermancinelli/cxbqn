@@ -1,4 +1,5 @@
 #pragma once
+#include <cstdint>
 
 namespace cxbqn {
 
@@ -16,6 +17,7 @@ static_assert("Only 64b systems" && sizeof(double) == 8);
 using f32 = float;
 using f64 = double;
 
+// for all scalar types
 #define CXBQN_FOR_ALL_TS(F) \
   F(i8); \
   F(i16); \

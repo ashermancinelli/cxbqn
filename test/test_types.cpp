@@ -45,7 +45,7 @@ TEST_CASE("test types", "Array") {
   }
 
   SECTION("Array Constructor ()") {
-    auto* ar = new Array<u8>();
+    auto* ar = new Array();
     CHECK(ar->shape.empty());
     CHECK(ar->values == nullptr);
     delete ar;

@@ -1,33 +1,35 @@
 namespace cxbqn::types {
 
-template<typename T>
-Array<T>::Array() : values{nullptr} { }
-
-template<typename T>
-Array<T>::Array(std::initializer_list<T> vs) {
-  shape.push_back(vs.size());
-  values = new T[vs.size()];
-  std::copy(vs.begin(), vs.end(), values);
+// default impl, worst case scenario.
+template<typename T> bool is(Value* v) {
+  return !(nullptr == dynamic_cast<T*>(v));
 }
 
-template<typename T>
-Array<T>::Array(std::initializer_list<uz> szs, std::initializer_list<T> vs) {
-  std::copy(szs.begin(), szs.end(), std::back_inserter(shape));
-  uz len = std::accumulate(szs.begin(), szs.end(), 1, std::multiplies<uz>());
-  values = new T[len];
-  std::copy(vs.begin(), vs.end(), values);
+template<typename OS>
+OS &operator<<(OS& os, Number* n) {
+  return os << "N";
 }
 
-template<typename T>
-Array<T>::~Array() {
-  if (nullptr == values)
-    return;
-  delete[] values;
+template<typename OS>
+OS &operator<<(OS& os, Function* f) {
+  return os << "F";
 }
 
-#define EXT_EXPLICIT_INSTANTIATE(TYPE) extern template struct Array< TYPE >;
+template<typename OS>
+OS &operator<<(OS& os, Builtin* bi) {
+  return os << "BI";
+}
 
-CXBQN_FOR_ALL_TS(EXT_EXPLICIT_INSTANTIATE);
+template<typename OS, typename T>
+OS &operator<<(OS& os, Array* ar) {
+  os << "A";
+  return os;
+}
 
-#undef EXT_EXPLICIT_INSTANTIATE
+template<typename OS, typename ValueType>
+OS &operator<<(OS& os, ValueType* v) {
+  os << "V";
+  return os;
+}
+
 }

@@ -23,13 +23,13 @@ u64 _num(std::vector<BcType> &bc, uz &prog_counter, StackType &stack) {
   return t+i*n;
 }
 
-u8 vm(std::vector<i32> bc, std::vector<u64> consts, std::vector<Block> blks,
+u8 vm(std::vector<i32> bc, std::vector<Value*> consts, std::vector<Block> blks,
       std::vector<Body> bodies) {
   spdlog::set_pattern("cxbqn:vm:vm[%^%l%$] %v");
   spdlog::debug("enter vm");
 
   // VM stack
-  std::deque<u64> stk;
+  std::deque<Value*> stk;
 
   // program counter
   uz pc;
