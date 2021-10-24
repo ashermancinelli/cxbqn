@@ -57,21 +57,24 @@ struct Value {
   virtual u8 t() const = 0;
 };
 
-struct Nothing : Value {};
+// Managed Value
+using MValue = std::shared_ptr<Value>;
 
-struct Character : Value {
+struct Nothing : public Value {};
+
+struct Character : public Value {
   char v;
   Character(char c) : v{c} {}
   u8 t() const override { return 2; }
 };
 
-struct Number : Value {
+struct Number : public Value {
   f64 v;
   Number(f64 v) : v{v} {}
   u8 t() const override { return 1; }
 };
 
-struct Array : Value {
+struct Array : public Value {
   std::vector<uz> shape;
   f64 *values;
   Array(initl<f64> vs);
@@ -81,56 +84,56 @@ struct Array : Value {
   u8 t() const override { return 0; }
 };
 
-struct Reference : Value {
+struct Reference : public Value {
   uz dis_from_parent;
   uz position_in_parent;
 };
 
-struct Function : Value {
+struct Function : public Value {
   u8 t() const override { return 3; }
 };
 
-struct Builtin : Function {
+struct Builtin : public Function {
   virtual Value *operator()(Value *x) = 0;
   virtual Value *operator()(Value *w, Value *x) = 0;
 };
 
-struct UserFn : Function {};
+struct UserFn : public Function {};
 
-struct Fork : Function {
+struct Fork : public Function {
   Value *f, *g, *h;
 };
 
-struct Atop : Function {
+struct Atop : public Function {
   Value *g, *h;
 };
 
-struct Md1 : Function {
+struct Md1 : public Function {
   u8 t() const override { return 4; }
 };
 
 struct Scope;
 struct Block;
 
-struct UserMd1 : Md1 {
+struct UserMd1 : public Md1 {
   Scope *sc;
   Block *bl;
 };
 
-struct Md2 : Function {
+struct Md2 : public Function {
   u8 t() const override { return 5; }
 };
 
-struct UserMd2 : Md2 {
+struct UserMd2 : public Md2 {
   Scope *sc;
   Block *bl;
 };
 
-struct Md1Derived : Function {
+struct Md1Derived : public Function {
   Value *f, *m1;
 };
 
-struct Md2Derived : Function {
+struct Md2Derived : public Function {
   Value *f, *m2, *g;
 };
 
