@@ -1,10 +1,10 @@
 #pragma once
-#include <numeric>
 #include <functional>
 #include <initializer_list>
+#include <numeric>
+#include <scalar_types.hpp>
 #include <type_traits>
 #include <variant>
-#include <scalar_types.hpp>
 
 namespace cxbqn {
 
@@ -17,7 +17,7 @@ template <typename E> constexpr auto to_underlying(E e) noexcept {
   return static_cast<std::underlying_type_t<E>>(e);
 }
 
-template<typename T> using initl = std::initializer_list<T>;
+template <typename T> using initl = std::initializer_list<T>;
 
 namespace types {
 
@@ -85,7 +85,14 @@ struct Reference : Value {
 
 struct Function : Value {};
 
-struct UserFn : Function{};
+struct Builtin : Function {
+  i32 (*f1)(Value *x);
+  i32 (*f2)(Value *w, Value *x);
+  i32 operator()(Value *x) { return f1(x); }
+  i32 operator()(Value *w, Value *x) { return f2(w, x); }
+};
+
+struct UserFn : Function {};
 
 struct Fork : Function {
   Value *f, *g, *h;
@@ -126,7 +133,7 @@ struct Scope {
 };
 
 struct CompilationResult {
-  uz *bc;
+  i32 *bc;
   Value *objs;
 };
 
@@ -148,11 +155,12 @@ struct Block {
   BlockType type;
   bool immediate;
   CompilationResult *comp;
-  uz bc_offset;
-  uz var_count;
+  uz body_idx;
+  Block(uz ty, uz immediate, uz idx);
+  ~Block();
 };
 
 } // namespace types
 } // namespace cxbqn
 
-#include "types.hpp.inl"
+#include "detail/types.hpp.inl"
