@@ -1,4 +1,5 @@
 #include <vm.hpp>
+#include <op.hpp>
 #include <spdlog/spdlog.h>
 #include <deque>
 #include <sstream>
@@ -34,9 +35,19 @@ u8 vm(std::vector<i32> bc, std::vector<Value*> consts, std::vector<Block> blks,
   // program counter
   uz pc;
 
-  auto num = [&] {
-    return _num(bc, pc, stk);
+  //auto num = [&] {
+  //  return _num(bc, pc, stk);
+  //};
+
+  auto dbg_consts = [&] {
+    std::stringstream ss;
+    ss << "consts:[";
+    for (const auto& i : consts)
+      ss << i << ",";
+    ss << "]";
+    spdlog::debug("{}", ss.str());
   };
+  dbg_consts();
 
   auto dbg_stk = [&] {
     std::stringstream ss;
@@ -51,8 +62,9 @@ u8 vm(std::vector<i32> bc, std::vector<Value*> consts, std::vector<Block> blks,
   while (1) {
     dbg_stk();
     switch(bc[pc++]) {
-      case 0:
-        stk.push_back(consts[num()]);
+      case op::PUSH:
+        spdlog::debug("op:PUSH");
+        stk.push_back(consts[bc[pc++]]);
         break;
       default:
         spdlog::debug("unreachable code {}", bc[pc]);

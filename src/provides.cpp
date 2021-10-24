@@ -1,8 +1,10 @@
 #include <provides.hpp>
+#include <spdlog/spdlog.h>
 
 namespace cxbqn::provides {
 
 Value *Type::operator()(Value *x) {
+  spdlog::debug("•Type(x)");
   using namespace cxbqn::types;
 #define RET_TV(T, v)                                                           \
   if (nullptr != dynamic_cast<T *>(x))                                         \

@@ -4,6 +4,7 @@
 
 using namespace cxbqn;
 using namespace cxbqn::types;
+using namespace cxbqn::provides;
 using namespace cxbqn::vm;
 
 TEST_CASE("test vm", "manual input") {
@@ -26,7 +27,10 @@ TEST_CASE("test vm", "manual input") {
     std::vector<i32> bc{0,1,0,0,0,1,17,7};
 
     // B_2(inc(runtime[0]),m_f64(5))
-    std::vector<Value*> consts;//{runtime[0], 5};
+    std::vector<Value*> consts {
+      new Type(),
+      new Number(5),
+    };//{runtime[0], 5};
 
     // B_1(new B_3(m_f64(0),m_f64(1),m_f64(0)))
     std::vector<Block> blks{Block(0, 1, 0)};
@@ -35,5 +39,8 @@ TEST_CASE("test vm", "manual input") {
     std::vector<Body> bodies{Body{0, 0}};
 
     auto ret = vm::vm(bc, consts, blks, bodies);
+
+    delete consts[0];
+    delete consts[1];
   }
 }
