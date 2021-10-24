@@ -1,12 +1,11 @@
-#include <vm.hpp>
-#include <op.hpp>
-#include <spdlog/spdlog.h>
+#include <cxbqn.hpp>
 #include <deque>
+#include <spdlog/spdlog.h>
 #include <sstream>
 
 namespace cxbqn::vm {
 
-template<typename BcType, typename StackType>
+template <typename BcType, typename StackType>
 u64 _num(std::vector<BcType> &bc, uz &prog_counter, StackType &stack) {
   static constexpr u64 b{128};
   u64 n = bc[prog_counter++];
@@ -21,55 +20,75 @@ u64 _num(std::vector<BcType> &bc, uz &prog_counter, StackType &stack) {
     n = bc[prog_counter++];
   } while (n >= b);
 
-  return t+i*n;
+  return t + i * n;
 }
 
-u8 vm(std::vector<i32> bc, std::vector<Value*> consts, std::vector<Block> blks,
-      std::vector<Body> bodies) {
+namespace {
+
+template <typename ValueContainer>
+void vdbg(const char *label, ValueContainer c) {
+  using namespace cxbqn::fmt;
+  std::stringstream ss;
+  ss << label << ":[";
+  for (const auto e : c) {
+    fmt::repr(ss, e);
+    ss << ",";
+  }
+  ss << "]";
+  spdlog::debug("{}", ss.str());
+}
+
+template <typename ValueContainer>
+void dbg(const char *label, ValueContainer c) {
+  using namespace cxbqn::fmt;
+  std::stringstream ss;
+  ss << label << ":[";
+  for (const auto e : c) {
+    ss << e << ",";
+  }
+  ss << "]";
+  spdlog::debug("{}", ss.str());
+}
+
+} // namespace
+
+Value* vm(std::vector<i32> bc, std::vector<Value *> consts, std::vector<Block> blks,
+      std::vector<Body> bodies, std::deque<Value*> stk) {
   spdlog::set_pattern("cxbqn:vm:vm[%^%l%$] %v");
   spdlog::debug("enter vm");
 
-  // VM stack
-  std::deque<Value*> stk;
+  dbg("bc", bc);
+  dbg("blocks", blks);
+  dbg("bodies", bodies);
 
   // program counter
-  uz pc;
+  uz pc = 0;
 
-  //auto num = [&] {
-  //  return _num(bc, pc, stk);
-  //};
+  // this is very expensive
+  vdbg("consts", consts);
 
-  auto dbg_consts = [&] {
-    std::stringstream ss;
-    ss << "consts:[";
-    for (const auto& i : consts)
-      ss << i << ",";
-    ss << "]";
-    spdlog::debug("{}", ss.str());
-  };
-  dbg_consts();
-
-  auto dbg_stk = [&] {
-    std::stringstream ss;
-    ss << "stack:[";
-    for (const auto& i : stk)
-      ss << i << ",";
-    ss << "]";
-    spdlog::debug("{}", ss.str());
-  };
+  types::Value* v;
+  types::Number* n;
 
   spdlog::debug("enter interpreter loop");
   while (1) {
-    dbg_stk();
-    switch(bc[pc++]) {
-      case op::PUSH:
-        spdlog::debug("op:PUSH");
-        stk.push_back(consts[bc[pc++]]);
-        break;
-      default:
-        spdlog::debug("unreachable code {}", bc[pc]);
-        assert(false && "unreachable");
+    spdlog::debug("bc={},pc={}", bc[pc], pc);
+    // vdbg("stack", stk);
+    switch (bc[pc]) {
+    case op::PUSH:
+      pc++;
+      spdlog::debug("op:PUSH bc[pc++]={}", bc[pc]);
+      stk.push_back(consts[bc[pc]]);
+      break;
+    case op::RETN:
+      spdlog::debug("op:RETN");
+      return stk.back();
+      break;
+    default:
+      spdlog::critical("unreachable code {}", bc[pc]);
+      assert(false);
     }
+    pc++;
   }
 
   return 0;

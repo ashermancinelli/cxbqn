@@ -26,11 +26,11 @@ int main(int argc, char **argv) {
   // B_1(new i32_2(0,0))
   std::vector<Body> bodies{Body{0, 0}};
 
+  std::deque<Value*> stk;
+
   spdlog::debug("run vm");
-  auto ret = vm::vm(bc, consts, blks, bodies);
+  auto* ret = vm::vm(bc, consts, blks, bodies, stk);
 
   spdlog::debug("cleanup");
-  delete consts[0];
-  delete consts[1];
   return 0;
 }

@@ -10,6 +10,11 @@ struct Type : types::Builtin {
   Value* operator()(Value*,Value*) override;
 };
 
+struct Plus : types::Builtin {
+  Value* operator()(Value*x) override;
+  Value* operator()(Value*,Value*) override;
+};
+
 struct Fill : types::Builtin {};
 
 }

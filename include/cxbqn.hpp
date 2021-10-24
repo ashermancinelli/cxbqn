@@ -6,3 +6,4 @@
 #include <provides.hpp>
 #include <op.hpp>
 #include <vm.hpp>
+#include <fmt.hpp>

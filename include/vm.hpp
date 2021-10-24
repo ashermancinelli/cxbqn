@@ -2,19 +2,21 @@
 #include <cstdint>
 #include <memory>
 #include <optional>
+#include <deque>
+#include <span>
 #include <tuple>
 #include <types.hpp>
 #include <variant>
 #include <vector>
-#include <span>
 
 namespace cxbqn::vm {
 
-using cxbqn::types::Value;
-using cxbqn::types::Body;
 using cxbqn::types::Block;
+using cxbqn::types::Body;
+using cxbqn::types::Value;
 
-u8 vm(std::vector<i32> bc, std::vector<Value*> consts, std::vector<Block> blks,
-      std::vector<Body> bodies);
+Value *vm(std::vector<i32> bc, std::vector<Value *> consts,
+          std::vector<Block> blks, std::vector<Body> bodies,
+          std::deque<Value *> stk);
 
 } // namespace cxbqn::vm

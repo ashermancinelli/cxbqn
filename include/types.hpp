@@ -40,9 +40,21 @@ namespace types {
  *
  */
 
+enum Types {
+  t_Array=0,
+  t_Number,
+  t_Character,
+  t_Function,
+  t_Md1,
+  t_Md2,
+  t_Namespace,
+  NUM_TYPES
+};
+
 struct Value {
   i32 refc;
   virtual ~Value() = default;
+  virtual u8 t() const = 0;
 };
 
 struct Nothing : Value {};
@@ -50,11 +62,13 @@ struct Nothing : Value {};
 struct Character : Value {
   char v;
   Character(char c) : v{c} {}
+  u8 t() const override { return 2; }
 };
 
 struct Number : Value {
   f64 v;
   Number(f64 v) : v{v} {}
+  u8 t() const override { return 1; }
 };
 
 struct Array : Value {
@@ -64,6 +78,7 @@ struct Array : Value {
   Array(initl<uz> szs, initl<f64> vs);
   Array();
   ~Array();
+  u8 t() const override { return 0; }
 };
 
 struct Reference : Value {
@@ -71,11 +86,13 @@ struct Reference : Value {
   uz position_in_parent;
 };
 
-struct Function : Value {};
+struct Function : Value {
+  u8 t() const override { return 3; }
+};
 
 struct Builtin : Function {
-  virtual Value* operator()(Value *x) = 0;
-  virtual Value* operator()(Value *w, Value *x) = 0;
+  virtual Value *operator()(Value *x) = 0;
+  virtual Value *operator()(Value *w, Value *x) = 0;
 };
 
 struct UserFn : Function {};
@@ -88,7 +105,9 @@ struct Atop : Function {
   Value *g, *h;
 };
 
-struct Md1 : Function {};
+struct Md1 : Function {
+  u8 t() const override { return 4; }
+};
 
 struct Scope;
 struct Block;
@@ -98,7 +117,9 @@ struct UserMd1 : Md1 {
   Block *bl;
 };
 
-struct Md2 : Function {};
+struct Md2 : Function {
+  u8 t() const override { return 5; }
+};
 
 struct UserMd2 : Md2 {
   Scope *sc;
@@ -146,22 +167,7 @@ struct Block {
   ~Block();
 };
 
-template<typename T> void is(Value* v);
-
-template<typename OS>
-OS& operator<<(OS& os, Number* f);
-
-template<typename OS>
-OS& operator<<(OS& os, Function* f);
-
-template<typename OS>
-OS& operator<<(OS& os, Builtin* f);
-
-template<typename OS, typename T>
-OS& operator<<(OS& os, Array* ar);
-
-template<typename OS, typename ValueType>
-OS& operator<<(OS& os, ValueType *v);
+template <typename T> void is(Value *v);
 
 } // namespace types
 } // namespace cxbqn

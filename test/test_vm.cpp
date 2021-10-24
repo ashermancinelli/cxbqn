@@ -10,29 +10,28 @@ using namespace cxbqn::vm;
 
 TEST_CASE("test vm", "manual input") {
   spdlog::set_level(spdlog::level::debug);
-  /*
-   * BQN string '5+5'
+  /**
+   * BQN string '5'
    *
    * cc.bqn:
    *
-   * m_cai32(8,(i32[]){0,1,0,0,0,1,17,7}),
-   * new B_2(inc(runtime[0]),m_f64(5)),
+   * new i32_3(0,0,7),
+   * new B_1(m_f64(5)),
    * new B_1(new B_3(m_f64(0),m_f64(1),m_f64(0))),
    * new B_1(new i32_2(0,0))
    *
    * cjs.bqn:
    *
-   * [[0,1,0,0,0,1,17,7],[runtime[0],5],[[0,1,0]],[[0,0]]]
+   * [[0,0,7],[5],[[0,1,0]],[[0,0]]]
    */
-  SECTION("manual 5+5") {
-    // m_cai32(8,(i32[]){0,1,0,0,0,1,17,7})
-    std::vector<i32> bc{0,1,0,0,0,1,17,7};
+  SECTION("manual '5'") {
 
-    // B_2(inc(runtime[0]),m_f64(5))
-    std::vector<Value*> consts {
-      new Type(),
-      new Number(5),
-    };//{runtime[0], 5};
+    std::vector<i32> bc{0, 0, 7};
+
+    // new B_1(m_f64(5)),
+    std::vector<Value *> consts{
+        new Number(5),
+    };
 
     // B_1(new B_3(m_f64(0),m_f64(1),m_f64(0)))
     std::vector<Block> blks{Block(0, 1, 0)};
@@ -40,9 +39,12 @@ TEST_CASE("test vm", "manual input") {
     // B_1(new i32_2(0,0))
     std::vector<Body> bodies{Body{0, 0}};
 
-    auto ret = vm::vm(bc, consts, blks, bodies);
+    // VM stack
+    std::deque<Value *> stk;
 
-    delete consts[0];
-    delete consts[1];
+    auto *ret = vm::vm(bc, consts, blks, bodies, stk);
+    Number* n;
+    CHECK(nullptr != (n = dynamic_cast<Number*>(ret)));
+    CHECK(5.0 == Approx(n->v));
   }
 }

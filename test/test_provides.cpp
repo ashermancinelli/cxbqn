@@ -2,10 +2,11 @@
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
 
+using namespace cxbqn;
+using namespace cxbqn::types;
+using namespace cxbqn::provides;
+
 TEST_CASE("test provides", "•Type") {
-  using namespace cxbqn;
-  using namespace cxbqn::types;
-  using namespace cxbqn::provides;
   SECTION("Dyad") {
     auto *t = new Type();
     auto *w = new Number(0), *x = new Number(1);
@@ -103,3 +104,15 @@ TEST_CASE("test provides", "•Type") {
     delete t;
   }
 }
+
+TEST_CASE("test provides", "+") {
+  SECTION("w+x") {
+    auto *op = new Plus();
+    auto *w = new Number(2), *x = new Number(3);
+    auto *ret = (*op)(w, x);
+    CHECK(ret->t() == 1);
+    CHECK(5.0 == Approx(dynamic_cast<Number *>(ret)->v));
+    delete op;
+  }
+}
+
