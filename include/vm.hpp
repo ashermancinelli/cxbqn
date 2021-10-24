@@ -6,6 +6,7 @@
 #include <types.hpp>
 #include <variant>
 #include <vector>
+#include <span>
 
 namespace cxbqn::vm {
 

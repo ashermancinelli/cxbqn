@@ -1,4 +1,5 @@
 #include <cxbqn.hpp>
+#include <spdlog/spdlog.h>
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
 
@@ -8,6 +9,7 @@ using namespace cxbqn::provides;
 using namespace cxbqn::vm;
 
 TEST_CASE("test vm", "manual input") {
+  spdlog::set_level(spdlog::level::debug);
   /*
    * BQN string '5+5'
    *

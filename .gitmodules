@@ -1,6 +1,6 @@
 [submodule "ext/catch"]
 	path = ext/catch
-	url = git@github.com:catchorg/Catch2.git
+	url = https://github.com/catchorg/Catch2.git
 	branch = v2.x
 [submodule "ext/bqn"]
 	path = ext/bqn
@@ -8,9 +8,12 @@
 	branch = master
 [submodule "ext/spdlog"]
 	path = ext/spdlog
-	url = git@github.com:gabime/spdlog.git
+	url = https://github.com/gabime/spdlog.git
 	branch = v1.x
 [submodule "ext/cbqn"]
 	path = ext/cbqn
-	url = git@github.com:dzaima/CBQN.git
+	url = https://github.com/dzaima/CBQN.git
 	branch = master
+[submodule "ext/span"]
+	path = ext/span
+	url = https://github.com/tcbrindle/span.git

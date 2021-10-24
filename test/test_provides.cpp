@@ -9,18 +9,10 @@ TEST_CASE("test provides", "•Type") {
   SECTION("Dyad") {
     auto *t = new Type();
     auto *w = new Number(0), *x = new Number(1);
-    bool fail = true;
-    Value* ret;
-    try {
-      ret = (*t)(w, x);
-      REQUIRE((false && "•Type as a dyad didnt throw"));
-    } catch (std::runtime_error &e) {
-      // just a dummy catch - the try clause will fail if t doesn't throw
-    }
+    CHECK_THROWS_AS((*t)(w, x), std::runtime_error);
     delete t;
     delete w;
     delete x;
-    delete ret;
   }
   SECTION("Array") {
     auto *t = new Type();

@@ -3,6 +3,11 @@
 
 namespace cxbqn::config {
 
+#cmakedefine HAS_BUILTIN_SPAN
+#ifndef HAS_BUILTIN_SPAN
+#define TCB_SPAN_NAMESPACE_NAME std
+#endif
+
 #cmakedefine CXBQN_INIT_STACK_SIZE @CXBQN_INIT_STACK_SIZE@
 
 static constexpr const char * version() {
@@ -12,7 +17,6 @@ static constexpr std::size_t init_stack_size() {
   return CXBQN_INIT_STACK_SIZE;
 }
 
-#undef CXBQN_VERSION
 #undef CXBQN_INIT_STACK_SIZE
 
 }

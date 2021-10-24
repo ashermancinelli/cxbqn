@@ -18,6 +18,9 @@ set(CHECK_SUBMODULES ON CACHE BOOL "Check git submodules on every build")
 
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
+add_library(tpl INTERFACE)
+add_library(cxbqn::tpl ALIAS tpl)
+
 include(cmake/Linters.cmake)
 include(cmake/CheckGitSubmodules.cmake)
 include(cmake/FindBQN.cmake)
@@ -25,17 +28,11 @@ include(cmake/FindBQN.cmake)
 include_directories(${PROJECT_BINARY_DIR})
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
-add_library(tpl INTERFACE)
-add_library(cxbqn::tpl ALIAS tpl)
-
-find_package(spdlog QUIET)
-
-target_link_libraries(tpl INTERFACE spdlog::spdlog)
+add_subdirectory(ext)
 
 configure_file(include/cxbqn_config.hpp.in
                ${PROJECT_BINARY_DIR}/cxbqn_config.hpp)
 
-add_subdirectory(ext)
 add_subdirectory(include)
 add_subdirectory(src)
 add_subdirectory(test)
