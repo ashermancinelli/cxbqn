@@ -6,7 +6,7 @@ using namespace cxbqn;
 using namespace cxbqn::types;
 using namespace cxbqn::provides;
 
-TEST_CASE("test provides", "•Type") {
+TEST_CASE("•Type", "") {
   SECTION("Dyad") {
     auto *t = new Type();
     auto *w = new Number(0), *x = new Number(1);
@@ -105,7 +105,7 @@ TEST_CASE("test provides", "•Type") {
   }
 }
 
-TEST_CASE("test provides", "+") {
+TEST_CASE("Builtins", "") {
   SECTION("w+x") {
     auto *op = new Plus();
     auto *w = new Number(2), *x = new Number(3);

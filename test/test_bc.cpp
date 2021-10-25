@@ -2,32 +2,24 @@
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
 
+#include "utils.hpp"
+
 using namespace cxbqn;
+using namespace cxbqn::vm;
 using namespace cxbqn::types;
 using namespace cxbqn::provides;
 
-struct Consts {
-  std::vector<Value*> v;
-  Consts(initl<i32> i) {
-    for (const auto& e : i)
-      v.push_back(new Number{static_cast<cxbqn::f64>(e)});
-  }
-};
-
-struct CompileParams {
-    std::vector<i32> bc;
-    Consts consts;
-    std::vector<Block> blks;
-    std::vector<Body> bodies;
-};
-
-CompileParams t0{
-#include <bc_tests/t0.hpp>
-};
-// #include <bc_tests/all.hpp>
-
 TEST_CASE("Bytecode", "") {
-  SECTION("") {
+  SECTION("manual bc t0") {
+    CompileParams p{
+#include <bc_tests/t0.hpp>
+    };
 
+    std::deque<Value *> stk;
+
+    auto *ret = vm::vm(p.bc, p.consts.v, p.blks, p.bodies, stk);
+    Number* n;
+    CHECK(nullptr != (n = dynamic_cast<Number*>(ret)));
+    CHECK(5.0 == Approx(n->v));
   }
 }
