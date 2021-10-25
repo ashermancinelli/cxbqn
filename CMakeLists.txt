@@ -15,6 +15,9 @@ set(CXBQN_INIT_STACK_SIZE
     CACHE STRING "The size the VM stack is initialized with")
 
 set(CHECK_SUBMODULES ON CACHE BOOL "Check git submodules on every build")
+set(HAS_BQN_EXE OFF)
+set(CXBQN_EXT_DIR ${PROJECT_SOURCE_DIR}/ext/)
+include(CMakePrintHelpers)
 
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
@@ -26,6 +29,7 @@ include(cmake/CheckGitSubmodules.cmake)
 include(cmake/FindBQN.cmake)
 
 include_directories(${PROJECT_BINARY_DIR})
+include_directories(${PROJECT_BINARY_DIR}/include)
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
 add_subdirectory(ext)

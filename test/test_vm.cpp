@@ -47,4 +47,8 @@ TEST_CASE("test vm", "manual input") {
     CHECK(nullptr != (n = dynamic_cast<Number*>(ret)));
     CHECK(5.0 == Approx(n->v));
   }
+
+  SECTION("manual '4⋄3'") {
+
+  }
 }

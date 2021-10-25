@@ -5,6 +5,7 @@
 #include <scalar_types.hpp>
 #include <type_traits>
 #include <variant>
+#include <memory>
 
 namespace cxbqn {
 
