@@ -18,5 +18,6 @@ if(NOT HAS_BUILTIN_SPAN)
     ${CMAKE_CURRENT_SOURCE_DIR}/span/include/tcb/span.hpp
     ${PROJECT_BINARY_DIR}/span
     )
+else()
+  message(STATUS "Found std::span, using builtin")
 endif()
-target_link_libraries(tpl INTERFACE span)

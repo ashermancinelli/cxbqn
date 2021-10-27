@@ -84,9 +84,16 @@ Value* vm(std::vector<i32> bc, std::vector<Value *> consts, std::vector<Block> b
       spdlog::debug("op:RETN");
       return stk.back();
       break;
+    case op::POPS:
+      stk.pop_back();
+      break;
+    case op::VARM:
+      break;
+    case op::SETN:
+      break;
     default:
       spdlog::critical("unreachable code {}", bc[pc]);
-      assert(false);
+      throw std::runtime_error("cxbqn::vim::vim: unreachable code");
     }
     pc++;
   }

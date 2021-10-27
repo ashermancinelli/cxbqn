@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 #include <functional>
 #include <initializer_list>
 #include <numeric>
@@ -58,7 +59,7 @@ struct Value {
   virtual u8 t() const = 0;
 };
 
-// Managed Value
+/// Managed Value
 using MValue = std::shared_ptr<Value>;
 
 struct Nothing : public Value {};
@@ -86,7 +87,7 @@ struct Array : public Value {
 };
 
 struct Reference : public Value {
-  uz dis_from_parent;
+  uz depth;
   uz position_in_parent;
 };
 
