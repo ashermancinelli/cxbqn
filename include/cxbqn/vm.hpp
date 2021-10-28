@@ -34,6 +34,7 @@ void setn(std::deque<Value *> &stk, Scope *);
 void varm(std::vector<i32> &bc, uz &pc, std::deque<Value *> &stk);
 void varo(std::vector<i32> &bc, uz &pc, std::deque<Value *> &stk, Scope* scp);
 void fn10(std::vector<i32> &bc, uz &pc, std::deque<Value *> &stk, Scope* scp);
+void fn20(std::vector<i32> &bc, uz &pc, std::deque<Value *> &stk, Scope* scp);
 
 } // namespace instructions
 

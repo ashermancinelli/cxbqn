@@ -63,7 +63,7 @@ void fn10(std::vector<i32> &bc, uz &pc, std::deque<Value *> &stk, Scope* scp) {
 #ifdef CXBQN_DEEPCHECKS
   if (nullptr == x)
     throw std::runtime_error("FN10: got nullptr for x");
-  if (nullptr == x)
+  if (nullptr == F)
     throw std::runtime_error("FN10: got nullptr for F");
 #endif
 
@@ -71,6 +71,35 @@ void fn10(std::vector<i32> &bc, uz &pc, std::deque<Value *> &stk, Scope* scp) {
 #ifdef CXBQN_DEEPCHECKS
   if (nullptr == v)
     throw std::runtime_error("FN10: F returned nullptr");
+#endif
+
+  stk.push_back(v);
+}
+
+void fn20(std::vector<i32> &bc, uz &pc, std::deque<Value *> &stk, Scope* scp) {
+  auto *w = stk.back();
+  stk.pop_back();
+
+  auto *F = stk.back();
+  stk.pop_back();
+
+  auto *x = stk.back();
+  stk.pop_back();
+
+#ifdef CXBQN_DEEPCHECKS
+  if (nullptr == x)
+    throw std::runtime_error("FN20: got nullptr for x");
+  if (nullptr == w)
+    throw std::runtime_error("FN20: got nullptr for w");
+  if (nullptr == F)
+    throw std::runtime_error("FN20: got nullptr for F");
+#endif
+
+  auto *v = F->call(2, w, x);
+
+#ifdef CXBQN_DEEPCHECKS
+  if (nullptr == v)
+    throw std::runtime_error("FN20: F returned nullptr");
 #endif
 
   stk.push_back(v);
