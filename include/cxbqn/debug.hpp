@@ -1,5 +1,6 @@
 #pragma once
-#include <cxbqn_config.hpp>
+#include <cxbqn/config.hpp>
+#include <cxbqn/fmt.hpp>
 
 #ifdef CXBQN_DEEPCHECKS
 #include <spdlog/spdlog.h>
@@ -20,6 +21,8 @@ void vdbg(const char *label, ValueContainer c) {
   std::stringstream ss;
   ss << label << ":[";
   for (const auto e : c) {
+    if (nullptr == e)
+      continue;
     fmt::repr(ss, e);
     ss << ",";
   }
@@ -41,5 +44,7 @@ void dbg(const char *label, ValueContainer c) {
   spdlog::debug("{}", ss.str());
 #endif
 }
+
+void scope(types::Scope* sc);
 
 }

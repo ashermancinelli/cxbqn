@@ -1,36 +1,50 @@
-#include <cxbqn.hpp>
+#include <cxbqn/cxbqn.hpp>
+#include <cxbqn/debug.hpp>
 #include <deque>
-#include <cxbqn_debug.hpp>
 #include <sstream>
 
 namespace cxbqn::vm {
 
-template <typename BcType, typename StackType>
-u64 _num(std::vector<BcType> &bc, uz &prog_counter, StackType &stack) {
-  static constexpr u64 b{128};
-  u64 n = bc[prog_counter++];
-  if (n < b)
-    return n;
+RunResult run(std::vector<i32> bc, std::vector<Value *> consts,
+              std::vector<Block> blks, std::vector<Body> bodies) {
 
-  // wtf is this
-  u64 i{1}, t{0};
-  do {
-    t += i * (n - b);
-    i *= b;
-    n = bc[prog_counter++];
-  } while (n >= b);
-
-  return t + i * n;
-}
-
-Value *vm(std::vector<i32> bc, std::vector<Value *> consts,
-          std::vector<Block> blks, std::vector<Body> bodies,
-          std::deque<Value *> stk, Scope* scope) {
-  CXBQN_DEBUG("enter vm");
+  CXBQN_DEBUG("vm::run:");
 
   debug::dbg("bc", bc);
   debug::dbg("blocks", blks);
   debug::dbg("bodies", bodies);
+
+  std::deque<Value *> stk;
+
+#ifdef CXBQN_DEEPCHECKS
+  auto idx = blks[0].body_idx;
+  if (idx >= bodies.size())
+    throw std::runtime_error("body idx is greater than num bodies, something "
+                             "has gone horribly wrong");
+#endif
+
+  auto body = bodies[blks[0].body_idx];
+
+  RunResult ret;
+
+  ret.scp = new Scope(nullptr, blks[0], body);
+
+  ret.v = vm::vm(bc, consts, blks[0], body, stk, ret.scp);
+
+#ifdef CXBQN_DEEPCHECKS
+  if (nullptr == ret.v)
+    throw std::runtime_error("vm::run: vm returned nullptr");
+#endif
+
+  return ret;
+}
+
+Value *vm(std::vector<i32> bc, std::vector<Value *> consts, Block blk,
+          Body body, std::deque<Value *> stk, Scope *scope) {
+
+  CXBQN_DEBUG("enter vm");
+
+  debug::dbg("bc", bc);
 
   // program counter
   uz pc = 0;
@@ -41,9 +55,11 @@ Value *vm(std::vector<i32> bc, std::vector<Value *> consts,
   i32 arga, argb;
 
   CXBQN_DEBUG("enter interpreter loop");
+
   while (1) {
     CXBQN_DEBUG("bc={},pc={}", bc[pc], pc);
     debug::vdbg("stack", stk);
+    debug::scope(scope);
     switch (bc[pc]) {
     case op::PUSH:
       pc++;
@@ -72,7 +88,7 @@ Value *vm(std::vector<i32> bc, std::vector<Value *> consts,
       break;
     default:
       CXBQN_CRIT("unreachable code {}", bc[pc]);
-      throw std::runtime_error("cxbqn::vim::vim: unreachable code");
+      throw std::runtime_error("cxbqn::vm::vm: unreachable code");
     }
     pc++;
   }

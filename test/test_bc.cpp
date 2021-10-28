@@ -1,4 +1,4 @@
-#include <cxbqn.hpp>
+#include <cxbqn/cxbqn.hpp>
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
 #include <spdlog/spdlog.h>
@@ -10,6 +10,7 @@ using namespace cxbqn::vm;
 using namespace cxbqn::types;
 using namespace cxbqn::provides;
 
+
 TEST_CASE("Bytecode", "") {
 
   spdlog::set_level(spdlog::level::debug);
@@ -19,15 +20,11 @@ TEST_CASE("Bytecode", "") {
 #include <bc_tests/t0.hpp>
     };
 
-    std::deque<Value *> stk;
+    auto ret = vm::run(p.bc, p.consts.v, p.blks, p.bodies);
 
-    auto* sc = new Scope();
-
-    auto *ret = vm::vm(p.bc, p.consts.v, p.blks, p.bodies, stk, sc);
-    Number* n;
-    REQUIRE(nullptr != (n = dynamic_cast<Number*>(ret)));
+    Number* n = dynamic_cast<Number*>(ret.v);
+    REQUIRE(nullptr != n);
     CHECK(5.0 == Approx(n->v));
-    delete sc;
   }
 
   SECTION("manual bc t1") {
@@ -35,15 +32,11 @@ TEST_CASE("Bytecode", "") {
 #include <bc_tests/t1.hpp>
     };
 
-    std::deque<Value *> stk;
+    auto ret = vm::run(p.bc, p.consts.v, p.blks, p.bodies);
 
-    auto* sc = new Scope();
-
-    auto *ret = vm::vm(p.bc, p.consts.v, p.blks, p.bodies, stk, sc);
-    Number* n;
-    REQUIRE(nullptr != (n = dynamic_cast<Number*>(ret)));
+    Number* n = dynamic_cast<Number*>(ret.v);;
+    REQUIRE(nullptr != n);
     CHECK(3.0 == Approx(n->v));
-    delete sc;
   }
 
   SECTION("manual bc t2") {
@@ -51,14 +44,16 @@ TEST_CASE("Bytecode", "") {
 #include <bc_tests/t2.hpp>
     };
 
-    std::deque<Value *> stk;
+    auto ret = vm::run(p.bc, p.consts.v, p.blks, p.bodies);
 
-    auto* sc = new Scope();
+    Reference* r = dynamic_cast<Reference*>(ret.v);
+    REQUIRE(nullptr != r);
+    REQUIRE(nullptr != ret.scp);
 
-    auto *ret = vm::vm(p.bc, p.consts.v, p.blks, p.bodies, stk, sc);
-    Number* n;
-    REQUIRE(nullptr != (n = dynamic_cast<Number*>(ret)));
+    Value *v = ret.scp->get(r);
+    REQUIRE(nullptr != v);
+    auto *n = dynamic_cast<Number*>(v);
+    REQUIRE(nullptr != n);
     CHECK(5.0 == Approx(n->v));
-    delete sc;
   }
 }

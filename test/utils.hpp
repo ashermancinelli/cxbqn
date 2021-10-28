@@ -1,5 +1,5 @@
 #pragma once
-#include <cxbqn.hpp>
+#include <cxbqn/cxbqn.hpp>
 
 using namespace cxbqn;
 using namespace cxbqn::types;

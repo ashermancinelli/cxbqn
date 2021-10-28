@@ -1,5 +1,5 @@
-#include <provides.hpp>
-#include <cxbqn_debug.hpp>
+#include <cxbqn/provides.hpp>
+#include <cxbqn/debug.hpp>
 
 namespace cxbqn::provides {
 

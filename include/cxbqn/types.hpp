@@ -1,9 +1,9 @@
 #pragma once
+#include <cxbqn/scalar_types.hpp>
 #include <functional>
 #include <initializer_list>
 #include <memory>
 #include <numeric>
-#include <scalar_types.hpp>
 #include <type_traits>
 #include <variant>
 #include <vector>
@@ -143,14 +143,6 @@ struct Md2Derived : public Function {
   Value *f, *m2, *g;
 };
 
-struct Scope {
-  Scope *parent;
-  std::vector<Value *> vars;
-  Scope() : parent{nullptr} {}
-  Scope(Scope *parent) : parent{parent} {}
-  Scope(Scope *parent, uz nvars) : parent{parent} { vars.resize(nvars); }
-};
-
 struct CompilationResult {
   i32 *bc;
   Value *objs;
@@ -177,6 +169,14 @@ struct Block {
   uz body_idx;
   Block(uz ty, uz immediate, uz idx);
   ~Block();
+};
+
+struct Scope {
+  Scope *parent;
+  std::vector<Value *> vars;
+  Scope(Scope *parent, Block, Body);
+  Value* get(Reference *r);
+  void set(Reference *r, Value *v);
 };
 
 template <typename T> void is(Value *v);

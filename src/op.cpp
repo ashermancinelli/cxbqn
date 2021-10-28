@@ -1,4 +1,4 @@
-#include <cxbqn.hpp>
+#include <cxbqn/cxbqn.hpp>
 
 namespace cxbqn::op {
 

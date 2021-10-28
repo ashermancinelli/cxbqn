@@ -1,4 +1,4 @@
-#include <cxbqn.hpp>
+#include <cxbqn/cxbqn.hpp>
 #include <spdlog/spdlog.h>
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>

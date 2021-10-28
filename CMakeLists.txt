@@ -14,7 +14,7 @@ set(CXBQN_INIT_STACK_SIZE
     10000
     CACHE STRING "The size the VM stack is initialized with")
 
-option(CXBQN_DEEPCHECKS ON)
+set(CXBQN_DEEPCHECKS ON CACHE BOOL "Deep null checking and debugging information")
 set(CHECK_SUBMODULES ON CACHE BOOL "Check git submodules on every build")
 set(HAS_BQN_EXE OFF)
 set(CXBQN_EXT_DIR ${PROJECT_SOURCE_DIR}/ext/)
@@ -29,14 +29,13 @@ include(cmake/Linters.cmake)
 include(cmake/CheckGitSubmodules.cmake)
 include(cmake/FindBQN.cmake)
 
-include_directories(${PROJECT_BINARY_DIR})
-include_directories(${PROJECT_BINARY_DIR}/include)
 include_directories(${PROJECT_SOURCE_DIR}/include)
+include_directories(${PROJECT_BINARY_DIR}/include)
+include_directories(${PROJECT_BINARY_DIR})
 
 add_subdirectory(ext)
 
-configure_file(include/cxbqn_config.hpp.in
-               ${PROJECT_BINARY_DIR}/cxbqn_config.hpp)
+configure_file(include/cxbqn/config.hpp.in ${PROJECT_BINARY_DIR}/include/cxbqn/config.hpp)
 
 add_subdirectory(include)
 add_subdirectory(src)

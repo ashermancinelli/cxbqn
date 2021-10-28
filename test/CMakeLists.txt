@@ -1,6 +1,6 @@
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
-foreach(test test_vm test_op test_types test_provides test_bc)
+foreach(test test_op test_types test_provides test_bc)
   add_executable(${test} ${test}.cpp)
   target_link_libraries(${test} PUBLIC cxbqn::cxbqn cxbqn::tpl Catch2::Catch2)
   add_test(NAME ${test} COMMAND $<TARGET_FILE:${test}>)
@@ -20,7 +20,6 @@ if(HAS_BQN_EXE)
   file(REMOVE ${GEN_BC_TEST_FILE})
   file(REMOVE ${ALL_BC_TESTS_HPP})
   file(WRITE ${GEN_BC_TEST_FILE} "cd ${CXBQN_EXT_DIR}/cbqn\n")
-  cmake_print_variables(ALL_BC_TESTS_HPP)
 
   set(i 0)
   foreach(BC_TEST ${BC_TESTS})
