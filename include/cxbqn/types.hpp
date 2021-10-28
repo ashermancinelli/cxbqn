@@ -180,6 +180,7 @@ struct Scope {
   Scope(Scope *parent, Block, Body);
   Value* get(Reference *r);
   void set(bool should_var_be_set, Reference *r, Value *v);
+  Scope* get_nth_parent(uz depth);
 };
 
 template <typename T> void is(Value *v);

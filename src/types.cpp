@@ -38,30 +38,15 @@ Value *Scope::get(Reference *r) {
     throw std::runtime_error("Scope::get got nullptr reference");
 #endif
 
-  Scope *scp = this;
-  auto n = r->depth;
-  while (n--) {
-    scp = scp->parent;
-#ifdef CXBQN_DEEPCHECKS
-    if (nullptr == scp)
-      throw std::runtime_error(
-          "assign: got nullptr scope when walking the scope tree");
-#endif
-  }
+  const auto n = r->depth;
+  Scope *scp = get_nth_parent(n);
 
-  CXBQN_DEBUG("cxbqn::Scope::get:r->pos={}", r->position_in_parent);
-#ifdef CXBQN_DEEPCHECKS
-  if (r->position_in_parent >= scp->vars.size())
-    throw std::runtime_error("Attempted to retrieve value of reference in "
-                             "location outside of bounds "
-                             "in the intended scope");
-#endif
   return scp->vars[r->position_in_parent];
 }
 
 void Scope::set(bool should_var_be_set, Reference *r, Value *v) {
-  // Number of scopes to ascend
-  auto n = r->depth;
+
+  const auto n = r->depth;
   CXBQN_DEBUG("cxbqn::vm::instructions::assign:n={}", n);
 
 #ifdef CXBQN_DEEPCHECKS
@@ -71,26 +56,7 @@ void Scope::set(bool should_var_be_set, Reference *r, Value *v) {
     throw std::runtime_error("assign: got nullptr value");
 #endif
 
-  Scope *scp = this;
-
-  // Walk the scope descendence to find the target scope
-  while (n--) {
-    CXBQN_DEBUG("Scope::set: traversing to parent");
-    scp = scp->parent;
-#ifdef CXBQN_DEEPCHECKS
-    if (nullptr == scp)
-      throw std::runtime_error(
-          "assign: got nullptr scope when walking the scope tree");
-#endif
-  }
-
-  CXBQN_DEBUG("cxbqn::Scope::set:r->pos={}", r->position_in_parent);
-#ifdef CXBQN_DEEPCHECKS
-  if (r->position_in_parent >= scp->vars.size())
-    throw std::runtime_error(
-        "Attempted to assign value to reference in location outside of bounds "
-        "in the intended scope");
-#endif
+  Scope *scp = get_nth_parent(n);
 
   bool isset = nullptr == dynamic_cast<Nothing*>(scp->vars[r->position_in_parent]);
   if (should_var_be_set != isset) {
@@ -100,6 +66,20 @@ void Scope::set(bool should_var_be_set, Reference *r, Value *v) {
 
   // assign to the underlying value
   scp->vars[r->position_in_parent] = v;
+}
+
+Scope* Scope::get_nth_parent(uz depth) {
+  auto* scp = this;
+  while (depth--) {
+    CXBQN_DEBUG("Scope::set: traversing to parent");
+    scp = scp->parent;
+#ifdef CXBQN_DEEPCHECKS
+    if (nullptr == scp)
+      throw std::runtime_error(
+          "assign: got nullptr scope when walking the scope tree");
+#endif
+  }
+  return scp;
 }
 
 Block::Block(uz ty, uz immediate, uz idx)

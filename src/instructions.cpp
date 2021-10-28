@@ -46,4 +46,11 @@ void varm(std::vector<i32> &bc, uz &pc, std::deque<Value *> &stk) {
                                      static_cast<uz>(pos_in_parent)));
 }
 
+void varo(std::vector<i32> &bc, uz &pc, std::deque<Value *> &stk, Scope* scp) {
+  const auto local_variable_idx = bc[++pc];
+  const auto n_frames_up = bc[++pc];
+  scp = scp->get_nth_parent(n_frames_up);
+  stk.push_back(scp->vars[local_variable_idx]);
+}
+
 } // namespace cxbqn::vm::instructions
