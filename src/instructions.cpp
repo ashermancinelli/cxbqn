@@ -53,4 +53,27 @@ void varo(std::vector<i32> &bc, uz &pc, std::deque<Value *> &stk, Scope* scp) {
   stk.push_back(scp->vars[local_variable_idx]);
 }
 
+void fn10(std::vector<i32> &bc, uz &pc, std::deque<Value *> &stk, Scope* scp) {
+  auto *F = stk.back();
+  stk.pop_back();
+
+  auto *x = stk.back();
+  stk.pop_back();
+
+#ifdef CXBQN_DEEPCHECKS
+  if (nullptr == x)
+    throw std::runtime_error("FN10: got nullptr for x");
+  if (nullptr == x)
+    throw std::runtime_error("FN10: got nullptr for F");
+#endif
+
+  auto *v = F->call(1, nullptr, x);
+#ifdef CXBQN_DEEPCHECKS
+  if (nullptr == v)
+    throw std::runtime_error("FN10: F returned nullptr");
+#endif
+
+  stk.push_back(v);
+}
+
 } // namespace cxbqn::vm::instructions

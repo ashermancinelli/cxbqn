@@ -56,13 +56,30 @@ enum Types {
   t_Nothing,
 };
 
+
+struct Scope;
+struct Block;
+
 struct Value {
+  // Sometimes we delete an opaque value
+  virtual ~Value() {}
+
+  // Currently, no reference counting is performed and all memory is leaked.
   i32 refc;
-  virtual ~Value() = default;
+
+  // A type must be able to tell you it's •Type. We also use this over trying to
+  // dynamic cast to a bunch of different types since the object creation
+  // required to attempt a dynamic cast can be very costly. Calling t() before a
+  // dyn cast lets us know for sure that the dyn cast will succeed.
   virtual u8 t() const = 0;
+
+  // If a value type does not define it's own call, we probably just push it
+  // back on the stack.
+  virtual Value *call(uz nargs, Value *w, Value *x) { return this; }
 };
 
 /// Managed Value
+/// Currently unused, but might be used for managing memory later on.
 using MValue = std::shared_ptr<Value>;
 
 struct Nothing : public Value {
@@ -107,7 +124,11 @@ struct Builtin : public Function {
   virtual Value *operator()(Value *w, Value *x) = 0;
 };
 
-struct UserFn : public Function {};
+struct UserFn : public Function {
+  Scope *scp;
+  Block *blk;
+  UserFn(Scope *scp, Block *blk) : scp{scp}, blk{blk} {}
+};
 
 struct Fork : public Function {
   Value *f, *g, *h;
@@ -120,9 +141,6 @@ struct Atop : public Function {
 struct Md1 : public Function {
   u8 t() const override { return 4; }
 };
-
-struct Scope;
-struct Block;
 
 struct UserMd1 : public Md1 {
   Scope *sc;
@@ -178,9 +196,9 @@ struct Scope {
   Scope *parent;
   std::vector<Value *> vars;
   Scope(Scope *parent, Block, Body);
-  Value* get(Reference *r);
+  Value *get(Reference *r);
   void set(bool should_var_be_set, Reference *r, Value *v);
-  Scope* get_nth_parent(uz depth);
+  Scope *get_nth_parent(uz depth);
 };
 
 template <typename T> void is(Value *v);

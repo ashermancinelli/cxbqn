@@ -90,6 +90,11 @@ Value *vm(std::vector<i32> bc, std::vector<Value *> consts, Block blk,
       CXBQN_DEBUG("op:VARO|VARU");
       instructions::varo(bc, pc, stk, scope);
       break;
+    case op::FN1O:
+    case op::FN1C:
+      CXBQN_DEBUG("op:FN10|FN1C");
+      instructions::fn10(bc, pc, stk, scope);
+      break;
     default:
       CXBQN_CRIT("unreachable code {}", bc[pc]);
       throw std::runtime_error("vm::vm: unreachable code");
