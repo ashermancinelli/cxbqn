@@ -7,6 +7,7 @@ std::ostream &repr(std::ostream &os, Value *v) {
   Array *a;
   Number *n;
   Function *f;
+  Reference *r;
 
   // using t() is faster than attempting to dynamic cast on every type
   switch (v->t()) {
@@ -24,6 +25,10 @@ std::ostream &repr(std::ostream &os, Value *v) {
   case t_Function:
     f = dynamic_cast<Function *>(v);
     os << "F{}";
+    break;
+  case t_Reference:
+    r = dynamic_cast<Reference*>(v);
+    os << "R{d="<< r->depth << ",pos="<<r->position_in_parent<<"}";
     break;
   default:
     spdlog::critical("got t()={}", v->t());

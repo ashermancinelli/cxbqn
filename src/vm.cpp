@@ -52,8 +52,9 @@ void dbg(const char *label, ValueContainer c) {
 
 } // namespace
 
-Value* vm(std::vector<i32> bc, std::vector<Value *> consts, std::vector<Block> blks,
-      std::vector<Body> bodies, std::deque<Value*> stk) {
+Value *vm(std::vector<i32> bc, std::vector<Value *> consts,
+          std::vector<Block> blks, std::vector<Body> bodies,
+          std::deque<Value *> stk) {
   spdlog::set_pattern("cxbqn:vm:vm[%^%l%$] %v");
   spdlog::debug("enter vm");
 
@@ -67,13 +68,12 @@ Value* vm(std::vector<i32> bc, std::vector<Value *> consts, std::vector<Block> b
   // this is very expensive
   vdbg("consts", consts);
 
-  types::Value* v;
-  types::Number* n;
+  i32 arga, argb;
 
   spdlog::debug("enter interpreter loop");
   while (1) {
     spdlog::debug("bc={},pc={}", bc[pc], pc);
-    // vdbg("stack", stk);
+    vdbg("stack", stk);
     switch (bc[pc]) {
     case op::PUSH:
       pc++;
@@ -85,11 +85,19 @@ Value* vm(std::vector<i32> bc, std::vector<Value *> consts, std::vector<Block> b
       return stk.back();
       break;
     case op::POPS:
+      spdlog::debug("op:POPS");
       stk.pop_back();
       break;
     case op::VARM:
+      arga = bc[++pc];
+      argb = bc[++pc];
+      spdlog::debug("op:VARM:a={},b={}", arga, argb);
+      stk.push_back(new types::Reference(
+          /*depth=*/static_cast<uz>(arga),
+          /*position in parent=*/static_cast<uz>(argb)));
       break;
     case op::SETN:
+      spdlog::debug("op:SETN");
       break;
     default:
       spdlog::critical("unreachable code {}", bc[pc]);

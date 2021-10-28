@@ -1,12 +1,12 @@
 #pragma once
-#include <vector>
 #include <functional>
 #include <initializer_list>
+#include <memory>
 #include <numeric>
 #include <scalar_types.hpp>
 #include <type_traits>
 #include <variant>
-#include <memory>
+#include <vector>
 
 namespace cxbqn {
 
@@ -43,14 +43,16 @@ namespace types {
  */
 
 enum Types {
-  t_Array=0,
+  t_Array = 0,
   t_Number,
   t_Character,
   t_Function,
   t_Md1,
   t_Md2,
   t_Namespace,
-  NUM_TYPES
+  NUM_TYPES, // All values after this are not valid with •Type, and are for
+             // internal use only.
+  t_Reference,
 };
 
 struct Value {
@@ -67,13 +69,13 @@ struct Nothing : public Value {};
 struct Character : public Value {
   char v;
   Character(char c) : v{c} {}
-  u8 t() const override { return 2; }
+  u8 t() const override { return t_Character; }
 };
 
 struct Number : public Value {
   f64 v;
   Number(f64 v) : v{v} {}
-  u8 t() const override { return 1; }
+  u8 t() const override { return t_Number; }
 };
 
 struct Array : public Value {
@@ -83,12 +85,14 @@ struct Array : public Value {
   Array(initl<uz> szs, initl<f64> vs);
   Array();
   ~Array();
-  u8 t() const override { return 0; }
+  u8 t() const override { return t_Array; }
 };
 
 struct Reference : public Value {
   uz depth;
   uz position_in_parent;
+  Reference(uz d, uz p) : depth{d}, position_in_parent{p} {}
+  u8 t() const override { return t_Reference; }
 };
 
 struct Function : public Value {
