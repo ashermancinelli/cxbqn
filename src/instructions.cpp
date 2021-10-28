@@ -1,13 +1,15 @@
 #include <cxbqn/cxbqn.hpp>
-#include <deque>
 #include <cxbqn/debug.hpp>
+#include <deque>
 #include <sstream>
 
 namespace cxbqn::vm::instructions {
 
 using namespace cxbqn::types;
 
-void setn(std::deque<Value *> stk, Scope *scp) {
+namespace {
+
+template <bool ShouldVarBeSet> void set(std::deque<Value *> stk, Scope *scp) {
 
   CXBQN_DEBUG("SETN:enter");
   debug::vdbg("setn:stack", stk);
@@ -26,9 +28,15 @@ void setn(std::deque<Value *> stk, Scope *scp) {
         "SETN: Could not cast reference to type Reference");
 #endif
 
-  scp->set(refer, value);
+  scp->set(ShouldVarBeSet, refer, value);
 
   stk.push_back(refer);
 }
+
+} // namespace
+
+void setu(std::deque<Value *> stk, Scope *scp) { set<true>(stk, scp); }
+
+void setn(std::deque<Value *> stk, Scope *scp) { set<true>(stk, scp); }
 
 } // namespace cxbqn::vm::instructions

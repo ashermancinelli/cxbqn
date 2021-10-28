@@ -29,8 +29,9 @@ Value *vm(std::vector<i32> bc, std::vector<Value *> consts, Block blk,
 
 namespace instructions {
 
+void setu(std::deque<Value *> stk, Scope *);
 void setn(std::deque<Value *> stk, Scope *);
 
-}
+} // namespace instructions
 
 } // namespace cxbqn::vm

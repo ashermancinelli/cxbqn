@@ -22,9 +22,11 @@ void vdbg(const char *label, ValueContainer c) {
   ss << label << ":[";
   for (const auto e : c) {
     if (nullptr == e)
-      continue;
-    fmt::repr(ss, e);
-    ss << ",";
+      ss << "null,";
+    else {
+      fmt::repr(ss, e);
+      ss << ",";
+    }
   }
   ss << "]";
   spdlog::debug("{}", ss.str());
@@ -45,6 +47,6 @@ void dbg(const char *label, ValueContainer c) {
 #endif
 }
 
-void scope(types::Scope* sc);
+void scope(types::Scope *sc);
 
-}
+} // namespace cxbqn::debug

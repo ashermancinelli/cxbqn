@@ -16,6 +16,7 @@ TEST_CASE("Bytecode", "") {
   spdlog::set_level(spdlog::level::debug);
 
   SECTION("manual bc t0") {
+    spdlog::debug("t0");
     CompileParams p{
 #include <bc_tests/t0.hpp>
     };
@@ -28,6 +29,7 @@ TEST_CASE("Bytecode", "") {
   }
 
   SECTION("manual bc t1") {
+    spdlog::debug("t1");
     CompileParams p{
 #include <bc_tests/t1.hpp>
     };
@@ -40,6 +42,7 @@ TEST_CASE("Bytecode", "") {
   }
 
   SECTION("manual bc t2") {
+    spdlog::debug("t2");
     CompileParams p{
 #include <bc_tests/t2.hpp>
     };
@@ -55,5 +58,15 @@ TEST_CASE("Bytecode", "") {
     auto *n = dynamic_cast<Number*>(v);
     REQUIRE(nullptr != n);
     CHECK(5.0 == Approx(n->v));
+  }
+
+  SECTION("manual bc t3") {
+    spdlog::debug("t3");
+    CompileParams p{
+#include <bc_tests/t3.hpp>
+    };
+
+    auto ret = vm::run(p.bc, p.consts.v, p.blks, p.bodies);
+    // CHECK(4.0 == Approx(n->v));
   }
 }

@@ -53,6 +53,7 @@ enum Types {
   NUM_TYPES, // All values after this are not valid with •Type, and are for
              // internal use only.
   t_Reference,
+  t_Nothing,
 };
 
 struct Value {
@@ -64,7 +65,9 @@ struct Value {
 /// Managed Value
 using MValue = std::shared_ptr<Value>;
 
-struct Nothing : public Value {};
+struct Nothing : public Value {
+  u8 t() const override { return t_Nothing; }
+};
 
 struct Character : public Value {
   char v;
@@ -176,7 +179,7 @@ struct Scope {
   std::vector<Value *> vars;
   Scope(Scope *parent, Block, Body);
   Value* get(Reference *r);
-  void set(Reference *r, Value *v);
+  void set(bool should_var_be_set, Reference *r, Value *v);
 };
 
 template <typename T> void is(Value *v);

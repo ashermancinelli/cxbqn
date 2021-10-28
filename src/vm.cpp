@@ -49,7 +49,6 @@ Value *vm(std::vector<i32> bc, std::vector<Value *> consts, Block blk,
   // program counter
   uz pc = 0;
 
-  // this is very expensive
   debug::vdbg("consts", consts);
 
   i32 arga, argb;
@@ -86,9 +85,13 @@ Value *vm(std::vector<i32> bc, std::vector<Value *> consts, Block blk,
       CXBQN_DEBUG("op:SETN");
       instructions::setn(stk, scope);
       break;
+    case op::SETU:
+      CXBQN_DEBUG("op:SETU");
+      instructions::setu(stk, scope);
+      break;
     default:
       CXBQN_CRIT("unreachable code {}", bc[pc]);
-      throw std::runtime_error("cxbqn::vm::vm: unreachable code");
+      throw std::runtime_error("vm::vm: unreachable code");
     }
     pc++;
   }

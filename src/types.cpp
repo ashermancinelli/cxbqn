@@ -27,7 +27,8 @@ Scope::Scope(Scope *parent, Block blk, Body bdy) {
   CXBQN_DEBUG("types::Scope()");
   this->parent = parent;
   this->vars.resize(bdy.var_count);
-  std::fill(vars.begin(), vars.end(), nullptr);
+  for (auto e : vars)
+    e = new Nothing();
 }
 
 Value *Scope::get(Reference *r) {
@@ -58,7 +59,7 @@ Value *Scope::get(Reference *r) {
   return scp->vars[r->position_in_parent];
 }
 
-void Scope::set(Reference *r, Value *v) {
+void Scope::set(bool should_var_be_set, Reference *r, Value *v) {
   // Number of scopes to ascend
   auto n = r->depth;
   CXBQN_DEBUG("cxbqn::vm::instructions::assign:n={}", n);
@@ -74,6 +75,7 @@ void Scope::set(Reference *r, Value *v) {
 
   // Walk the scope descendence to find the target scope
   while (n--) {
+    CXBQN_DEBUG("Scope::set: traversing to parent");
     scp = scp->parent;
 #ifdef CXBQN_DEEPCHECKS
     if (nullptr == scp)
@@ -89,6 +91,12 @@ void Scope::set(Reference *r, Value *v) {
         "Attempted to assign value to reference in location outside of bounds "
         "in the intended scope");
 #endif
+
+  bool isset = nullptr == dynamic_cast<Nothing*>(scp->vars[r->position_in_parent]);
+  if (should_var_be_set != isset) {
+    CXBQN_CRIT("should_var_be_set={},isset={}", should_var_be_set, isset);
+    throw std::runtime_error("Expected var to be set or unset, but this was not the case");
+  }
 
   // assign to the underlying value
   scp->vars[r->position_in_parent] = v;
