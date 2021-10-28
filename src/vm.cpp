@@ -74,12 +74,8 @@ Value *vm(std::vector<i32> bc, std::vector<Value *> consts, Block blk,
       stk.pop_back();
       break;
     case op::VARM:
-      arga = bc[++pc];
-      argb = bc[++pc];
-      CXBQN_DEBUG("op:VARM:a={},b={}", arga, argb);
-      stk.push_back(new types::Reference(
-          /*depth=*/static_cast<uz>(arga),
-          /*position in parent=*/static_cast<uz>(argb)));
+      CXBQN_DEBUG("op:VARM");
+      instructions::varm(bc, pc, stk);
       break;
     case op::SETN:
       CXBQN_DEBUG("op:SETN");

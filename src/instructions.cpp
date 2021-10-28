@@ -35,8 +35,15 @@ template <bool ShouldVarBeSet> void set(std::deque<Value *> stk, Scope *scp) {
 
 } // namespace
 
-void setu(std::deque<Value *> stk, Scope *scp) { set<true>(stk, scp); }
+void setu(std::deque<Value *> &stk, Scope *scp) { set<true>(stk, scp); }
 
-void setn(std::deque<Value *> stk, Scope *scp) { set<true>(stk, scp); }
+void setn(std::deque<Value *> &stk, Scope *scp) { set<true>(stk, scp); }
+
+void varm(std::vector<i32> &bc, uz &pc, std::deque<Value *> &stk) {
+  const auto depth = bc[++pc];
+  const auto pos_in_parent = bc[++pc];
+  stk.push_back(new types::Reference(static_cast<uz>(depth),
+                                     static_cast<uz>(pos_in_parent)));
+}
 
 } // namespace cxbqn::vm::instructions
