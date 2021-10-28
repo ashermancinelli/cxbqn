@@ -1,4 +1,4 @@
-add_library(cxbqn vm.cpp types.cpp provides.cpp op.cpp fmt.cpp)
+add_library(cxbqn vm.cpp types.cpp provides.cpp op.cpp fmt.cpp instructions.cpp)
 target_link_libraries(cxbqn PUBLIC tpl)
 add_library(cxbqn::cxbqn ALIAS cxbqn)
 

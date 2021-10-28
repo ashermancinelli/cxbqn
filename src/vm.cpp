@@ -1,6 +1,6 @@
 #include <cxbqn.hpp>
 #include <deque>
-#include <spdlog/spdlog.h>
+#include <cxbqn_debug.hpp>
 #include <sstream>
 
 namespace cxbqn::vm {
@@ -23,84 +23,55 @@ u64 _num(std::vector<BcType> &bc, uz &prog_counter, StackType &stack) {
   return t + i * n;
 }
 
-namespace {
-
-template <typename ValueContainer>
-void vdbg(const char *label, ValueContainer c) {
-  using namespace cxbqn::fmt;
-  std::stringstream ss;
-  ss << label << ":[";
-  for (const auto e : c) {
-    fmt::repr(ss, e);
-    ss << ",";
-  }
-  ss << "]";
-  spdlog::debug("{}", ss.str());
-}
-
-template <typename ValueContainer>
-void dbg(const char *label, ValueContainer c) {
-  using namespace cxbqn::fmt;
-  std::stringstream ss;
-  ss << label << ":[";
-  for (const auto e : c) {
-    ss << e << ",";
-  }
-  ss << "]";
-  spdlog::debug("{}", ss.str());
-}
-
-} // namespace
-
 Value *vm(std::vector<i32> bc, std::vector<Value *> consts,
           std::vector<Block> blks, std::vector<Body> bodies,
-          std::deque<Value *> stk) {
-  spdlog::set_pattern("cxbqn:vm:vm[%^%l%$] %v");
-  spdlog::debug("enter vm");
+          std::deque<Value *> stk, Scope* scope) {
+  CXBQN_DEBUG("enter vm");
 
-  dbg("bc", bc);
-  dbg("blocks", blks);
-  dbg("bodies", bodies);
+  debug::dbg("bc", bc);
+  debug::dbg("blocks", blks);
+  debug::dbg("bodies", bodies);
 
   // program counter
   uz pc = 0;
 
   // this is very expensive
-  vdbg("consts", consts);
+  debug::vdbg("consts", consts);
 
   i32 arga, argb;
 
-  spdlog::debug("enter interpreter loop");
+  CXBQN_DEBUG("enter interpreter loop");
   while (1) {
-    spdlog::debug("bc={},pc={}", bc[pc], pc);
-    vdbg("stack", stk);
+    CXBQN_DEBUG("bc={},pc={}", bc[pc], pc);
+    debug::vdbg("stack", stk);
     switch (bc[pc]) {
     case op::PUSH:
       pc++;
-      spdlog::debug("op:PUSH bc[pc++]={}", bc[pc]);
+      CXBQN_DEBUG("op:PUSH bc[pc++]={}", bc[pc]);
       stk.push_back(consts[bc[pc]]);
       break;
     case op::RETN:
-      spdlog::debug("op:RETN");
+      CXBQN_DEBUG("op:RETN");
       return stk.back();
       break;
     case op::POPS:
-      spdlog::debug("op:POPS");
+      CXBQN_DEBUG("op:POPS");
       stk.pop_back();
       break;
     case op::VARM:
       arga = bc[++pc];
       argb = bc[++pc];
-      spdlog::debug("op:VARM:a={},b={}", arga, argb);
+      CXBQN_DEBUG("op:VARM:a={},b={}", arga, argb);
       stk.push_back(new types::Reference(
           /*depth=*/static_cast<uz>(arga),
           /*position in parent=*/static_cast<uz>(argb)));
       break;
     case op::SETN:
-      spdlog::debug("op:SETN");
+      CXBQN_DEBUG("op:SETN");
+      instructions::setn(stk, scope);
       break;
     default:
-      spdlog::critical("unreachable code {}", bc[pc]);
+      CXBQN_CRIT("unreachable code {}", bc[pc]);
       throw std::runtime_error("cxbqn::vim::vim: unreachable code");
     }
     pc++;

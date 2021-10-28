@@ -21,10 +21,13 @@ TEST_CASE("Bytecode", "") {
 
     std::deque<Value *> stk;
 
-    auto *ret = vm::vm(p.bc, p.consts.v, p.blks, p.bodies, stk);
+    auto* sc = new Scope();
+
+    auto *ret = vm::vm(p.bc, p.consts.v, p.blks, p.bodies, stk, sc);
     Number* n;
     REQUIRE(nullptr != (n = dynamic_cast<Number*>(ret)));
     CHECK(5.0 == Approx(n->v));
+    delete sc;
   }
 
   SECTION("manual bc t1") {
@@ -34,10 +37,13 @@ TEST_CASE("Bytecode", "") {
 
     std::deque<Value *> stk;
 
-    auto *ret = vm::vm(p.bc, p.consts.v, p.blks, p.bodies, stk);
+    auto* sc = new Scope();
+
+    auto *ret = vm::vm(p.bc, p.consts.v, p.blks, p.bodies, stk, sc);
     Number* n;
     REQUIRE(nullptr != (n = dynamic_cast<Number*>(ret)));
     CHECK(3.0 == Approx(n->v));
+    delete sc;
   }
 
   SECTION("manual bc t2") {
@@ -47,9 +53,12 @@ TEST_CASE("Bytecode", "") {
 
     std::deque<Value *> stk;
 
-    auto *ret = vm::vm(p.bc, p.consts.v, p.blks, p.bodies, stk);
+    auto* sc = new Scope();
+
+    auto *ret = vm::vm(p.bc, p.consts.v, p.blks, p.bodies, stk, sc);
     Number* n;
     REQUIRE(nullptr != (n = dynamic_cast<Number*>(ret)));
     CHECK(5.0 == Approx(n->v));
+    delete sc;
   }
 }

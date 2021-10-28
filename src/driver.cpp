@@ -18,7 +18,7 @@ int main(int argc, char **argv) {
   std::vector<Value *> consts{
       new Type(),
       new Number(5),
-  }; //{runtime[0], 5};
+  };
 
   // B_1(new B_3(m_f64(0),m_f64(1),m_f64(0)))
   std::vector<Block> blks{Block(0, 1, 0)};
@@ -28,8 +28,10 @@ int main(int argc, char **argv) {
 
   std::deque<Value*> stk;
 
+  Scope* scope;
+
   spdlog::debug("run vm");
-  auto* ret = vm::vm(bc, consts, blks, bodies, stk);
+  auto* ret = vm::vm(bc, consts, blks, bodies, stk, scope);
 
   spdlog::debug("cleanup");
   return 0;

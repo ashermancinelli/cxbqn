@@ -18,9 +18,8 @@ Array::Array(initl<uz> szs, initl<f64> vs) {
 }
 
 Array::~Array() {
-  if (nullptr == values)
-    return;
-  delete[] values;
+  if (nullptr != values)
+    delete[] values;
 }
 
 Block::Block(uz ty, uz immediate, uz idx)

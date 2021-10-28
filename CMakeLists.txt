@@ -14,6 +14,7 @@ set(CXBQN_INIT_STACK_SIZE
     10000
     CACHE STRING "The size the VM stack is initialized with")
 
+option(CXBQN_DEEPCHECKS ON)
 set(CHECK_SUBMODULES ON CACHE BOOL "Check git submodules on every build")
 set(HAS_BQN_EXE OFF)
 set(CXBQN_EXT_DIR ${PROJECT_SOURCE_DIR}/ext/)

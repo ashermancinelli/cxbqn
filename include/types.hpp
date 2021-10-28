@@ -145,7 +145,10 @@ struct Md2Derived : public Function {
 
 struct Scope {
   Scope *parent;
-  Value *vars[];
+  std::vector<Value *> vars;
+  Scope() : parent{nullptr} {}
+  Scope(Scope *parent) : parent{parent} {}
+  Scope(Scope *parent, uz nvars) : parent{parent} { vars.resize(nvars); }
 };
 
 struct CompilationResult {
