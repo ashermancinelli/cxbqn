@@ -5,29 +5,30 @@
 
 namespace cxbqn::vm {
 
+using namespace types;
+
 RunResult run(std::vector<i32> bc, std::vector<Value *> consts,
-              std::vector<Block> blks, std::vector<Body> bodies) {
+              std::vector<BlockDef> blk_defs, std::vector<Body> bodies) {
 
-  CXBQN_DEBUG("vm::run:");
+  CXBQN_SETLOGSTR();
+  CXBQN_DEBUG("vm::run");
 
-  debug::dbg("bc", bc);
-  debug::dbg("blocks", blks);
-  debug::dbg("bodies", bodies);
+  CXBQN_DEBUG("bc=", ByteCodeRef(bc));
+
+  std::vector<Block> blks;
+
+  for (auto &blkd : blk_defs)
+    blks.emplace_back(bc, blkd, bodies);
+
+  CXBQN_DEBUG("blocks={}", std::span(blks));
 
   std::deque<Value *> stk;
 
-#ifdef CXBQN_DEEPCHECKS
-  auto idx = blks[0].body_idx;
-  if (idx >= bodies.size())
-    throw std::runtime_error("body idx is greater than num bodies, something "
-                             "has gone horribly wrong");
-#endif
-
   RunResult ret;
 
-  ret.scp = new Scope(nullptr, blks[0], bodies[blks[0].body_idx]);
+  ret.scp = new Scope(nullptr, blks, 0);
 
-  ret.v = vm::vm(bc, consts, blks, 0, bodies, blks[0].body_idx, stk, ret.scp);
+  ret.v = vm::vm(bc, consts, stk, ret.scp);
 
 #ifdef CXBQN_DEEPCHECKS
   if (nullptr == ret.v)
@@ -37,70 +38,68 @@ RunResult run(std::vector<i32> bc, std::vector<Value *> consts,
   return ret;
 }
 
-Value *vm(std::vector<i32> bc, std::vector<Value *> consts,
-          std::vector<Block> blks, const uz blk_idx, std::vector<Body> bds,
-          const uz bdy_idx, std::deque<Value *> stk, Scope *scope) {
+Value *vm(ByteCodeRef bc, std::vector<Value *> consts,
+          std::deque<Value *> stk, Scope *scope) {
 
   CXBQN_DEBUG("enter vm");
 
-  debug::dbg("bc", bc);
+  CXBQN_DEBUG("bc=", bc);
 
   // program counter
   uz pc = 0;
 
-  debug::vdbg("consts", consts);
+  // debug::vdbg("consts", consts);
 
   i32 arga, argb;
 
   CXBQN_DEBUG("enter interpreter loop");
 
   while (1) {
-    CXBQN_DEBUG("bc={},pc={}", bc[pc], pc);
-    debug::vdbg("stack", stk);
-    debug::scope(scope);
+    CXBQN_DEBUG("bc={},pc={},scope={}", bc[pc], pc, *scope);
     switch (bc[pc]) {
     case op::PUSH:
-      CXBQN_DEBUG("op:PUSH");
+      CXBQN_INFO("PUSH");
       stk.push_back(consts[bc[++pc]]);
+      CXBQN_INFO("\t{}", bc[pc]);
       break;
     case op::RETN:
-      CXBQN_DEBUG("op:RETN");
+      CXBQN_INFO("RETN");
       return stk.back();
       break;
     case op::POPS:
-      CXBQN_DEBUG("op:POPS");
+      CXBQN_INFO("POPS");
       stk.pop_back();
       break;
     case op::VARM:
-      CXBQN_DEBUG("op:VARM");
+      CXBQN_INFO("VARM");
       instructions::varm(bc, pc, stk);
       break;
     case op::SETN:
-      CXBQN_DEBUG("op:SETN");
+      CXBQN_INFO("SETN");
       instructions::setn(stk, scope);
       break;
     case op::SETU:
-      CXBQN_DEBUG("op:SETU");
+      CXBQN_INFO("SETU");
       instructions::setu(stk, scope);
       break;
     case op::VARO:
     case op::VARU:
-      CXBQN_DEBUG("op:VARO|VARU");
+      CXBQN_INFO("VARO|VARU");
       instructions::varo(bc, pc, stk, scope);
       break;
     case op::FN1O:
     case op::FN1C:
-      CXBQN_DEBUG("op:FN10|FN1C");
+      CXBQN_INFO("FN10|FN1C");
       instructions::fn10(bc, pc, stk);
       break;
     case op::FN2O:
     case op::FN2C:
-      CXBQN_DEBUG("op:FN20|FN2C");
+      CXBQN_INFO("FN20|FN2C");
       instructions::fn20(bc, pc, stk);
       break;
     case op::DFND:
-      CXBQN_DEBUG("op:DFND");
-      instructions::dfnd(bc, pc, stk, scope, blks, bds);
+      CXBQN_INFO("DFND");
+      instructions::dfnd(bc, pc, stk, scope);
       break;
     default:
       CXBQN_CRIT("unreachable code {}", bc[pc]);

@@ -1,5 +1,6 @@
+#include <cxbqn/cxbqn.hpp>
 #include <cxbqn/debug.hpp>
-#include <cxbqn/types.hpp>
+#include <deque>
 
 namespace cxbqn::types {
 
@@ -23,10 +24,11 @@ Array::~Array() {
     delete[] values;
 }
 
-Scope::Scope(Scope *parent, Block blk, Body bdy) {
+Scope::Scope(Scope *parent, std::span<Block> blks, uz blk_idx)
+    : blks{blks}, blk_idx{blk_idx} {
   CXBQN_DEBUG("types::Scope()");
   this->parent = parent;
-  this->vars.resize(bdy.var_count);
+  this->vars.resize(blks[blk_idx].var_count);
   for (auto e : vars)
     e = new Nothing();
 }
@@ -58,18 +60,20 @@ void Scope::set(bool should_var_be_set, Reference *r, Value *v) {
 
   Scope *scp = get_nth_parent(n);
 
-  bool isset = nullptr == dynamic_cast<Nothing*>(scp->vars[r->position_in_parent]);
+  bool isset =
+      nullptr == dynamic_cast<Nothing *>(scp->vars[r->position_in_parent]);
   if (should_var_be_set != isset) {
     CXBQN_CRIT("should_var_be_set={},isset={}", should_var_be_set, isset);
-    throw std::runtime_error("Expected var to be set or unset, but this was not the case");
+    throw std::runtime_error(
+        "Expected var to be set or unset, but this was not the case");
   }
 
   // assign to the underlying value
   scp->vars[r->position_in_parent] = v;
 }
 
-Scope* Scope::get_nth_parent(uz depth) {
-  auto* scp = this;
+Scope *Scope::get_nth_parent(uz depth) {
+  auto *scp = this;
   while (depth--) {
     CXBQN_DEBUG("Scope::set: traversing to parent");
     scp = scp->parent;
@@ -82,10 +86,40 @@ Scope* Scope::get_nth_parent(uz depth) {
   return scp;
 }
 
-Block::Block(uz ty, uz immediate, uz idx)
+BlockDef::BlockDef(uz ty, uz immediate, uz idx)
     : type{static_cast<BlockType>(ty)}, immediate{static_cast<bool>(immediate)},
-      comp{nullptr}, body_idx{idx} {}
+      body_idx{idx} {}
 
-Block::~Block() {}
+BlockDef::~BlockDef() {}
+
+Block::Block(std::span<i32> bc, BlockDef bd, std::span<Body> bods)
+    : immediate{bd.immediate}, type{bd.type} {
+  const auto body = bods[bd.body_idx];
+  this->bc = bc.subspan(body.bc_offset);
+  this->var_count = body.var_count;
+}
+
+Value *UserFn::call(uz nargs, Value *w, Value *x) {
+  auto *child = new Scope(scp, scp->blks, blk_idx);
+  const auto blk = scp->blks[scp->blk_idx];
+  CXBQN_DEBUG("UserFn::call:nargs={},childscope={},blk={}", nargs, *child, blk);
+
+  /* From the spec:
+   *
+   * A frame is a mutable list of slots for variable values. It has slots for
+   * any special names that are available during the blocks execution followed
+   * by the local variables it defines. Special names use the ordering 𝕤𝕩𝕨𝕣𝕗𝕘.
+   */
+  std::vector<Value *> consts(3 + blk.var_count, nullptr);
+  consts[0] = this;
+  if (nargs > 1) consts[2] = w;
+  if (nargs > 0) consts[1] = x;
+
+  std::deque<Value *> stk;
+
+  CXBQN_DEBUG("UserFn::call:recursing into vm");
+  auto* ret = vm::vm(scp->blks[scp->blk_idx].bc, consts, stk, child);
+  return ret;
+}
 
 } // namespace cxbqn::types

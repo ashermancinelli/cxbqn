@@ -11,33 +11,28 @@
 
 namespace cxbqn::vm {
 
-using cxbqn::types::Block;
-using cxbqn::types::Body;
-using cxbqn::types::Scope;
-using cxbqn::types::Value;
+using namespace cxbqn::types;
 
 struct RunResult {
   Value *v;
   Scope *scp;
 };
 
-RunResult run(std::vector<i32> bc, std::vector<Value *> consts,
-              std::vector<Block> blks, std::vector<Body> bodies);
+RunResult run(ByteCode bc, std::vector<Value *> consts,
+              std::vector<BlockDef> blks, std::vector<Body> bds);
 
-Value *vm(std::vector<i32> bc, std::vector<Value *> consts,
-          std::vector<Block> blks, const uz blk_idx, std::vector<Body> bds,
-          const uz bdy_idx, std::deque<Value *> stk, Scope *scope);
+Value *vm(ByteCodeRef bc, std::vector<Value *> consts, std::deque<Value *> stk,
+          Scope *scope);
 
 namespace instructions {
 
 void setu(std::deque<Value *> &stk, Scope *);
 void setn(std::deque<Value *> &stk, Scope *);
-void varm(std::vector<i32> &bc, uz &pc, std::deque<Value *> &stk);
-void varo(std::vector<i32> &bc, uz &pc, std::deque<Value *> &stk, Scope *scp);
-void fn10(std::vector<i32> &bc, uz &pc, std::deque<Value *> &stk);
-void fn20(std::vector<i32> &bc, uz &pc, std::deque<Value *> &stk);
-void dfnd(std::vector<i32> &bc, uz &pc, std::deque<Value *> &stk, Scope *scp,
-          std::vector<Block> &blks, std::vector<Body> &bds);
+void varm(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk);
+void varo(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk, Scope *scp);
+void fn10(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk);
+void fn20(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk);
+void dfnd(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk, Scope *scp);
 
 } // namespace instructions
 

@@ -14,6 +14,8 @@ set(CXBQN_INIT_STACK_SIZE
     10000
     CACHE STRING "The size the VM stack is initialized with")
 
+set(CMAKE_CXX_FLAGS "-Wall -Wextra ${CMAKE_CXX_FLAGS}" CACHE STRING "")
+
 set(CXBQN_DEEPCHECKS ON CACHE BOOL "Deep null checking and debugging information")
 set(CHECK_SUBMODULES ON CACHE BOOL "Check git submodules on every build")
 set(HAS_BQN_EXE OFF)

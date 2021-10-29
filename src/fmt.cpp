@@ -42,10 +42,4 @@ std::ostream &operator<<(std::ostream &os, Body b) {
   return os << "Body{bc=" << b.bc_offset << ",nvars=" << b.var_count << "}";
 }
 
-std::ostream &operator<<(std::ostream &os, Block b) {
-  return os << "Block{ty=" << static_cast<int>(b.type)
-            << ",imm=" << std::boolalpha << b.immediate
-            << ",body=" << b.body_idx << "}";
-}
-
 } // namespace cxbqn::fmt

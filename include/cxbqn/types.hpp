@@ -4,11 +4,16 @@
 #include <initializer_list>
 #include <memory>
 #include <numeric>
+#include <optional>
+#include <span>
+#include <spdlog/fmt/ostr.h>
 #include <type_traits>
 #include <variant>
 #include <vector>
 
 namespace cxbqn {
+
+using std::nullopt;
 
 // template deduction guides to make std::visit feel better
 template <class... Ts> struct overload : Ts... { using Ts::operator()...; };
@@ -56,6 +61,8 @@ enum Types {
   t_Nothing,
 };
 
+using ByteCode = std::vector<i32>;
+using ByteCodeRef = std::span<i32>;
 
 struct Scope;
 struct Block;
@@ -76,6 +83,8 @@ struct Value {
   // If a value type does not define it's own call, we probably just push it
   // back on the stack.
   virtual Value *call(uz nargs, Value *w, Value *x) { return this; }
+
+  virtual std::ostream &repr(std::ostream &os) const { return os << "V"; }
 };
 
 /// Managed Value
@@ -84,18 +93,25 @@ using MValue = std::shared_ptr<Value>;
 
 struct Nothing : public Value {
   u8 t() const override { return t_Nothing; }
+  std::ostream &repr(std::ostream &os) const override { return os << "null"; }
 };
 
 struct Character : public Value {
   char v;
   Character(char c) : v{c} {}
   u8 t() const override { return t_Character; }
+  std::ostream &repr(std::ostream &os) const override {
+    return os << "C{" << v << "}";
+  }
 };
 
 struct Number : public Value {
   f64 v;
   Number(f64 v) : v{v} {}
   u8 t() const override { return t_Number; }
+  std::ostream &repr(std::ostream &os) const override {
+    return os << "N{" << v << "}";
+  }
 };
 
 struct Array : public Value {
@@ -106,6 +122,7 @@ struct Array : public Value {
   Array();
   ~Array();
   u8 t() const override { return t_Array; }
+  std::ostream &repr(std::ostream &os) const override { return os << "A{}"; }
 };
 
 struct Reference : public Value {
@@ -113,10 +130,14 @@ struct Reference : public Value {
   uz position_in_parent;
   Reference(uz d, uz p) : depth{d}, position_in_parent{p} {}
   u8 t() const override { return t_Reference; }
+  std::ostream &repr(std::ostream &os) const override {
+    return os << "R{depth=" << depth << "pos=" << position_in_parent << "}";
+  }
 };
 
 struct Function : public Value {
   u8 t() const override { return 3; }
+  std::ostream &repr(std::ostream &os) const override { return os << "F{}"; }
 };
 
 struct Builtin : public Function {
@@ -126,8 +147,12 @@ struct Builtin : public Function {
 
 struct UserFn : public Function {
   Scope *scp;
-  Block *blk;
-  UserFn(Scope *scp, Block *blk) : scp{scp}, blk{blk} {}
+  uz blk_idx;
+  UserFn(Scope *scp, uz blk_idx) : scp{scp}, blk_idx{blk_idx} {}
+  Value *call(uz nargs, Value *w, Value *x) override;
+  std::ostream &repr(std::ostream &os) const override {
+    return os << "UserFn{blk_idx=" << blk_idx << "}";
+  }
 };
 
 struct Fork : public Function {
@@ -181,21 +206,34 @@ struct Body {
 };
 
 /**
- * Block without multiple bodies
+ * \brief Blocks as they are passed from compiled output are seperate from the
+ * bodies. This structure represents only the block information as passed in.
+ * This type is then used to construct the true `Block` structure, which is more
+ * useful at runtime.
  */
-struct Block {
+struct BlockDef {
   BlockType type;
   bool immediate;
   CompilationResult *comp;
   uz body_idx;
-  Block(uz ty, uz immediate, uz idx);
-  ~Block();
+  BlockDef(uz ty, uz immediate, uz idx);
+  ~BlockDef();
+};
+
+struct Block {
+  BlockType type;
+  bool immediate;
+  uz var_count;
+  ByteCodeRef bc;
+  Block(ByteCodeRef bc, BlockDef bd, std::span<Body> bods);
 };
 
 struct Scope {
   Scope *parent;
   std::vector<Value *> vars;
-  Scope(Scope *parent, Block, Body);
+  std::span<Block> blks;
+  const uz blk_idx;
+  Scope(Scope *parent, std::span<Block> blks, uz blk_idx);
   Value *get(Reference *r);
   void set(bool should_var_be_set, Reference *r, Value *v);
   Scope *get_nth_parent(uz depth);

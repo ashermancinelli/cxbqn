@@ -22,6 +22,6 @@ struct Consts {
 struct CompileParams {
     std::vector<i32> bc;
     Consts consts;
-    std::vector<Block> blks;
+    std::vector<BlockDef> blk_defs;
     std::vector<Body> bodies;
 };

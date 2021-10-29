@@ -21,7 +21,7 @@ TEST_CASE("Bytecode", "") {
 #include <bc_tests/t0.hpp>
     };
 
-    auto ret = vm::run(p.bc, p.consts.v, p.blks, p.bodies);
+    auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
 
     Number* n = dynamic_cast<Number*>(ret.v);
     REQUIRE(nullptr != n);
@@ -34,7 +34,7 @@ TEST_CASE("Bytecode", "") {
 #include <bc_tests/t1.hpp>
     };
 
-    auto ret = vm::run(p.bc, p.consts.v, p.blks, p.bodies);
+    auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
 
     Number* n = dynamic_cast<Number*>(ret.v);;
     REQUIRE(nullptr != n);
@@ -47,7 +47,7 @@ TEST_CASE("Bytecode", "") {
 #include <bc_tests/t2.hpp>
     };
 
-    auto ret = vm::run(p.bc, p.consts.v, p.blks, p.bodies);
+    auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
 
     Reference* r = dynamic_cast<Reference*>(ret.v);
     REQUIRE(nullptr != r);
@@ -66,7 +66,7 @@ TEST_CASE("Bytecode", "") {
 #include <bc_tests/t3.hpp>
     };
 
-    auto ret = vm::run(p.bc, p.consts.v, p.blks, p.bodies);
+    auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
     REQUIRE(nullptr != ret.scp);
     REQUIRE(nullptr != ret.v);
     auto *scp = ret.scp;
@@ -84,7 +84,7 @@ TEST_CASE("Bytecode", "") {
     CompileParams p{
 #include <bc_tests/t4.hpp>
     };
-    auto ret = vm::run(p.bc, p.consts.v, p.blks, p.bodies);
+    auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
     REQUIRE(nullptr != ret.scp);
     REQUIRE(nullptr != ret.v);
     auto* n = dynamic_cast<Number*>(ret.v);
@@ -97,7 +97,7 @@ TEST_CASE("Bytecode", "") {
     CompileParams p{
 #include <bc_tests/t5.hpp>
     };
-    auto ret = vm::run(p.bc, p.consts.v, p.blks, p.bodies);
+    auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
     REQUIRE(nullptr != ret.scp);
     REQUIRE(nullptr != ret.v);
     auto* n = dynamic_cast<Number*>(ret.v);
@@ -110,7 +110,7 @@ TEST_CASE("Bytecode", "") {
     CompileParams p{
 #include <bc_tests/t6.hpp>
     };
-    auto ret = vm::run(p.bc, p.consts.v, p.blks, p.bodies);
+    auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
     REQUIRE(nullptr != ret.scp);
     REQUIRE(nullptr != ret.v);
     auto* n = dynamic_cast<Number*>(ret.v);
@@ -123,7 +123,7 @@ TEST_CASE("Bytecode", "") {
     CompileParams p{
 #include <bc_tests/t7.hpp>
     };
-    auto ret = vm::run(p.bc, p.consts.v, p.blks, p.bodies);
+    auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
     REQUIRE(nullptr != ret.scp);
     REQUIRE(nullptr != ret.v);
     //auto* n = dynamic_cast<Number*>(ret.v);
