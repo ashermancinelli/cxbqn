@@ -23,13 +23,11 @@ RunResult run(std::vector<i32> bc, std::vector<Value *> consts,
                              "has gone horribly wrong");
 #endif
 
-  auto body = bodies[blks[0].body_idx];
-
   RunResult ret;
 
-  ret.scp = new Scope(nullptr, blks[0], body);
+  ret.scp = new Scope(nullptr, blks[0], bodies[blks[0].body_idx]);
 
-  ret.v = vm::vm(bc, consts, blks[0], body, stk, ret.scp);
+  ret.v = vm::vm(bc, consts, blks, 0, bodies, blks[0].body_idx, stk, ret.scp);
 
 #ifdef CXBQN_DEEPCHECKS
   if (nullptr == ret.v)
@@ -39,8 +37,9 @@ RunResult run(std::vector<i32> bc, std::vector<Value *> consts,
   return ret;
 }
 
-Value *vm(std::vector<i32> bc, std::vector<Value *> consts, Block blk,
-          Body body, std::deque<Value *> stk, Scope *scope) {
+Value *vm(std::vector<i32> bc, std::vector<Value *> consts,
+          std::vector<Block> blks, const uz blk_idx, std::vector<Body> bds,
+          const uz bdy_idx, std::deque<Value *> stk, Scope *scope) {
 
   CXBQN_DEBUG("enter vm");
 
@@ -61,9 +60,8 @@ Value *vm(std::vector<i32> bc, std::vector<Value *> consts, Block blk,
     debug::scope(scope);
     switch (bc[pc]) {
     case op::PUSH:
-      pc++;
-      CXBQN_DEBUG("op:PUSH bc[pc++]={}", bc[pc]);
-      stk.push_back(consts[bc[pc]]);
+      CXBQN_DEBUG("op:PUSH");
+      stk.push_back(consts[bc[++pc]]);
       break;
     case op::RETN:
       CXBQN_DEBUG("op:RETN");
@@ -93,12 +91,16 @@ Value *vm(std::vector<i32> bc, std::vector<Value *> consts, Block blk,
     case op::FN1O:
     case op::FN1C:
       CXBQN_DEBUG("op:FN10|FN1C");
-      instructions::fn10(bc, pc, stk, scope);
+      instructions::fn10(bc, pc, stk);
       break;
     case op::FN2O:
     case op::FN2C:
       CXBQN_DEBUG("op:FN20|FN2C");
-      instructions::fn20(bc, pc, stk, scope);
+      instructions::fn20(bc, pc, stk);
+      break;
+    case op::DFND:
+      CXBQN_DEBUG("op:DFND");
+      instructions::dfnd(bc, pc, stk, scope, blks, bds);
       break;
     default:
       CXBQN_CRIT("unreachable code {}", bc[pc]);

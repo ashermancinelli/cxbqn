@@ -46,14 +46,14 @@ void varm(std::vector<i32> &bc, uz &pc, std::deque<Value *> &stk) {
                                      static_cast<uz>(pos_in_parent)));
 }
 
-void varo(std::vector<i32> &bc, uz &pc, std::deque<Value *> &stk, Scope* scp) {
+void varo(std::vector<i32> &bc, uz &pc, std::deque<Value *> &stk, Scope *scp) {
   const auto local_variable_idx = bc[++pc];
   const auto n_frames_up = bc[++pc];
   scp = scp->get_nth_parent(n_frames_up);
   stk.push_back(scp->vars[local_variable_idx]);
 }
 
-void fn10(std::vector<i32> &bc, uz &pc, std::deque<Value *> &stk, Scope* scp) {
+void fn10(std::vector<i32> &bc, uz &pc, std::deque<Value *> &stk) {
   auto *F = stk.back();
   stk.pop_back();
 
@@ -76,7 +76,7 @@ void fn10(std::vector<i32> &bc, uz &pc, std::deque<Value *> &stk, Scope* scp) {
   stk.push_back(v);
 }
 
-void fn20(std::vector<i32> &bc, uz &pc, std::deque<Value *> &stk, Scope* scp) {
+void fn20(std::vector<i32> &bc, uz &pc, std::deque<Value *> &stk) {
   auto *w = stk.back();
   stk.pop_back();
 
@@ -103,6 +103,24 @@ void fn20(std::vector<i32> &bc, uz &pc, std::deque<Value *> &stk, Scope* scp) {
 #endif
 
   stk.push_back(v);
+}
+
+void dfnd(std::vector<i32> &bc, uz &pc, std::deque<Value *> &stk, Scope *scp,
+          std::vector<Block>& blks, std::vector<Body>& bds) {
+
+#ifdef CXBQN_DEEPCHECKS
+  if (bc[pc+1] >= blks.size())
+    throw std::runtime_error("DFND: block index out of range");
+#endif
+
+  auto blk = blks[bc[++pc]];
+
+  if (blk.type==BlockType::func && blk.immediate) {
+    auto *child = new Scope(scp, blk, bds[blk.body_idx]);
+  }
+  else {
+    throw std::runtime_error("unimplemented");
+  }
 }
 
 } // namespace cxbqn::vm::instructions
