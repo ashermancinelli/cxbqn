@@ -34,7 +34,8 @@ if(HAS_BQN_EXE)
   foreach(BC_TEST ${BC_TESTS})
     file(
       APPEND ${GEN_BC_TEST_FILE}
-      "${BQN_EXE} ${CMAKE_CURRENT_SOURCE_DIR}/ccxx.bqn ${CXBQN_EXT_DIR}/bqn '${BC_TEST}' > ${PROJECT_BINARY_DIR}/include/bc_tests/t${i}.hpp\n"
+      "echo -e '/* ${BC_TEST} */' > ${PROJECT_BINARY_DIR}/include/bc_tests/t${i}.hpp
+${BQN_EXE} ${CMAKE_CURRENT_SOURCE_DIR}/ccxx.bqn ${CXBQN_EXT_DIR}/bqn '${BC_TEST}' >> ${PROJECT_BINARY_DIR}/include/bc_tests/t${i}.hpp\n"
     )
     file(APPEND ${ALL_BC_TESTS_HPP}
          "CompileParams t${i}{\n#include <bc_tests/t${i}.hpp>\n};\n")

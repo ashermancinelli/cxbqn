@@ -51,7 +51,10 @@ void varo(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk, Scope *scp) {
   const auto n_frames_up = bc[++pc];
   CXBQN_INFO("\t{}, {}", local_variable_idx, n_frames_up);
   scp = scp->get_nth_parent(n_frames_up);
+  CXBQN_DEBUG("instructions::varo:scope={},localidx={},framesup={}", *scp, local_variable_idx, n_frames_up);
+  CXBQN_DEBUG_NC("instructions::varo:pushing var={}", scp->vars[local_variable_idx]);
   stk.push_back(scp->vars[local_variable_idx]);
+  CXBQN_DEBUG_NC("instructions::varo: pushed back value={}", scp->vars[local_variable_idx]);
 }
 
 void fn10(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk) {

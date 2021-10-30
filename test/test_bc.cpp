@@ -16,7 +16,7 @@ TEST_CASE("Bytecode", "") {
   spdlog::set_level(spdlog::level::debug);
 
   SECTION("manual bc t0") {
-    spdlog::debug("t0");
+    CXBQN_LOG_TESTN(0);
     CompileParams p{
 #include <bc_tests/t0.hpp>
     };
@@ -29,7 +29,7 @@ TEST_CASE("Bytecode", "") {
   }
 
   SECTION("manual bc t1") {
-    spdlog::debug("t1");
+    CXBQN_LOG_TESTN(1);
     CompileParams p{
 #include <bc_tests/t1.hpp>
     };
@@ -42,7 +42,7 @@ TEST_CASE("Bytecode", "") {
   }
 
   SECTION("manual bc t2") {
-    spdlog::debug("t2");
+    CXBQN_LOG_TESTN(2);
     CompileParams p{
 #include <bc_tests/t2.hpp>
     };
@@ -61,7 +61,7 @@ TEST_CASE("Bytecode", "") {
   }
 
   SECTION("manual bc t3") {
-    spdlog::debug("t3");
+    CXBQN_LOG_TESTN(3);
     CompileParams p{
 #include <bc_tests/t3.hpp>
     };
@@ -80,7 +80,7 @@ TEST_CASE("Bytecode", "") {
   }
 
   SECTION("manual bc t4") {
-    spdlog::debug("t4");
+    CXBQN_LOG_TESTN(4);
     CompileParams p{
 #include <bc_tests/t4.hpp>
     };
@@ -93,7 +93,7 @@ TEST_CASE("Bytecode", "") {
   }
 
   SECTION("manual bc t5") {
-    spdlog::debug("t5");
+    CXBQN_LOG_TESTN(5);
     CompileParams p{
 #include <bc_tests/t5.hpp>
     };
@@ -106,7 +106,7 @@ TEST_CASE("Bytecode", "") {
   }
 
   SECTION("manual bc t6") {
-    spdlog::debug("t6");
+    CXBQN_LOG_TESTN(6);
     CompileParams p{
 #include <bc_tests/t6.hpp>
     };
@@ -119,15 +119,15 @@ TEST_CASE("Bytecode", "") {
   }
 
   SECTION("manual bc t7") {
-    spdlog::debug("t7");
+    CXBQN_LOG_TESTN(7);
     CompileParams p{
 #include <bc_tests/t7.hpp>
     };
     auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
     REQUIRE(nullptr != ret.scp);
     REQUIRE(nullptr != ret.v);
-    //auto* n = dynamic_cast<Number*>(ret.v);
-    //REQUIRE(nullptr != n);
-    //CHECK(6.0 == Approx(n->v));
+    auto* n = dynamic_cast<Number*>(ret.v);
+    REQUIRE(nullptr != n);
+    CHECK(6.0 == Approx(n->v));
   }
 }

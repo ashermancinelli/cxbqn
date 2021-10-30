@@ -12,8 +12,12 @@ RunResult run(std::vector<i32> bc, std::vector<Value *> consts,
 
   CXBQN_SETLOGSTR();
   CXBQN_DEBUG("vm::run");
+  CXBQN_DEBUG("bc={}", ByteCodeRef(bc));
 
-  CXBQN_DEBUG("bc=", ByteCodeRef(bc));
+//#ifdef CXBQN_DEEPCHECKS
+//  for (const auto& b : bodies)
+//    CXBQN_DEBUG("{}", b);
+//#endif
 
   std::vector<Block> blks;
 
@@ -27,6 +31,8 @@ RunResult run(std::vector<i32> bc, std::vector<Value *> consts,
   RunResult ret;
 
   ret.scp = new Scope(nullptr, blks, 0);
+
+  std::copy_n(consts.begin(), consts.size(), ret.scp->vars.begin());
 
   ret.v = vm::vm(bc, consts, stk, ret.scp);
 
@@ -43,7 +49,7 @@ Value *vm(ByteCodeRef bc, std::vector<Value *> consts,
 
   CXBQN_DEBUG("enter vm");
 
-  CXBQN_DEBUG("bc=", bc);
+  CXBQN_DEBUG("bc={},consts={}", bc, consts);
 
   // program counter
   uz pc = 0;
@@ -55,7 +61,7 @@ Value *vm(ByteCodeRef bc, std::vector<Value *> consts,
   CXBQN_DEBUG("enter interpreter loop");
 
   while (1) {
-    CXBQN_DEBUG("bc={},pc={},scope={}", bc[pc], pc, *scope);
+    CXBQN_DEBUG("bc={},pc={},stack={},scope={}", bc[pc], pc, stk, *scope);
     switch (bc[pc]) {
     case op::PUSH:
       CXBQN_INFO("PUSH");

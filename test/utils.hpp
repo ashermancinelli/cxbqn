@@ -25,3 +25,6 @@ struct CompileParams {
     std::vector<BlockDef> blk_defs;
     std::vector<Body> bodies;
 };
+
+#define CXBQN_LOG_TESTN(N) \
+    spdlog::critical("=== Test #" #N " ===");
