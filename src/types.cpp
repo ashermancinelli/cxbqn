@@ -95,7 +95,10 @@ Scope *Scope::get_nth_parent(uz depth) {
 
 BlockDef::BlockDef(uz ty, uz immediate, uz idx)
     : type{static_cast<BlockType>(ty)}, immediate{static_cast<bool>(immediate)},
-      body_idx{idx} {}
+      body_idx{idx} {
+  mon_body_idxs.push_back(body_idx);
+  dya_body_idxs.push_back(body_idx);
+}
 
 BlockDef::BlockDef(uz ty, uz immediate, std::vector<std::vector<uz>> indices)
     : type{static_cast<BlockType>(ty)}, immediate{
@@ -109,6 +112,10 @@ BlockDef::BlockDef(uz ty, uz immediate, std::vector<std::vector<uz>> indices)
   if (indices[1].size() > 1)
     throw std::runtime_error("BlockDef got indices[1] with size > 1. Something "
                              "has gone horribly wrong.");
+
+  CXBQN_DEBUG("BlockDef::BlockDef:ty={},imm={},idxs={}", ty, immediate,
+              indices);
+
   if (indices[0].size()) {
     mon_body_idxs.push_back(indices[0][0]);
     CXBQN_DEBUG("BlockDef:mondaic body index={}", mon_body_idxs[0]);
@@ -132,8 +139,11 @@ uz Block::max_nvars() const {
   if (def.immediate)
     cached_max_nvars = bods[def.body_idx].var_count;
   else {
+    CXBQN_DEBUG("Block::max_nvars:getting mon body idxs")
     const auto m1 = def.mon_body_idxs.size() ? def.mon_body_idxs[0] : 0;
+    CXBQN_DEBUG("Block::max_nvars:getting dya body idxs")
     const auto m2 = def.dya_body_idxs.size() ? def.dya_body_idxs[0] : 0;
+    CXBQN_DEBUG("Block::max_nvars:mon bod idx={}, dya bod idx={}", m1, m2);
     cached_max_nvars = std::max(m1, m2);
   }
 
@@ -181,16 +191,19 @@ Value *UserFn::call(uz nargs, Value *w, Value *x) {
    * any special names that are available during the blocks execution followed
    * by the local variables it defines. Special names use the ordering 𝕤𝕩𝕨𝕣𝕗𝕘.
    */
-  std::vector<Value *> consts(3 + blk.max_nvars(), nullptr);
-  consts[0] = this;
-  if (nargs > 1) {
-    CXBQN_DEBUG_NC("UserFn::call:w={}", w);
-    consts[2] = w;
-  }
+  child->vars[0] = this;
   if (nargs > 0) {
     CXBQN_DEBUG_NC("UserFn::call:x={}", x);
-    consts[1] = x;
+    child->vars[1] = x;
   }
+  if (nargs > 1) {
+    CXBQN_DEBUG_NC("UserFn::call:w={}", w);
+    child->vars[2] = w;
+  }
+
+  // idk what to do about this. I still don't understand the relationship
+  // between the scope's frame and the consts I pass in.
+  std::vector<Value *> consts(3 + blk.max_nvars(), nullptr);
 
   std::deque<Value *> stk;
 

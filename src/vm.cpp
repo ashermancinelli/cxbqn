@@ -14,10 +14,10 @@ RunResult run(std::vector<i32> bc, std::vector<Value *> consts,
   CXBQN_DEBUG("vm::run");
   CXBQN_DEBUG("bc={}", ByteCodeRef(bc));
 
-//#ifdef CXBQN_DEEPCHECKS
-//  for (const auto& b : bodies)
-//    CXBQN_DEBUG("{}", b);
-//#endif
+#ifdef CXBQN_DEEPCHECKS
+  for (const auto& b : bodies)
+    CXBQN_DEBUG("{}", b);
+#endif
 
   std::vector<Block> blks;
 
