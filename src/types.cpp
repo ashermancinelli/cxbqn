@@ -26,14 +26,16 @@ Array::~Array() {
 
 Scope::Scope(Scope *parent, std::span<Block> blks, uz blk_idx)
     : blks{blks}, blk_idx{blk_idx} {
-  CXBQN_DEBUG("types::Scope()");
+  CXBQN_DEBUG("Scope::Scope()");
   this->parent = parent;
-  this->vars.resize(6+blks[blk_idx].var_count);
+  this->vars.resize(6 + blks[blk_idx].max_nvars());
   for (auto e : vars)
-    e = new Nothing();
+    e = nullptr;
 }
 
 Value *Scope::get(Reference *r) {
+
+  // CXBQN_DEBUG_NC("Scope::get(ref={})", r);
 
 #ifdef CXBQN_DEEPCHECKS
   if (nullptr == r)
@@ -61,10 +63,9 @@ void Scope::set(bool should_var_be_set, Reference *r, Value *v) {
   CXBQN_DEBUG_NC("Scope::set:nth parent={}", scp);
 
   CXBQN_DEBUG("Scope::set:r->pos={},scp->vars.size={}", r->position_in_parent,
-             scp->vars.size());
+              scp->vars.size());
 
-  bool isset =
-      nullptr == dynamic_cast<Nothing *>(scp->vars[r->position_in_parent]);
+  bool isset = nullptr != scp->vars[r->position_in_parent];
   if (should_var_be_set != isset) {
     CXBQN_CRIT("should_var_be_set={},isset={}", should_var_be_set, isset);
     throw std::runtime_error(
@@ -96,13 +97,75 @@ BlockDef::BlockDef(uz ty, uz immediate, uz idx)
     : type{static_cast<BlockType>(ty)}, immediate{static_cast<bool>(immediate)},
       body_idx{idx} {}
 
+BlockDef::BlockDef(uz ty, uz immediate, std::vector<std::vector<uz>> indices)
+    : type{static_cast<BlockType>(ty)}, immediate{
+                                            static_cast<bool>(immediate)} {
+  if (indices.size() != 2)
+    throw std::runtime_error("BlockDef got indices with size != 2. Something "
+                             "has gone horribly wrong.");
+  if (indices[0].size() > 1)
+    throw std::runtime_error("BlockDef got indices[0] with size > 1. Something "
+                             "has gone horribly wrong.");
+  if (indices[1].size() > 1)
+    throw std::runtime_error("BlockDef got indices[1] with size > 1. Something "
+                             "has gone horribly wrong.");
+  if (indices[0].size()) {
+    mon_body_idxs.push_back(indices[0][0]);
+    CXBQN_DEBUG("BlockDef:mondaic body index={}", mon_body_idxs[0]);
+  }
+  if (indices[1].size()) {
+    dya_body_idxs.push_back(indices[1][0]);
+    CXBQN_DEBUG("BlockDef:dyadic body index={}", dya_body_idxs[0]);
+  }
+}
+
 BlockDef::~BlockDef() {}
 
 Block::Block(std::span<i32> bc, BlockDef bd, std::span<Body> bods)
-    : immediate{bd.immediate}, type{bd.type} {
-  const auto body = bods[bd.body_idx];
-  this->bc = bc.subspan(body.bc_offset);
-  this->var_count = body.var_count;
+    : def{bd}, bc{bc}, bods{bods}, cached_max_nvars{nullopt} {}
+
+uz Block::max_nvars() const {
+  CXBQN_DEBUG("Block::max_nvars()");
+  if (cached_max_nvars.has_value())
+    return cached_max_nvars.value();
+
+  if (def.immediate)
+    cached_max_nvars = bods[def.body_idx].var_count;
+  else {
+    const auto m1 = def.mon_body_idxs.size() ? def.mon_body_idxs[0] : 0;
+    const auto m2 = def.dya_body_idxs.size() ? def.dya_body_idxs[0] : 0;
+    cached_max_nvars = std::max(m1, m2);
+  }
+
+  return max_nvars();
+}
+
+std::pair<ByteCodeRef, uz> Block::body(u8 nargs) const {
+  CXBQN_DEBUG("Block::body: nargs={}", nargs);
+
+  if (def.immediate) {
+    if (nargs != 0)
+      throw std::runtime_error("immediate body invoked with arguments");
+    auto bod = bods[def.body_idx];
+    auto _bc = bc.subspan(bod.bc_offset);
+    return std::make_pair(_bc, bod.var_count);
+  }
+
+  if (1 == nargs) {
+    // segfault here
+    auto bod = bods[def.mon_body_idxs[0]];
+    CXBQN_DEBUG("Block::body:offset={},nvars={}", bod.bc_offset, bod.var_count);
+    auto _bc = bc.subspan(bod.bc_offset);
+    return std::make_pair(_bc, bod.var_count);
+  } else if (2 == nargs) {
+    auto bod = bods[def.dya_body_idxs[0]];
+    CXBQN_DEBUG("Block::body:offset={},nvars={}", bod.bc_offset, bod.var_count);
+    auto _bc = bc.subspan(bod.bc_offset);
+    return std::make_pair(_bc, bod.var_count);
+  }
+
+  throw std::runtime_error("Block::body: unreachable");
+  return std::make_pair(ByteCodeRef{}, 0);
 }
 
 Value *UserFn::call(uz nargs, Value *w, Value *x) {
@@ -110,13 +173,15 @@ Value *UserFn::call(uz nargs, Value *w, Value *x) {
   const auto blk = scp->blks[blk_idx];
   CXBQN_DEBUG("UserFn::call:nargs={},childscope={},blk={}", nargs, *child, blk);
 
+  auto [bc, nvars] = blk.body(nargs);
+
   /* From the spec:
    *
    * A frame is a mutable list of slots for variable values. It has slots for
    * any special names that are available during the blocks execution followed
    * by the local variables it defines. Special names use the ordering 𝕤𝕩𝕨𝕣𝕗𝕘.
    */
-  std::vector<Value *> consts(3 + blk.var_count, nullptr);
+  std::vector<Value *> consts(3 + blk.max_nvars(), nullptr);
   consts[0] = this;
   if (nargs > 1) {
     CXBQN_DEBUG_NC("UserFn::call:w={}", w);
@@ -130,7 +195,7 @@ Value *UserFn::call(uz nargs, Value *w, Value *x) {
   std::deque<Value *> stk;
 
   CXBQN_DEBUG("UserFn::call:recursing into vm");
-  auto *ret = vm::vm(blk.bc, consts, stk, child);
+  auto *ret = vm::vm(bc, consts, stk, child);
   return ret;
 }
 

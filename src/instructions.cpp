@@ -47,9 +47,9 @@ void varm(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk) {
 }
 
 void varo(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk, Scope *scp) {
-  const auto local_variable_idx = bc[++pc];
   const auto n_frames_up = bc[++pc];
-  CXBQN_INFO("\t{}, {}", local_variable_idx, n_frames_up);
+  const auto local_variable_idx = bc[++pc];
+  CXBQN_INFO("\t{}, {}", n_frames_up, local_variable_idx);
   scp = scp->get_nth_parent(n_frames_up);
   CXBQN_DEBUG("instructions::varo:scope={},localidx={},framesup={}", *scp, local_variable_idx, n_frames_up);
   CXBQN_DEBUG_NC("instructions::varo:pushing var={}", scp->vars[local_variable_idx]);
@@ -116,11 +116,11 @@ void dfnd(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk, Scope *scp) {
   const auto blk = scp->blks[blk_idx];
   CXBQN_DEBUG("dfnd:pc={},block={}", pc, blk);
 
-  if (blk.type == BlockType::func && blk.immediate) {
+  if (blk.def.type == BlockType::func && blk.def.immediate) {
     // auto *child = new Scope(scp, blk);
     CXBQN_CRIT("unimplemented");
   } else {
-    if (BlockType::func == blk.type) {
+    if (BlockType::func == blk.def.type) {
       auto* F = new UserFn(scp, blk_idx);
       stk.push_back(F);
     }

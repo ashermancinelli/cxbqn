@@ -6,6 +6,7 @@
 #include <numeric>
 #include <optional>
 #include <span>
+#include <tuple>
 #include <spdlog/fmt/ostr.h>
 #include <type_traits>
 #include <variant>
@@ -131,7 +132,7 @@ struct Reference : public Value {
   Reference(uz d, uz p) : depth{d}, position_in_parent{p} {}
   u8 t() const override { return t_Reference; }
   std::ostream &repr(std::ostream &os) const override {
-    return os << "R{depth=" << depth << "pos=" << position_in_parent << "}";
+    return os << "R{depth=" << depth << ",pos=" << position_in_parent << "}";
   }
 };
 
@@ -215,17 +216,42 @@ struct BlockDef {
   BlockType type;
   bool immediate;
   CompilationResult *comp;
+
+  // FIXME: body_idx and mon/dya indices should really be a variant
+
+  // "ambivalent index", which is used in immediate blocks
   uz body_idx;
+
+  // list of bodies to try executing in sequence for monadic and dyadic calls
+  std::vector<uz> mon_body_idxs;
+  std::vector<uz> dya_body_idxs;
+
   BlockDef(uz ty, uz immediate, uz idx);
+  BlockDef(uz ty, uz immediate, std::vector<std::vector<uz>> indices);
   ~BlockDef();
 };
 
 struct Block {
-  BlockType type;
-  bool immediate;
-  uz var_count;
-  ByteCodeRef bc;
+  const BlockDef def;
+
+  // Gives the bytecode and number of variables for a given call
+  std::pair<ByteCodeRef, uz> body(u8 nargs=0) const;
+
+  uz max_nvars() const;
+
   Block(ByteCodeRef bc, BlockDef bd, std::span<Body> bods);
+
+private:
+
+  // modification of this should not affect constness since it doesn't affect
+  // idempotency of the call, in particular `max_nvars`
+  mutable std::optional<uz> cached_max_nvars;
+
+  // Span of bytecode, so we can retrieve a subspan for a
+  // monadic/dyadic/immediate invokation of the block as needed.
+  ByteCodeRef bc;
+
+  std::span<Body> bods;
 };
 
 struct Scope {

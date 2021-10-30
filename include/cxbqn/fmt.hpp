@@ -21,11 +21,31 @@ template <typename OS> OS &operator<<(OS &os, const Value *v) {
 }
 
 template <typename OS> OS &operator<<(OS &os, const Block &b) {
-  os << "Block{type=" << static_cast<int>(b.type) << ",imm=" << b.immediate
-     << ",varc=" << b.var_count << ",bc=[";
-  for (const auto &e : b.bc)
-    os << e << ",";
-  os << "]}";
+  os << "Block{type=" << static_cast<int>(b.def.type)
+     << ",imm=" << b.def.immediate << ",";
+  if (b.def.immediate) {
+    auto [bc, nvars] = b.body();
+    os << "nvars=" << nvars << ",bc=[";
+    for (const auto &e : bc)
+      os << e << ",";
+    os << "]";
+  } else {
+    {
+      auto [bc, nvars] = b.body(1);
+      os << "nvars1=" << nvars << ",bc1=[";
+      for (const auto &e : bc)
+        os << e << ",";
+      os << "]";
+    }
+    {
+      auto [bc, nvars] = b.body(2);
+      os << "nvars2=" << nvars << ",bc2=[";
+      for (const auto &e : bc)
+        os << e << ",";
+      os << "]";
+    }
+  }
+  os << "}";
   return os;
 }
 
@@ -122,13 +142,12 @@ template <> struct fmt::formatter<Body> {
   }
   template <typename FormatContext>
   auto format(const Body &b, FormatContext &ctx) -> decltype(ctx.out()) {
-    return format_to(ctx.out(), "Body{nvars={},offset={}}", b.var_count,
-                     b.bc_offset);
+    // return format_to(ctx.out(), "Body{nvars={},offset={}}", b.var_count, b.bc_offset);
+    return format_to(ctx.out(), "{}", "Body{}");
   }
 };
 
-template <>
-struct fmt::formatter<std::span<Block>> {
+template <> struct fmt::formatter<std::span<Block>> {
   constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin()) {
     return ctx.end();
   }

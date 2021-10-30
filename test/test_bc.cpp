@@ -10,7 +10,6 @@ using namespace cxbqn::vm;
 using namespace cxbqn::types;
 using namespace cxbqn::provides;
 
-
 TEST_CASE("Bytecode", "") {
 
   spdlog::set_level(spdlog::level::debug);
@@ -23,7 +22,7 @@ TEST_CASE("Bytecode", "") {
 
     auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
 
-    Number* n = dynamic_cast<Number*>(ret.v);
+    Number *n = dynamic_cast<Number *>(ret.v);
     REQUIRE(nullptr != n);
     CHECK(5.0 == Approx(n->v));
   }
@@ -36,7 +35,8 @@ TEST_CASE("Bytecode", "") {
 
     auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
 
-    Number* n = dynamic_cast<Number*>(ret.v);;
+    Number *n = dynamic_cast<Number *>(ret.v);
+    ;
     REQUIRE(nullptr != n);
     CHECK(3.0 == Approx(n->v));
   }
@@ -49,13 +49,13 @@ TEST_CASE("Bytecode", "") {
 
     auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
 
-    Reference* r = dynamic_cast<Reference*>(ret.v);
+    Reference *r = dynamic_cast<Reference *>(ret.v);
     REQUIRE(nullptr != r);
     REQUIRE(nullptr != ret.scp);
 
     Value *v = ret.scp->get(r);
     REQUIRE(nullptr != v);
-    auto *n = dynamic_cast<Number*>(v);
+    auto *n = dynamic_cast<Number *>(v);
     REQUIRE(nullptr != n);
     CHECK(5.0 == Approx(n->v));
   }
@@ -70,11 +70,11 @@ TEST_CASE("Bytecode", "") {
     REQUIRE(nullptr != ret.scp);
     REQUIRE(nullptr != ret.v);
     auto *scp = ret.scp;
-    auto* r = dynamic_cast<Reference*>(ret.v);
+    auto *r = dynamic_cast<Reference *>(ret.v);
     REQUIRE(nullptr != r);
     auto *v = scp->get(r);
     REQUIRE(nullptr != v);
-    auto *n = dynamic_cast<Number*>(v);
+    auto *n = dynamic_cast<Number *>(v);
     REQUIRE(nullptr != n);
     CHECK(4.0 == Approx(n->v));
   }
@@ -87,7 +87,7 @@ TEST_CASE("Bytecode", "") {
     auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
     REQUIRE(nullptr != ret.scp);
     REQUIRE(nullptr != ret.v);
-    auto* n = dynamic_cast<Number*>(ret.v);
+    auto *n = dynamic_cast<Number *>(ret.v);
     REQUIRE(nullptr != n);
     CHECK(2.0 == Approx(n->v));
   }
@@ -100,7 +100,7 @@ TEST_CASE("Bytecode", "") {
     auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
     REQUIRE(nullptr != ret.scp);
     REQUIRE(nullptr != ret.v);
-    auto* n = dynamic_cast<Number*>(ret.v);
+    auto *n = dynamic_cast<Number *>(ret.v);
     REQUIRE(nullptr != n);
     CHECK(1.0 == Approx(n->v));
   }
@@ -113,7 +113,7 @@ TEST_CASE("Bytecode", "") {
     auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
     REQUIRE(nullptr != ret.scp);
     REQUIRE(nullptr != ret.v);
-    auto* n = dynamic_cast<Number*>(ret.v);
+    auto *n = dynamic_cast<Number *>(ret.v);
     REQUIRE(nullptr != n);
     CHECK(2.0 == Approx(n->v));
   }
@@ -126,8 +126,27 @@ TEST_CASE("Bytecode", "") {
     auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
     REQUIRE(nullptr != ret.scp);
     REQUIRE(nullptr != ret.v);
-    auto* n = dynamic_cast<Number*>(ret.v);
+    auto *n = dynamic_cast<Number *>(ret.v);
     REQUIRE(nullptr != n);
     CHECK(6.0 == Approx(n->v));
+  }
+
+  /*  A←{𝕨}⋄3 A 4           #    dyadic block function
+   * {1,1,33,0,0,48,6,0,1,34,0,0,0,0,17,7,34,0,2,7},
+   * {3,4},
+   * {{0,1,0},{0,0,{{},{1}}}},
+   * {{0,1},{16,3}}
+   */
+  SECTION("manual bc t8") {
+    CXBQN_LOG_TESTN(8);
+    CompileParams p{
+#include <bc_tests/t8.hpp>
+    };
+    auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+    // REQUIRE(nullptr != ret.scp);
+    // REQUIRE(nullptr != ret.v);
+    // auto* n = dynamic_cast<Number*>(ret.v);
+    // REQUIRE(nullptr != n);
+    // CHECK(6.0 == Approx(n->v));
   }
 }
