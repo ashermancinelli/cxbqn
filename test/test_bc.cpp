@@ -181,4 +181,17 @@ TEST_CASE("Bytecode", "") {
     REQUIRE(nullptr != n);
     CHECK(4.0 == Approx(n->v));
   }
+
+  SECTION("manual bc t11") {
+    CXBQN_LOG_TESTN(11);
+    CompileParams p{
+#include <bc_tests/t11.hpp>
+    };
+    auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+    REQUIRE(nullptr != ret.scp);
+    REQUIRE(nullptr != ret.v);
+    auto* n = dynamic_cast<Number*>(ret.v);
+    REQUIRE(nullptr != n);
+    CHECK(6.0 == Approx(n->v));
+  }
 }
