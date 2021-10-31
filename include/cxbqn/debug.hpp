@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 #include <cxbqn/config.hpp>
 #include <cxbqn/fmt.hpp>
 
@@ -17,12 +18,6 @@
 #define CXBQN_SETLOGSTR()
 #endif
 
-// Debug a value with a nullcheck
-#define CXBQN_DEBUG_NC(fmt, x)                                                 \
-  do {                                                                         \
-    if (nullptr == x) {                                                        \
-      CXBQN_DEBUG(fmt, "null");                                                \
-    } else {                                                                   \
-      CXBQN_DEBUG(fmt, *x);                                                    \
-    }                                                                          \
-  } while (0);
+#define CXBQN_STR_NC(x)                                                   \
+  static_cast<std::string>((nullptr == x) ? "null" : fmt::format("{}", *x))
+#define CXBQN_DEBUG_NC(fmt, x) CXBQN_DEBUG(fmt, CXBQN_STR_NC(x))

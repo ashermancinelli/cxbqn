@@ -127,7 +127,7 @@ template <> struct fmt::formatter<Body> {
   }
   template <typename FormatContext>
   auto format(const Body &b, FormatContext &ctx) -> decltype(ctx.out()) {
-    return format_to(ctx.out(), "Body⟨nvars={},offset={}⟩", b.var_count,
+    return format_to(ctx.out(), "Body<nvars={},offset={}>", b.var_count,
                      b.bc_offset);
   }
 };

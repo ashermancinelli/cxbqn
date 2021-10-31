@@ -1,12 +1,13 @@
 #pragma once
+#include <bitset>
 #include <cxbqn/scalar_types.hpp>
+#include <deque>
 #include <functional>
 #include <initializer_list>
 #include <memory>
 #include <numeric>
 #include <optional>
 #include <span>
-#include <deque>
 #include <spdlog/fmt/ostr.h>
 #include <tuple>
 #include <type_traits>
@@ -49,6 +50,8 @@ namespace types {
  *
  */
 
+// The value of •Type for a given value is `myval.t_&7` as the builtin type
+// is stored in the first three bits of the type field.
 enum Types {
   t_Array = 0,
   t_Number,
@@ -57,11 +60,41 @@ enum Types {
   t_Md1,
   t_Md2,
   t_Namespace,
-  NUM_TYPES, // All values after this are not valid with •Type, and are for
-             // internal use only.
-  t_Reference,
-  t_Nothing,
 };
+
+// The bit represeting (1 << t_Annotation) in the type of a value represents
+// the value of a given type annotation.
+//
+// Eg an array reference would have `0b000 | (1<<t_Reference)` since 0b000 is
+// type value 0 as prescribed in the spec, and 1<<t_Reference indicates the
+// reference annotation.
+enum TypeAnnotations {
+  // After the namespace type, all other "types" are used internally only.
+  // The first 3 bits of the type of a value represent the return of •Type on
+  // that value, and the rest are internal annotations that may be associated
+  // with a type, eg an array reference will have type t_Array|t_Reference
+  t_Reference = 3,
+  t_UserDefined,
+  t_Derived,
+
+  // Because •Type of an array is 0, checking for bits to test for an array
+  // is not effective.
+  t_RefArray,
+
+  // If a type does not override Value::t_ for some reason, this will be its
+  // type
+  t_Opaque,
+};
+
+static constexpr u32 annot(TypeAnnotations ta) { return 1 << ta; }
+
+// The type used to represent the •Type of a value along with some internal
+// type annotations, eg references and uniform arrays.
+//
+// Size is 32 even though we will likely never have this many internal type
+// annotations, but the smallest number we can turn a bitset into is a ulong,
+// so we might as well have access to that much data.
+using TypeType = std::bitset<32>;
 
 using ByteCode = std::vector<i32>;
 using ByteCodeRef = std::span<i32>;
@@ -73,14 +106,11 @@ struct Value {
   // Sometimes we delete an opaque value
   virtual ~Value() {}
 
-  // Currently, no reference counting is performed and all memory is leaked.
-  i32 refc;
-
   // A type must be able to tell you it's •Type. We also use this over trying to
   // dynamic cast to a bunch of different types since the object creation
   // required to attempt a dynamic cast can be very costly. Calling t() before a
   // dyn cast lets us know for sure that the dyn cast will succeed.
-  virtual u8 t() const = 0;
+  virtual TypeType t() const { return TypeType{annot(t_Opaque)}; }
 
   // If a value type does not define it's own call, we probably just push it
   // back on the stack.
@@ -93,15 +123,10 @@ struct Value {
 /// Currently unused, but might be used for managing memory later on.
 using MValue = std::shared_ptr<Value>;
 
-struct Nothing : public Value {
-  u8 t() const override { return t_Nothing; }
-  std::ostream &repr(std::ostream &os) const override { return os << "null"; }
-};
-
 struct Character : public Value {
   char v;
   Character(char c) : v{c} {}
-  u8 t() const override { return t_Character; }
+  virtual TypeType t() const { return TypeType{t_Character}; }
   std::ostream &repr(std::ostream &os) const override {
     return os << "C<" << v << ">";
   }
@@ -110,7 +135,7 @@ struct Character : public Value {
 struct Number : public Value {
   f64 v;
   Number(f64 v) : v{v} {}
-  u8 t() const override { return t_Number; }
+  virtual TypeType t() const { return TypeType{t_Number}; }
   std::ostream &repr(std::ostream &os) const override {
     return os << "N<" << v << ">";
   }
@@ -121,7 +146,7 @@ struct Array : public Value {
   std::vector<Value *> values;
   Array(const ByteCode::value_type N, std::deque<Value *> &stk);
   ~Array() {}
-  u8 t() const override { return t_Array; }
+  virtual TypeType t() const { return TypeType{t_Array}; }
   std::ostream &repr(std::ostream &os) const override {
     return os << "A<n=" << N << ">";
   }
@@ -131,22 +156,26 @@ struct Reference : public Value {
   uz depth;
   uz position_in_parent;
   Reference(uz d, uz p) : depth{d}, position_in_parent{p} {}
-  u8 t() const override { return t_Reference; }
+  virtual TypeType t() const { return TypeType{annot(t_Reference)}; }
   std::ostream &repr(std::ostream &os) const override {
     return os << "R<depth=" << depth << ",pos=" << position_in_parent << ">";
   }
 };
 
 struct RefArray : public Array {
-  RefArray(const ByteCode::value_type N, std::deque<Value *> &stk) : Array(N, stk) {}
-  Reference* getref(uz idx);
+  RefArray(const ByteCode::value_type N, std::deque<Value *> &stk)
+      : Array(N, stk) {}
+  Reference *getref(uz idx);
+  virtual TypeType t() const {
+    return TypeType{t_Array | annot(t_Reference) | annot(t_RefArray)};
+  }
   std::ostream &repr(std::ostream &os) const override {
     return os << "RA<n=" << N << ">";
   }
 };
 
 struct Function : public Value {
-  u8 t() const override { return 3; }
+  virtual TypeType t() const { return TypeType{t_Function}; }
   std::ostream &repr(std::ostream &os) const override { return os << "F<>"; }
 };
 
@@ -158,6 +187,9 @@ struct Builtin : public Function {
 struct UserFn : public Function {
   Scope *scp;
   uz blk_idx;
+  virtual TypeType t() const {
+    return TypeType{t_Function | annot(t_UserDefined)};
+  }
   UserFn(Scope *scp, uz blk_idx) : scp{scp}, blk_idx{blk_idx} {}
   Value *call(uz nargs, Value *w, Value *x) override;
   std::ostream &repr(std::ostream &os) const override {
@@ -174,28 +206,32 @@ struct Atop : public Function {
 };
 
 struct Md1 : public Function {
-  u8 t() const override { return 4; }
+  static constexpr TypeType t_{t_Md1};
 };
 
 struct UserMd1 : public Md1 {
+  virtual TypeType t() const { return TypeType{t_Md1 | annot(t_UserDefined)}; }
   Scope *sc;
   Block *bl;
 };
 
 struct Md2 : public Function {
-  u8 t() const override { return 5; }
+  virtual TypeType t() const { return TypeType{t_Md2}; }
 };
 
 struct UserMd2 : public Md2 {
+  virtual TypeType t() const { return TypeType{t_Md2 | annot(t_UserDefined)}; }
   Scope *sc;
   Block *bl;
 };
 
 struct Md1Derived : public Function {
+  virtual TypeType t() const { return TypeType{t_Md1 | annot(t_Derived)}; }
   Value *f, *m1;
 };
 
 struct Md2Derived : public Function {
+  virtual TypeType t() const { return TypeType{t_Md2 | annot(t_Derived)}; }
   Value *f, *m2, *g;
 };
 

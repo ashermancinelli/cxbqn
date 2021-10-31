@@ -1,7 +1,41 @@
 #include <cxbqn/cxbqn.hpp>
 #include <cxbqn/debug.hpp>
 #include <deque>
+#include <spdlog/fmt/bundled/color.h>
 #include <sstream>
+
+#ifdef CXBQN_DEEPCHECKS
+
+#define INSTR_CL (fmt::fg(fmt::color::cyan))
+#define PC_CL (fmt::fg(fmt::color::light_green))
+#define ARG_CL (fmt::fg(fmt::color::yellow))
+
+#define INSTR_PC(pc) fmt::print(PC_CL, "@{:<10}", pc)
+#define INSTR_INSTR(x) fmt::print(INSTR_CL, "{}", x)
+
+#define INSTR(x)                                                               \
+  do {                                                                         \
+    INSTR_PC(pc);                                                              \
+    INSTR_INSTR(x);                                                            \
+    fmt::print("\n");                                                          \
+  } while (0);
+#define INSTR1(x)                                                              \
+  do {                                                                         \
+    INSTR_PC(pc);                                                              \
+    INSTR_INSTR(x);                                                            \
+    fmt::print(ARG_CL, " {}\n", bc[pc + 1]);                                           \
+  } while (0);
+#define INSTR2(x)                                                              \
+  do {                                                                         \
+    INSTR_PC(pc);                                                              \
+    INSTR_INSTR(x);                                                            \
+    fmt::print(ARG_CL, " {}, {}\n", bc[pc + 1], bc[pc + 2]);                           \
+  } while (0);
+#else
+#define INSTR(...)
+#define INSTR1(...)
+#define INSTR2(...)
+#endif
 
 namespace cxbqn::vm {
 
@@ -15,7 +49,7 @@ RunResult run(std::vector<i32> bc, std::vector<Value *> consts,
   CXBQN_DEBUG("bc={}", ByteCodeRef(bc));
 
 #ifdef CXBQN_DEEPCHECKS
-  for (const auto& b : bodies)
+  for (const auto &b : bodies)
     CXBQN_DEBUG("{}", b);
 #endif
 
@@ -44,8 +78,8 @@ RunResult run(std::vector<i32> bc, std::vector<Value *> consts,
   return ret;
 }
 
-Value *vm(ByteCodeRef bc, std::vector<Value *> consts,
-          std::deque<Value *> stk, Scope *scope) {
+Value *vm(ByteCodeRef bc, std::vector<Value *> consts, std::deque<Value *> stk,
+          Scope *scope) {
 
   CXBQN_DEBUG("enter vm");
 
@@ -59,60 +93,59 @@ Value *vm(ByteCodeRef bc, std::vector<Value *> consts,
   i32 arga, argb;
 
   CXBQN_DEBUG("enter interpreter loop");
-
   while (1) {
     CXBQN_DEBUG("bc={},pc={},stack={},scope={}", bc[pc], pc, stk, *scope);
     switch (bc[pc]) {
     case op::PUSH:
-      CXBQN_INFO("PUSH");
+      INSTR1("PUSH");
       stk.push_back(consts[bc[++pc]]);
-      CXBQN_INFO("\t{}", bc[pc]);
       break;
     case op::RETN:
-      CXBQN_INFO("RETN");
+      INSTR("RETN");
+      CXBQN_DEBUG_NC("returning {}", stk.back());
       return stk.back();
       break;
     case op::POPS:
-      CXBQN_INFO("POPS");
+      INSTR("POPS");
       stk.pop_back();
       break;
     case op::VARM:
-      CXBQN_INFO("VARM");
+      INSTR2("VARM");
       instructions::varm(bc, pc, stk);
       break;
     case op::SETN:
-      CXBQN_INFO("SETN");
+      INSTR("SETN");
       instructions::setn(stk, scope);
       break;
     case op::SETU:
-      CXBQN_INFO("SETU");
+      INSTR("SETU");
       instructions::setu(stk, scope);
       break;
     case op::VARO:
     case op::VARU:
-      CXBQN_INFO("VARO|VARU");
+      INSTR2("VARO/VARU");
       instructions::varo(bc, pc, stk, scope);
       break;
     case op::FN1O:
     case op::FN1C:
-      CXBQN_INFO("FN10|FN1C");
+      INSTR("FN10/FN1C");
       instructions::fn10(bc, pc, stk);
       break;
     case op::FN2O:
     case op::FN2C:
-      CXBQN_INFO("FN20|FN2C");
+      INSTR("FN20/FN2C");
       instructions::fn20(bc, pc, stk);
       break;
     case op::DFND:
-      CXBQN_INFO("DFND");
+      INSTR1("DFND");
       instructions::dfnd(bc, pc, stk, scope);
       break;
     case op::ARRO:
-      CXBQN_INFO("ARRO");
+      INSTR1("ARRO");
       instructions::arro(bc, pc, stk);
       break;
     case op::ARRM:
-      CXBQN_INFO("ARRM");
+      INSTR1("ARRM");
       instructions::arrm(bc, pc, stk);
       break;
     default:
@@ -121,6 +154,7 @@ Value *vm(ByteCodeRef bc, std::vector<Value *> consts,
     }
     pc++;
   }
+#undef INSTR
 
   return 0;
 }

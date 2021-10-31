@@ -20,7 +20,18 @@ template <bool ShouldVarBeSet> void set(std::deque<Value *> stk, Scope *scp) {
   auto *value = stk.back();
   stk.pop_back();
 
-  if (t_Array == opaque_refer->t()) {
+  CXBQN_DEBUG("SETN:ref={},val={}", CXBQN_STR_NC(opaque_refer), CXBQN_STR_NC(value));
+
+#ifdef CXBQN_DEEPCHECKS
+  if (not opaque_refer->t()[t_Reference]) {
+    CXBQN_CRIT("SETN: trying to set reference without t_Reference bit set.");
+    CXBQN_CRIT("raw bits={}, val={}", opaque_refer->t(), *opaque_refer);
+  }
+#endif
+
+  // If we're setting a reference, the type is either reference or refarray.
+  // If the masked type matches t_Array, we know we're working with an array.
+  if (opaque_refer->t()[t_RefArray]) {
     auto *aref = dynamic_cast<RefArray *>(opaque_refer);
 #ifdef CXBQN_DEEPCHECKS
     if (nullptr == aref)
@@ -50,7 +61,6 @@ void setn(std::deque<Value *> &stk, Scope *scp) { set<true>(stk, scp); }
 void varm(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk) {
   const auto depth = bc[++pc];
   const auto pos_in_parent = bc[++pc];
-  CXBQN_INFO("\t{}, {}", depth, pos_in_parent);
   stk.push_back(new types::Reference(static_cast<uz>(depth),
                                      static_cast<uz>(pos_in_parent)));
 }
@@ -58,7 +68,6 @@ void varm(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk) {
 void varo(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk, Scope *scp) {
   const auto n_frames_up = bc[++pc];
   const auto local_variable_idx = bc[++pc];
-  CXBQN_INFO("\t{}, {}", n_frames_up, local_variable_idx);
   scp = scp->get_nth_parent(n_frames_up);
   CXBQN_DEBUG("instructions::varo:scope={},localidx={},framesup={}", *scp,
               local_variable_idx, n_frames_up);
@@ -123,7 +132,6 @@ void fn20(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk) {
 
 void dfnd(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk, Scope *scp) {
   auto blk_idx = bc[++pc];
-  CXBQN_INFO("\t{}", blk_idx);
 
   const auto blk = scp->blks[blk_idx];
   CXBQN_DEBUG("dfnd:pc={},block={}", pc, blk);
