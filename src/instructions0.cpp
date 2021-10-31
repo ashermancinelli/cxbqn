@@ -33,13 +33,18 @@ template <bool ShouldVarBeSet> void set(std::deque<Value *> stk, Scope *scp) {
   // If the masked type matches t_Array, we know we're working with an array.
   if (opaque_refer->t()[t_RefArray]) {
     auto *aref = dynamic_cast<RefArray *>(opaque_refer);
+    auto *aval = dynamic_cast<Array*>(value);
 #ifdef CXBQN_DEEPCHECKS
     if (nullptr == aref)
       throw std::runtime_error(
           "SETN: Could not cast reference to type RefArray");
+    if (nullptr == aval)
+      throw std::runtime_error(
+          "SETN: Could not cast value to type Array when assigning to RefArray");
 #endif
-    scp->set(ShouldVarBeSet, aref->getref(0), value);
-    stk.push_back(aref);
+    for (int i=0; i < aval->N; i++)
+      scp->set(ShouldVarBeSet, aref->getref(i), aval->values[i]);
+    stk.push_back(aval);
   } else {
     auto *refer = dynamic_cast<Reference *>(opaque_refer);
 #ifdef CXBQN_DEEPCHECKS
