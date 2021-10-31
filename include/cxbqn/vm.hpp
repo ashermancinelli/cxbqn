@@ -1,7 +1,6 @@
 #pragma once
 #include <cstdint>
 #include <cxbqn/types.hpp>
-#include <deque>
 #include <memory>
 #include <optional>
 #include <span>
@@ -33,6 +32,8 @@ void varo(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk, Scope *scp);
 void fn10(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk);
 void fn20(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk);
 void dfnd(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk, Scope *scp);
+void arro(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk);
+void arrm(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk);
 
 } // namespace instructions
 

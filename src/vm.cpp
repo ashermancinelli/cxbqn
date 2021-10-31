@@ -107,6 +107,14 @@ Value *vm(ByteCodeRef bc, std::vector<Value *> consts,
       CXBQN_INFO("DFND");
       instructions::dfnd(bc, pc, stk, scope);
       break;
+    case op::ARRO:
+      CXBQN_INFO("ARRO");
+      instructions::arro(bc, pc, stk);
+      break;
+    case op::ARRM:
+      CXBQN_INFO("ARRM");
+      instructions::arrm(bc, pc, stk);
+      break;
     default:
       CXBQN_CRIT("unreachable code {}", bc[pc]);
       throw std::runtime_error("vm::vm: unreachable code");

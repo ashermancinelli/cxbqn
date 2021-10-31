@@ -149,4 +149,23 @@ TEST_CASE("Bytecode", "") {
     REQUIRE(nullptr != n);
     CHECK(3.0 == Approx(n->v));
   }
+
+  /*  a‿b←7‿2⋄a             # 11 ARRO, 12 ARRM
+   * {0,0,0,1,11,2,33,0,0,33,0,1,12,2,48,6,34,0,0,7},
+   * {7,2},
+   * {{0,1,0}},
+   * {{0,2}} 
+   */
+  SECTION("manual bc t9") {
+    CXBQN_LOG_TESTN(9);
+    CompileParams p{
+#include <bc_tests/t9.hpp>
+    };
+    auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+    REQUIRE(nullptr != ret.scp);
+    REQUIRE(nullptr != ret.v);
+    //auto* n = dynamic_cast<Number*>(ret.v);
+    //REQUIRE(nullptr != n);
+    //CHECK(3.0 == Approx(n->v));
+  }
 }

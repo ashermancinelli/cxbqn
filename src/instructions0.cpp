@@ -10,8 +10,8 @@ using namespace cxbqn::types;
 namespace {
 
 template <bool ShouldVarBeSet> void set(std::deque<Value *> stk, Scope *scp) {
-
   CXBQN_DEBUG("SETN:enter");
+
   // Reference this instruction is assigning to
   auto *opaque_refer = stk.back();
   stk.pop_back();
@@ -20,16 +20,25 @@ template <bool ShouldVarBeSet> void set(std::deque<Value *> stk, Scope *scp) {
   auto *value = stk.back();
   stk.pop_back();
 
-  auto *refer = dynamic_cast<Reference *>(opaque_refer);
+  if (t_Array == opaque_refer->t()) {
+    auto *aref = dynamic_cast<RefArray *>(opaque_refer);
 #ifdef CXBQN_DEEPCHECKS
-  if (nullptr == refer)
-    throw std::runtime_error(
-        "SETN: Could not cast reference to type Reference");
+    if (nullptr == aref)
+      throw std::runtime_error(
+          "SETN: Could not cast reference to type RefArray");
 #endif
-
-  scp->set(ShouldVarBeSet, refer, value);
-
-  stk.push_back(refer);
+    scp->set(ShouldVarBeSet, aref->getref(0), value);
+    stk.push_back(aref);
+  } else {
+    auto *refer = dynamic_cast<Reference *>(opaque_refer);
+#ifdef CXBQN_DEEPCHECKS
+    if (nullptr == refer)
+      throw std::runtime_error(
+          "SETN: Could not cast reference to type Reference");
+#endif
+    scp->set(ShouldVarBeSet, refer, value);
+    stk.push_back(refer);
+  }
 }
 
 } // namespace
@@ -51,10 +60,13 @@ void varo(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk, Scope *scp) {
   const auto local_variable_idx = bc[++pc];
   CXBQN_INFO("\t{}, {}", n_frames_up, local_variable_idx);
   scp = scp->get_nth_parent(n_frames_up);
-  CXBQN_DEBUG("instructions::varo:scope={},localidx={},framesup={}", *scp, local_variable_idx, n_frames_up);
-  CXBQN_DEBUG_NC("instructions::varo:pushing var={}", scp->vars[local_variable_idx]);
+  CXBQN_DEBUG("instructions::varo:scope={},localidx={},framesup={}", *scp,
+              local_variable_idx, n_frames_up);
+  CXBQN_DEBUG_NC("instructions::varo:pushing var={}",
+                 scp->vars[local_variable_idx]);
   stk.push_back(scp->vars[local_variable_idx]);
-  CXBQN_DEBUG_NC("instructions::varo: pushed back value={}", scp->vars[local_variable_idx]);
+  CXBQN_DEBUG_NC("instructions::varo: pushed back value={}",
+                 scp->vars[local_variable_idx]);
 }
 
 void fn10(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk) {
@@ -121,10 +133,9 @@ void dfnd(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk, Scope *scp) {
     CXBQN_CRIT("unimplemented");
   } else {
     if (BlockType::func == blk.def.type) {
-      auto* F = new UserFn(scp, blk_idx);
+      auto *F = new UserFn(scp, blk_idx);
       stk.push_back(F);
-    }
-    else
+    } else
       throw std::runtime_error("unimplemented");
   }
 }

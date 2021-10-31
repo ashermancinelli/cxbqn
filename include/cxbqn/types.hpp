@@ -6,8 +6,9 @@
 #include <numeric>
 #include <optional>
 #include <span>
-#include <tuple>
+#include <deque>
 #include <spdlog/fmt/ostr.h>
+#include <tuple>
 #include <type_traits>
 #include <variant>
 #include <vector>
@@ -102,7 +103,7 @@ struct Character : public Value {
   Character(char c) : v{c} {}
   u8 t() const override { return t_Character; }
   std::ostream &repr(std::ostream &os) const override {
-    return os << "C{" << v << "}";
+    return os << "C<" << v << ">";
   }
 };
 
@@ -111,19 +112,19 @@ struct Number : public Value {
   Number(f64 v) : v{v} {}
   u8 t() const override { return t_Number; }
   std::ostream &repr(std::ostream &os) const override {
-    return os << "N{" << v << "}";
+    return os << "N<" << v << ">";
   }
 };
 
 struct Array : public Value {
-  std::vector<uz> shape;
-  f64 *values;
-  Array(initl<f64> vs);
-  Array(initl<uz> szs, initl<f64> vs);
-  Array();
-  ~Array();
+  const uz N;
+  std::vector<Value *> values;
+  Array(const ByteCode::value_type N, std::deque<Value *> &stk);
+  ~Array() {}
   u8 t() const override { return t_Array; }
-  std::ostream &repr(std::ostream &os) const override { return os << "A{}"; }
+  std::ostream &repr(std::ostream &os) const override {
+    return os << "A<n=" << N << ">";
+  }
 };
 
 struct Reference : public Value {
@@ -132,13 +133,21 @@ struct Reference : public Value {
   Reference(uz d, uz p) : depth{d}, position_in_parent{p} {}
   u8 t() const override { return t_Reference; }
   std::ostream &repr(std::ostream &os) const override {
-    return os << "R{depth=" << depth << ",pos=" << position_in_parent << "}";
+    return os << "R<depth=" << depth << ",pos=" << position_in_parent << ">";
+  }
+};
+
+struct RefArray : public Array {
+  RefArray(const ByteCode::value_type N, std::deque<Value *> &stk) : Array(N, stk) {}
+  Reference* getref(uz idx);
+  std::ostream &repr(std::ostream &os) const override {
+    return os << "RA<n=" << N << ">";
   }
 };
 
 struct Function : public Value {
   u8 t() const override { return 3; }
-  std::ostream &repr(std::ostream &os) const override { return os << "F{}"; }
+  std::ostream &repr(std::ostream &os) const override { return os << "F<>"; }
 };
 
 struct Builtin : public Function {
@@ -152,7 +161,7 @@ struct UserFn : public Function {
   UserFn(Scope *scp, uz blk_idx) : scp{scp}, blk_idx{blk_idx} {}
   Value *call(uz nargs, Value *w, Value *x) override;
   std::ostream &repr(std::ostream &os) const override {
-    return os << "UserFn{blk_idx=" << blk_idx << "}";
+    return os << "UserFn<blk_idx=" << blk_idx << ">";
   }
 };
 
@@ -235,14 +244,13 @@ struct Block {
   const BlockDef def;
 
   // Gives the bytecode and number of variables for a given call
-  std::pair<ByteCodeRef, uz> body(u8 nargs=0) const;
+  std::pair<ByteCodeRef, uz> body(u8 nargs = 0) const;
 
   uz max_nvars() const;
 
   Block(ByteCodeRef bc, BlockDef bd, std::span<Body> bods);
 
 private:
-
   // modification of this should not affect constness since it doesn't affect
   // idempotency of the call, in particular `max_nvars`
   mutable std::optional<uz> cached_max_nvars;

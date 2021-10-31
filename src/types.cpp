@@ -4,29 +4,34 @@
 
 namespace cxbqn::types {
 
-Array::Array() : values{nullptr} {}
-
-Array::Array(initl<f64> vs) {
-  shape.push_back(vs.size());
-  values = new f64[vs.size()];
-  std::copy(vs.begin(), vs.end(), values);
+Array::Array(const ByteCode::value_type N, std::deque<Value *> &stk)
+    : N{static_cast<uz>(N)} {
+  values.assign(stk.begin() + (stk.size() - N), stk.end());
+  stk.resize(stk.size() - N);
 }
 
-Array::Array(initl<uz> szs, initl<f64> vs) {
-  std::copy(szs.begin(), szs.end(), std::back_inserter(shape));
-  uz len = std::accumulate(szs.begin(), szs.end(), 1, std::multiplies<uz>());
-  values = new f64[len];
-  std::copy(vs.begin(), vs.end(), values);
-}
-
-Array::~Array() {
-  if (nullptr != values)
-    delete[] values;
+Reference *RefArray::getref(uz idx) {
+#ifdef CXBQN_DEEPCHECKS
+  if (idx >= N)
+    throw std::runtime_error("RefArray::getref: idx >= N");
+#endif
+  auto *v = values[idx];
+#ifdef CXBQN_DEEPCHECKS
+  if (nullptr == v)
+    throw std::runtime_error("RefArray::getref: values[idx] is nullptr");
+#endif
+  auto *r = dynamic_cast<Reference *>(v);
+#ifdef CXBQN_DEEPCHECKS
+  if (nullptr == r)
+    throw std::runtime_error(
+        "RefArray::getref: values[idx] cast to Reference* is nullptr");
+#endif
+  return r;
 }
 
 Scope::Scope(Scope *parent, std::span<Block> blks, uz blk_idx)
     : blks{blks}, blk_idx{blk_idx} {
-  CXBQN_DEBUG("Scope::Scope()");
+  CXBQN_DEBUG("Scope::Scope");
   this->parent = parent;
   this->vars.resize(6 + blks[blk_idx].max_nvars());
   for (auto e : vars)
@@ -34,8 +39,6 @@ Scope::Scope(Scope *parent, std::span<Block> blks, uz blk_idx)
 }
 
 Value *Scope::get(Reference *r) {
-
-  // CXBQN_DEBUG_NC("Scope::get(ref={})", r);
 
 #ifdef CXBQN_DEEPCHECKS
   if (nullptr == r)

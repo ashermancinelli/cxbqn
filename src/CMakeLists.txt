@@ -3,8 +3,8 @@ add_library(cxbqn
   types.cpp
   provides.cpp
   op.cpp
-  fmt.cpp
-  instructions.cpp
+  instructions0.cpp
+  instructions1.cpp
   debug.cpp
   )
 target_link_libraries(cxbqn PUBLIC tpl)

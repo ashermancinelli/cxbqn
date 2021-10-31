@@ -21,7 +21,7 @@ template <typename OS> OS &operator<<(OS &os, const Value *v) {
 }
 
 template <typename OS> OS &operator<<(OS &os, const Block &b) {
-  os << "Block⟨type=" << static_cast<int>(b.def.type)
+  os << "Block<type=" << static_cast<int>(b.def.type)
      << ",imm=" << b.def.immediate << ",";
   if (b.def.immediate) {
     auto [bc, nvars] = b.body();
@@ -45,7 +45,7 @@ template <typename OS> OS &operator<<(OS &os, const Block &b) {
       os << "],";
     }
   }
-  os << "⟩";
+  os << ">";
   return os;
 }
 
@@ -68,8 +68,8 @@ template <> struct fmt::formatter<Scope> {
   template <typename FormatContext>
   auto format(const Scope &s, FormatContext &ctx) -> decltype(ctx.out()) {
     auto &&out = ctx.out();
-    format_to(out, "Scope⟨parent={},vars.size={}⟩",
-              (s.parent ? "Scope⟨⟩" : "nullptr"), s.vars.size());
+    format_to(out, "Scope<parent={},vars.size={}>",
+              (s.parent ? "Scope<>" : "null"), s.vars.size());
     return out;
   }
 };
