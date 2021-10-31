@@ -11,7 +11,7 @@
 #define CXBQN_INFO(...) spdlog::info(__VA_ARGS__);
 #define CXBQN_SETLOGSTR()                                                      \
   do {                                                                         \
-    spdlog::set_level(spdlog::level::CXBQN_LOGLEVEL);                                 \
+    spdlog::set_level(spdlog::CXBQN_LOGLEVEL);                                 \
     spdlog::set_pattern("cxbqn[%^%5l%$]:%v");                                  \
   } while (0);
 #else

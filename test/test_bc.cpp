@@ -1,4 +1,5 @@
 #include <cxbqn/cxbqn.hpp>
+#include <cxbqn/debug.hpp>
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
 #include <spdlog/spdlog.h>
@@ -11,8 +12,7 @@ using namespace cxbqn::types;
 using namespace cxbqn::provides;
 
 TEST_CASE("Bytecode", "") {
-
-  spdlog::set_level(spdlog::level::debug);
+  CXBQN_SETLOGSTR();
 
   SECTION("manual bc t0") {
     CXBQN_LOG_TESTN(0);
@@ -167,5 +167,18 @@ TEST_CASE("Bytecode", "") {
     auto* n = dynamic_cast<Number*>(ret.v);
     REQUIRE(nullptr != n);
     CHECK(7.0 == Approx(n->v));
+  }
+
+  SECTION("manual bc t10") {
+    CXBQN_LOG_TESTN(10);
+    CompileParams p{
+#include <bc_tests/t10.hpp>
+    };
+    auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+    //REQUIRE(nullptr != ret.scp);
+    //REQUIRE(nullptr != ret.v);
+    //auto* n = dynamic_cast<Number*>(ret.v);
+    //REQUIRE(nullptr != n);
+    //CHECK(7.0 == Approx(n->v));
   }
 }

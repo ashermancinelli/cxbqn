@@ -181,12 +181,12 @@ std::pair<ByteCodeRef, uz> Block::body(u8 nargs) const {
   return std::make_pair(ByteCodeRef{}, 0);
 }
 
-Value *UserFn::call(uz nargs, Value *w, Value *x) {
+Value *BlockInst::call(initl<Value*> args) {
   auto *child = new Scope(scp, scp->blks, blk_idx);
   const auto blk = scp->blks[blk_idx];
-  CXBQN_DEBUG("UserFn::call:nargs={},childscope={},blk={}", nargs, *child, blk);
+  CXBQN_DEBUG("BlockInst::call:nargs={},childscope={},blk={}", args.size(), *child, blk);
 
-  auto [bc, nvars] = blk.body(nargs);
+  auto [bc, nvars] = blk.body(args.size()-1);
 
   /* From the spec:
    *
@@ -194,15 +194,8 @@ Value *UserFn::call(uz nargs, Value *w, Value *x) {
    * any special names that are available during the blocks execution followed
    * by the local variables it defines. Special names use the ordering 𝕤𝕩𝕨𝕣𝕗𝕘.
    */
-  child->vars[0] = this;
-  if (nargs > 0) {
-    CXBQN_DEBUG_NC("UserFn::call:x={}", x);
-    child->vars[1] = x;
-  }
-  if (nargs > 1) {
-    CXBQN_DEBUG_NC("UserFn::call:w={}", w);
-    child->vars[2] = w;
-  }
+  std::fill(child->vars.begin(), child->vars.end(), nullptr);
+  std::copy_n(args.begin(), args.size(), child->vars.begin());
 
   // idk what to do about this. I still don't understand the relationship
   // between the scope's frame and the consts I pass in.
@@ -210,7 +203,7 @@ Value *UserFn::call(uz nargs, Value *w, Value *x) {
 
   std::deque<Value *> stk;
 
-  CXBQN_DEBUG("UserFn::call:recursing into vm");
+  CXBQN_DEBUG("BlockInst::call:recursing into vm");
   auto *ret = vm::vm(bc, consts, stk, child);
   return ret;
 }

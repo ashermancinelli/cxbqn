@@ -84,6 +84,7 @@ enum TypeAnnotations {
   // If a type does not override Value::t_ for some reason, this will be its
   // type
   t_Opaque,
+  t_BlockInst,
 };
 
 static constexpr u32 annot(TypeAnnotations ta) { return 1 << ta; }
@@ -114,7 +115,7 @@ struct Value {
 
   // If a value type does not define it's own call, we probably just push it
   // back on the stack.
-  virtual Value *call(uz nargs, Value *w, Value *x) { return this; }
+  virtual Value *call(initl<Value*> args) { return this; };
 
   virtual std::ostream &repr(std::ostream &os) const { return os << "V"; }
 };
@@ -184,16 +185,16 @@ struct Builtin : public Function {
   virtual Value *operator()(Value *w, Value *x) = 0;
 };
 
-struct UserFn : public Function {
+struct BlockInst : public Function {
   Scope *scp;
   uz blk_idx;
   virtual TypeType t() const {
-    return TypeType{t_Function | annot(t_UserDefined)};
+    return TypeType{annot(t_BlockInst)};
   }
-  UserFn(Scope *scp, uz blk_idx) : scp{scp}, blk_idx{blk_idx} {}
-  Value *call(uz nargs, Value *w, Value *x) override;
+  BlockInst(Scope *scp, uz blk_idx) : scp{scp}, blk_idx{blk_idx} {}
+  Value *call(initl<Value*> args) override;
   std::ostream &repr(std::ostream &os) const override {
-    return os << "UserFn<blk_idx=" << blk_idx << ">";
+    return os << "BlockInst<blk_idx=" << blk_idx << ">";
   }
 };
 
@@ -206,7 +207,7 @@ struct Atop : public Function {
 };
 
 struct Md1 : public Function {
-  static constexpr TypeType t_{t_Md1};
+  virtual TypeType t() const { return TypeType{t_Md1}; }
 };
 
 struct UserMd1 : public Md1 {

@@ -6,12 +6,18 @@
 
 #ifdef CXBQN_DEEPCHECKS
 
-#define INSTR_CL (fmt::fg(fmt::color::cyan))
-#define PC_CL (fmt::fg(fmt::color::light_green))
-#define ARG_CL (fmt::fg(fmt::color::yellow))
+#ifdef CXBQN_COLOR
+#define INSTR_CL (fmt::fg(fmt::color::cyan)),
+#define PC_CL (fmt::fg(fmt::color::light_green)),
+#define ARG_CL (fmt::fg(fmt::color::yellow)),
+#else
+#define INSTR_CL
+#define PC_CL
+#define ARG_CL
+#endif
 
-#define INSTR_PC(pc) fmt::print(PC_CL, "@{:<10}", pc)
-#define INSTR_INSTR(x) fmt::print(INSTR_CL, "{}", x)
+#define INSTR_PC(pc) fmt::print(PC_CL "@{:<10}", pc)
+#define INSTR_INSTR(x) fmt::print(INSTR_CL "{}", x)
 
 #define INSTR(x)                                                               \
   do {                                                                         \
@@ -23,13 +29,13 @@
   do {                                                                         \
     INSTR_PC(pc);                                                              \
     INSTR_INSTR(x);                                                            \
-    fmt::print(ARG_CL, " {}\n", bc[pc + 1]);                                           \
+    fmt::print(ARG_CL " {}\n", bc[pc + 1]);                                           \
   } while (0);
 #define INSTR2(x)                                                              \
   do {                                                                         \
     INSTR_PC(pc);                                                              \
     INSTR_INSTR(x);                                                            \
-    fmt::print(ARG_CL, " {}, {}\n", bc[pc + 1], bc[pc + 2]);                           \
+    fmt::print(ARG_CL " {}, {}\n", bc[pc + 1], bc[pc + 2]);                           \
   } while (0);
 #else
 #define INSTR(...)
@@ -87,10 +93,6 @@ Value *vm(ByteCodeRef bc, std::vector<Value *> consts, std::deque<Value *> stk,
 
   // program counter
   uz pc = 0;
-
-  // debug::vdbg("consts", consts);
-
-  i32 arga, argb;
 
   CXBQN_DEBUG("enter interpreter loop");
   while (1) {

@@ -17,7 +17,8 @@ set(CXBQN_INIT_STACK_SIZE
 set(CMAKE_CXX_FLAGS "-Wall -Wextra ${CMAKE_CXX_FLAGS}" CACHE STRING "")
 
 set(CXBQN_DEEPCHECKS ON CACHE BOOL "Deep null checking and debugging information")
-set(CXBQN_LOGLEVEL "debug" CACHE STRING "Log level spdlog will be set to")
+set(CXBQN_COLOR ON CACHE BOOL "Output VM information in color")
+set(CXBQN_LOGLEVEL "level::debug" CACHE STRING "Log level spdlog will be set to")
 set(CHECK_SUBMODULES ON CACHE BOOL "Check git submodules on every build")
 set(HAS_BQN_EXE OFF)
 set(CXBQN_EXT_DIR ${PROJECT_SOURCE_DIR}/ext/)

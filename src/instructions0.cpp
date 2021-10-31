@@ -97,7 +97,7 @@ void fn10(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk) {
     throw std::runtime_error("FN10: got nullptr for F");
 #endif
 
-  auto *v = F->call(1, nullptr, x);
+  auto *v = F->call({F, x});
 #ifdef CXBQN_DEEPCHECKS
   if (nullptr == v)
     throw std::runtime_error("FN10: F returned nullptr");
@@ -125,7 +125,7 @@ void fn20(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk) {
     throw std::runtime_error("FN20: got nullptr for F");
 #endif
 
-  auto *v = F->call(2, w, x);
+  auto *v = F->call({F, x, w});
 
 #ifdef CXBQN_DEEPCHECKS
   if (nullptr == v)
@@ -146,7 +146,7 @@ void dfnd(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk, Scope *scp) {
     CXBQN_CRIT("unimplemented");
   } else {
     if (BlockType::func == blk.def.type) {
-      auto *F = new UserFn(scp, blk_idx);
+      auto *F = new BlockInst(scp, blk_idx);
       stk.push_back(F);
     } else
       throw std::runtime_error("unimplemented");
