@@ -142,14 +142,17 @@ void dfnd(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk, Scope *scp) {
   CXBQN_DEBUG("dfnd:pc={},block={}", pc, blk);
 
   if (blk.def.type == BlockType::func && blk.def.immediate) {
-    // auto *child = new Scope(scp, blk);
-    CXBQN_CRIT("unimplemented");
+    auto *child = new Scope(scp, scp->blks, blk_idx);
+    const auto blk = scp->blks[blk_idx];
+    auto [bc, nvars] = blk.body();
+    std::deque<Value *> stk_;
+
+    CXBQN_DEBUG("dfnd:recursing into vm");
+    auto *ret = vm::vm(bc, child->consts, stk_, child);
+    stk.push_back(ret);
   } else {
-    if (BlockType::func == blk.def.type) {
-      auto *F = new BlockInst(scp, blk_idx);
-      stk.push_back(F);
-    } else
-      throw std::runtime_error("unimplemented");
+    auto *F = new BlockInst(scp, blk_idx);
+    stk.push_back(F);
   }
 }
 

@@ -70,7 +70,7 @@ RunResult run(std::vector<i32> bc, std::vector<Value *> consts,
 
   RunResult ret;
 
-  ret.scp = new Scope(nullptr, blks, 0);
+  ret.scp = new Scope(nullptr, blks, 0, consts);
 
   std::copy_n(consts.begin(), consts.size(), ret.scp->vars.begin());
 
@@ -84,7 +84,7 @@ RunResult run(std::vector<i32> bc, std::vector<Value *> consts,
   return ret;
 }
 
-Value *vm(ByteCodeRef bc, std::vector<Value *> consts, std::deque<Value *> stk,
+Value *vm(ByteCodeRef bc, std::span<Value *> consts, std::deque<Value *> stk,
           Scope *scope) {
 
   CXBQN_DEBUG("enter vm");
@@ -149,6 +149,10 @@ Value *vm(ByteCodeRef bc, std::vector<Value *> consts, std::deque<Value *> stk,
     case op::ARRM:
       INSTR1("ARRM");
       instructions::arrm(bc, pc, stk);
+      break;
+    case op::MD1C:
+      INSTR("MD1C");
+      instructions::md1c(bc, pc, stk);
       break;
     default:
       CXBQN_CRIT("unreachable code {}", bc[pc]);

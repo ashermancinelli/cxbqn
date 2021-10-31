@@ -115,7 +115,7 @@ struct Value {
 
   // If a value type does not define it's own call, we probably just push it
   // back on the stack.
-  virtual Value *call(initl<Value*> args) { return this; };
+  virtual Value *call(initl<Value *> args) { return this; };
 
   virtual std::ostream &repr(std::ostream &os) const { return os << "V"; }
 };
@@ -188,11 +188,9 @@ struct Builtin : public Function {
 struct BlockInst : public Function {
   Scope *scp;
   uz blk_idx;
-  virtual TypeType t() const {
-    return TypeType{annot(t_BlockInst)};
-  }
+  virtual TypeType t() const { return TypeType{annot(t_BlockInst)}; }
   BlockInst(Scope *scp, uz blk_idx) : scp{scp}, blk_idx{blk_idx} {}
-  Value *call(initl<Value*> args) override;
+  Value *call(initl<Value *> args) override;
   std::ostream &repr(std::ostream &os) const override {
     return os << "BlockInst<blk_idx=" << blk_idx << ">";
   }
@@ -302,9 +300,11 @@ private:
 struct Scope {
   Scope *parent;
   std::vector<Value *> vars;
+  std::span<Value *> consts;
   std::span<Block> blks;
   const uz blk_idx;
-  Scope(Scope *parent, std::span<Block> blks, uz blk_idx);
+  Scope(Scope *parent, std::span<Block> blks, uz blk_idx,
+        std::optional<std::span<Value *>> consts = nullopt);
   Value *get(Reference *r);
   void set(bool should_var_be_set, Reference *r, Value *v);
   Scope *get_nth_parent(uz depth);

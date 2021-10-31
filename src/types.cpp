@@ -29,10 +29,16 @@ Reference *RefArray::getref(uz idx) {
   return r;
 }
 
-Scope::Scope(Scope *parent, std::span<Block> blks, uz blk_idx)
+Scope::Scope(Scope *parent, std::span<Block> blks, uz blk_idx,
+             std::optional<std::span<Value *>> consts)
     : blks{blks}, blk_idx{blk_idx} {
   CXBQN_DEBUG("Scope::Scope");
   this->parent = parent;
+#ifdef CXBQN_DEEPCHECKS
+  if (nullptr == parent and nullopt == consts)
+    throw std::runtime_error("Scope::Scope: both parent=null and consts=null");
+#endif
+  this->consts = nullptr == parent ? consts.value() : parent->consts;
   this->vars.resize(6 + blks[blk_idx].max_nvars());
   for (auto e : vars)
     e = nullptr;
@@ -157,8 +163,8 @@ std::pair<ByteCodeRef, uz> Block::body(u8 nargs) const {
   CXBQN_DEBUG("Block::body: nargs={}", nargs);
 
   if (def.immediate) {
-    if (nargs != 0)
-      throw std::runtime_error("immediate body invoked with arguments");
+    // if (nargs != 0)
+      // throw std::runtime_error("immediate body invoked with arguments");
     auto bod = bods[def.body_idx];
     auto _bc = bc.subspan(bod.bc_offset);
     return std::make_pair(_bc, bod.var_count);
@@ -181,12 +187,13 @@ std::pair<ByteCodeRef, uz> Block::body(u8 nargs) const {
   return std::make_pair(ByteCodeRef{}, 0);
 }
 
-Value *BlockInst::call(initl<Value*> args) {
+Value *BlockInst::call(initl<Value *> args) {
   auto *child = new Scope(scp, scp->blks, blk_idx);
   const auto blk = scp->blks[blk_idx];
-  CXBQN_DEBUG("BlockInst::call:nargs={},childscope={},blk={}", args.size(), *child, blk);
+  CXBQN_DEBUG("BlockInst::call:nargs={},childscope={},blk={}", args.size(),
+              *child, blk);
 
-  auto [bc, nvars] = blk.body(args.size()-1);
+  auto [bc, nvars] = blk.body(args.size() - 1);
 
   /* From the spec:
    *
@@ -197,14 +204,10 @@ Value *BlockInst::call(initl<Value*> args) {
   std::fill(child->vars.begin(), child->vars.end(), nullptr);
   std::copy_n(args.begin(), args.size(), child->vars.begin());
 
-  // idk what to do about this. I still don't understand the relationship
-  // between the scope's frame and the consts I pass in.
-  std::vector<Value *> consts(3 + blk.max_nvars(), nullptr);
-
   std::deque<Value *> stk;
 
   CXBQN_DEBUG("BlockInst::call:recursing into vm");
-  auto *ret = vm::vm(bc, consts, stk, child);
+  auto *ret = vm::vm(bc, child->consts, stk, child);
   return ret;
 }
 

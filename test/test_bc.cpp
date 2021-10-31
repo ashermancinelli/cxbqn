@@ -175,10 +175,10 @@ TEST_CASE("Bytecode", "") {
 #include <bc_tests/t10.hpp>
     };
     auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
-    //REQUIRE(nullptr != ret.scp);
-    //REQUIRE(nullptr != ret.v);
-    //auto* n = dynamic_cast<Number*>(ret.v);
-    //REQUIRE(nullptr != n);
-    //CHECK(7.0 == Approx(n->v));
+    REQUIRE(nullptr != ret.scp);
+    REQUIRE(nullptr != ret.v);
+    auto* n = dynamic_cast<Number*>(ret.v);
+    REQUIRE(nullptr != n);
+    CHECK(4.0 == Approx(n->v));
   }
 }
