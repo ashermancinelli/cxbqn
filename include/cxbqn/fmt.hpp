@@ -68,8 +68,8 @@ template <> struct fmt::formatter<Scope> {
   template <typename FormatContext>
   auto format(const Scope &s, FormatContext &ctx) -> decltype(ctx.out()) {
     auto &&out = ctx.out();
-    format_to(out, "Scope<parent={},vars.size={}>",
-              (s.parent ? "Scope<>" : "null"), s.vars.size());
+    format_to(out, "Scope<parent={},vars={}>",
+              (s.parent ? "Scope<>" : "null"), s.vars);
     return out;
   }
 };
@@ -118,6 +118,7 @@ template <> struct fmt::formatter<Value> {
 FMT_PTR_CONTAINER(std::vector, Value);
 FMT_PTR_CONTAINER(std::deque, Value);
 FMT_PTR_CONTAINER(std::span, Value);
+FMT_PTR_CONTAINER(std::initializer_list, Value);
 
 #undef FMT_PTR_CONTAINER
 #undef FORMAT_TO_OR_NULL

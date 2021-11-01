@@ -10,7 +10,7 @@ using namespace cxbqn::types;
 namespace {
 
 template <bool ShouldVarBeSet> void set(std::deque<Value *> stk, Scope *scp) {
-  CXBQN_DEBUG("SETN:enter");
+  CXBQN_DEBUG("setn:enter");
 
   // Reference this instruction is assigning to
   auto *opaque_refer = stk.back();
@@ -20,11 +20,11 @@ template <bool ShouldVarBeSet> void set(std::deque<Value *> stk, Scope *scp) {
   auto *value = stk.back();
   stk.pop_back();
 
-  CXBQN_DEBUG("SETN:ref={},val={}", CXBQN_STR_NC(opaque_refer), CXBQN_STR_NC(value));
+  CXBQN_DEBUG("setn:ref={},val={}", CXBQN_STR_NC(opaque_refer), CXBQN_STR_NC(value));
 
 #ifdef CXBQN_DEEPCHECKS
   if (not opaque_refer->t()[t_Reference]) {
-    CXBQN_CRIT("SETN: trying to set reference without t_Reference bit set.");
+    CXBQN_CRIT("setn: trying to set reference without t_Reference bit set.");
     CXBQN_CRIT("raw bits={}, val={}", opaque_refer->t(), *opaque_refer);
   }
 #endif
@@ -37,10 +37,10 @@ template <bool ShouldVarBeSet> void set(std::deque<Value *> stk, Scope *scp) {
 #ifdef CXBQN_DEEPCHECKS
     if (nullptr == aref)
       throw std::runtime_error(
-          "SETN: Could not cast reference to type RefArray");
+          "setn: Could not cast reference to type RefArray");
     if (nullptr == aval)
       throw std::runtime_error(
-          "SETN: Could not cast value to type Array when assigning to RefArray");
+          "setn: Could not cast value to type Array when assigning to RefArray");
 #endif
     for (int i=0; i < aval->N; i++)
       scp->set(ShouldVarBeSet, aref->getref(i), aval->values[i]);
@@ -50,7 +50,7 @@ template <bool ShouldVarBeSet> void set(std::deque<Value *> stk, Scope *scp) {
 #ifdef CXBQN_DEEPCHECKS
     if (nullptr == refer)
       throw std::runtime_error(
-          "SETN: Could not cast reference to type Reference");
+          "setn: Could not cast reference to type Reference");
 #endif
     scp->set(ShouldVarBeSet, refer, value);
     stk.push_back(refer);
@@ -74,17 +74,14 @@ void varo(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk, Scope *scp) {
   const auto n_frames_up = bc[++pc];
   const auto local_variable_idx = bc[++pc];
   scp = scp->get_nth_parent(n_frames_up);
-  CXBQN_DEBUG("instructions::varo:scope={},localidx={},framesup={}", *scp,
+  CXBQN_DEBUG("varo:scope={},localidx={},framesup={}", *scp,
               local_variable_idx, n_frames_up);
-  CXBQN_DEBUG_NC("instructions::varo:pushing var={}",
-                 scp->vars[local_variable_idx]);
+  CXBQN_DEBUG_NC("varo:pushing var={}", scp->vars[local_variable_idx]);
   stk.push_back(scp->vars[local_variable_idx]);
-  CXBQN_DEBUG_NC("instructions::varo: pushed back value={}",
-                 scp->vars[local_variable_idx]);
 }
 
 void fn10(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk) {
-  auto *F = stk.back();
+  auto *S = stk.back();
   stk.pop_back();
 
   auto *x = stk.back();
@@ -92,15 +89,17 @@ void fn10(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk) {
 
 #ifdef CXBQN_DEEPCHECKS
   if (nullptr == x)
-    throw std::runtime_error("FN10: got nullptr for x");
-  if (nullptr == F)
-    throw std::runtime_error("FN10: got nullptr for F");
+    throw std::runtime_error("fn10: got nullptr for x");
+  if (nullptr == S)
+    throw std::runtime_error("fn10: got nullptr for S");
 #endif
 
-  auto *v = F->call({F, x});
+  CXBQN_DEBUG("fn10:calling S={} on x={}", CXBQN_STR_NC(S), CXBQN_STR_NC(x));
+  auto *v = S->call(1, {S, x});
+  CXBQN_DEBUG("fn10:returning {}", CXBQN_STR_NC(v));
 #ifdef CXBQN_DEEPCHECKS
   if (nullptr == v)
-    throw std::runtime_error("FN10: F returned nullptr");
+    throw std::runtime_error("fn10: S returned nullptr");
 #endif
 
   stk.push_back(v);
@@ -110,7 +109,7 @@ void fn20(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk) {
   auto *w = stk.back();
   stk.pop_back();
 
-  auto *F = stk.back();
+  auto *S = stk.back();
   stk.pop_back();
 
   auto *x = stk.back();
@@ -121,11 +120,11 @@ void fn20(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk) {
     throw std::runtime_error("FN20: got nullptr for x");
   if (nullptr == w)
     throw std::runtime_error("FN20: got nullptr for w");
-  if (nullptr == F)
-    throw std::runtime_error("FN20: got nullptr for F");
+  if (nullptr == S)
+    throw std::runtime_error("FN20: got nullptr for S");
 #endif
 
-  auto *v = F->call({F, x, w});
+  auto *v = S->call(2, {S, x, w});
 
 #ifdef CXBQN_DEEPCHECKS
   if (nullptr == v)

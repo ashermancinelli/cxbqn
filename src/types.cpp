@@ -31,7 +31,7 @@ Reference *RefArray::getref(uz idx) {
 
 Scope::Scope(Scope *parent, std::span<Block> blks, uz blk_idx,
              std::optional<std::span<Value *>> consts)
-    : blks{blks}, blk_idx{blk_idx} {
+    : blks{blks}, blk_idx{blk_idx}, vars(6, nullptr) {
   CXBQN_DEBUG("Scope::Scope");
   this->parent = parent;
 #ifdef CXBQN_DEEPCHECKS
@@ -39,9 +39,6 @@ Scope::Scope(Scope *parent, std::span<Block> blks, uz blk_idx,
     throw std::runtime_error("Scope::Scope: both parent=null and consts=null");
 #endif
   this->consts = nullptr == parent ? consts.value() : parent->consts;
-  this->vars.resize(6 + blks[blk_idx].max_nvars());
-  for (auto e : vars)
-    e = nullptr;
 }
 
 Value *Scope::get(Reference *r) {
@@ -71,8 +68,8 @@ void Scope::set(bool should_var_be_set, Reference *r, Value *v) {
   auto *scp = get_nth_parent(n);
   CXBQN_DEBUG_NC("Scope::set:nth parent={}", scp);
 
-  CXBQN_DEBUG("Scope::set:r->pos={},scp->vars.size={}", r->position_in_parent,
-              scp->vars.size());
+  CXBQN_DEBUG("Scope::set:r->pos={},scp->vars={}", r->position_in_parent,
+              scp->vars);
 
   bool isset = nullptr != scp->vars[r->position_in_parent];
   if (should_var_be_set != isset) {
@@ -163,22 +160,21 @@ std::pair<ByteCodeRef, uz> Block::body(u8 nargs) const {
   CXBQN_DEBUG("Block::body: nargs={}", nargs);
 
   if (def.immediate) {
-    // if (nargs != 0)
-      // throw std::runtime_error("immediate body invoked with arguments");
     auto bod = bods[def.body_idx];
     auto _bc = bc.subspan(bod.bc_offset);
     return std::make_pair(_bc, bod.var_count);
   }
 
   if (1 == nargs) {
-    // segfault here
     auto bod = bods[def.mon_body_idxs[0]];
-    CXBQN_DEBUG("Block::body:offset={},nvars={}", bod.bc_offset, bod.var_count);
+    CXBQN_DEBUG("Block::body:monadic bodies:offset={},nvars={}", bod.bc_offset,
+                bod.var_count);
     auto _bc = bc.subspan(bod.bc_offset);
     return std::make_pair(_bc, bod.var_count);
   } else if (2 == nargs) {
     auto bod = bods[def.dya_body_idxs[0]];
-    CXBQN_DEBUG("Block::body:offset={},nvars={}", bod.bc_offset, bod.var_count);
+    CXBQN_DEBUG("Block::body:dyadic bodies:offset={},nvars={}", bod.bc_offset,
+                bod.var_count);
     auto _bc = bc.subspan(bod.bc_offset);
     return std::make_pair(_bc, bod.var_count);
   }
@@ -187,22 +183,19 @@ std::pair<ByteCodeRef, uz> Block::body(u8 nargs) const {
   return std::make_pair(ByteCodeRef{}, 0);
 }
 
-Value *BlockInst::call(initl<Value *> args) {
-  auto *child = new Scope(scp, scp->blks, blk_idx);
+Value *BlockInst::call(u8 nargs, initl<Value *> args) {
+
   const auto blk = scp->blks[blk_idx];
+
+  auto *child = new Scope(scp, scp->blks, blk_idx);
+
+  auto [bc, nvars] = blk.body(nargs);
+  std::copy_n(deferred_args.begin(), deferred_args.size(), child->vars.begin());
+  std::copy_if(args.begin(), args.end(), child->vars.begin(),
+               [](auto *v) { return nullptr != v; });
+
   CXBQN_DEBUG("BlockInst::call:nargs={},childscope={},blk={}", args.size(),
               *child, blk);
-
-  auto [bc, nvars] = blk.body(args.size() - 1);
-
-  /* From the spec:
-   *
-   * A frame is a mutable list of slots for variable values. It has slots for
-   * any special names that are available during the blocks execution followed
-   * by the local variables it defines. Special names use the ordering 𝕤𝕩𝕨𝕣𝕗𝕘.
-   */
-  std::fill(child->vars.begin(), child->vars.end(), nullptr);
-  std::copy_n(args.begin(), args.size(), child->vars.begin());
 
   std::deque<Value *> stk;
 

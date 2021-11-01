@@ -182,7 +182,7 @@ Value *vm(ByteCodeRef bc, std::span<Value *> consts, std::deque<Value *> stk,
       break;
     case op::MD1C:
       INSTR("MD1C");
-      instructions::md1c(bc, pc, stk);
+      instructions::md1c(bc, pc, stk, scope);
       break;
     default:
       CXBQN_CRIT("unreachable code {}", bc[pc]);

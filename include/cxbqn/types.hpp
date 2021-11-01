@@ -115,7 +115,7 @@ struct Value {
 
   // If a value type does not define it's own call, we probably just push it
   // back on the stack.
-  virtual Value *call(initl<Value *> args) { return this; };
+  virtual Value *call(u8 nargs = 0, initl<Value *> args = {}) { return this; };
 
   virtual std::ostream &repr(std::ostream &os) const { return os << "V"; }
 };
@@ -188,9 +188,11 @@ struct Builtin : public Function {
 struct BlockInst : public Function {
   Scope *scp;
   uz blk_idx;
+  std::vector<Value *> deferred_args;
   virtual TypeType t() const { return TypeType{annot(t_BlockInst)}; }
-  BlockInst(Scope *scp, uz blk_idx) : scp{scp}, blk_idx{blk_idx} {}
-  Value *call(initl<Value *> args) override;
+  BlockInst(Scope *scp, uz blk_idx)
+      : scp{scp}, blk_idx{blk_idx}, deferred_args(6, nullptr) {}
+  Value *call(u8 nargs = 0, initl<Value *> args = {}) override;
   std::ostream &repr(std::ostream &os) const override {
     return os << "BlockInst<blk_idx=" << blk_idx << ">";
   }

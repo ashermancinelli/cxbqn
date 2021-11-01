@@ -18,19 +18,23 @@ void arrm(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk) {
   stk.push_back(ar);
 }
 
-void md1c(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk) {
+void md1c(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk, Scope* scp) {
   auto *f = stk.back();
   stk.pop_back();
 
-  auto *modif = stk.back();
+  auto *opaque_r = stk.back();
   stk.pop_back();
 
-  CXBQN_DEBUG("MD1C:modif={},f={}", CXBQN_STR_NC(modif), CXBQN_STR_NC(f));
+  CXBQN_DEBUG("md1c:r={},f={}", CXBQN_STR_NC(opaque_r), CXBQN_STR_NC(f));
 
-  auto *ret = modif->call({modif, f});
-
-  CXBQN_DEBUG("MD1C:ret={}", CXBQN_STR_NC(ret));
-  stk.push_back(ret);
+  auto* r = dynamic_cast<BlockInst*>(opaque_r);
+  if (r->scp->blks[r->blk_idx].def.immediate) {
+    auto* v = r->call(1, {nullptr, nullptr, nullptr, opaque_r, f, nullptr});
+    stk.push_back(v);
+  } else {
+    r->deferred_args.assign({nullptr, nullptr, nullptr, opaque_r, f, nullptr});
+    stk.push_back(opaque_r);
+  }
 }
 
 } // namespace cxbqn::vm::instructions
