@@ -4,40 +4,67 @@
 #include <spdlog/fmt/bundled/color.h>
 #include <sstream>
 
-#ifdef CXBQN_DEEPCHECKS
+#ifdef CXBQN_DEBUG_VM
 
 #ifdef CXBQN_COLOR
 #define INSTR_CL (fmt::fg(fmt::color::cyan)),
 #define PC_CL (fmt::fg(fmt::color::light_green)),
 #define ARG_CL (fmt::fg(fmt::color::yellow)),
+#define EVAL_CL (fmt::fg(fmt::color::orange)),
 #else
 #define INSTR_CL
 #define PC_CL
 #define ARG_CL
+#define EVAL_CL
 #endif
 
-#define INSTR_PC(pc) fmt::print(PC_CL "@{:<10}", pc)
+#define INSTR_PC(pc) fmt::print(PC_CL "@{:<4}", pc)
 #define INSTR_INSTR(x) fmt::print(INSTR_CL "{}", x)
+
+static cxbqn::u8 indent = -1;
+#define INDENT()                                                              \
+  for (int i = 0; i < indent; i++)                                                  \
+    fmt::print("    ");
 
 #define INSTR(x)                                                               \
   do {                                                                         \
     INSTR_PC(pc);                                                              \
+    INDENT();                                                            \
     INSTR_INSTR(x);                                                            \
     fmt::print("\n");                                                          \
   } while (0);
 #define INSTR1(x)                                                              \
   do {                                                                         \
     INSTR_PC(pc);                                                              \
+    INDENT();                                                            \
     INSTR_INSTR(x);                                                            \
-    fmt::print(ARG_CL " {}\n", bc[pc + 1]);                                           \
+    fmt::print(ARG_CL " {}\n", bc[pc + 1]);                                    \
   } while (0);
 #define INSTR2(x)                                                              \
   do {                                                                         \
     INSTR_PC(pc);                                                              \
+    INDENT();                                                            \
     INSTR_INSTR(x);                                                            \
-    fmt::print(ARG_CL " {}, {}\n", bc[pc + 1], bc[pc + 2]);                           \
+    fmt::print(ARG_CL " {}, {}\n", bc[pc + 1], bc[pc + 2]);                    \
   } while (0);
+
+#define CXBQN_NEWEVAL() \
+  do { \
+    indent++; \
+    INDENT();                                                            \
+    fmt::print(EVAL_CL "     {}\n", "new eval"); \
+  } while(0);
+
+#define CXBQN_ENDEVAL() \
+  do { \
+    INDENT();                                                            \
+    fmt::print(EVAL_CL "     {}\n", "end eval"); \
+    indent--; \
+  } while(0);
+
 #else
+#define CXBQN_NEWEVAL(...)
+#define CXBQN_ENDEVAL(...)
 #define INSTR(...)
 #define INSTR1(...)
 #define INSTR2(...)
@@ -87,16 +114,18 @@ RunResult run(std::vector<i32> bc, std::vector<Value *> consts,
 Value *vm(ByteCodeRef bc, std::span<Value *> consts, std::deque<Value *> stk,
           Scope *scope) {
 
-  CXBQN_DEBUG("enter vm");
+  CXBQN_NEWEVAL();
 
   CXBQN_DEBUG("bc={},consts={}", bc, consts);
 
   // program counter
   uz pc = 0;
 
+  Value* ret=nullptr;
+
   CXBQN_DEBUG("enter interpreter loop");
   while (1) {
-    CXBQN_DEBUG("bc={},pc={},stack={},scope={}", bc[pc], pc, stk, *scope);
+    CXBQN_INFO("bc={},pc={},stack={},scope={}", bc[pc], pc, stk, *scope);
     switch (bc[pc]) {
     case op::PUSH:
       INSTR1("PUSH");
@@ -105,7 +134,8 @@ Value *vm(ByteCodeRef bc, std::span<Value *> consts, std::deque<Value *> stk,
     case op::RETN:
       INSTR("RETN");
       CXBQN_DEBUG_NC("returning {}", stk.back());
-      return stk.back();
+      ret = stk.back();
+      goto done;
       break;
     case op::POPS:
       INSTR("POPS");
@@ -160,9 +190,16 @@ Value *vm(ByteCodeRef bc, std::span<Value *> consts, std::deque<Value *> stk,
     }
     pc++;
   }
-#undef INSTR
 
-  return 0;
+done:
+
+  CXBQN_ENDEVAL();
+
+  return ret;
 }
+
+#undef INSTR
+#undef INSTR1
+#undef INSTR2
 
 } // namespace cxbqn::vm
