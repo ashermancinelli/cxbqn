@@ -160,9 +160,7 @@ struct Array : public Value {
   Array(const ByteCode::value_type N, std::deque<Value *> &stk);
   ~Array() {}
   virtual TypeType t() const { return TypeType{t_Array}; }
-  std::ostream &repr(std::ostream &os) const override {
-    return os << "A<n=" << N << ">";
-  }
+  std::ostream &repr(std::ostream &os) const override;
 };
 
 struct Reference : public Value {
@@ -182,9 +180,7 @@ struct RefArray : public Array {
   virtual TypeType t() const {
     return TypeType{t_Array | annot(t_Reference) | annot(t_RefArray)};
   }
-  std::ostream &repr(std::ostream &os) const override {
-    return os << "RA<n=" << N << ">";
-  }
+  std::ostream &repr(std::ostream &os) const override;
 };
 
 struct Function : public Value {
@@ -214,6 +210,9 @@ struct BlockInst : public Function {
 
 struct Fork : public Function {
   Value *f, *g, *h;
+  Fork(Value*f, Value*g, Value*h) : f{f}, g{g}, h{h} {}
+  Value *call(u8 nargs = 0, initl<Value *> args = {}) override;
+  std::ostream &repr(std::ostream &os) const override;
 };
 
 struct Atop : public Function {

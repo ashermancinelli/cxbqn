@@ -61,7 +61,7 @@ template <bool ShouldVarBeSet> void set(std::deque<Value *> stk, Scope *scp) {
 
 void setu(std::deque<Value *> &stk, Scope *scp) { set<true>(stk, scp); }
 
-void setn(std::deque<Value *> &stk, Scope *scp) { set<true>(stk, scp); }
+void setn(std::deque<Value *> &stk, Scope *scp) { set<false>(stk, scp); }
 
 void varm(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk) {
   const auto depth = bc[++pc];

@@ -10,6 +10,30 @@ Array::Array(const ByteCode::value_type N, std::deque<Value *> &stk)
   stk.resize(stk.size() - N);
 }
 
+std::ostream &Array::repr(std::ostream &os) const {
+  os << "A<[";
+  for (const auto &e : values) {
+    if (e)
+      e->repr(os);
+    else
+      os << "null";
+    os << ",";
+  }
+  return os << "]>";
+}
+
+std::ostream &RefArray::repr(std::ostream &os) const {
+  os << "RA<[";
+  for (const auto &e : values) {
+    if (e)
+      e->repr(os);
+    else
+      os << "null";
+    os << ",";
+  }
+  return os << "]>";
+}
+
 Reference *RefArray::getref(uz idx) {
 #ifdef CXBQN_DEEPCHECKS
   if (idx >= N)
@@ -124,11 +148,9 @@ BlockDef::BlockDef(uz ty, uz immediate, std::vector<std::vector<uz>> indices)
 
   if (indices[0].size()) {
     mon_body_idxs.push_back(indices[0][0]);
-    CXBQN_DEBUG("BlockDef:mondaic body index={}", mon_body_idxs[0]);
   }
   if (indices[1].size()) {
     dya_body_idxs.push_back(indices[1][0]);
-    CXBQN_DEBUG("BlockDef:dyadic body index={}", dya_body_idxs[0]);
   }
 }
 
@@ -216,8 +238,29 @@ Value *Atop::call(u8 nargs, initl<Value *> args) {
 }
 
 std::ostream &Atop::repr(std::ostream &os) const {
-  return os << "Atop<f=" << CXBQN_STR_NC(f) << ",g=" << CXBQN_STR_NC(g)
-            << ">";
+  return os << "Atop<f=" << CXBQN_STR_NC(f) << ",g=" << CXBQN_STR_NC(g) << ">";
+}
+
+Value *Fork::call(u8 nargs, initl<Value *> args) {
+  CXBQN_DEBUG("Fork::call:nargs={},args={}", nargs, args);
+
+  // Pass 𝕩 and 𝕨 (if exists)
+  std::copy(args.begin(), args.end(), f->deferred_args.begin());
+  auto* l = f->call(nargs, {f});
+
+  // Pass 𝕩 and 𝕨 (if exists)
+  std::copy(args.begin(), args.end(), h->deferred_args.begin());
+  auto* r = h->call(nargs, {h});
+
+  // nargs will always be two for the inner function of a fork
+  auto *ret = g->call(2, {g, r, l});
+
+  return ret;
+}
+
+std::ostream &Fork::repr(std::ostream &os) const {
+  return os << "Fork<f=" << CXBQN_STR_NC(f) << ",g=" << CXBQN_STR_NC(g)
+            << ",h=" << CXBQN_STR_NC(h) << ">";
 }
 
 } // namespace cxbqn::types

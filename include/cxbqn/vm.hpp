@@ -37,6 +37,7 @@ void arrm(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk);
 void md1c(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk, Scope *scp);
 void md2c(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk, Scope *scp);
 void tr2d(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk, Scope *scp);
+void tr3d(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk, Scope *scp);
 
 } // namespace instructions
 

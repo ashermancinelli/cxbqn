@@ -170,56 +170,106 @@ TEST_CASE("bc0-9", "") {
   }
 }
 
-TEST_CASE("bc10-19", "") {
-  SECTION("t10") {
-    CXBQN_LOG_TESTN(10);
-    CompileParams p{
+TEST_CASE("t10") {
+  CXBQN_LOG_TESTN(10);
+  CompileParams p{
 #include <bc_tests/t10.hpp>
-    };
-    auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
-    REQUIRE(nullptr != ret.scp);
-    REQUIRE(nullptr != ret.v);
-    auto* n = dynamic_cast<Number*>(ret.v);
-    REQUIRE(nullptr != n);
-    CHECK(4.0 == Approx(n->v));
-  }
-
-  SECTION("t11") {
-    CXBQN_LOG_TESTN(11);
-    CompileParams p{
-#include <bc_tests/t11.hpp>
-    };
-    auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
-    REQUIRE(nullptr != ret.scp);
-    REQUIRE(nullptr != ret.v);
-    auto* n = dynamic_cast<Number*>(ret.v);
-    REQUIRE(nullptr != n);
-    CHECK(6.0 == Approx(n->v));
-  }
-
-  SECTION("t12") {
-    CXBQN_LOG_TESTN(12);
-    CompileParams p{
-#include <bc_tests/t12.hpp>
-    };
-    auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
-    REQUIRE(nullptr != ret.scp);
-    REQUIRE(nullptr != ret.v);
-    auto* n = dynamic_cast<Number*>(ret.v);
-    REQUIRE(nullptr != n);
-    CHECK(1.0 == Approx(n->v));
-  }
-
-  SECTION("t13") {
-    CXBQN_LOG_TESTN(13);
-    CompileParams p{
-#include <bc_tests/t13.hpp>
-    };
-    auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
-    REQUIRE(nullptr != ret.scp);
-    REQUIRE(nullptr != ret.v);
-    auto* n = dynamic_cast<Number*>(ret.v);
-    REQUIRE(nullptr != n);
-    CHECK(2.0 == Approx(n->v));
-  }
+  };
+  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  REQUIRE(nullptr != ret.scp);
+  REQUIRE(nullptr != ret.v);
+  auto* n = dynamic_cast<Number*>(ret.v);
+  REQUIRE(nullptr != n);
+  CHECK(4.0 == Approx(n->v));
 }
+
+TEST_CASE("t11", "") {
+  CXBQN_LOG_TESTN(11);
+  CompileParams p{
+#include <bc_tests/t11.hpp>
+  };
+  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  REQUIRE(nullptr != ret.scp);
+  REQUIRE(nullptr != ret.v);
+  auto* n = dynamic_cast<Number*>(ret.v);
+  REQUIRE(nullptr != n);
+  CHECK(6.0 == Approx(n->v));
+}
+
+TEST_CASE("t12", "") {
+  CXBQN_LOG_TESTN(12);
+  CompileParams p{
+#include <bc_tests/t12.hpp>
+  };
+  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  REQUIRE(nullptr != ret.scp);
+  REQUIRE(nullptr != ret.v);
+  auto* n = dynamic_cast<Number*>(ret.v);
+  REQUIRE(nullptr != n);
+  CHECK(1.0 == Approx(n->v));
+}
+
+TEST_CASE("t13", "") {
+  CXBQN_LOG_TESTN(13);
+  CompileParams p{
+#include <bc_tests/t13.hpp>
+  };
+  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  REQUIRE(nullptr != ret.scp);
+  REQUIRE(nullptr != ret.v);
+  auto* n = dynamic_cast<Number*>(ret.v);
+  REQUIRE(nullptr != n);
+  CHECK(2.0 == Approx(n->v));
+}
+
+TEST_CASE("t14", "") {
+  CXBQN_LOG_TESTN(14);
+  CompileParams p{
+#include <bc_tests/t14.hpp>
+  };
+  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  REQUIRE(nullptr != ret.scp);
+  REQUIRE(nullptr != ret.v);
+  auto* n = dynamic_cast<Number*>(ret.v);
+  REQUIRE(nullptr != n);
+  CHECK(3.0 == Approx(n->v));
+}
+
+TEST_CASE("t15", "") {
+  CXBQN_LOG_TESTN(15);
+  CompileParams p{
+#include <bc_tests/t15.hpp>
+  };
+  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  REQUIRE(nullptr != ret.scp);
+  REQUIRE(nullptr != ret.v);
+  auto* n = dynamic_cast<Number*>(ret.v);
+  REQUIRE(nullptr != n);
+  CHECK(4.0 == Approx(n->v));
+}
+
+TEST_CASE("t16", "") {
+  CXBQN_LOG_TESTN(16);
+  CompileParams p{
+#include <bc_tests/t16.hpp>
+  };
+  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  REQUIRE(nullptr != ret.scp);
+  REQUIRE(nullptr != ret.v);
+  auto* n = dynamic_cast<Number*>(ret.v);
+  REQUIRE(nullptr != n);
+  CHECK(2.0 == Approx(n->v));
+}
+
+//TEST_CASE("t17", "") {
+//  CXBQN_LOG_TESTN(17);
+//  CompileParams p{
+//#include <bc_tests/t17.hpp>
+//  };
+//  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+//  REQUIRE(nullptr != ret.scp);
+//  REQUIRE(nullptr != ret.v);
+//  auto* n = dynamic_cast<Number*>(ret.v);
+//  REQUIRE(nullptr != n);
+//  CHECK(2.0 == Approx(n->v));
+//}
