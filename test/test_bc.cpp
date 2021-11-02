@@ -261,15 +261,15 @@ TEST_CASE("t16", "") {
   CHECK(2.0 == Approx(n->v));
 }
 
-//TEST_CASE("t17", "") {
-//  CXBQN_LOG_TESTN(17);
-//  CompileParams p{
-//#include <bc_tests/t17.hpp>
-//  };
-//  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
-//  REQUIRE(nullptr != ret.scp);
-//  REQUIRE(nullptr != ret.v);
-//  auto* n = dynamic_cast<Number*>(ret.v);
-//  REQUIRE(nullptr != n);
-//  CHECK(2.0 == Approx(n->v));
-//}
+TEST_CASE("t17", "") {
+  CXBQN_LOG_TESTN(17);
+  CompileParams p{
+#include <bc_tests/t17.hpp>
+  };
+  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  REQUIRE(nullptr != ret.scp);
+  REQUIRE(nullptr != ret.v);
+  auto* n = dynamic_cast<Number*>(ret.v);
+  REQUIRE(nullptr != n);
+  CHECK(2.0 == Approx(n->v));
+}

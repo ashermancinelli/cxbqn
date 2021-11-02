@@ -245,12 +245,12 @@ Value *Fork::call(u8 nargs, initl<Value *> args) {
   CXBQN_DEBUG("Fork::call:nargs={},args={}", nargs, args);
 
   // Pass 𝕩 and 𝕨 (if exists)
-  std::copy(args.begin(), args.end(), f->deferred_args.begin());
-  auto* l = f->call(nargs, {f});
-
-  // Pass 𝕩 and 𝕨 (if exists)
   std::copy(args.begin(), args.end(), h->deferred_args.begin());
   auto* r = h->call(nargs, {h});
+
+  // Pass 𝕩 and 𝕨 (if exists)
+  std::copy(args.begin(), args.end(), f->deferred_args.begin());
+  auto* l = f->call(nargs, {f});
 
   // nargs will always be two for the inner function of a fork
   auto *ret = g->call(2, {g, r, l});
