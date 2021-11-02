@@ -190,7 +190,7 @@ Value *BlockInst::call(u8 nargs, initl<Value *> args) {
   auto *child = new Scope(scp, scp->blks, blk_idx);
 
   auto [bc, nvars] = blk.body(nargs);
-  std::copy_n(deferred_args.begin(), deferred_args.size(), child->vars.begin());
+  std::copy(deferred_args.begin(), deferred_args.end(), child->vars.begin());
   std::copy_if(args.begin(), args.end(), child->vars.begin(),
                [](auto *v) { return nullptr != v; });
 
@@ -202,6 +202,18 @@ Value *BlockInst::call(u8 nargs, initl<Value *> args) {
   CXBQN_DEBUG("BlockInst::call:recursing into vm");
   auto *ret = vm::vm(bc, child->consts, stk, child);
   return ret;
+}
+
+Value *Atop::call(u8 nargs, initl<Value *> args) {
+  CXBQN_DEBUG("Atop::call:nargs={},args={}", nargs, args);
+  auto *ret = g->call(nargs, args);
+  std::copy(args.begin(), args.end(), f->deferred_args.begin());
+  return f->call(nargs, {f, ret});
+}
+
+std::ostream &Atop::repr(std::ostream &os) const {
+  return os << "Atop<f=" << CXBQN_STR_NC(f) << ",g=" << CXBQN_STR_NC(g)
+            << ">";
 }
 
 } // namespace cxbqn::types

@@ -209,4 +209,17 @@ TEST_CASE("bc10-19", "") {
     REQUIRE(nullptr != n);
     CHECK(1.0 == Approx(n->v));
   }
+
+  SECTION("t13") {
+    CXBQN_LOG_TESTN(13);
+    CompileParams p{
+#include <bc_tests/t13.hpp>
+    };
+    auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+    REQUIRE(nullptr != ret.scp);
+    REQUIRE(nullptr != ret.v);
+    auto* n = dynamic_cast<Number*>(ret.v);
+    REQUIRE(nullptr != n);
+    CHECK(2.0 == Approx(n->v));
+  }
 }

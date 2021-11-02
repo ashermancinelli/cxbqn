@@ -104,7 +104,16 @@ struct Scope;
 struct Block;
 
 struct Value {
-  // Sometimes we delete an opaque value
+
+  // When blocks are not immediate, we sometimes need to cache arguments to be
+  // referred to later. For example, a modifier block may need to refer both to
+  // the modifier arguments (𝕣𝕗𝕘) as well as the function arguments (𝕤𝕩𝕨). In
+  // this case, when the modifier is defined, 𝕣 𝕗 and 𝕘 are stored in
+  // deferred_args so they can be copied into the scope when the function
+  // arguments are present.
+  std::vector<Value *> deferred_args;
+  Value() : deferred_args(6, nullptr) {}
+
   virtual ~Value() {}
 
   // A type must be able to tell you it's •Type. We also use this over trying to
@@ -120,9 +129,12 @@ struct Value {
   virtual std::ostream &repr(std::ostream &os) const { return os << "V"; }
 };
 
-/// Managed Value
-/// Currently unused, but might be used for managing memory later on.
-using MValue = std::shared_ptr<Value>;
+// Managed Value
+// Currently unused, but might be used for managing memory later on. The stack
+// and scope will likely own their values, while all other values can just hold
+// a weak reference since they share a common ancestor (the root scope).
+using OwnedV = std::shared_ptr<Value>;
+using WeakV = std::weak_ptr<Value>;
 
 struct Character : public Value {
   char v;
@@ -188,10 +200,8 @@ struct Builtin : public Function {
 struct BlockInst : public Function {
   Scope *scp;
   uz blk_idx;
-  std::vector<Value *> deferred_args;
   virtual TypeType t() const { return TypeType{annot(t_BlockInst)}; }
-  BlockInst(Scope *scp, uz blk_idx)
-      : scp{scp}, blk_idx{blk_idx}, deferred_args(6, nullptr) {}
+  BlockInst(Scope *scp, uz blk_idx) : scp{scp}, blk_idx{blk_idx} {}
   Value *call(u8 nargs = 0, initl<Value *> args = {}) override;
   std::ostream &repr(std::ostream &os) const override {
     return os << "BlockInst<blk_idx=" << blk_idx << ">";
@@ -203,7 +213,10 @@ struct Fork : public Function {
 };
 
 struct Atop : public Function {
-  Value *g, *h;
+  Value *g, *f;
+  Atop(Value* f, Value* g) : f{f}, g{g} {}
+  Value *call(u8 nargs = 0, initl<Value *> args = {}) override;
+  std::ostream &repr(std::ostream &os) const override;
 };
 
 struct Md1 : public Function {

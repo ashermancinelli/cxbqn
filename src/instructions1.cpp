@@ -61,4 +61,16 @@ void md2c(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk, Scope *scp) {
   }
 }
 
+void tr2d(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk, Scope *scp) {
+  auto* f = stk.back();
+  stk.pop_back();
+
+  auto* g = stk.back();
+  stk.pop_back();
+
+  CXBQN_DEBUG("tr2d:f={},g={}", CXBQN_STR_NC(f), CXBQN_STR_NC(g));
+
+  stk.push_back(new Atop(f, g));
+}
+
 } // namespace cxbqn::vm::instructions
