@@ -1,74 +1,7 @@
 #include <cxbqn/cxbqn.hpp>
-#include <cxbqn/debug.hpp>
+#include "vm_macros.hpp"
 #include <deque>
-#include <spdlog/fmt/bundled/color.h>
 #include <sstream>
-
-#ifdef CXBQN_DEBUG_VM
-
-#ifdef CXBQN_COLOR
-#define INSTR_CL (fmt::fg(fmt::color::cyan)),
-#define PC_CL (fmt::fg(fmt::color::light_green)),
-#define ARG_CL (fmt::fg(fmt::color::yellow)),
-#define EVAL_CL (fmt::fg(fmt::color::orange)),
-#else
-#define INSTR_CL
-#define PC_CL
-#define ARG_CL
-#define EVAL_CL
-#endif
-
-#define INSTR_PC(pc) fmt::print(PC_CL "@{:<4}", pc)
-#define INSTR_INSTR(x) fmt::print(INSTR_CL "{}", x)
-
-static cxbqn::u8 indent = -1;
-#define INDENT()                                                              \
-  for (int i = 0; i < indent; i++)                                                  \
-    fmt::print("    ");
-
-#define INSTR(x)                                                               \
-  do {                                                                         \
-    INSTR_PC(pc);                                                              \
-    INDENT();                                                            \
-    INSTR_INSTR(x);                                                            \
-    fmt::print("\n");                                                          \
-  } while (0);
-#define INSTR1(x)                                                              \
-  do {                                                                         \
-    INSTR_PC(pc);                                                              \
-    INDENT();                                                            \
-    INSTR_INSTR(x);                                                            \
-    fmt::print(ARG_CL " {}\n", bc[pc + 1]);                                    \
-  } while (0);
-#define INSTR2(x)                                                              \
-  do {                                                                         \
-    INSTR_PC(pc);                                                              \
-    INDENT();                                                            \
-    INSTR_INSTR(x);                                                            \
-    fmt::print(ARG_CL " {}, {}\n", bc[pc + 1], bc[pc + 2]);                    \
-  } while (0);
-
-#define CXBQN_NEWEVAL() \
-  do { \
-    indent++; \
-    INDENT();                                                            \
-    fmt::print(EVAL_CL "     {}\n", "new eval"); \
-  } while(0);
-
-#define CXBQN_ENDEVAL() \
-  do { \
-    INDENT();                                                            \
-    fmt::print(EVAL_CL "     {}\n", "end eval"); \
-    indent--; \
-  } while(0);
-
-#else
-#define CXBQN_NEWEVAL(...)
-#define CXBQN_ENDEVAL(...)
-#define INSTR(...)
-#define INSTR1(...)
-#define INSTR2(...)
-#endif
 
 namespace cxbqn::vm {
 
@@ -105,6 +38,8 @@ RunResult run(std::vector<i32> bc, std::vector<Value *> consts,
   if (nullptr == ret.v)
     throw std::runtime_error("vm::run: vm returned nullptr");
 #endif
+
+  INSTR_REPORT()
 
   return ret;
 }
@@ -197,6 +132,10 @@ Value *vm(ByteCodeRef bc, std::span<Value *> consts, std::deque<Value *> stk,
     case op::SETM:
       INSTR("SETM");
       instructions::setm(stk, scope);
+      break;
+    case op::SETC:
+      INSTR("SETC");
+      instructions::setc(stk, scope);
       break;
     default:
       CXBQN_CRIT("unreachable code {}", bc[pc]);

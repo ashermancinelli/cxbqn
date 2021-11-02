@@ -9,23 +9,16 @@ using namespace cxbqn::types;
 
 namespace {
 
-template <bool ShouldVarBeSet> void set(std::deque<Value *> stk, Scope *scp) {
-  CXBQN_DEBUG("setn:enter");
-
-  // Reference this instruction is assigning to
-  auto *opaque_refer = stk.back();
-  stk.pop_back();
-
-  // Value the reference will be assigned to
-  auto *value = stk.back();
-  stk.pop_back();
-
-  CXBQN_DEBUG("setn:ref={},val={}", CXBQN_STR_NC(opaque_refer),
-              CXBQN_STR_NC(value));
+// We know we need to assign to a reference-type, but we don't know whether
+// we're working with a reference or a reference array. This function checks
+// that the types allign, eg a refer is being set to a value and a refarray is
+// being set to an array.
+template <bool ShouldVarBeSet>
+Value* safe_set_refer(Value *opaque_refer, Value *value, Scope *scp) {
 
 #ifdef CXBQN_DEEPCHECKS
   if (not opaque_refer->t()[t_Reference]) {
-    CXBQN_CRIT("setn: trying to set reference without t_Reference bit set.");
+    CXBQN_CRIT("set_: trying to set reference without t_Reference bit set.");
     CXBQN_CRIT("raw bits={}, val={}", opaque_refer->t(), *opaque_refer);
   }
 #endif
@@ -45,8 +38,10 @@ template <bool ShouldVarBeSet> void set(std::deque<Value *> stk, Scope *scp) {
 #endif
     for (int i = 0; i < aval->N; i++)
       scp->set(ShouldVarBeSet, aref->getref(i), aval->values[i]);
-    stk.push_back(aval);
+    return aval;
+
   } else {
+
     auto *refer = dynamic_cast<Reference *>(opaque_refer);
 #ifdef CXBQN_DEEPCHECKS
     if (nullptr == refer)
@@ -54,15 +49,51 @@ template <bool ShouldVarBeSet> void set(std::deque<Value *> stk, Scope *scp) {
           "setn: Could not cast reference to type Reference");
 #endif
     scp->set(ShouldVarBeSet, refer, value);
-    stk.push_back(refer);
+    return refer;
   }
+}
+
+template <bool ShouldVarBeSet>
+Value* set_un_helper(std::deque<Value *> stk, Scope *scp) {
+  CXBQN_DEBUG("setn:enter");
+
+  // Reference this instruction is assigning to
+  auto *opaque_refer = stk.back();
+  stk.pop_back();
+
+  // Value the reference will be assigned to
+  auto *value = stk.back();
+  stk.pop_back();
+
+  CXBQN_DEBUG("setn:ref={},val={}", CXBQN_STR_NC(opaque_refer),
+              CXBQN_STR_NC(value));
+
+  return safe_set_refer<ShouldVarBeSet>(opaque_refer, value, scp);
+}
+
+static Value *setm_ref(Value *F, Value *x, Value *r, Scope *scp) {
+  auto *refer = dynamic_cast<Reference *>(r);
+  auto *v = F->call(2, {F, x, scp->get(refer)});
+
+  // Set the new value of the reference, and push it back on the stack
+  scp->set(true, refer, v);
+  return v;
+}
+
+static Value *setm_refarray(Value *F, Value *x, Value *r, Scope *scp) {
+  // foo
+  return nullptr;
 }
 
 } // namespace
 
-void setu(std::deque<Value *> &stk, Scope *scp) { set<true>(stk, scp); }
+void setu(std::deque<Value *> &stk, Scope *scp) {
+  stk.push_back(set_un_helper<true>(stk, scp));
+}
 
-void setn(std::deque<Value *> &stk, Scope *scp) { set<false>(stk, scp); }
+void setn(std::deque<Value *> &stk, Scope *scp) {
+  set_un_helper<false>(stk, scp);
+}
 
 void setm(std::deque<Value *> &stk, Scope *scp) {
   auto *r = stk.back();
@@ -78,8 +109,29 @@ void setm(std::deque<Value *> &stk, Scope *scp) {
               CXBQN_STR_NC(r));
 
   // F is called with 𝕩 and dereferenced r
+
+  // Are we working with an array of references?
+  if (r->t()[t_RefArray]) {
+    stk.push_back(setm_refarray(F, x, r, scp));
+  }
+  // Or just a reference?
+  else {
+    stk.push_back(setm_ref(F, x, r, scp));
+  }
+}
+
+void setc(std::deque<Value *> &stk, Scope *scp) {
+  auto *r = stk.back();
+  stk.pop_back();
+
+  auto *F = stk.back();
+  stk.pop_back();
+
+  CXBQN_DEBUG("setm:F={},r={}", CXBQN_STR_NC(F), CXBQN_STR_NC(r));
+
+  // F is called with 𝕩 and dereferenced r
   auto *refer = dynamic_cast<Reference *>(r);
-  auto *v = F->call(2, {F, x, scp->get(refer)});
+  auto *v = F->call(2, {F, scp->get(refer)});
 
   // Set the new value of the reference, and push it back on the stack
   scp->set(true, refer, v);

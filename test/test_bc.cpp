@@ -300,15 +300,28 @@ TEST_CASE("t19", "") {
   CHECK(5.0 == Approx(n->v));
 }
 
-//TEST_CASE("t20", "") {
-//  CXBQN_LOG_TESTN(20);
-//  CompileParams p{
-//#include <bc_tests/t20.hpp>
-//  };
-//  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
-//  REQUIRE(nullptr != ret.scp);
-//  REQUIRE(nullptr != ret.v);
-//  auto* n = dynamic_cast<Number*>(ret.v);
-//  REQUIRE(nullptr != n);
-//  CHECK(5.0 == Approx(n->v));
-//}
+TEST_CASE("t20", "") {
+  CXBQN_LOG_TESTN(20);
+  CompileParams p{
+#include <bc_tests/t20.hpp>
+  };
+  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  REQUIRE(nullptr != ret.scp);
+  REQUIRE(nullptr != ret.v);
+  auto* n = dynamic_cast<Number*>(ret.v);
+  REQUIRE(nullptr != n);
+  CHECK(1.0 == Approx(n->v));
+}
+
+TEST_CASE("t21", "") {
+  CXBQN_LOG_TESTN(21);
+  CompileParams p{
+#include <bc_tests/t21.hpp>
+  };
+  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  REQUIRE(nullptr != ret.scp);
+  REQUIRE(nullptr != ret.v);
+  auto* n = dynamic_cast<Number*>(ret.v);
+  REQUIRE(nullptr != n);
+  CHECK(4.0 == Approx(n->v));
+}

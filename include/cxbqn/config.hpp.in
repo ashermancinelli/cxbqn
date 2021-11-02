@@ -19,6 +19,7 @@ static constexpr std::size_t init_stack_size() {
 
 #undef CXBQN_INIT_STACK_SIZE
 
+#cmakedefine CXBQN_PROFILE_VM
 #cmakedefine CXBQN_DEBUG_VM
 #cmakedefine CXBQN_DEEPCHECKS
 #cmakedefine CXBQN_COLOR
