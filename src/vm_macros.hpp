@@ -6,8 +6,6 @@
 
 namespace cxbqn {
 
-#ifdef CXBQN_DEBUG_VM
-
 #ifdef CXBQN_PROFILE_VM
 static std::map<std::string, uz> instr_counts;
 #define INCR_INSTR(x) instr_counts[x]++;
@@ -30,6 +28,8 @@ static std::map<std::string, uz> instr_counts;
 #define INCR_INSTR(...)
 #define INSTR_REPORT()
 #endif
+
+#ifdef CXBQN_DEBUG_VM
 
 #ifdef CXBQN_COLOR
 #define INSTR_CL (fmt::fg(fmt::color::cyan)),

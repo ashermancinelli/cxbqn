@@ -86,19 +86,17 @@ Value *vm(ByteCodeRef bc, std::span<Value *> consts, std::deque<Value *> stk,
       INSTR("SETU");
       instructions::setu(stk, scope);
       break;
-    case op::VARO:
     case op::VARU:
-      INSTR2("VARO/VARU");
+    case op::VARO:
+      INSTR2("VARO");
       instructions::varo(bc, pc, stk, scope);
       break;
-    case op::FN1O:
     case op::FN1C:
-      INSTR("FN10/FN1C");
+      INSTR("FN1C");
       instructions::fn10(bc, pc, stk);
       break;
-    case op::FN2O:
     case op::FN2C:
-      INSTR("FN20/FN2C");
+      INSTR("FN2C");
       instructions::fn20(bc, pc, stk);
       break;
     case op::DFND:

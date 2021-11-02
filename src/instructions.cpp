@@ -14,7 +14,7 @@ namespace {
 // that the types allign, eg a refer is being set to a value and a refarray is
 // being set to an array.
 template <bool ShouldVarBeSet>
-Value* safe_set_refer(Value *opaque_refer, Value *value, Scope *scp) {
+static Value *safe_set_refer(Value *opaque_refer, Value *value, Scope *scp) {
 
 #ifdef CXBQN_DEEPCHECKS
   if (not opaque_refer->t()[t_Reference]) {
@@ -49,14 +49,12 @@ Value* safe_set_refer(Value *opaque_refer, Value *value, Scope *scp) {
           "setn: Could not cast reference to type Reference");
 #endif
     scp->set(ShouldVarBeSet, refer, value);
-    return refer;
+    return value;
   }
 }
 
 template <bool ShouldVarBeSet>
-Value* set_un_helper(std::deque<Value *> stk, Scope *scp) {
-  CXBQN_DEBUG("setn:enter");
-
+static Value *set_un_helper(std::deque<Value *> &stk, Scope *scp) {
   // Reference this instruction is assigning to
   auto *opaque_refer = stk.back();
   stk.pop_back();
@@ -65,7 +63,7 @@ Value* set_un_helper(std::deque<Value *> stk, Scope *scp) {
   auto *value = stk.back();
   stk.pop_back();
 
-  CXBQN_DEBUG("setn:ref={},val={}", CXBQN_STR_NC(opaque_refer),
+  CXBQN_DEBUG("set_un_helper:ref={},val={}", CXBQN_STR_NC(opaque_refer),
               CXBQN_STR_NC(value));
 
   return safe_set_refer<ShouldVarBeSet>(opaque_refer, value, scp);
@@ -81,8 +79,18 @@ static Value *setm_ref(Value *F, Value *x, Value *r, Scope *scp) {
 }
 
 static Value *setm_refarray(Value *F, Value *x, Value *r, Scope *scp) {
-  // foo
-  return nullptr;
+  auto *refarr = dynamic_cast<RefArray *>(r);
+  auto *varr = new Array(refarr->N);
+
+  // create an array from the reference array to pass into F
+  for (int i = 0; i < refarr->N; i++)
+    varr->values.push_back(scp->get(refarr->getref(i)));
+
+  auto *v = F->call(2, {F, x, varr});
+
+  safe_set_refer<true>(r, v, scp);
+
+  return r;
 }
 
 } // namespace
@@ -92,7 +100,7 @@ void setu(std::deque<Value *> &stk, Scope *scp) {
 }
 
 void setn(std::deque<Value *> &stk, Scope *scp) {
-  set_un_helper<false>(stk, scp);
+  stk.push_back(set_un_helper<false>(stk, scp));
 }
 
 void setm(std::deque<Value *> &stk, Scope *scp) {
@@ -107,6 +115,15 @@ void setm(std::deque<Value *> &stk, Scope *scp) {
 
   CXBQN_DEBUG("setm:x={},F={},r={}", CXBQN_STR_NC(x), CXBQN_STR_NC(F),
               CXBQN_STR_NC(r));
+
+#ifdef CXBQN_DEEPCHECKS
+    if (nullptr == r)
+      throw std::runtime_error("setm: got nullptr for r");
+    if (nullptr == F)
+      throw std::runtime_error("setm: got nullptr for R");
+    if (nullptr == x)
+      throw std::runtime_error("setm: got nullptr for x");
+#endif
 
   // F is called with 𝕩 and dereferenced r
 

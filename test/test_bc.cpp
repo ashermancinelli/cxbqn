@@ -36,7 +36,6 @@ TEST_CASE("bc0-9", "") {
     auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
 
     Number *n = dynamic_cast<Number *>(ret.v);
-    ;
     REQUIRE(nullptr != n);
     CHECK(3.0 == Approx(n->v));
   }
@@ -49,13 +48,9 @@ TEST_CASE("bc0-9", "") {
 
     auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
 
-    Reference *r = dynamic_cast<Reference *>(ret.v);
-    REQUIRE(nullptr != r);
+    REQUIRE(nullptr != ret.v);
     REQUIRE(nullptr != ret.scp);
-
-    Value *v = ret.scp->get(r);
-    REQUIRE(nullptr != v);
-    auto *n = dynamic_cast<Number *>(v);
+    Number *n = dynamic_cast<Number *>(ret.v);
     REQUIRE(nullptr != n);
     CHECK(5.0 == Approx(n->v));
   }
@@ -69,12 +64,7 @@ TEST_CASE("bc0-9", "") {
     auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
     REQUIRE(nullptr != ret.scp);
     REQUIRE(nullptr != ret.v);
-    auto *scp = ret.scp;
-    auto *r = dynamic_cast<Reference *>(ret.v);
-    REQUIRE(nullptr != r);
-    auto *v = scp->get(r);
-    REQUIRE(nullptr != v);
-    auto *n = dynamic_cast<Number *>(v);
+    auto *n = dynamic_cast<Number *>(ret.v);
     REQUIRE(nullptr != n);
     CHECK(4.0 == Approx(n->v));
   }

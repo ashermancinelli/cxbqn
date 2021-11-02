@@ -158,6 +158,7 @@ struct Array : public Value {
   const uz N;
   std::vector<Value *> values;
   Array(const ByteCode::value_type N, std::deque<Value *> &stk);
+  Array(uz N) : N{N} {}
   ~Array() {}
   virtual TypeType t() const { return TypeType{t_Array}; }
   std::ostream &repr(std::ostream &os) const override;

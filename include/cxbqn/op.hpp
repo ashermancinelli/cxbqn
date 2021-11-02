@@ -15,8 +15,6 @@ enum {
 
   FN1C = 0x10, // monadic function call ⟨…,x,f  ⟩ → F x
   FN2C = 0x11, //  dyadic function call ⟨…,x,f,w⟩ → w F x
-  FN1O = 0x12, // optional monadic call (FN1C but checks for · at 𝕩)
-  FN2O = 0x13, // optional  dyadic call (FN2C but checks for · at 𝕩 & 𝕨)
   TR2D = 0x14, // derive 2-train aka atop; ⟨…,  g,f⟩ → (f g)
   TR3D = 0x15, // derive 3-train aka fork; ⟨…,h,g,f⟩ → (f g h)
   CHKV = 0x16, // throw error if top of stack is ·
