@@ -28,7 +28,7 @@ void md1c(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk, Scope *scp) {
   CXBQN_DEBUG("md1c:r={},f={}", CXBQN_STR_NC(opaque_r), CXBQN_STR_NC(f));
 
   auto *r = dynamic_cast<BlockInst *>(opaque_r);
-  if (r->scp->blks[r->blk_idx].def.immediate) {
+  if (r->imm()) {
     auto *v = r->call(1, {nullptr, nullptr, nullptr, opaque_r, f, nullptr});
     stk.push_back(v);
   } else {
@@ -52,7 +52,7 @@ void md2c(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk, Scope *scp) {
 
   auto *r = dynamic_cast<BlockInst *>(opaque_r);
 
-  if (r->scp->blks[r->blk_idx].def.immediate) {
+  if (r->imm()) {
     auto *v = r->call(2, {nullptr, nullptr, nullptr, opaque_r, f, g});
     stk.push_back(v);
   } else {

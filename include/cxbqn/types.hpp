@@ -200,6 +200,10 @@ struct Builtin : public Function {
 struct BlockInst : public Function {
   Scope *scp;
   uz blk_idx;
+
+  // Is the block at index blk_idx immediate?
+  bool imm() const;
+
   virtual TypeType t() const { return TypeType{annot(t_BlockInst)}; }
   BlockInst(Scope *scp, uz blk_idx) : scp{scp}, blk_idx{blk_idx} {}
   Value *call(u8 nargs = 0, initl<Value *> args = {}) override;

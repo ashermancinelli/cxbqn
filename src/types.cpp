@@ -183,6 +183,10 @@ std::pair<ByteCodeRef, uz> Block::body(u8 nargs) const {
   return std::make_pair(ByteCodeRef{}, 0);
 }
 
+bool BlockInst::imm() const {
+  return this->scp->blks[this->blk_idx].def.immediate;
+}
+
 Value *BlockInst::call(u8 nargs, initl<Value *> args) {
 
   const auto blk = scp->blks[blk_idx];
