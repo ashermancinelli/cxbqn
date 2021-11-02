@@ -27,6 +27,7 @@ namespace instructions {
 
 void setu(std::deque<Value *> &stk, Scope *);
 void setn(std::deque<Value *> &stk, Scope *);
+void setm(std::deque<Value *> &stk, Scope *);
 void varm(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk);
 void varo(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk, Scope *scp);
 void fn10(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk);

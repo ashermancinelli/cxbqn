@@ -20,7 +20,8 @@ template <bool ShouldVarBeSet> void set(std::deque<Value *> stk, Scope *scp) {
   auto *value = stk.back();
   stk.pop_back();
 
-  CXBQN_DEBUG("setn:ref={},val={}", CXBQN_STR_NC(opaque_refer), CXBQN_STR_NC(value));
+  CXBQN_DEBUG("setn:ref={},val={}", CXBQN_STR_NC(opaque_refer),
+              CXBQN_STR_NC(value));
 
 #ifdef CXBQN_DEEPCHECKS
   if (not opaque_refer->t()[t_Reference]) {
@@ -33,16 +34,16 @@ template <bool ShouldVarBeSet> void set(std::deque<Value *> stk, Scope *scp) {
   // If the masked type matches t_Array, we know we're working with an array.
   if (opaque_refer->t()[t_RefArray]) {
     auto *aref = dynamic_cast<RefArray *>(opaque_refer);
-    auto *aval = dynamic_cast<Array*>(value);
+    auto *aval = dynamic_cast<Array *>(value);
 #ifdef CXBQN_DEEPCHECKS
     if (nullptr == aref)
       throw std::runtime_error(
           "setn: Could not cast reference to type RefArray");
     if (nullptr == aval)
-      throw std::runtime_error(
-          "setn: Could not cast value to type Array when assigning to RefArray");
+      throw std::runtime_error("setn: Could not cast value to type Array when "
+                               "assigning to RefArray");
 #endif
-    for (int i=0; i < aval->N; i++)
+    for (int i = 0; i < aval->N; i++)
       scp->set(ShouldVarBeSet, aref->getref(i), aval->values[i]);
     stk.push_back(aval);
   } else {
@@ -63,6 +64,29 @@ void setu(std::deque<Value *> &stk, Scope *scp) { set<true>(stk, scp); }
 
 void setn(std::deque<Value *> &stk, Scope *scp) { set<false>(stk, scp); }
 
+void setm(std::deque<Value *> &stk, Scope *scp) {
+  auto *r = stk.back();
+  stk.pop_back();
+
+  auto *F = stk.back();
+  stk.pop_back();
+
+  auto *x = stk.back();
+  stk.pop_back();
+
+  CXBQN_DEBUG("setm:x={},F={},r={}", CXBQN_STR_NC(x), CXBQN_STR_NC(F),
+              CXBQN_STR_NC(r));
+
+  // F is called with 𝕩 and dereferenced r
+  auto *refer = dynamic_cast<Reference *>(r);
+  auto *v = F->call(2, {F, x, scp->get(refer)});
+
+  // Set the new value of the reference, and push it back on the stack
+  scp->set(true, refer, v);
+
+  stk.push_back(v);
+}
+
 void varm(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk) {
   const auto depth = bc[++pc];
   const auto pos_in_parent = bc[++pc];
@@ -74,8 +98,8 @@ void varo(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk, Scope *scp) {
   const auto n_frames_up = bc[++pc];
   const auto local_variable_idx = bc[++pc];
   scp = scp->get_nth_parent(n_frames_up);
-  CXBQN_DEBUG("varo:scope={},localidx={},framesup={}", *scp,
-              local_variable_idx, n_frames_up);
+  CXBQN_DEBUG("varo:scope={},localidx={},framesup={}", *scp, local_variable_idx,
+              n_frames_up);
   CXBQN_DEBUG_NC("varo:pushing var={}", scp->vars[local_variable_idx]);
   stk.push_back(scp->vars[local_variable_idx]);
 }
@@ -153,6 +177,90 @@ void dfnd(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk, Scope *scp) {
     auto *F = new BlockInst(scp, blk_idx);
     stk.push_back(F);
   }
+}
+
+void arro(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk) {
+  const auto list_len = bc[++pc];
+  auto *ar = new Array(list_len, stk);
+  stk.push_back(ar);
+}
+
+void arrm(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk) {
+  const auto list_len = bc[++pc];
+  auto *ar = new RefArray(list_len, stk);
+  stk.push_back(ar);
+}
+
+void md1c(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk, Scope *scp) {
+  auto *f = stk.back();
+  stk.pop_back();
+
+  auto *opaque_r = stk.back();
+  stk.pop_back();
+
+  CXBQN_DEBUG("md1c:r={},f={}", CXBQN_STR_NC(opaque_r), CXBQN_STR_NC(f));
+
+  auto *r = dynamic_cast<BlockInst *>(opaque_r);
+  if (r->imm()) {
+    auto *v = r->call(1, {nullptr, nullptr, nullptr, opaque_r, f, nullptr});
+    stk.push_back(v);
+  } else {
+    r->deferred_args.assign({nullptr, nullptr, nullptr, opaque_r, f, nullptr});
+    stk.push_back(opaque_r);
+  }
+}
+
+void md2c(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk, Scope *scp) {
+  auto *f = stk.back();
+  stk.pop_back();
+
+  auto *opaque_r = stk.back();
+  stk.pop_back();
+
+  auto *g = stk.back();
+  stk.pop_back();
+
+  CXBQN_DEBUG("md1c:(F _r_ G)=({} {} {})", CXBQN_STR_NC(f),
+              CXBQN_STR_NC(opaque_r), CXBQN_STR_NC(g));
+
+  auto *r = dynamic_cast<BlockInst *>(opaque_r);
+
+  if (r->imm()) {
+    auto *v = r->call(2, {nullptr, nullptr, nullptr, opaque_r, f, g});
+    stk.push_back(v);
+  } else {
+    r->deferred_args.assign({nullptr, nullptr, nullptr, opaque_r, f, g});
+    stk.push_back(opaque_r);
+  }
+}
+
+void tr2d(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk, Scope *scp) {
+  auto *f = stk.back();
+  stk.pop_back();
+
+  auto *g = stk.back();
+  stk.pop_back();
+
+  CXBQN_DEBUG("tr2d:f={},g={}", CXBQN_STR_NC(f), CXBQN_STR_NC(g));
+
+  stk.push_back(new Atop(f, g));
+}
+
+// fork: ⟨…,h,g,f⟩ → (f g h)
+void tr3d(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk, Scope *scp) {
+  auto *f = stk.back();
+  stk.pop_back();
+
+  auto *g = stk.back();
+  stk.pop_back();
+
+  auto *h = stk.back();
+  stk.pop_back();
+
+  CXBQN_DEBUG("tr3d:f={},g={},h={}", CXBQN_STR_NC(f), CXBQN_STR_NC(g),
+              CXBQN_STR_NC(h));
+
+  stk.push_back(new Fork(f, g, h));
 }
 
 } // namespace cxbqn::vm::instructions

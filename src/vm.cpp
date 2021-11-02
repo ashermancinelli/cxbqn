@@ -194,6 +194,10 @@ Value *vm(ByteCodeRef bc, std::span<Value *> consts, std::deque<Value *> stk,
       INSTR("TR3D");
       instructions::tr3d(bc, pc, stk, scope);
       break;
+    case op::SETM:
+      INSTR("SETM");
+      instructions::setm(stk, scope);
+      break;
     default:
       CXBQN_CRIT("unreachable code {}", bc[pc]);
       throw std::runtime_error("vm::vm: unreachable code");
