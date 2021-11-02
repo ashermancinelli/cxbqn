@@ -184,6 +184,10 @@ Value *vm(ByteCodeRef bc, std::span<Value *> consts, std::deque<Value *> stk,
       INSTR("MD1C");
       instructions::md1c(bc, pc, stk, scope);
       break;
+    case op::MD2C:
+      INSTR("MD2C");
+      instructions::md2c(bc, pc, stk, scope);
+      break;
     default:
       CXBQN_CRIT("unreachable code {}", bc[pc]);
       throw std::runtime_error("vm::vm: unreachable code");

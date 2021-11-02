@@ -11,10 +11,10 @@ using namespace cxbqn::vm;
 using namespace cxbqn::types;
 using namespace cxbqn::provides;
 
-TEST_CASE("Bytecode", "") {
+TEST_CASE("bc0-9", "") {
   CXBQN_SETLOGSTR();
 
-  SECTION("manual bc t0") {
+  SECTION("t0") {
     CXBQN_LOG_TESTN(0);
     CompileParams p{
 #include <bc_tests/t0.hpp>
@@ -27,7 +27,7 @@ TEST_CASE("Bytecode", "") {
     CHECK(5.0 == Approx(n->v));
   }
 
-  SECTION("manual bc t1") {
+  SECTION("t1") {
     CXBQN_LOG_TESTN(1);
     CompileParams p{
 #include <bc_tests/t1.hpp>
@@ -41,7 +41,7 @@ TEST_CASE("Bytecode", "") {
     CHECK(3.0 == Approx(n->v));
   }
 
-  SECTION("manual bc t2") {
+  SECTION("t2") {
     CXBQN_LOG_TESTN(2);
     CompileParams p{
 #include <bc_tests/t2.hpp>
@@ -60,7 +60,7 @@ TEST_CASE("Bytecode", "") {
     CHECK(5.0 == Approx(n->v));
   }
 
-  SECTION("manual bc t3") {
+  SECTION("t3") {
     CXBQN_LOG_TESTN(3);
     CompileParams p{
 #include <bc_tests/t3.hpp>
@@ -79,7 +79,7 @@ TEST_CASE("Bytecode", "") {
     CHECK(4.0 == Approx(n->v));
   }
 
-  SECTION("manual bc t4") {
+  SECTION("t4") {
     CXBQN_LOG_TESTN(4);
     CompileParams p{
 #include <bc_tests/t4.hpp>
@@ -92,7 +92,7 @@ TEST_CASE("Bytecode", "") {
     CHECK(2.0 == Approx(n->v));
   }
 
-  SECTION("manual bc t5") {
+  SECTION("t5") {
     CXBQN_LOG_TESTN(5);
     CompileParams p{
 #include <bc_tests/t5.hpp>
@@ -105,7 +105,7 @@ TEST_CASE("Bytecode", "") {
     CHECK(1.0 == Approx(n->v));
   }
 
-  SECTION("manual bc t6") {
+  SECTION("t6") {
     CXBQN_LOG_TESTN(6);
     CompileParams p{
 #include <bc_tests/t6.hpp>
@@ -118,7 +118,7 @@ TEST_CASE("Bytecode", "") {
     CHECK(2.0 == Approx(n->v));
   }
 
-  SECTION("manual bc t7") {
+  SECTION("t7") {
     CXBQN_LOG_TESTN(7);
     CompileParams p{
 #include <bc_tests/t7.hpp>
@@ -137,7 +137,7 @@ TEST_CASE("Bytecode", "") {
    * {{0,1,0},{0,0,{{},{1}}}},
    * {{0,1},{16,3}}
    */
-  SECTION("manual bc t8") {
+  SECTION("t8") {
     CXBQN_LOG_TESTN(8);
     CompileParams p{
 #include <bc_tests/t8.hpp>
@@ -156,7 +156,7 @@ TEST_CASE("Bytecode", "") {
    * {{0,1,0}},
    * {{0,2}} 
    */
-  SECTION("manual bc t9") {
+  SECTION("t9") {
     CXBQN_LOG_TESTN(9);
     CompileParams p{
 #include <bc_tests/t9.hpp>
@@ -168,8 +168,10 @@ TEST_CASE("Bytecode", "") {
     REQUIRE(nullptr != n);
     CHECK(7.0 == Approx(n->v));
   }
+}
 
-  SECTION("manual bc t10") {
+TEST_CASE("bc10-19", "") {
+  SECTION("t10") {
     CXBQN_LOG_TESTN(10);
     CompileParams p{
 #include <bc_tests/t10.hpp>
@@ -182,7 +184,7 @@ TEST_CASE("Bytecode", "") {
     CHECK(4.0 == Approx(n->v));
   }
 
-  SECTION("manual bc t11") {
+  SECTION("t11") {
     CXBQN_LOG_TESTN(11);
     CompileParams p{
 #include <bc_tests/t11.hpp>
@@ -193,5 +195,18 @@ TEST_CASE("Bytecode", "") {
     auto* n = dynamic_cast<Number*>(ret.v);
     REQUIRE(nullptr != n);
     CHECK(6.0 == Approx(n->v));
+  }
+
+  SECTION("t12") {
+    CXBQN_LOG_TESTN(12);
+    CompileParams p{
+#include <bc_tests/t12.hpp>
+    };
+    auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+    REQUIRE(nullptr != ret.scp);
+    REQUIRE(nullptr != ret.v);
+    auto* n = dynamic_cast<Number*>(ret.v);
+    REQUIRE(nullptr != n);
+    CHECK(1.0 == Approx(n->v));
   }
 }
