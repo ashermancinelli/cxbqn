@@ -6,6 +6,7 @@ namespace cxbqn::types {
 
 Array::Array(const ByteCode::value_type N, std::deque<Value *> &stk)
     : N{static_cast<uz>(N)} {
+  shape.push_back(N);
   values.assign(stk.begin() + (stk.size() - N), stk.end());
   stk.resize(stk.size() - N);
 }

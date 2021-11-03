@@ -1,107 +1,28 @@
 #include <cxbqn/cxbqn.hpp>
-#define CATCH_CONFIG_FAST_COMPILE
-#define CATCH_CONFIG_MAIN
-#include <catch2/catch.hpp>
+#include "utils.hpp"
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#include <doctest/doctest.h>
 
 using namespace cxbqn;
 using namespace cxbqn::types;
 using namespace cxbqn::provides;
 
-TEST_CASE("•Type", "") {
-//  SECTION("Dyad") {
-//    auto *t = new Type();
-//    auto *w = new Number(0), *x = new Number(1);
-//    CHECK_THROWS_AS((*t)(w, x), std::runtime_error);
-//    delete t;
-//    delete w;
-//    delete x;
-//  }
-//  SECTION("Array") {
-//    auto *t = new Type();
-//    auto *v = new Array({1, 2, 3});
-//    auto *res = (*t)(v);
-//    CHECK(nullptr != dynamic_cast<Number *>(res));
-//    auto *n = dynamic_cast<Number *>(res);
-//    CHECK(0.0 == Approx(n->v));
-//    delete res;
-//    delete v;
-//    delete t;
-//  }
+TEST_CASE("level0") {
+
+  const auto rt = provides::get_runtime();
+  const auto runtime = rt->values;
+
+  SUBCASE("t0") {
+    CXBQN_LOG_TESTN(0);
+    CompileParams p{
+#include <prim_tests/t0.hpp>
+    };
+
+    auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+    REQUIRE(nullptr != ret.v);
+    REQUIRE(nullptr != ret.scp);
+    Number *n = dynamic_cast<Number *>(ret.v);
+    //REQUIRE(nullptr != n);
+    //CHECK(5.0 == doctest::Approx(n->v));
+  }
 }
-//  SECTION("Number") {
-//    auto *t = new Type();
-//    auto *v = new Number(5);
-//    auto *res = (*t)(v);
-//    CHECK(nullptr != dynamic_cast<Number *>(res));
-//    auto *n = dynamic_cast<Number *>(res);
-//    CHECK(1.0 == Approx(n->v));
-//    delete res;
-//    delete v;
-//    delete t;
-//  }
-//  SECTION("Character") {
-//    auto *t = new Type();
-//    auto *v = new Character('c');
-//    auto *res = (*t)(v);
-//    CHECK(nullptr != dynamic_cast<Number *>(res));
-//    auto *n = dynamic_cast<Number *>(res);
-//    CHECK(2.0 == Approx(n->v));
-//    delete res;
-//    delete v;
-//    delete t;
-//  }
-//  SECTION("Function") {
-//    auto *t = new Type();
-//    auto *v = new Function();
-//    auto *res = (*t)(v);
-//    CHECK(nullptr != dynamic_cast<Number *>(res));
-//    auto *n = dynamic_cast<Number *>(res);
-//    CHECK(3.0 == Approx(n->v));
-//    delete res;
-//    delete v;
-//    delete t;
-//  }
-//  SECTION("Md1") {
-//    auto *t = new Type();
-//    auto *v = new Md1();
-//    auto *res = (*t)(v);
-//    CHECK(nullptr != dynamic_cast<Number *>(res));
-//    auto *n = dynamic_cast<Number *>(res);
-//    CHECK(4.0 == Approx(n->v));
-//    delete res;
-//    delete v;
-//    delete t;
-//  }
-//  SECTION("UserMd1") {
-//    auto *t = new Type();
-//    auto *v = new UserMd1();
-//    auto *res = (*t)(v);
-//    CHECK(nullptr != dynamic_cast<Number *>(res));
-//    auto *n = dynamic_cast<Number *>(res);
-//    CHECK(4.0 == Approx(n->v));
-//    delete res;
-//    delete v;
-//    delete t;
-//  }
-//  SECTION("Md2") {
-//    auto *t = new Type();
-//    auto *v = new Md2();
-//    auto *res = (*t)(v);
-//    CHECK(nullptr != dynamic_cast<Number *>(res));
-//    auto *n = dynamic_cast<Number *>(res);
-//    CHECK(5.0 == Approx(n->v));
-//    delete res;
-//    delete v;
-//    delete t;
-//  }
-//  SECTION("UserMd2") {
-//    auto *t = new Type();
-//    auto *v = new UserMd2();
-//    auto *res = (*t)(v);
-//    CHECK(nullptr != dynamic_cast<Number *>(res));
-//    auto *n = dynamic_cast<Number *>(res);
-//    CHECK(5.0 == Approx(n->v));
-//    delete res;
-//    delete v;
-//    delete t;
-//  }

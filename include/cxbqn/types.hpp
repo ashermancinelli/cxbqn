@@ -130,16 +130,16 @@ struct Value {
 
   // If a value type does not define it's own call, we probably just push it
   // back on the stack.
-  virtual Value *call(u8 nargs = 0, std::vector<Value *> args = {}) { return this; };
+  virtual Value *call(u8 nargs = 0, std::vector<Value *> args = {}) {
+    return this;
+  };
 
   virtual std::ostream &repr(std::ostream &os) const { return os << "V"; }
 };
 
 struct Nothing : public Value {
   TypeType t() const override { return TypeType{annot(t_Nothing)}; }
-  std::ostream &repr(std::ostream &os) const override {
-    return os << "·";
-  }
+  std::ostream &repr(std::ostream &os) const override { return os << "·"; }
 };
 
 // Managed Value
@@ -153,26 +153,27 @@ struct Character : public Value {
   char v;
   Character(char c) : v{c} {}
   virtual TypeType t() const { return TypeType{t_Character}; }
-  std::ostream &repr(std::ostream &os) const override {
-    return os << v;
-  }
+  std::ostream &repr(std::ostream &os) const override { return os << v; }
 };
 
 struct Number : public Value {
   f64 v;
   Number(f64 v) : v{v} {}
   virtual TypeType t() const { return TypeType{t_Number}; }
-  std::ostream &repr(std::ostream &os) const override {
-    return os << v;
-  }
+  std::ostream &repr(std::ostream &os) const override { return os << v; }
 };
 
 struct Array : public Value {
-  const uz N;
+  uz N;
   std::vector<Value *> values;
+  std::vector<uz> shape;
   Array(const ByteCode::value_type N, std::deque<Value *> &stk);
-  Array(uz N) : N{N} {}
+  Array(uz N) : N{N} {
+    shape.push_back(N);
+  }
   ~Array() {}
+  Value *operator[](const std::size_t &i) { return values[i]; }
+  const Value *operator[](const std::size_t &i) const { return values[i]; }
   virtual TypeType t() const { return TypeType{t_Array}; }
   std::ostream &repr(std::ostream &os) const override;
 };
@@ -202,11 +203,6 @@ struct Function : public Value {
   std::ostream &repr(std::ostream &os) const override { return os << "F"; }
 };
 
-struct Builtin : public Function {
-  virtual Value *operator()(Value *x) = 0;
-  virtual Value *operator()(Value *w, Value *x) = 0;
-};
-
 struct BlockInst : public Function {
   Scope *scp;
   uz blk_idx;
@@ -224,14 +220,14 @@ struct BlockInst : public Function {
 
 struct Fork : public Function {
   Value *f, *g, *h;
-  Fork(Value*f, Value*g, Value*h) : f{f}, g{g}, h{h} {}
+  Fork(Value *f, Value *g, Value *h) : f{f}, g{g}, h{h} {}
   Value *call(u8 nargs = 0, std::vector<Value *> args = {}) override;
   std::ostream &repr(std::ostream &os) const override;
 };
 
 struct Atop : public Function {
   Value *g, *f;
-  Atop(Value* f, Value* g) : f{f}, g{g} {}
+  Atop(Value *f, Value *g) : f{f}, g{g} {}
   Value *call(u8 nargs = 0, std::vector<Value *> args = {}) override;
   std::ostream &repr(std::ostream &os) const override;
 };
@@ -263,7 +259,7 @@ struct UserMd2 : public Md2 {
 struct Md1Deferred : public Function {
   virtual TypeType t() const { return TypeType{t_Md1 | annot(t_Deferred)}; }
   Value *f, *m1;
-  Md1Deferred(Value* f, Value* m1) : f{f}, m1{m1} {}
+  Md1Deferred(Value *f, Value *m1) : f{f}, m1{m1} {}
   Value *call(u8 nargs = 0, std::vector<Value *> args = {}) override;
 };
 
@@ -273,7 +269,7 @@ struct Md1Deferred : public Function {
 struct Md2Deferred : public Function {
   virtual TypeType t() const { return TypeType{t_Md2 | annot(t_Deferred)}; }
   Value *f, *m2, *g;
-  Md2Deferred(Value* f, Value* m2, Value* g) : f{f}, m2{m2}, g{g} {}
+  Md2Deferred(Value *f, Value *m2, Value *g) : f{f}, m2{m2}, g{g} {}
   Value *call(u8 nargs = 0, std::vector<Value *> args = {}) override;
 };
 

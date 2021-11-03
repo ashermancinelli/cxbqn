@@ -13,9 +13,13 @@ using namespace cxbqn::provides;
 
 struct Consts {
   std::vector<Value *> v;
-  Consts(initl<i32> i) {
-    for (const auto &e : i)
-      v.push_back(new Number{static_cast<cxbqn::f64>(e)});
+  Consts(std::initializer_list<std::variant<Value*, i32>> i) {
+    for (const auto &e : i) {
+      if (std::holds_alternative<Value*>(e))
+        v.push_back(std::get<Value*>(e));
+      else
+        v.push_back(new Number{static_cast<cxbqn::f64>(std::get<i32>(e))});
+    }
   }
 };
 

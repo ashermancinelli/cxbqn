@@ -1,9 +1,8 @@
 #include <cxbqn/cxbqn.hpp>
 #include <cxbqn/debug.hpp>
-#define CATCH_CONFIG_FAST_COMPILE
-#define CATCH_CONFIG_MAIN
-#include <catch2/catch.hpp>
 #include <spdlog/spdlog.h>
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#include <doctest/doctest.h>
 
 #include "utils.hpp"
 
@@ -12,10 +11,10 @@ using namespace cxbqn::vm;
 using namespace cxbqn::types;
 using namespace cxbqn::provides;
 
-TEST_CASE("bc0-9", "") {
+TEST_CASE("bc0-9") {
   CXBQN_SETLOGSTR();
 
-  SECTION("t0") {
+  SUBCASE("t0") {
     CXBQN_LOG_TESTN(0);
     CompileParams p{
 #include <bc_tests/t0.hpp>
@@ -25,10 +24,10 @@ TEST_CASE("bc0-9", "") {
 
     Number *n = dynamic_cast<Number *>(ret.v);
     REQUIRE(nullptr != n);
-    CHECK(5.0 == Approx(n->v));
+    CHECK(5.0 == doctest::Approx(n->v));
   }
 
-  SECTION("t1") {
+  SUBCASE("t1") {
     CXBQN_LOG_TESTN(1);
     CompileParams p{
 #include <bc_tests/t1.hpp>
@@ -38,10 +37,10 @@ TEST_CASE("bc0-9", "") {
 
     Number *n = dynamic_cast<Number *>(ret.v);
     REQUIRE(nullptr != n);
-    CHECK(3.0 == Approx(n->v));
+    CHECK(3.0 == doctest::Approx(n->v));
   }
 
-  SECTION("t2") {
+  SUBCASE("t2") {
     CXBQN_LOG_TESTN(2);
     CompileParams p{
 #include <bc_tests/t2.hpp>
@@ -53,10 +52,10 @@ TEST_CASE("bc0-9", "") {
     REQUIRE(nullptr != ret.scp);
     Number *n = dynamic_cast<Number *>(ret.v);
     REQUIRE(nullptr != n);
-    CHECK(5.0 == Approx(n->v));
+    CHECK(5.0 == doctest::Approx(n->v));
   }
 
-  SECTION("t3") {
+  SUBCASE("t3") {
     CXBQN_LOG_TESTN(3);
     CompileParams p{
 #include <bc_tests/t3.hpp>
@@ -67,10 +66,10 @@ TEST_CASE("bc0-9", "") {
     REQUIRE(nullptr != ret.v);
     auto *n = dynamic_cast<Number *>(ret.v);
     REQUIRE(nullptr != n);
-    CHECK(4.0 == Approx(n->v));
+    CHECK(4.0 == doctest::Approx(n->v));
   }
 
-  SECTION("t4") {
+  SUBCASE("t4") {
     CXBQN_LOG_TESTN(4);
     CompileParams p{
 #include <bc_tests/t4.hpp>
@@ -80,10 +79,10 @@ TEST_CASE("bc0-9", "") {
     REQUIRE(nullptr != ret.v);
     auto *n = dynamic_cast<Number *>(ret.v);
     REQUIRE(nullptr != n);
-    CHECK(2.0 == Approx(n->v));
+    CHECK(2.0 == doctest::Approx(n->v));
   }
 
-  SECTION("t5") {
+  SUBCASE("t5") {
     CXBQN_LOG_TESTN(5);
     CompileParams p{
 #include <bc_tests/t5.hpp>
@@ -93,10 +92,10 @@ TEST_CASE("bc0-9", "") {
     REQUIRE(nullptr != ret.v);
     auto *n = dynamic_cast<Number *>(ret.v);
     REQUIRE(nullptr != n);
-    CHECK(1.0 == Approx(n->v));
+    CHECK(1.0 == doctest::Approx(n->v));
   }
 
-  SECTION("t6") {
+  SUBCASE("t6") {
     CXBQN_LOG_TESTN(6);
     CompileParams p{
 #include <bc_tests/t6.hpp>
@@ -106,10 +105,10 @@ TEST_CASE("bc0-9", "") {
     REQUIRE(nullptr != ret.v);
     auto *n = dynamic_cast<Number *>(ret.v);
     REQUIRE(nullptr != n);
-    CHECK(2.0 == Approx(n->v));
+    CHECK(2.0 == doctest::Approx(n->v));
   }
 
-  SECTION("t7") {
+  SUBCASE("t7") {
     CXBQN_LOG_TESTN(7);
     CompileParams p{
 #include <bc_tests/t7.hpp>
@@ -119,7 +118,7 @@ TEST_CASE("bc0-9", "") {
     REQUIRE(nullptr != ret.v);
     auto *n = dynamic_cast<Number *>(ret.v);
     REQUIRE(nullptr != n);
-    CHECK(6.0 == Approx(n->v));
+    CHECK(6.0 == doctest::Approx(n->v));
   }
 
   /*  A←{𝕨}⋄3 A 4           #    dyadic block function
@@ -128,7 +127,7 @@ TEST_CASE("bc0-9", "") {
    * {{0,1,0},{0,0,{{},{1}}}},
    * {{0,1},{16,3}}
    */
-  SECTION("t8") {
+  SUBCASE("t8") {
     CXBQN_LOG_TESTN(8);
     CompileParams p{
 #include <bc_tests/t8.hpp>
@@ -138,7 +137,7 @@ TEST_CASE("bc0-9", "") {
     REQUIRE(nullptr != ret.v);
     auto* n = dynamic_cast<Number*>(ret.v);
     REQUIRE(nullptr != n);
-    CHECK(3.0 == Approx(n->v));
+    CHECK(3.0 == doctest::Approx(n->v));
   }
 
   /*  a‿b←7‿2⋄a             # 11 ARRO, 12 ARRM
@@ -147,7 +146,7 @@ TEST_CASE("bc0-9", "") {
    * {{0,1,0}},
    * {{0,2}} 
    */
-  SECTION("t9") {
+  SUBCASE("t9") {
     CXBQN_LOG_TESTN(9);
     CompileParams p{
 #include <bc_tests/t9.hpp>
@@ -157,7 +156,7 @@ TEST_CASE("bc0-9", "") {
     REQUIRE(nullptr != ret.v);
     auto* n = dynamic_cast<Number*>(ret.v);
     REQUIRE(nullptr != n);
-    CHECK(7.0 == Approx(n->v));
+    CHECK(7.0 == doctest::Approx(n->v));
   }
 }
 
@@ -171,10 +170,10 @@ TEST_CASE("t10") {
   REQUIRE(nullptr != ret.v);
   auto* n = dynamic_cast<Number*>(ret.v);
   REQUIRE(nullptr != n);
-  CHECK(4.0 == Approx(n->v));
+  CHECK(4.0 == doctest::Approx(n->v));
 }
 
-TEST_CASE("t11", "") {
+TEST_CASE("t11") {
   CXBQN_LOG_TESTN(11);
   CompileParams p{
 #include <bc_tests/t11.hpp>
@@ -184,10 +183,10 @@ TEST_CASE("t11", "") {
   REQUIRE(nullptr != ret.v);
   auto* n = dynamic_cast<Number*>(ret.v);
   REQUIRE(nullptr != n);
-  CHECK(6.0 == Approx(n->v));
+  CHECK(6.0 == doctest::Approx(n->v));
 }
 
-TEST_CASE("t12", "") {
+TEST_CASE("t12") {
   CXBQN_LOG_TESTN(12);
   CompileParams p{
 #include <bc_tests/t12.hpp>
@@ -197,10 +196,10 @@ TEST_CASE("t12", "") {
   REQUIRE(nullptr != ret.v);
   auto* n = dynamic_cast<Number*>(ret.v);
   REQUIRE(nullptr != n);
-  CHECK(1.0 == Approx(n->v));
+  CHECK(1.0 == doctest::Approx(n->v));
 }
 
-TEST_CASE("t13", "") {
+TEST_CASE("t13") {
   CXBQN_LOG_TESTN(13);
   CompileParams p{
 #include <bc_tests/t13.hpp>
@@ -210,10 +209,10 @@ TEST_CASE("t13", "") {
   REQUIRE(nullptr != ret.v);
   auto* n = dynamic_cast<Number*>(ret.v);
   REQUIRE(nullptr != n);
-  CHECK(2.0 == Approx(n->v));
+  CHECK(2.0 == doctest::Approx(n->v));
 }
 
-TEST_CASE("t14", "") {
+TEST_CASE("t14") {
   CXBQN_LOG_TESTN(14);
   CompileParams p{
 #include <bc_tests/t14.hpp>
@@ -223,10 +222,10 @@ TEST_CASE("t14", "") {
   REQUIRE(nullptr != ret.v);
   auto* n = dynamic_cast<Number*>(ret.v);
   REQUIRE(nullptr != n);
-  CHECK(3.0 == Approx(n->v));
+  CHECK(3.0 == doctest::Approx(n->v));
 }
 
-TEST_CASE("t15", "") {
+TEST_CASE("t15") {
   CXBQN_LOG_TESTN(15);
   CompileParams p{
 #include <bc_tests/t15.hpp>
@@ -236,10 +235,10 @@ TEST_CASE("t15", "") {
   REQUIRE(nullptr != ret.v);
   auto* n = dynamic_cast<Number*>(ret.v);
   REQUIRE(nullptr != n);
-  CHECK(4.0 == Approx(n->v));
+  CHECK(4.0 == doctest::Approx(n->v));
 }
 
-TEST_CASE("t16", "") {
+TEST_CASE("t16") {
   CXBQN_LOG_TESTN(16);
   CompileParams p{
 #include <bc_tests/t16.hpp>
@@ -249,10 +248,10 @@ TEST_CASE("t16", "") {
   REQUIRE(nullptr != ret.v);
   auto* n = dynamic_cast<Number*>(ret.v);
   REQUIRE(nullptr != n);
-  CHECK(2.0 == Approx(n->v));
+  CHECK(2.0 == doctest::Approx(n->v));
 }
 
-TEST_CASE("t17", "") {
+TEST_CASE("t17") {
   CXBQN_LOG_TESTN(17);
   CompileParams p{
 #include <bc_tests/t17.hpp>
@@ -262,10 +261,10 @@ TEST_CASE("t17", "") {
   REQUIRE(nullptr != ret.v);
   auto* n = dynamic_cast<Number*>(ret.v);
   REQUIRE(nullptr != n);
-  CHECK(2.0 == Approx(n->v));
+  CHECK(2.0 == doctest::Approx(n->v));
 }
 
-TEST_CASE("t18", "") {
+TEST_CASE("t18") {
   CXBQN_LOG_TESTN(18);
   CompileParams p{
 #include <bc_tests/t18.hpp>
@@ -275,10 +274,10 @@ TEST_CASE("t18", "") {
   REQUIRE(nullptr != ret.v);
   auto* n = dynamic_cast<Number*>(ret.v);
   REQUIRE(nullptr != n);
-  CHECK(8.0 == Approx(n->v));
+  CHECK(8.0 == doctest::Approx(n->v));
 }
 
-TEST_CASE("t19", "") {
+TEST_CASE("t19") {
   CXBQN_LOG_TESTN(19);
   CompileParams p{
 #include <bc_tests/t19.hpp>
@@ -288,10 +287,10 @@ TEST_CASE("t19", "") {
   REQUIRE(nullptr != ret.v);
   auto* n = dynamic_cast<Number*>(ret.v);
   REQUIRE(nullptr != n);
-  CHECK(5.0 == Approx(n->v));
+  CHECK(5.0 == doctest::Approx(n->v));
 }
 
-TEST_CASE("t20", "") {
+TEST_CASE("t20") {
   CXBQN_LOG_TESTN(20);
   CompileParams p{
 #include <bc_tests/t20.hpp>
@@ -301,10 +300,10 @@ TEST_CASE("t20", "") {
   REQUIRE(nullptr != ret.v);
   auto* n = dynamic_cast<Number*>(ret.v);
   REQUIRE(nullptr != n);
-  CHECK(1.0 == Approx(n->v));
+  CHECK(1.0 == doctest::Approx(n->v));
 }
 
-TEST_CASE("t21", "") {
+TEST_CASE("t21") {
   CXBQN_LOG_TESTN(21);
   CompileParams p{
 #include <bc_tests/t21.hpp>
@@ -314,10 +313,10 @@ TEST_CASE("t21", "") {
   REQUIRE(nullptr != ret.v);
   auto* n = dynamic_cast<Number*>(ret.v);
   REQUIRE(nullptr != n);
-  CHECK(4.0 == Approx(n->v));
+  CHECK(4.0 == doctest::Approx(n->v));
 }
 
-TEST_CASE("t22", "") {
+TEST_CASE("t22") {
   CXBQN_LOG_TESTN(22);
   CompileParams p{
 #include <bc_tests/t22.hpp>
@@ -327,10 +326,10 @@ TEST_CASE("t22", "") {
   REQUIRE(nullptr != ret.v);
   auto* n = dynamic_cast<Number*>(ret.v);
   REQUIRE(nullptr != n);
-  CHECK(1.0 == Approx(n->v));
+  CHECK(1.0 == doctest::Approx(n->v));
 }
 
-TEST_CASE("t23", "") {
+TEST_CASE("t23") {
   CXBQN_LOG_TESTN(23);
   CompileParams p{
 #include <bc_tests/t23.hpp>
@@ -340,10 +339,10 @@ TEST_CASE("t23", "") {
   REQUIRE(nullptr != ret.v);
   auto* n = dynamic_cast<Number*>(ret.v);
   REQUIRE(nullptr != n);
-  CHECK(2.0 == Approx(n->v));
+  CHECK(2.0 == doctest::Approx(n->v));
 }
 
-TEST_CASE("t24", "") {
+TEST_CASE("t24") {
   CXBQN_LOG_TESTN(24);
   CompileParams p{
 #include <bc_tests/t24.hpp>
@@ -353,10 +352,10 @@ TEST_CASE("t24", "") {
   REQUIRE(nullptr != ret.v);
   auto* n = dynamic_cast<Number*>(ret.v);
   REQUIRE(nullptr != n);
-  CHECK(6.0 == Approx(n->v));
+  CHECK(6.0 == doctest::Approx(n->v));
 }
 
-TEST_CASE("t25", "") {
+TEST_CASE("t25") {
   CXBQN_LOG_TESTN(25);
   CompileParams p{
 #include <bc_tests/t25.hpp>
@@ -366,10 +365,10 @@ TEST_CASE("t25", "") {
   REQUIRE(nullptr != ret.v);
   auto* n = dynamic_cast<Number*>(ret.v);
   REQUIRE(nullptr != n);
-  CHECK(5.0 == Approx(n->v));
+  CHECK(5.0 == doctest::Approx(n->v));
 }
 
-TEST_CASE("t26", "") {
+TEST_CASE("t26") {
   CXBQN_LOG_TESTN(26);
   CompileParams p{
 #include <bc_tests/t26.hpp>
@@ -379,10 +378,10 @@ TEST_CASE("t26", "") {
   REQUIRE(nullptr != ret.v);
   auto* n = dynamic_cast<Number*>(ret.v);
   REQUIRE(nullptr != n);
-  CHECK(3.0 == Approx(n->v));
+  CHECK(3.0 == doctest::Approx(n->v));
 }
 
-TEST_CASE("t27", "") {
+TEST_CASE("t27") {
   CXBQN_LOG_TESTN(27);
   CompileParams p{
 #include <bc_tests/t27.hpp>
@@ -392,10 +391,10 @@ TEST_CASE("t27", "") {
   REQUIRE(nullptr != ret.v);
   auto* n = dynamic_cast<Number*>(ret.v);
   REQUIRE(nullptr != n);
-  CHECK(1.0 == Approx(n->v));
+  CHECK(1.0 == doctest::Approx(n->v));
 }
 
-TEST_CASE("t28", "") {
+TEST_CASE("t28") {
   CXBQN_LOG_TESTN(28);
   CompileParams p{
 #include <bc_tests/t28.hpp>
@@ -405,5 +404,5 @@ TEST_CASE("t28", "") {
   REQUIRE(nullptr != ret.v);
   auto* n = dynamic_cast<Number*>(ret.v);
   REQUIRE(nullptr != n);
-  CHECK(2.0 == Approx(n->v));
+  CHECK(2.0 == doctest::Approx(n->v));
 }

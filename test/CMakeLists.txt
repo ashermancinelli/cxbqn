@@ -7,7 +7,7 @@ set(tests
 
 foreach(test ${tests})
   add_executable(${test} ${test}.cpp)
-  target_link_libraries(${test} PUBLIC cxbqn::cxbqn cxbqn::tpl Catch2::Catch2)
+  target_link_libraries(${test} PUBLIC cxbqn::cxbqn cxbqn::tpl doctest::doctest)
   add_test(NAME ${test} COMMAND $<TARGET_FILE:${test}>)
 endforeach()
 
