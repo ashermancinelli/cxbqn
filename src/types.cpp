@@ -59,7 +59,7 @@ Reference *RefArray::getref(uz idx) {
 
 Scope::Scope(Scope *parent, std::span<Block> blks, uz blk_idx,
              std::optional<std::span<Value *>> consts)
-    : blks{blks}, blk_idx{blk_idx}, vars(6, nullptr) {
+    : blks{blks}, blk_idx{blk_idx} {
   CXBQN_DEBUG("Scope::Scope");
   this->parent = parent;
 #ifdef CXBQN_DEEPCHECKS
@@ -67,6 +67,8 @@ Scope::Scope(Scope *parent, std::span<Block> blks, uz blk_idx,
     throw std::runtime_error("Scope::Scope: both parent=null and consts=null");
 #endif
   this->consts = nullptr == parent ? consts.value() : parent->consts;
+  vars.resize(blks[blk_idx].max_nvars() > 6 ? blks[blk_idx].max_nvars() : 6);
+  std::fill(vars.begin(), vars.end(), nullptr);
 }
 
 Value *Scope::get(Reference *r) {
@@ -213,16 +215,14 @@ bool BlockInst::imm() const {
   return this->scp->blks[this->blk_idx].def.immediate;
 }
 
-Value *BlockInst::call(u8 nargs, initl<Value *> args) {
+Value *BlockInst::call(u8 nargs, std::vector<Value *> args) {
 
   const auto blk = scp->blks[blk_idx];
 
   auto *child = new Scope(scp, scp->blks, blk_idx);
 
   auto [bc, nvars] = blk.body(nargs);
-  std::copy(deferred_args.begin(), deferred_args.end(), child->vars.begin());
-  std::copy_if(args.begin(), args.end(), child->vars.begin(),
-               [](auto *v) { return nullptr != v; });
+  std::copy(args.begin(), args.end(), child->vars.begin());
 
   CXBQN_DEBUG("BlockInst::call:nargs={},childscope={},blk={}", args.size(),
               *child, blk);
@@ -236,37 +236,27 @@ Value *BlockInst::call(u8 nargs, initl<Value *> args) {
   return ret;
 }
 
-Value *Atop::call(u8 nargs, initl<Value *> args) {
+Value *Atop::call(u8 nargs, std::vector<Value *> args) {
   CXBQN_DEBUG("Atop::call:nargs={},args={}", nargs, args);
   auto *ret = g->call(nargs, args);
   std::copy(args.begin(), args.end(), f->deferred_args.begin());
 
-  if (1 == nargs)
-    f->deferred_args[2] = new Nothing();
-
-  return f->call(nargs, {f, ret});
+  return f->call(nargs, {f, ret, new Nothing()});
 }
 
 std::ostream &Atop::repr(std::ostream &os) const {
   return os << "(atop f=" << CXBQN_STR_NC(f) << ",g=" << CXBQN_STR_NC(g) << ")";
 }
 
-Value *Fork::call(u8 nargs, initl<Value *> args) {
+Value *Fork::call(u8 nargs, std::vector<Value *> args) {
   CXBQN_DEBUG("Fork::call:nargs={},args={}", nargs, args);
 
   // Pass 𝕩 and 𝕨 (if exists)
-  std::copy(args.begin(), args.end(), h->deferred_args.begin());
-  auto* r = h->call(nargs, {h});
+  args[0] = h;
+  auto* r = h->call(nargs, args);
 
-  // Pass 𝕩 and 𝕨 (if exists)
-  std::copy(args.begin(), args.end(), f->deferred_args.begin());
-
-  // If 𝕨 does not exist, we can't just leave it as a nullptr - that's different
-  // from a value of type Nothing.
-  if (1 == nargs)
-    f->deferred_args[2] = new Nothing();
-
-  auto* l = f->call(nargs, {f});
+  args[0] = f;
+  auto* l = f->call(nargs, args);
 
   // nargs will always be two for the inner function of a fork
   auto *ret = g->call(2, {g, r, l});
@@ -277,6 +267,19 @@ Value *Fork::call(u8 nargs, initl<Value *> args) {
 std::ostream &Fork::repr(std::ostream &os) const {
   return os << "(fork f=" << CXBQN_STR_NC(f) << ",g=" << CXBQN_STR_NC(g)
             << ",h=" << CXBQN_STR_NC(h) << ")";
+}
+
+Value *Md1Deferred::call(u8 nargs, std::vector<Value *> args) {
+  args.push_back(m1);
+  args.push_back(f);
+  return m1->call(nargs, args);
+}
+
+Value *Md2Deferred::call(u8 nargs, std::vector<Value *> args) {
+  args.push_back(m2);
+  args.push_back(f);
+  args.push_back(g);
+  return m2->call(nargs, args);
 }
 
 } // namespace cxbqn::types

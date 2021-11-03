@@ -148,7 +148,7 @@ void setc(std::deque<Value *> &stk, Scope *scp) {
 
   // F is called with 𝕩 and dereferenced r
   auto *refer = dynamic_cast<Reference *>(r);
-  auto *v = F->call(2, {F, scp->get(refer)});
+  auto *v = F->call(2, {F, scp->get(refer), new Nothing()});
 
   // Set the new value of the reference, and push it back on the stack
   scp->set(true, refer, v);
@@ -188,7 +188,7 @@ void fn10(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk) {
 #endif
 
   CXBQN_DEBUG("fn10:calling S={} on x={}", CXBQN_STR_NC(S), CXBQN_STR_NC(x));
-  auto *v = S->call(1, {S, x});
+  auto *v = S->call(1, {S, x, new Nothing()});
   CXBQN_DEBUG("fn10:returning {}", CXBQN_STR_NC(v));
 #ifdef CXBQN_DEEPCHECKS
   if (nullptr == v)
@@ -210,18 +210,18 @@ void fn20(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk) {
 
 #ifdef CXBQN_DEEPCHECKS
   if (nullptr == x)
-    throw std::runtime_error("FN20: got nullptr for x");
+    throw std::runtime_error("fn20: got nullptr for x");
   if (nullptr == w)
-    throw std::runtime_error("FN20: got nullptr for w");
+    throw std::runtime_error("fn20: got nullptr for w");
   if (nullptr == S)
-    throw std::runtime_error("FN20: got nullptr for S");
+    throw std::runtime_error("fn20: got nullptr for S");
 #endif
 
   auto *v = S->call(2, {S, x, w});
 
 #ifdef CXBQN_DEEPCHECKS
   if (nullptr == v)
-    throw std::runtime_error("FN20: F returned nullptr");
+    throw std::runtime_error("fn20: F returned nullptr");
 #endif
 
   stk.push_back(v);
@@ -243,8 +243,7 @@ void dfnd(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk, Scope *scp) {
     auto *ret = vm::vm(bc, child->consts, stk_, child);
     stk.push_back(ret);
   } else {
-    auto *F = new BlockInst(scp, blk_idx);
-    stk.push_back(F);
+    stk.push_back(new BlockInst(scp, blk_idx));
   }
 }
 
@@ -271,11 +270,11 @@ void md1c(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk, Scope *scp) {
 
   auto *r = dynamic_cast<BlockInst *>(opaque_r);
   if (r->imm()) {
-    auto *v = r->call(1, {nullptr, nullptr, nullptr, opaque_r, f, nullptr});
+    auto *v = r->call(1, {opaque_r, f, nullptr});
     stk.push_back(v);
   } else {
-    r->deferred_args.assign({nullptr, nullptr, nullptr, opaque_r, f, nullptr});
-    stk.push_back(opaque_r);
+    // r->deferred_args.assign({nullptr, nullptr, nullptr, opaque_r, f, nullptr});
+    stk.push_back(new Md1Deferred(f, opaque_r));
   }
 }
 
@@ -295,11 +294,10 @@ void md2c(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk, Scope *scp) {
   auto *r = dynamic_cast<BlockInst *>(opaque_r);
 
   if (r->imm()) {
-    auto *v = r->call(2, {nullptr, nullptr, nullptr, opaque_r, f, g});
+    auto *v = r->call(2, {opaque_r, f, g});
     stk.push_back(v);
   } else {
-    r->deferred_args.assign({nullptr, nullptr, nullptr, opaque_r, f, g});
-    stk.push_back(opaque_r);
+    stk.push_back(new Md2Deferred(f, opaque_r, g));
   }
 }
 

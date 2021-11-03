@@ -21,31 +21,22 @@ template <typename OS> OS &operator<<(OS &os, const Value *v) {
 }
 
 template <typename OS> OS &operator<<(OS &os, const Block &b) {
-  os << "Block<type=" << static_cast<int>(b.def.type)
-     << ",imm=" << b.def.immediate << ",";
+  os << "(block type=" << static_cast<int>(b.def.type)
+     << " imm=" << b.def.immediate << " ";
   if (b.def.immediate) {
     auto [bc, nvars] = b.body();
-    os << "nvars=" << nvars << ",bc=[";
-    for (const auto &e : bc)
-      os << e << ",";
-    os << "],";
+    os << "nvars=" << nvars << " ";
   } else {
     if (b.def.mon_body_idxs.size()) {
       auto [bc, nvars] = b.body(1);
-      os << "nvars1=" << nvars << ",bc1=[";
-      for (const auto &e : bc)
-        os << e << ",";
-      os << "],";
+      os << "nvars1=" << nvars << " ";
     }
     if (b.def.dya_body_idxs.size()) {
       auto [bc, nvars] = b.body(2);
-      os << "nvars2=" << nvars << ",bc2=[";
-      for (const auto &e : bc)
-        os << e << ",";
-      os << "],";
+      os << "nvars2=" << nvars << " ";
     }
   }
-  os << ">";
+  os << ")";
   return os;
 }
 
@@ -102,13 +93,15 @@ template <> struct fmt::formatter<Value> {
     auto format(const Container<ValueType *> &vs, FormatContext &ctx)          \
         -> decltype(ctx.out()) {                                               \
       auto &&out = ctx.out();                                                  \
+      std::vector<ValueType *> vvs(vs.begin(), vs.end());                      \
       format_to(out, "{}", "⟨");                                               \
-      for (const auto &v : vs) {                                               \
-        if (nullptr == v)                                                      \
+      for (int i = 0; i < vvs.size(); i++) {                                   \
+        if (nullptr == vvs[i])                                                 \
           format_to(out, "{}", "null");                                        \
         else                                                                   \
-          format_to(out, "{}", *v);                                            \
-        format_to(out, "{}", ",");                                             \
+          format_to(out, "{}", *vvs[i]);                                       \
+        if (i + 1 < vvs.size())                                                \
+          format_to(out, "{}", ",");                                           \
       }                                                                        \
       return format_to(out, "{}", "⟩");                                        \
     }                                                                          \

@@ -75,7 +75,7 @@ enum TypeAnnotations {
   // with a type, eg an array reference will have type t_Array|t_Reference
   t_Reference = 3,
   t_UserDefined,
-  t_Derived,
+  t_Deferred,
 
   // Because •Type of an array is 0, checking for bits to test for an array
   // is not effective.
@@ -127,13 +127,16 @@ struct Value {
 
   // If a value type does not define it's own call, we probably just push it
   // back on the stack.
-  virtual Value *call(u8 nargs = 0, initl<Value *> args = {}) { return this; };
+  virtual Value *call(u8 nargs = 0, std::vector<Value *> args = {}) { return this; };
 
   virtual std::ostream &repr(std::ostream &os) const { return os << "V"; }
 };
 
 struct Nothing : public Value {
   TypeType t() const override { return TypeType{annot(t_Nothing)}; }
+  std::ostream &repr(std::ostream &os) const override {
+    return os << "·";
+  }
 };
 
 // Managed Value
@@ -210,7 +213,7 @@ struct BlockInst : public Function {
 
   virtual TypeType t() const { return TypeType{annot(t_BlockInst)}; }
   BlockInst(Scope *scp, uz blk_idx) : scp{scp}, blk_idx{blk_idx} {}
-  Value *call(u8 nargs = 0, initl<Value *> args = {}) override;
+  Value *call(u8 nargs = 0, std::vector<Value *> args = {}) override;
   std::ostream &repr(std::ostream &os) const override {
     return os << "Block{i=" << blk_idx << "}";
   }
@@ -219,14 +222,14 @@ struct BlockInst : public Function {
 struct Fork : public Function {
   Value *f, *g, *h;
   Fork(Value*f, Value*g, Value*h) : f{f}, g{g}, h{h} {}
-  Value *call(u8 nargs = 0, initl<Value *> args = {}) override;
+  Value *call(u8 nargs = 0, std::vector<Value *> args = {}) override;
   std::ostream &repr(std::ostream &os) const override;
 };
 
 struct Atop : public Function {
   Value *g, *f;
   Atop(Value* f, Value* g) : f{f}, g{g} {}
-  Value *call(u8 nargs = 0, initl<Value *> args = {}) override;
+  Value *call(u8 nargs = 0, std::vector<Value *> args = {}) override;
   std::ostream &repr(std::ostream &os) const override;
 };
 
@@ -250,14 +253,25 @@ struct UserMd2 : public Md2 {
   Block *bl;
 };
 
-struct Md1Derived : public Function {
-  virtual TypeType t() const { return TypeType{t_Md1 | annot(t_Derived)}; }
+/*
+ * When a modifier is popped off the stack and it not immediate, this type
+ * is pushed back on the stack
+ */
+struct Md1Deferred : public Function {
+  virtual TypeType t() const { return TypeType{t_Md1 | annot(t_Deferred)}; }
   Value *f, *m1;
+  Md1Deferred(Value* f, Value* m1) : f{f}, m1{m1} {}
+  Value *call(u8 nargs = 0, std::vector<Value *> args = {}) override;
 };
 
-struct Md2Derived : public Function {
-  virtual TypeType t() const { return TypeType{t_Md2 | annot(t_Derived)}; }
+/*
+ * Same as above, but two modifier
+ */
+struct Md2Deferred : public Function {
+  virtual TypeType t() const { return TypeType{t_Md2 | annot(t_Deferred)}; }
   Value *f, *m2, *g;
+  Md2Deferred(Value* f, Value* m2, Value* g) : f{f}, m2{m2}, g{g} {}
+  Value *call(u8 nargs = 0, std::vector<Value *> args = {}) override;
 };
 
 struct CompilationResult {
