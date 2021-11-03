@@ -68,8 +68,7 @@ template <> struct fmt::formatter<Scope> {
   template <typename FormatContext>
   auto format(const Scope &s, FormatContext &ctx) -> decltype(ctx.out()) {
     auto &&out = ctx.out();
-    format_to(out, "Scope<parent={},vars={}>",
-              (s.parent ? "Scope<>" : "null"), s.vars);
+    format_to(out, "(scp p={},v={})", (s.parent ? "scp" : "null"), s.vars);
     return out;
   }
 };
@@ -103,7 +102,7 @@ template <> struct fmt::formatter<Value> {
     auto format(const Container<ValueType *> &vs, FormatContext &ctx)          \
         -> decltype(ctx.out()) {                                               \
       auto &&out = ctx.out();                                                  \
-      format_to(out, "{}", "[");                                               \
+      format_to(out, "{}", "⟨");                                               \
       for (const auto &v : vs) {                                               \
         if (nullptr == v)                                                      \
           format_to(out, "{}", "null");                                        \
@@ -111,7 +110,7 @@ template <> struct fmt::formatter<Value> {
           format_to(out, "{}", *v);                                            \
         format_to(out, "{}", ",");                                             \
       }                                                                        \
-      return format_to(out, "{}", "]");                                        \
+      return format_to(out, "{}", "⟩");                                        \
     }                                                                          \
   };
 
@@ -144,13 +143,13 @@ template <> struct fmt::formatter<Body> {
       return ctx.end();                                                        \
     }                                                                          \
     template <typename FormatContext>                                          \
-    auto format(const Container &vs, FormatContext &ctx)                     \
+    auto format(const Container &vs, FormatContext &ctx)                       \
         -> decltype(ctx.out()) {                                               \
       auto &&out = ctx.out();                                                  \
-      format_to(out, "{}", "[");                                                  \
-      for (const auto &e : vs)                                               \
+      format_to(out, "{}", "⟨");                                               \
+      for (const auto &e : vs)                                                 \
         format_to(out, "{},", e);                                              \
-      return format_to(out, "{}", "]");                                           \
+      return format_to(out, "{}", "⟩");                                        \
     }                                                                          \
   };
 

@@ -11,27 +11,31 @@ Array::Array(const ByteCode::value_type N, std::deque<Value *> &stk)
 }
 
 std::ostream &Array::repr(std::ostream &os) const {
-  os << "A<[";
-  for (const auto &e : values) {
+  os << "⟨";
+  for (int i=0; i<values.size(); i++) {
+    auto e = values[i];
     if (e)
       e->repr(os);
     else
       os << "null";
-    os << ",";
+    if (i+1 < values.size())
+      os << ",";
   }
-  return os << "]>";
+  return os << "⟩";
 }
 
 std::ostream &RefArray::repr(std::ostream &os) const {
-  os << "RA<[";
-  for (const auto &e : values) {
+  os << "r⟨";
+  for (int i=0; i<values.size(); i++) {
+    auto e = values[i];
     if (e)
       e->repr(os);
     else
       os << "null";
-    os << ",";
+    if (i+1 < values.size())
+      os << ",";
   }
-  return os << "]>";
+  return os << "⟩";
 }
 
 Reference *RefArray::getref(uz idx) {
@@ -227,6 +231,8 @@ Value *BlockInst::call(u8 nargs, initl<Value *> args) {
 
   CXBQN_DEBUG("BlockInst::call:recursing into vm");
   auto *ret = vm::vm(bc, child->consts, stk, child);
+  CXBQN_DEBUG("BlockInst::call:returning {}", CXBQN_STR_NC(ret));
+
   return ret;
 }
 
@@ -234,11 +240,15 @@ Value *Atop::call(u8 nargs, initl<Value *> args) {
   CXBQN_DEBUG("Atop::call:nargs={},args={}", nargs, args);
   auto *ret = g->call(nargs, args);
   std::copy(args.begin(), args.end(), f->deferred_args.begin());
+
+  if (1 == nargs)
+    f->deferred_args[2] = new Nothing();
+
   return f->call(nargs, {f, ret});
 }
 
 std::ostream &Atop::repr(std::ostream &os) const {
-  return os << "Atop<f=" << CXBQN_STR_NC(f) << ",g=" << CXBQN_STR_NC(g) << ">";
+  return os << "(atop f=" << CXBQN_STR_NC(f) << ",g=" << CXBQN_STR_NC(g) << ")";
 }
 
 Value *Fork::call(u8 nargs, initl<Value *> args) {
@@ -250,6 +260,12 @@ Value *Fork::call(u8 nargs, initl<Value *> args) {
 
   // Pass 𝕩 and 𝕨 (if exists)
   std::copy(args.begin(), args.end(), f->deferred_args.begin());
+
+  // If 𝕨 does not exist, we can't just leave it as a nullptr - that's different
+  // from a value of type Nothing.
+  if (1 == nargs)
+    f->deferred_args[2] = new Nothing();
+
   auto* l = f->call(nargs, {f});
 
   // nargs will always be two for the inner function of a fork
@@ -259,8 +275,8 @@ Value *Fork::call(u8 nargs, initl<Value *> args) {
 }
 
 std::ostream &Fork::repr(std::ostream &os) const {
-  return os << "Fork<f=" << CXBQN_STR_NC(f) << ",g=" << CXBQN_STR_NC(g)
-            << ",h=" << CXBQN_STR_NC(h) << ">";
+  return os << "(fork f=" << CXBQN_STR_NC(f) << ",g=" << CXBQN_STR_NC(g)
+            << ",h=" << CXBQN_STR_NC(h) << ")";
 }
 
 } // namespace cxbqn::types

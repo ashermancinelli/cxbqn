@@ -85,6 +85,9 @@ enum TypeAnnotations {
   // type
   t_Opaque,
   t_BlockInst,
+
+  // The value of 𝕨 in monadic calls
+  t_Nothing,
 };
 
 static constexpr u32 annot(TypeAnnotations ta) { return 1 << ta; }
@@ -129,6 +132,10 @@ struct Value {
   virtual std::ostream &repr(std::ostream &os) const { return os << "V"; }
 };
 
+struct Nothing : public Value {
+  TypeType t() const override { return TypeType{annot(t_Nothing)}; }
+};
+
 // Managed Value
 // Currently unused, but might be used for managing memory later on. The stack
 // and scope will likely own their values, while all other values can just hold
@@ -141,7 +148,7 @@ struct Character : public Value {
   Character(char c) : v{c} {}
   virtual TypeType t() const { return TypeType{t_Character}; }
   std::ostream &repr(std::ostream &os) const override {
-    return os << "C<" << v << ">";
+    return os << v;
   }
 };
 
@@ -150,7 +157,7 @@ struct Number : public Value {
   Number(f64 v) : v{v} {}
   virtual TypeType t() const { return TypeType{t_Number}; }
   std::ostream &repr(std::ostream &os) const override {
-    return os << "N<" << v << ">";
+    return os << v;
   }
 };
 
@@ -170,7 +177,7 @@ struct Reference : public Value {
   Reference(uz d, uz p) : depth{d}, position_in_parent{p} {}
   virtual TypeType t() const { return TypeType{annot(t_Reference)}; }
   std::ostream &repr(std::ostream &os) const override {
-    return os << "R<depth=" << depth << ",pos=" << position_in_parent << ">";
+    return os << "(d=" << depth << ",p=" << position_in_parent << ")";
   }
 };
 
@@ -186,7 +193,7 @@ struct RefArray : public Array {
 
 struct Function : public Value {
   virtual TypeType t() const { return TypeType{t_Function}; }
-  std::ostream &repr(std::ostream &os) const override { return os << "F<>"; }
+  std::ostream &repr(std::ostream &os) const override { return os << "F"; }
 };
 
 struct Builtin : public Function {
@@ -205,7 +212,7 @@ struct BlockInst : public Function {
   BlockInst(Scope *scp, uz blk_idx) : scp{scp}, blk_idx{blk_idx} {}
   Value *call(u8 nargs = 0, initl<Value *> args = {}) override;
   std::ostream &repr(std::ostream &os) const override {
-    return os << "BlockInst<blk_idx=" << blk_idx << ">";
+    return os << "Block{i=" << blk_idx << "}";
   }
 };
 

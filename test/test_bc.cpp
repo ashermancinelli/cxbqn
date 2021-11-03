@@ -406,3 +406,13 @@ TEST_CASE("t28", "") {
   REQUIRE(nullptr != n);
   CHECK(2.0 == Approx(n->v));
 }
+
+TEST_CASE("debug", "") {
+  CXBQN_LOG_TESTN(29);
+  CompileParams p{
+#include <bc_tests/debug.hpp>
+  };
+  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  REQUIRE(nullptr != ret.scp);
+  REQUIRE(nullptr != ret.v);
+}

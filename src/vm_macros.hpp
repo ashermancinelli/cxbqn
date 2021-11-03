@@ -15,8 +15,8 @@ static std::map<std::string, uz> instr_counts;
         std::accumulate(instr_counts.begin(), instr_counts.end(), 0,           \
                         [](auto acc, auto kv) { return acc + kv.second; });    \
     std::vector<std::pair<std::string, uz>> freq;                              \
-    for (const auto it : instr_counts)                                        \
-      freq.push_back(it);                                                     \
+    for (const auto it : instr_counts)                                         \
+      freq.push_back(it);                                                      \
     std::sort(freq.begin(), freq.end(),                                        \
               [](auto a, auto b) { return a.second > b.second; });             \
     fmt::print("{:^30}{:<20}{:<20}\n", "instruction", "count", "\% of total"); \
@@ -36,16 +36,34 @@ static std::map<std::string, uz> instr_counts;
 #define PC_CL (fmt::fg(fmt::color::light_green)),
 #define ARG_CL (fmt::fg(fmt::color::yellow)),
 #define EVAL_CL (fmt::fg(fmt::color::orange)),
+#define STK_CL (fmt::fg(fmt::color::light_coral)),
 #else
 #define INSTR_CL
 #define PC_CL
 #define ARG_CL
 #define EVAL_CL
+#define STK_CL
 #endif
 
+// Print the program counter
 #define INSTR_PC(pc) fmt::print(PC_CL "@{:<4}", pc)
+
+// Print the instruction
 #define INSTR_INSTR(x) fmt::print(INSTR_CL "{}", x)
 
+// Print the stack
+#define P_STK()                                                                \
+  do {                                                                         \
+    std::stringstream ss;                                                      \
+    for (int i = 0; i < stk.size(); i++) {                                     \
+      ss << CXBQN_STR_NC(stk[i]);                                              \
+      if (i + 1 < stk.size())                                                  \
+        ss << "; ";                                                            \
+    }                                                                          \
+    fmt::print(STK_CL "  {}", ss.str());                                       \
+  } while (0);
+
+// Indent according to the level of nesting in the given vm execution
 static cxbqn::u8 indent = -1;
 #define INDENT()                                                               \
   for (int i = 0; i < indent; i++)                                             \
@@ -57,6 +75,8 @@ static cxbqn::u8 indent = -1;
     INSTR_PC(pc);                                                              \
     INDENT();                                                                  \
     INSTR_INSTR(x);                                                            \
+    fmt::print("{:<6}", ""); \
+    P_STK();                                                                   \
     fmt::print("\n");                                                          \
   } while (0);
 #define INSTR1(x)                                                              \
@@ -65,7 +85,10 @@ static cxbqn::u8 indent = -1;
     INSTR_PC(pc);                                                              \
     INDENT();                                                                  \
     INSTR_INSTR(x);                                                            \
-    fmt::print(ARG_CL " {}\n", bc[pc + 1]);                                    \
+    const auto s = fmt::format(" {}", bc[pc + 1]);                             \
+    fmt::print(ARG_CL "{:<6}", s);                                             \
+    P_STK();                                                                   \
+    fmt::print("\n");                                                          \
   } while (0);
 #define INSTR2(x)                                                              \
   do {                                                                         \
@@ -73,7 +96,10 @@ static cxbqn::u8 indent = -1;
     INSTR_PC(pc);                                                              \
     INDENT();                                                                  \
     INSTR_INSTR(x);                                                            \
-    fmt::print(ARG_CL " {}, {}\n", bc[pc + 1], bc[pc + 2]);                    \
+    const auto s = fmt::format(" {} {}", bc[pc + 1], bc[pc + 2]);              \
+    fmt::print(ARG_CL "{:<6}", s);                                             \
+    P_STK();                                                                   \
+    fmt::print("\n");                                                          \
   } while (0);
 
 #define CXBQN_NEWEVAL()                                                        \
