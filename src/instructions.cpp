@@ -270,10 +270,9 @@ void md1c(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk, Scope *scp) {
 
   auto *r = dynamic_cast<BlockInst *>(opaque_r);
   if (r->imm()) {
-    auto *v = r->call(1, {opaque_r, f, nullptr});
+    auto *v = r->call(1, {opaque_r, f});
     stk.push_back(v);
   } else {
-    // r->deferred_args.assign({nullptr, nullptr, nullptr, opaque_r, f, nullptr});
     stk.push_back(new Md1Deferred(f, opaque_r));
   }
 }

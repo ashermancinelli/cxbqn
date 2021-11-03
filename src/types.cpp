@@ -239,7 +239,6 @@ Value *BlockInst::call(u8 nargs, std::vector<Value *> args) {
 Value *Atop::call(u8 nargs, std::vector<Value *> args) {
   CXBQN_DEBUG("Atop::call:nargs={},args={}", nargs, args);
   auto *ret = g->call(nargs, args);
-  std::copy(args.begin(), args.end(), f->deferred_args.begin());
 
   return f->call(nargs, {f, ret, new Nothing()});
 }

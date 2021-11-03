@@ -88,6 +88,9 @@ enum TypeAnnotations {
 
   // The value of 𝕨 in monadic calls
   t_Nothing,
+
+  // Builtin host-side functions for bootstrapping the runtime
+  t_Primitive,
 };
 
 static constexpr u32 annot(TypeAnnotations ta) { return 1 << ta; }

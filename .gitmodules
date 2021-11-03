@@ -17,3 +17,6 @@
 [submodule "ext/span"]
 	path = ext/span
 	url = https://github.com/tcbrindle/span.git
+[submodule "ext/doctest"]
+	path = ext/doctest
+	url = https://github.com/onqtam/doctest.git

@@ -1,7 +1,7 @@
 add_library(cxbqn
   vm.cpp
   types.cpp
-  # provides.cpp
+  provides.cpp
   op.cpp
   instructions.cpp
   debug.cpp
