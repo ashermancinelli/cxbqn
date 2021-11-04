@@ -9,7 +9,7 @@ using namespace cxbqn::types;
 using namespace cxbqn::provides;
 
 TEST_CASE("5") {
-  spdlog::critical("test={}, ans={}", "5", "5");
+  spdlog::critical("test='{}', ans='{}'", "5", "5");
   const auto rt = provides::get_runtime();
   const auto runtime = rt->values;
   CompileParams p{{0, 0, 7}, {5}, {{0, 1, 0}}, {{0, 0}}
@@ -24,7 +24,7 @@ TEST_CASE("5") {
 }
 
 TEST_CASE("4⋄3") {
-  spdlog::critical("test={}, ans={}", "4⋄3", "3");
+  spdlog::critical("test='{}', ans='{}'", "4⋄3", "3");
   const auto rt = provides::get_runtime();
   const auto runtime = rt->values;
   CompileParams p{{0, 0, 6, 0, 1, 7}, {4, 3}, {{0, 1, 0}}, {{0, 0}}
@@ -39,7 +39,7 @@ TEST_CASE("4⋄3") {
 }
 
 TEST_CASE("a←5") {
-  spdlog::critical("test={}, ans={}", "a←5", "5");
+  spdlog::critical("test='{}', ans='{}'", "a←5", "5");
   const auto rt = provides::get_runtime();
   const auto runtime = rt->values;
   CompileParams p{{0, 0, 33, 0, 0, 48, 7}, {5}, {{0, 1, 0}}, {{0, 1}}
@@ -54,7 +54,7 @@ TEST_CASE("a←5") {
 }
 
 TEST_CASE("a←5⋄a↩4") {
-  spdlog::critical("test={}, ans={}", "a←5⋄a↩4", "4");
+  spdlog::critical("test='{}', ans='{}'", "a←5⋄a↩4", "4");
   const auto rt = provides::get_runtime();
   const auto runtime = rt->values;
   CompileParams p{{0, 0, 33, 0, 0, 48, 6, 0, 1, 33, 0, 0, 49, 7},
@@ -72,7 +72,7 @@ TEST_CASE("a←5⋄a↩4") {
 }
 
 TEST_CASE("a←2⋄b←3⋄a") {
-  spdlog::critical("test={}, ans={}", "a←2⋄b←3⋄a", "2");
+  spdlog::critical("test='{}', ans='{}'", "a←2⋄b←3⋄a", "2");
   const auto rt = provides::get_runtime();
   const auto runtime = rt->values;
   CompileParams p{{0, 0, 33, 0, 0, 48, 6, 0, 1, 33, 0, 1, 48, 6, 34, 0, 0, 7},
@@ -90,7 +90,7 @@ TEST_CASE("a←2⋄b←3⋄a") {
 }
 
 TEST_CASE("a←1⋄A 4") {
-  spdlog::critical("test={}, ans={}", "a←1⋄A 4", "1");
+  spdlog::critical("test='{}', ans='{}'", "a←1⋄A 4", "1");
   const auto rt = provides::get_runtime();
   const auto runtime = rt->values;
   CompileParams p{{0, 0, 33, 0, 0, 48, 6, 0, 1, 34, 0, 0, 16, 7},
@@ -108,7 +108,7 @@ TEST_CASE("a←1⋄A 4") {
 }
 
 TEST_CASE("a←2⋄3 A 4") {
-  spdlog::critical("test={}, ans={}", "a←2⋄3 A 4", "2");
+  spdlog::critical("test='{}', ans='{}'", "a←2⋄3 A 4", "2");
   const auto rt = provides::get_runtime();
   const auto runtime = rt->values;
   CompileParams p{{0, 0, 33, 0, 0, 48, 6, 0, 2, 34, 0, 0, 0, 1, 17, 7},
@@ -126,7 +126,7 @@ TEST_CASE("a←2⋄3 A 4") {
 }
 
 TEST_CASE("{𝕩}6") {
-  spdlog::critical("test={}, ans={}", "{𝕩}6", "6");
+  spdlog::critical("test='{}', ans='{}'", "{𝕩}6", "6");
   const auto rt = provides::get_runtime();
   const auto runtime = rt->values;
   CompileParams p{{0, 0, 1, 1, 16, 7, 34, 0, 1, 7},
@@ -144,7 +144,7 @@ TEST_CASE("{𝕩}6") {
 }
 
 TEST_CASE("A←{𝕨}⋄3 A 4") {
-  spdlog::critical("test={}, ans={}", "A←{𝕨}⋄3 A 4", "3");
+  spdlog::critical("test='{}', ans='{}'", "A←{𝕨}⋄3 A 4", "3");
   const auto rt = provides::get_runtime();
   const auto runtime = rt->values;
   CompileParams p{
@@ -163,7 +163,7 @@ TEST_CASE("A←{𝕨}⋄3 A 4") {
 }
 
 TEST_CASE("a‿b←7‿2⋄a") {
-  spdlog::critical("test={}, ans={}", "a‿b←7‿2⋄a", "7");
+  spdlog::critical("test='{}', ans='{}'", "a‿b←7‿2⋄a", "7");
   const auto rt = provides::get_runtime();
   const auto runtime = rt->values;
   CompileParams p{
@@ -182,7 +182,7 @@ TEST_CASE("a‿b←7‿2⋄a") {
 }
 
 TEST_CASE("4{𝔽}") {
-  spdlog::critical("test={}, ans={}", "4{𝔽}", "4");
+  spdlog::critical("test='{}', ans='{}'", "4{𝔽}", "4");
   const auto rt = provides::get_runtime();
   const auto runtime = rt->values;
   CompileParams p{{1, 1, 0, 0, 26, 7, 34, 0, 1, 7},
@@ -200,7 +200,7 @@ TEST_CASE("4{𝔽}") {
 }
 
 TEST_CASE("4{𝔽⋄𝕩}6") {
-  spdlog::critical("test={}, ans={}", "4{𝔽⋄𝕩}6", "6");
+  spdlog::critical("test='{}', ans='{}'", "4{𝔽⋄𝕩}6", "6");
   const auto rt = provides::get_runtime();
   const auto runtime = rt->values;
   CompileParams p{{0, 1, 1, 1, 0, 0, 26, 16, 7, 34, 0, 4, 6, 34, 0, 1, 7},
@@ -218,7 +218,7 @@ TEST_CASE("4{𝔽⋄𝕩}6") {
 }
 
 TEST_CASE("3{𝔾}{𝕩} 1") {
-  spdlog::critical("test={}, ans={}", "3{𝔾}{𝕩} 1", "1");
+  spdlog::critical("test='{}', ans='{}'", "3{𝔾}{𝕩} 1", "1");
   const auto rt = provides::get_runtime();
   const auto runtime = rt->values;
   CompileParams p{{0, 1, 1, 1, 1, 2, 0, 0, 27, 16, 7, 34, 0, 1, 7, 34, 0, 2, 7},
@@ -236,7 +236,7 @@ TEST_CASE("3{𝔾}{𝕩} 1") {
 }
 
 TEST_CASE("(2{𝔽}{𝕩})3") {
-  spdlog::critical("test={}, ans={}", "(2{𝔽}{𝕩})3", "2");
+  spdlog::critical("test='{}', ans='{}'", "(2{𝔽}{𝕩})3", "2");
   const auto rt = provides::get_runtime();
   const auto runtime = rt->values;
   CompileParams p{
@@ -255,7 +255,7 @@ TEST_CASE("(2{𝔽}{𝕩})3") {
 }
 
 TEST_CASE("3({a‿b←𝕩⋄a}{𝕨‿𝕩})4") {
-  spdlog::critical("test={}, ans={}", "3({a‿b←𝕩⋄a}{𝕨‿𝕩})4", "3");
+  spdlog::critical("test='{}', ans='{}'", "3({a‿b←𝕩⋄a}{𝕨‿𝕩})4", "3");
   const auto rt = provides::get_runtime();
   const auto runtime = rt->values;
   CompileParams p{
@@ -275,7 +275,7 @@ TEST_CASE("3({a‿b←𝕩⋄a}{𝕨‿𝕩})4") {
 }
 
 TEST_CASE("4({𝕨‿𝕩}{𝕩}{𝕨})5") {
-  spdlog::critical("test={}, ans={}", "4({𝕨‿𝕩}{𝕩}{𝕨})5", "4");
+  spdlog::critical("test='{}', ans='{}'", "4({𝕨‿𝕩}{𝕩}{𝕨})5", "4");
   const auto rt = provides::get_runtime();
   const auto runtime = rt->values;
   CompileParams p{{0, 1, 1,  1, 1, 2, 1,  3, 21, 0,  0, 17, 7,  34, 0,
@@ -294,7 +294,7 @@ TEST_CASE("4({𝕨‿𝕩}{𝕩}{𝕨})5") {
 }
 
 TEST_CASE("a‿b←(2{𝕨‿𝕩}{𝕩})5⋄a") {
-  spdlog::critical("test={}, ans={}", "a‿b←(2{𝕨‿𝕩}{𝕩})5⋄a", "2");
+  spdlog::critical("test='{}', ans='{}'", "a‿b←(2{𝕨‿𝕩}{𝕩})5⋄a", "2");
   const auto rt = provides::get_runtime();
   const auto runtime = rt->values;
   CompileParams p{
@@ -314,7 +314,7 @@ TEST_CASE("a‿b←(2{𝕨‿𝕩}{𝕩})5⋄a") {
 }
 
 TEST_CASE("({a↩2⋄𝕩}{𝕩⋄a}{a↩3⋄𝕩})a←4") {
-  spdlog::critical("test={}, ans={}", "({a↩2⋄𝕩}{𝕩⋄a}{a↩3⋄𝕩})a←4", "2");
+  spdlog::critical("test='{}', ans='{}'", "({a↩2⋄𝕩}{𝕩⋄a}{a↩3⋄𝕩})a←4", "2");
   const auto rt = provides::get_runtime();
   const auto runtime = rt->values;
   CompileParams p{{0,  2, 33, 0, 0, 48, 1,  1,  1, 2,  1, 3,  21, 16, 7,
@@ -334,7 +334,7 @@ TEST_CASE("({a↩2⋄𝕩}{𝕩⋄a}{a↩3⋄𝕩})a←4") {
 }
 
 TEST_CASE("a←3⋄a{𝕩}↩8⋄a") {
-  spdlog::critical("test={}, ans={}", "a←3⋄a{𝕩}↩8⋄a", "8");
+  spdlog::critical("test='{}', ans='{}'", "a←3⋄a{𝕩}↩8⋄a", "8");
   const auto rt = provides::get_runtime();
   const auto runtime = rt->values;
   CompileParams p{{0, 0, 33, 0, 0,  48, 6, 0, 1,  1, 1, 33,
@@ -353,7 +353,7 @@ TEST_CASE("a←3⋄a{𝕩}↩8⋄a") {
 }
 
 TEST_CASE("a←4⋄a{𝕨⋄5}↩6") {
-  spdlog::critical("test={}, ans={}", "a←4⋄a{𝕨⋄5}↩6", "5");
+  spdlog::critical("test='{}', ans='{}'", "a←4⋄a{𝕨⋄5}↩6", "5");
   const auto rt = provides::get_runtime();
   const auto runtime = rt->values;
   CompileParams p{{0, 0, 33, 0, 0,  48, 6, 0, 2, 1, 1, 33,
@@ -372,7 +372,7 @@ TEST_CASE("a←4⋄a{𝕨⋄5}↩6") {
 }
 
 TEST_CASE("a←3⋄a{𝕩⋄1}↩⋄a") {
-  spdlog::critical("test={}, ans={}", "a←3⋄a{𝕩⋄1}↩⋄a", "1");
+  spdlog::critical("test='{}', ans='{}'", "a←3⋄a{𝕩⋄1}↩⋄a", "1");
   const auto rt = provides::get_runtime();
   const auto runtime = rt->values;
   CompileParams p{{0, 0,  33, 0, 0, 48, 6, 1, 1, 33, 0, 0, 51,
@@ -391,7 +391,7 @@ TEST_CASE("a←3⋄a{𝕩⋄1}↩⋄a") {
 }
 
 TEST_CASE("a‿b←2‿1⋄a‿b{𝕩‿𝕨}↩4⋄a") {
-  spdlog::critical("test={}, ans={}", "a‿b←2‿1⋄a‿b{𝕩‿𝕨}↩4⋄a", "4");
+  spdlog::critical("test='{}', ans='{}'", "a‿b←2‿1⋄a‿b{𝕩‿𝕨}↩4⋄a", "4");
   const auto rt = provides::get_runtime();
   const auto runtime = rt->values;
   CompileParams p{{0,  0, 0, 1, 11, 2,  33, 0,  0,  33, 0,  1,  12, 2,  48,
@@ -411,7 +411,7 @@ TEST_CASE("a‿b←2‿1⋄a‿b{𝕩‿𝕨}↩4⋄a") {
 }
 
 TEST_CASE("a←1⋄{a←2}⋄a") {
-  spdlog::critical("test={}, ans={}", "a←1⋄{a←2}⋄a", "1");
+  spdlog::critical("test='{}', ans='{}'", "a←1⋄{a←2}⋄a", "1");
   const auto rt = provides::get_runtime();
   const auto runtime = rt->values;
   CompileParams p{
@@ -430,7 +430,7 @@ TEST_CASE("a←1⋄{a←2}⋄a") {
 }
 
 TEST_CASE("a←1⋄{a↩2}⋄a") {
-  spdlog::critical("test={}, ans={}", "a←1⋄{a↩2}⋄a", "2");
+  spdlog::critical("test='{}', ans='{}'", "a←1⋄{a↩2}⋄a", "2");
   const auto rt = provides::get_runtime();
   const auto runtime = rt->values;
   CompileParams p{
@@ -449,7 +449,7 @@ TEST_CASE("a←1⋄{a↩2}⋄a") {
 }
 
 TEST_CASE("f‿g←{a←2⋄{a↩𝕩}‿{𝕩⋄a}}⋄F 6⋄G 0") {
-  spdlog::critical("test={}, ans={}", "f‿g←{a←2⋄{a↩𝕩}‿{𝕩⋄a}}⋄F 6⋄G 0", "6");
+  spdlog::critical("test='{}', ans='{}'", "f‿g←{a←2⋄{a↩𝕩}‿{𝕩⋄a}}⋄F 6⋄G 0", "6");
   const auto rt = provides::get_runtime();
   const auto runtime = rt->values;
   CompileParams p{
@@ -470,7 +470,7 @@ TEST_CASE("f‿g←{a←2⋄{a↩𝕩}‿{𝕩⋄a}}⋄F 6⋄G 0") {
 }
 
 TEST_CASE("L←{𝕩{𝕏𝕗}}⋄{𝕏𝕤}L L L 5") {
-  spdlog::critical("test={}, ans={}", "L←{𝕩{𝕏𝕗}}⋄{𝕏𝕤}L L L 5", "5");
+  spdlog::critical("test='{}', ans='{}'", "L←{𝕩{𝕏𝕗}}⋄{𝕏𝕤}L L L 5", "5");
   const auto rt = provides::get_runtime();
   const auto runtime = rt->values;
   CompileParams p{
@@ -491,7 +491,8 @@ TEST_CASE("L←{𝕩{𝕏𝕗}}⋄{𝕏𝕤}L L L 5") {
 }
 
 TEST_CASE("_l←{𝕩{𝕏𝕗} 𝔽}⋄{𝕏𝕤} {𝕩}_l 3 _l 5") {
-  spdlog::critical("test={}, ans={}", "_l←{𝕩{𝕏𝕗} 𝔽}⋄{𝕏𝕤} {𝕩}_l 3 _l 5", "3");
+  spdlog::critical("test='{}', ans='{}'", "_l←{𝕩{𝕏𝕗} 𝔽}⋄{𝕏𝕤} {𝕩}_l 3 _l 5",
+                   "3");
   const auto rt = provides::get_runtime();
   const auto runtime = rt->values;
   CompileParams p{
@@ -512,7 +513,7 @@ TEST_CASE("_l←{𝕩{𝕏𝕗} 𝔽}⋄{𝕏𝕤} {𝕩}_l 3 _l 5") {
 }
 
 TEST_CASE("1{𝕨}{𝔽{𝕩𝔽𝕨}𝔾𝔽}{𝕩}0") {
-  spdlog::critical("test={}, ans={}", "1{𝕨}{𝔽{𝕩𝔽𝕨}𝔾𝔽}{𝕩}0", "1");
+  spdlog::critical("test='{}', ans='{}'", "1{𝕨}{𝔽{𝕩𝔽𝕨}𝔾𝔽}{𝕩}0", "1");
   const auto rt = provides::get_runtime();
   const auto runtime = rt->values;
   CompileParams p{
@@ -534,7 +535,7 @@ TEST_CASE("1{𝕨}{𝔽{𝕩𝔽𝕨}𝔾𝔽}{𝕩}0") {
 
 TEST_CASE("0‿(0‿{𝕩}){{a‿b←𝕩⋄t←𝕤⋄{𝕤⋄T↩{𝕤⋄{a‿b←𝕩⋄a}}}{B𝕗}0⋄(T b){a‿b←𝕩⋄𝔽b}}𝕗} "
           "0‿(1‿(2‿(3‿(4‿{𝕩}))))") {
-  spdlog::critical("test={}, ans={}",
+  spdlog::critical("test='{}', ans='{}'",
                    "0‿(0‿{𝕩}){{a‿b←𝕩⋄t←𝕤⋄{𝕤⋄T↩{𝕤⋄{a‿b←𝕩⋄a}}}{B𝕗}0⋄(T "
                    "b){a‿b←𝕩⋄𝔽b}}𝕗} 0‿(1‿(2‿(3‿(4‿{𝕩}))))",
                    "2");

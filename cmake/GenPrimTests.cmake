@@ -33,7 +33,7 @@ using namespace cxbqn::provides;
       )
     file(APPEND ${P_TEST_SOURCE} "
 TEST_CASE(\"${test}\") {
-  spdlog::critical(\"test={}, ans={}\", \"${test}\", \"${ans}\");
+  spdlog::critical(\"test='{}', ans='{}'\", \"${test}\", \"${ans}\");
   const auto rt = provides::get_runtime();
   const auto runtime = rt->values;
   CompileParams p{

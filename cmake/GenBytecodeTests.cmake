@@ -1,7 +1,6 @@
 add_custom_target(gen_bc_test ALL)
 
 if(HAS_BQN_EXE)
-  find_package(UnixCommands REQUIRED)
   message(STATUS "Generating bytecode tests")
   set(BC_TESTS
       "5"
@@ -91,7 +90,7 @@ using namespace cxbqn::provides;
       APPEND ${BC_TEST_SOURCE}
       "
 TEST_CASE(\"${test}\") {
-  spdlog::critical(\"test={}, ans={}\", \"${test}\", \"${ans}\");
+  spdlog::critical(\"test='{}', ans='{}'\", \"${test}\", \"${ans}\");
   const auto rt = provides::get_runtime();
   const auto runtime = rt->values;
   CompileParams p{

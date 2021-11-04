@@ -9,7 +9,7 @@ using namespace cxbqn::types;
 using namespace cxbqn::provides;
 
 TEST_CASE("0≡¯2+2") {
-  spdlog::critical("test={}, ans={}", "0≡¯2+2", "1");
+  spdlog::critical("test='{}', ans='{}'", "0≡¯2+2", "1");
   const auto rt = provides::get_runtime();
   const auto runtime = rt->values;
   CompileParams p{{0, 4, 0, 0, 0, 3, 17, 0, 1, 0, 2, 17, 7},
@@ -27,7 +27,7 @@ TEST_CASE("0≡¯2+2") {
 }
 
 TEST_CASE("1e4≡5e3+5e3") {
-  spdlog::critical("test={}, ans={}", "1e4≡5e3+5e3", "1");
+  spdlog::critical("test='{}', ans='{}'", "1e4≡5e3+5e3", "1");
   const auto rt = provides::get_runtime();
   const auto runtime = rt->values;
   CompileParams p{{0, 3, 0, 0, 0, 3, 17, 0, 1, 0, 2, 17, 7},
@@ -45,7 +45,7 @@ TEST_CASE("1e4≡5e3+5e3") {
 }
 
 TEST_CASE("'c'≡'a'+2") {
-  spdlog::critical("test={}, ans={}", "'c'≡'a'+2", "1");
+  spdlog::critical("test='{}', ans='{}'", "'c'≡'a'+2", "1");
   const auto rt = provides::get_runtime();
   const auto runtime = rt->values;
   CompileParams p{
