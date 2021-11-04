@@ -25,7 +25,7 @@ ${BQN_EXE} ${CMAKE_CURRENT_SOURCE_DIR}/ccxx.bqn ${CXBQN_EXT_DIR}/bqn '${P_TEST}'
   add_custom_command(
     COMMENT "Generating primitive tests"
     DEPENDS ccxx.bqn
-    COMMAND cat ${GEN_P_TEST_FILE}
+    COMMAND bash ${GEN_P_TEST_FILE}
     OUTPUT ${PROJECT_BINARY_DIR}/include/prim_tests/t0.hpp)
   add_custom_target(
     do_gen_prim_test

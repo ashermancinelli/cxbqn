@@ -11,10 +11,12 @@ struct Provides : public Function {
   }
 };
 
-#define CXBQN_BUILTIN_DECL(T, symbol) \
-  struct T : public Provides { \
-    std::ostream &repr(std::ostream &os) const override { return os << symbol; } \
-    Value *call(u8 nargs = 0, std::vector<Value *> args = {}) override; \
+#define CXBQN_BUILTIN_DECL(T, ...)                                             \
+  struct T : public Provides {                                                 \
+    std::ostream &repr(std::ostream &os) const override {                      \
+      return os << __VA_ARGS__;                                                \
+    }                                                                          \
+    Value *call(u8 nargs = 0, std::vector<Value *> args = {}) override;        \
   };
 
 CXBQN_BUILTIN_DECL(Plus, "+");
@@ -62,9 +64,21 @@ CXBQN_BUILTIN_DECL(Table, "⌜");
  * 27 bi_drop
  */
 
-
 #undef CXBQN_BUILTIN_DECL
 
-Array* get_runtime();
+Array *get_runtime();
+Value* bi_plus();
+Value* bi_minus();
+Value* bi_mul();
+Value* bi_div();
+Value* bi_power();
+Value* bi_root();
+Value* bi_floor();
+Value* bi_ceil();
+Value* bi_feq();
+Value* bi_fne();
+Value* bi_arraydepth();
+Value* bi_type();
+Value* bi_table();
 
 } // namespace cxbqn::provides

@@ -1,5 +1,6 @@
 #include <cxbqn/debug.hpp>
 #include <cxbqn/provides.hpp>
+#include <cmath>
 
 namespace cxbqn::provides {
 
@@ -7,27 +8,72 @@ Array *get_runtime() {
   CXBQN_DEBUG("provides::get_runtime");
   auto *rt = new Array(23);
   rt->values.resize(23);
-  rt->values[0] = new Plus();
-  // rt->values[1] = new Minus();
-  // rt->values[2] = new Mul();
-  // rt->values[3] = new Div();
-  // rt->values[4] = new Power();
-  // rt->values[5] = new Root();
-  // rt->values[6] = new Floor();
-  // rt->values[7] = new Ceil();
-  //
+  rt->values[0] = bi_plus();
+  rt->values[1] = bi_minus();
+  rt->values[2] = bi_mul();
+  rt->values[3] = bi_div();
+  rt->values[4] = bi_power();
+  rt->values[5] = bi_root();
+  rt->values[6] = bi_floor();
+  rt->values[7] = bi_ceil();
   rt->values[18] = new FEQ();
   return rt;
 }
 
-CXBQN_BUILTIN_DECL(Plus, "+");
-CXBQN_BUILTIN_DECL(Minus, "-");
-CXBQN_BUILTIN_DECL(Mul, "×");
-CXBQN_BUILTIN_DECL(Div, "÷");
-CXBQN_BUILTIN_DECL(Power, "⋆");
-CXBQN_BUILTIN_DECL(Root, "√");
-CXBQN_BUILTIN_DECL(Floor, "⌊");
-CXBQN_BUILTIN_DECL(Ceil, "⌈");
+Value *bi_plus() {
+  static Plus p;
+  return &p;
+}
+
+Value *bi_minus() {
+  static Minus m;
+  return &m;
+}
+
+Value *bi_mul() {
+  static Mul m;
+  return &m;
+}
+Value *bi_div() {
+  static Minus m;
+  return &m;
+}
+Value *bi_power() {
+  static Minus m;
+  return &m;
+}
+Value *bi_root() {
+  static Minus m;
+  return &m;
+}
+Value *bi_floor() {
+  static Floor m;
+  return &m;
+}
+Value *bi_ceil() {
+  static Ceil m;
+  return &m;
+}
+Value *bi_feq() {
+  static Minus m;
+  return &m;
+}
+Value *bi_fne() {
+  static Minus m;
+  return &m;
+}
+Value *bi_arraydepth() {
+  static Minus m;
+  return &m;
+}
+Value *bi_type() {
+  static Minus m;
+  return &m;
+}
+Value *bi_table() {
+  static Minus m;
+  return &m;
+}
 
 namespace {
 
@@ -90,10 +136,11 @@ static uz array_depth_helper(uz init, Value *v) {
   CXBQN_DEBUG("array_depth_helper:init={},value={}", init, CXBQN_STR_NC(v));
   if (t_Array == type_builtin(v)) {
     auto *ar = dynamic_cast<Array *>(v);
-    return init + std::accumulate(ar->values.begin(), ar->values.end(), 1,
-                                  [](uz acc, auto b) {
-                                    return std::max(acc, array_depth_helper(0, b));
-                                  });
+    return init +
+           std::accumulate(ar->values.begin(), ar->values.end(), 1,
+                           [](uz acc, auto b) {
+                             return std::max(acc, array_depth_helper(0, b));
+                           });
   } else
     return 1 + init;
 }
@@ -116,6 +163,43 @@ Value *Plus::call(u8 nargs, std::vector<Value *> args) {
   auto *x = dynamic_cast<Number *>(args[1]);
   auto *w = dynamic_cast<Number *>(args[2]);
   return new Number(x->v + w->v);
+}
+
+Value *Minus::call(u8 nargs, std::vector<Value *> args) {
+  CXBQN_DEBUG("-:nargs={},args={}", nargs, args);
+  auto *x = dynamic_cast<Number *>(args[1]);
+  auto *w = dynamic_cast<Number *>(args[2]);
+  return new Number(2 == args.size() ? w->v - x->v : -x->v);
+}
+
+Value *Mul::call(u8 nargs, std::vector<Value *> args) {
+  CXBQN_DEBUG("×:nargs={},args={}", nargs, args);
+  auto *x = dynamic_cast<Number *>(args[1]);
+  auto *w = dynamic_cast<Number *>(args[2]);
+  if (2 == args.size()) {
+    return new Number(w->v * x->v);
+  }
+  return new Number(feq_helper(0., x->v) ? 0 : x->v > 0 ? 1 : 0);
+}
+
+Value *Floor::call(u8 nargs, std::vector<Value *> args) {
+  CXBQN_DEBUG("⌊:nargs={},args={}", nargs, args);
+  auto *x = dynamic_cast<Number *>(args[1]);
+  auto *w = dynamic_cast<Number *>(args[2]);
+  if (2 == args.size()) {
+    return new Number(std::min(w->v, x->v));
+  }
+  return new Number(std::floor(x->v));
+}
+
+Value *Ceil::call(u8 nargs, std::vector<Value *> args) {
+  CXBQN_DEBUG("⌈:nargs={},args={}", nargs, args);
+  auto *x = dynamic_cast<Number *>(args[1]);
+  auto *w = dynamic_cast<Number *>(args[2]);
+  if (2 == args.size()) {
+    return new Number(std::max(w->v, x->v));
+  }
+  return new Number(std::ceil(x->v));
 }
 
 Value *FEQ::call(u8 nargs, std::vector<Value *> args) {

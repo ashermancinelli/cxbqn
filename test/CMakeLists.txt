@@ -3,6 +3,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 set(tests
     test_bc
     test_prim
+    test_simple
 )
 
 foreach(test ${tests})
@@ -16,3 +17,6 @@ add_dependencies(test_bc gen_bc_test)
 
 include(GenPrimTests)
 add_dependencies(test_prim gen_prim_test)
+
+include(GenSimpleTests)
+add_dependencies(test_simple gen_simple_test)

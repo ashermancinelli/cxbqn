@@ -22,7 +22,7 @@ TEST_CASE("level0") {
     REQUIRE(nullptr != ret.v);
     REQUIRE(nullptr != ret.scp);
     Number *n = dynamic_cast<Number *>(ret.v);
-    //REQUIRE(nullptr != n);
-    //CHECK(5.0 == doctest::Approx(n->v));
+    REQUIRE(nullptr != n);
+    CHECK(1.0 == doctest::Approx(n->v));
   }
 }
