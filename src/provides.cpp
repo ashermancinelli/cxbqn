@@ -12,6 +12,16 @@ static inline auto type_builtin(const Value *v) {
   return (v->t() & TypeType{0b111}).to_ulong();
 }
 
+#define CHR_MAX 1114111
+static inline Value* check_char(Value* v) {
+  if (t_Character != type_builtin(v))
+    throw std::runtime_error("internal: invalid value passed to check_char");
+  auto f = dynamic_cast<Character*>(v)->v;
+  if (f < 0 || f > CHR_MAX)
+    throw std::runtime_error("invalid code point");
+  return v;
+}
+
 // When we "reshape" an array, we just allocate enough memory to hold all the
 // elements and assign the shape feild to be the shape we expect.
 static inline void reshape(Array *arr, std::initializer_list<uz> shape) {
@@ -37,8 +47,14 @@ static uz array_depth_helper(uz init, Value *v) {
 
 // For floating point comparisons, we use 10 times the machine precision.
 // Subject to change.
-static bool feq_helper(f64 a, f64 b) {
-  return std::abs(a - b) < (10 * std::numeric_limits<f64>::epsilon());
+template <typename T = f64> static bool feq_helper(T a, T b) {
+#define INF std::numeric_limits<T>::infinity()
+  if (a == INF and b == INF)
+    return true;
+  if (a == -INF and b == -INF)
+    return true;
+#undef INF
+  return std::abs(a - b) < (10 * std::numeric_limits<T>::epsilon());
 }
 
 } // namespace
@@ -50,27 +66,60 @@ static bool feq_helper(f64 a, f64 b) {
 // an f64
 #define NNC(x) new Number(static_cast<f64>(x))
 
-// Shorthand to define the call method of a given builtin type
+// Shorthand to define the call method of a given builtin type.
+// `ox` and `ow` are short for the opaque pointers to each argument, in case the
+// operator needs to do some checks on the values before casting them.
 #define CXBQN_BI_CALL_DEF_NUMONLY(TYPE, SYMBOL, PREAMBLE, RETURN)              \
   Value *TYPE::call(u8 nargs, std::vector<Value *> args) {                     \
     CXBQN_DEBUG(SYMBOL ":nargs={},args={}", nargs, args);                      \
+    auto *ox = args[1];                                                        \
+    auto *ow = args[2];                                                        \
     auto *x = dynamic_cast<Number *>(args[1]);                                 \
     auto *w = dynamic_cast<Number *>(args[2]);                                 \
     PREAMBLE;                                                                  \
-    return (RETURN);                                                           \
+    auto *ret = (RETURN);                                                      \
+    return ret;                                                                \
   }
 
-CXBQN_BI_CALL_DEF_NUMONLY(Plus, "+", {},
-                          1 == nargs ? args[1] : NN(x->v + w->v));
-CXBQN_BI_CALL_DEF_NUMONLY(Minus, "-", {}, NN(2 == nargs ? w->v - x->v : -x->v));
-Value *Mul::call(u8 nargs, std::vector<Value *> args) {
-  CXBQN_DEBUG("×:nargs={},args={}", nargs, args);
+Value *Plus::call(u8 nargs, std::vector<Value *> args) {
+  CXBQN_DEBUG("+:nargs={},args={}", nargs, args);
+  auto *ox = args[1];
+  auto *ow = args[2];
   auto *x = dynamic_cast<Number *>(args[1]);
   auto *w = dynamic_cast<Number *>(args[2]);
-  if (2 == nargs)
-    return NN(w->v * x->v);
-  return NN(feq_helper(0.0, x->v) ? 0 : x->v > 0 ? 1 : 0);
+  if (t_Character == type_builtin(ox) and t_Character == type_builtin(ow))
+    throw std::runtime_error("+: Cannot add two characters");
+  if (!ox->t()[t_DataValue] or !ow->t()[t_DataValue])
+    throw std::runtime_error("+: Cannot add non-data values");
+  if (t_Character == type_builtin(ox) || t_Character == type_builtin(ow)) {
+    return check_char(new Character(x->v + w->v));
+  }
+  return NN(x->v + w->v);
 }
+
+CXBQN_BI_CALL_DEF_NUMONLY(
+    Minus, "-",
+    {
+      if (t_Character == type_builtin(ow) and t_Number == type_builtin(ox))
+      {
+        return check_char(new Character(w->v - x->v));
+      }
+      if (t_Character == type_builtin(ow) and t_Character == type_builtin(ox)) {
+        return NN(w->v - x->v);
+      }
+      if (t_Number != type_builtin(ox))
+        throw std::runtime_error("can only negate numbers");
+    },
+    NN(2 == nargs ? w->v - x->v : -x->v));
+CXBQN_BI_CALL_DEF_NUMONLY(
+    Mul, "×",
+    {
+      if (2 == nargs)
+        return NN(w->v * x->v);
+    },
+    NN(feq_helper(0.0, x->v) ? 0
+       : x->v > 0            ? 1
+                             : 0));
 CXBQN_BI_CALL_DEF_NUMONLY(Div, "÷", {},
                           NN(2 == nargs ? w->v / x->v : 1 / x->v));
 CXBQN_BI_CALL_DEF_NUMONLY(Power, "×", {},
@@ -99,8 +148,10 @@ CXBQN_BI_CALL_DEF_NUMONLY(LT, "<", {}, NNC(w->v < x->v));
 CXBQN_BI_CALL_DEF_NUMONLY(GT, ">", {}, NNC(w->v > x->v));
 CXBQN_BI_CALL_DEF_NUMONLY(NE, "≠", {}, NNC(!feq_helper(x->v, w->v)));
 CXBQN_BI_CALL_DEF_NUMONLY(EQ, "=", {}, NNC(feq_helper(x->v, w->v)));
-CXBQN_BI_CALL_DEF_NUMONLY(LE, "≤", {}, NNC(w->v < x->v || feq_helper(x->v, w->v)));
-CXBQN_BI_CALL_DEF_NUMONLY(GE, "≥", {}, NNC(w->v > x->v || feq_helper(x->v, w->v)));
+CXBQN_BI_CALL_DEF_NUMONLY(LE, "≤", {},
+                          NNC(w->v < x->v || feq_helper(x->v, w->v)));
+CXBQN_BI_CALL_DEF_NUMONLY(GE, "≥", {},
+                          NNC(w->v > x->v || feq_helper(x->v, w->v)));
 CXBQN_BI_CALL_DEF_NUMONLY(FEQ, "feq", {}, NNC(feq_helper(x->v, w->v)));
 CXBQN_BI_CALL_DEF_NUMONLY(FNE, "fne", {}, NNC(!feq_helper(x->v, w->v)));
 CXBQN_BI_CALL_DEF_NUMONLY(Ltack, "⊣", {}, args[2]);

@@ -22,7 +22,7 @@ if(CXBQN_REGEN_TESTS)
     COMMAND ${CLANGFORMAT_EXE} -i ${PROJECT_BINARY_DIR}/test_simple.cpp
     COMMENT "Formatting generated sources..."
     )
-  add_custom_target(gentests
+  add_custom_target(gentest
     COMMAND ${CMAKE_COMMAND} -E rm ${CMAKE_CURRENT_SOURCE_DIR}/test_bc.cpp
     COMMAND ${CMAKE_COMMAND} -E rm ${CMAKE_CURRENT_SOURCE_DIR}/test_prim.cpp
     COMMAND ${CMAKE_COMMAND} -E rm ${CMAKE_CURRENT_SOURCE_DIR}/test_simple.cpp
@@ -32,7 +32,7 @@ if(CXBQN_REGEN_TESTS)
     COMMENT "Installing generated sources into the source tree..."
     )
   if(NOT ${CLANGFORMAT_EXE} STREQUAL "")
-    add_dependencies(gentests format-gen-tests)
+    add_dependencies(gentest format-gen-tests)
   else()
     message(WARNING "Generated sources will not be formatted, as clang-format could not be found.")
   endif()

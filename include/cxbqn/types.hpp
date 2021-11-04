@@ -91,6 +91,9 @@ enum TypeAnnotations {
 
   // Builtin host-side functions for bootstrapping the runtime
   t_Primitive,
+
+  // Some operations can only take certain combinations of data values, eg +.
+  t_DataValue,
 };
 
 static constexpr u32 annot(TypeAnnotations ta) { return 1 << ta; }
@@ -153,14 +156,15 @@ using WeakV = std::weak_ptr<Value>;
 struct Number : public Value {
   f64 v;
   Number(f64 v) : v{v} {}
-  virtual TypeType t() const { return TypeType{t_Number}; }
+  TypeType t() const override { return TypeType{t_Number | annot(t_DataValue)}; }
   std::ostream &repr(std::ostream &os) const override { return os << v; }
 };
 
 struct Character : public Number {
   Character(char c) : Number{static_cast<f64>(c)} {}
-  virtual TypeType t() const { return TypeType{t_Character}; }
-  std::ostream &repr(std::ostream &os) const override { return os << '\'' << static_cast<char>(v) << '\''; }
+  TypeType t() const override { return TypeType{t_Character | annot(t_DataValue)}; }
+  inline char c() const { return static_cast<char>(v); }
+  std::ostream &repr(std::ostream &os) const override { return os << "\'" << static_cast<char>(v) << "\'"; }
 };
 
 struct Array : public Value {
@@ -175,7 +179,7 @@ struct Array : public Value {
   ~Array() {}
   Value *operator[](const std::size_t &i) { return values[i]; }
   const Value *operator[](const std::size_t &i) const { return values[i]; }
-  virtual TypeType t() const { return TypeType{t_Array}; }
+  TypeType t() const override { return TypeType{t_Array}; }
   std::ostream &repr(std::ostream &os) const override;
 };
 
@@ -183,7 +187,7 @@ struct Reference : public Value {
   uz depth;
   uz position_in_parent;
   Reference(uz d, uz p) : depth{d}, position_in_parent{p} {}
-  virtual TypeType t() const { return TypeType{annot(t_Reference)}; }
+  TypeType t() const override { return TypeType{annot(t_Reference)}; }
   std::ostream &repr(std::ostream &os) const override {
     return os << "(d=" << depth << ",p=" << position_in_parent << ")";
   }
@@ -193,14 +197,14 @@ struct RefArray : public Array {
   RefArray(const ByteCode::value_type N, std::deque<Value *> &stk)
       : Array(N, stk) {}
   Reference *getref(uz idx);
-  virtual TypeType t() const {
+  TypeType t() const override {
     return TypeType{t_Array | annot(t_Reference) | annot(t_RefArray)};
   }
   std::ostream &repr(std::ostream &os) const override;
 };
 
 struct Function : public Value {
-  virtual TypeType t() const { return TypeType{t_Function}; }
+  TypeType t() const override { return TypeType{t_Function}; }
   std::ostream &repr(std::ostream &os) const override { return os << "F"; }
 };
 
@@ -211,7 +215,7 @@ struct BlockInst : public Function {
   // Is the block at index blk_idx immediate?
   bool imm() const;
 
-  virtual TypeType t() const { return TypeType{annot(t_BlockInst)}; }
+  TypeType t() const override { return TypeType{annot(t_BlockInst)}; }
   BlockInst(Scope *scp, uz blk_idx) : scp{scp}, blk_idx{blk_idx} {}
   Value *call(u8 nargs = 0, std::vector<Value *> args = {}) override;
   std::ostream &repr(std::ostream &os) const override {
@@ -234,21 +238,21 @@ struct Atop : public Function {
 };
 
 struct Md1 : public Function {
-  virtual TypeType t() const { return TypeType{t_Md1}; }
+  TypeType t() const override { return TypeType{t_Md1}; }
 };
 
 struct UserMd1 : public Md1 {
-  virtual TypeType t() const { return TypeType{t_Md1 | annot(t_UserDefined)}; }
+  TypeType t() const override { return TypeType{t_Md1 | annot(t_UserDefined)}; }
   Scope *sc;
   Block *bl;
 };
 
 struct Md2 : public Function {
-  virtual TypeType t() const { return TypeType{t_Md2}; }
+  TypeType t() const override { return TypeType{t_Md2}; }
 };
 
 struct UserMd2 : public Md2 {
-  virtual TypeType t() const { return TypeType{t_Md2 | annot(t_UserDefined)}; }
+  TypeType t() const override { return TypeType{t_Md2 | annot(t_UserDefined)}; }
   Scope *sc;
   Block *bl;
 };
@@ -258,7 +262,7 @@ struct UserMd2 : public Md2 {
  * is pushed back on the stack
  */
 struct Md1Deferred : public Function {
-  virtual TypeType t() const { return TypeType{t_Md1 | annot(t_Deferred)}; }
+  TypeType t() const override { return TypeType{t_Md1 | annot(t_Deferred)}; }
   Value *f, *m1;
   Md1Deferred(Value *f, Value *m1) : f{f}, m1{m1} {}
   Value *call(u8 nargs = 0, std::vector<Value *> args = {}) override;
@@ -268,7 +272,7 @@ struct Md1Deferred : public Function {
  * Same as above, but two modifier
  */
 struct Md2Deferred : public Function {
-  virtual TypeType t() const { return TypeType{t_Md2 | annot(t_Deferred)}; }
+  TypeType t() const override { return TypeType{t_Md2 | annot(t_Deferred)}; }
   Value *f, *m2, *g;
   Md2Deferred(Value *f, Value *m2, Value *g) : f{f}, m2{m2}, g{g} {}
   Value *call(u8 nargs = 0, std::vector<Value *> args = {}) override;

@@ -13,6 +13,7 @@ RunResult run(std::vector<i32> bc, std::vector<Value *> consts,
   CXBQN_SETLOGSTR();
   CXBQN_DEBUG("vm::run");
   CXBQN_DEBUG("bc={}", ByteCodeRef(bc));
+  INSTR_INIT();
 
 #ifdef CXBQN_DEEPCHECKS
   for (const auto &b : bodies)

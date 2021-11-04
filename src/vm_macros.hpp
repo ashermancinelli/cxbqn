@@ -64,7 +64,8 @@ static std::map<std::string, uz> instr_counts;
   } while (0);
 
 // Indent according to the level of nesting in the given vm execution
-static cxbqn::u8 indent = -1;
+static cxbqn::u8 indent;
+#define INSTR_INIT() indent = -1;
 #define INDENT()                                                               \
   for (int i = 0; i < indent; i++)                                             \
     fmt::print("    ");

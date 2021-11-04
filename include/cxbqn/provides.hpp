@@ -8,7 +8,7 @@ using namespace cxbqn::types;
 Array *get_runtime();
 
 struct Provides : public Function {
-  virtual TypeType t() const {
+  TypeType t() const override {
     return TypeType{t_Function | annot(t_Primitive)};
   }
 };
