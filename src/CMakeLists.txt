@@ -1,10 +1,10 @@
 add_library(cxbqn
+  bi.cpp
   vm.cpp
   types.cpp
   provides.cpp
   op.cpp
   instructions.cpp
-  debug.cpp
   )
 target_link_libraries(cxbqn PUBLIC tpl)
 add_library(cxbqn::cxbqn ALIAS cxbqn)

@@ -4,6 +4,11 @@
 
 namespace cxbqn::types {
 
+Value* bi_nothing() {
+  static Nothing n;
+  return &n;
+}
+
 Array::Array(const ByteCode::value_type N, std::deque<Value *> &stk)
     : N{static_cast<uz>(N)} {
   shape.push_back(N);
@@ -241,7 +246,7 @@ Value *Atop::call(u8 nargs, std::vector<Value *> args) {
   CXBQN_DEBUG("Atop::call:nargs={},args={}", nargs, args);
   auto *ret = g->call(nargs, args);
 
-  return f->call(nargs, {f, ret, new Nothing()});
+  return f->call(nargs, {f, ret, bi_nothing()});
 }
 
 std::ostream &Atop::repr(std::ostream &os) const {

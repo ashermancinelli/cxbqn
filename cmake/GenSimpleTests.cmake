@@ -1,4 +1,4 @@
-add_custom_target(gen_simple_test ALL)
+add_custom_target(gen_simple_test)
 
 if(HAS_BQN_EXE)
   find_package(UnixCommands REQUIRED)
@@ -64,11 +64,59 @@ ${BQN_EXE} ${CMAKE_CURRENT_SOURCE_DIR}/ccxx.bqn ${CXBQN_EXT_DIR}/bqn '${S_TEST}'
     )
     math(EXPR i "${i} + 1")
   endforeach()
+  math(EXPR i "${i} - 1")
+
+  set(S_TEST_SOURCE ${PROJECT_BINARY_DIR}/test_simple.cpp)
+  file(REMOVE ${S_TEST_SOURCE})
+  set(GEN_S_TEST_SOURCE ${PROJECT_BINARY_DIR}/gen-simple-test-source.sh)
+  file(WRITE ${GEN_S_TEST_SOURCE} "cd ${PROJECT_BINARY_DIR}
+echo '
+#include <cxbqn/cxbqn.hpp>
+#include \"utils.hpp\"
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#include <doctest/doctest.h>
+
+using namespace cxbqn;
+using namespace cxbqn::types;
+using namespace cxbqn::provides;
+
+TEST_CASE(\"simple\") {
+  const auto rt = provides::get_runtime();
+  const auto runtime = rt->values;
+
+' > ${S_TEST_SOURCE}
+
+for i in `seq 0 ${i}`; do
+echo \"
+  SUBCASE(\\\"$i\\\") {
+    CXBQN_LOG_TESTN($i);
+    CompileParams p{
+#include <simple_tests/t\${i}.hpp>
+    };
+
+    auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+    REQUIRE(nullptr != ret.v);
+    REQUIRE(nullptr != ret.scp);
+    Number *n = dynamic_cast<Number *>(ret.v);
+    REQUIRE(nullptr != n);
+    auto ans =
+#include <simple_tests/a\${i}.hpp>
+      ;
+    CHECK(ans == doctest::Approx(n->v));
+  }
+
+\" >> ${S_TEST_SOURCE}
+done
+echo '
+}
+' >> ${S_TEST_SOURCE}
+  ")
 
   add_custom_command(
     COMMENT "Generating simple tests"
     DEPENDS ccxx.bqn
     COMMAND bash ${GEN_S_TEST_FILE}
+    COMMAND bash ${GEN_S_TEST_SOURCE}
     OUTPUT ${PROJECT_BINARY_DIR}/include/simple_tests/t0.hpp)
   add_custom_target(
     do_gen_simple_test DEPENDS ${PROJECT_BINARY_DIR}/include/simple_tests/t0.hpp

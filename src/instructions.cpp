@@ -148,7 +148,7 @@ void setc(std::deque<Value *> &stk, Scope *scp) {
 
   // F is called with 𝕩 and dereferenced r
   auto *refer = dynamic_cast<Reference *>(r);
-  auto *v = F->call(2, {F, scp->get(refer), new Nothing()});
+  auto *v = F->call(2, {F, scp->get(refer), bi_nothing()});
 
   // Set the new value of the reference, and push it back on the stack
   scp->set(true, refer, v);
@@ -188,7 +188,7 @@ void fn10(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk) {
 #endif
 
   CXBQN_DEBUG("fn10:calling S={} on x={}", CXBQN_STR_NC(S), CXBQN_STR_NC(x));
-  auto *v = S->call(1, {S, x, new Nothing()});
+  auto *v = S->call(1, {S, x, bi_nothing()});
   CXBQN_DEBUG("fn10:returning {}", CXBQN_STR_NC(v));
 #ifdef CXBQN_DEEPCHECKS
   if (nullptr == v)

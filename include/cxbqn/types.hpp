@@ -141,6 +141,7 @@ struct Nothing : public Value {
   TypeType t() const override { return TypeType{annot(t_Nothing)}; }
   std::ostream &repr(std::ostream &os) const override { return os << "·"; }
 };
+Value* bi_nothing();
 
 // Managed Value
 // Currently unused, but might be used for managing memory later on. The stack
@@ -171,6 +172,7 @@ struct Array : public Value {
   Array(uz N) : N{N} {
     shape.push_back(N);
   }
+  Array() {}
   ~Array() {}
   Value *operator[](const std::size_t &i) { return values[i]; }
   const Value *operator[](const std::size_t &i) const { return values[i]; }
@@ -349,9 +351,5 @@ struct Scope {
   Scope *get_nth_parent(uz depth);
 };
 
-template <typename T> void is(Value *v);
-
 } // namespace types
 } // namespace cxbqn
-
-#include "detail/types.hpp.inl"

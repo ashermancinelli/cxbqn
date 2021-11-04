@@ -5,6 +5,8 @@ namespace cxbqn::provides {
 
 using namespace cxbqn::types;
 
+Array *get_runtime();
+
 struct Provides : public Function {
   virtual TypeType t() const {
     return TypeType{t_Function | annot(t_Primitive)};
@@ -19,6 +21,7 @@ struct Provides : public Function {
     Value *call(u8 nargs = 0, std::vector<Value *> args = {}) override;        \
   };
 
+// Arithmatic
 CXBQN_BUILTIN_DECL(Plus, "+");
 CXBQN_BUILTIN_DECL(Minus, "-");
 CXBQN_BUILTIN_DECL(Mul, "×");
@@ -28,49 +31,6 @@ CXBQN_BUILTIN_DECL(Root, "√");
 CXBQN_BUILTIN_DECL(Floor, "⌊");
 CXBQN_BUILTIN_DECL(Ceil, "⌈");
 CXBQN_BUILTIN_DECL(Stile, "|");
-//
-CXBQN_BUILTIN_DECL(FEQ, "feq");
-CXBQN_BUILTIN_DECL(FNE, "fne");
-CXBQN_BUILTIN_DECL(Ltack, "⊣");
-CXBQN_BUILTIN_DECL(Rtack, "⊢");
-
-CXBQN_BUILTIN_DECL(ArrayDepth, "≡");
-CXBQN_BUILTIN_DECL(Type, "•Type");
-CXBQN_BUILTIN_DECL(Table, "⌜");
-/*
- * 0 bi_add
- * 1 bi_sub
- * 2 bi_mul
- * 3 bi_div
- * 4 bi_pow
- * 5 bi_root
- * 6 bi_floor
- * 7 bi_ceil
- * 8 bi_stile
- * 9 bi_not
- * 10 bi_and
- * 11 bi_or
- * 12 bi_lt
- * 13 bi_gt
- * 14 bi_ne
- * 15 bi_eq
- * 16 bi_le
- * 17 bi_ge
- * 18 bi_feq
- * 19 bi_fne
- * 20 bi_ltack
- * 21 bi_rtack
- * 22 bi_shape
- * 23 bi_join
- * 24 bi_couple
- * 25 bi_pair
- * 26 bi_take
- * 27 bi_drop
- */
-
-#undef CXBQN_BUILTIN_DECL
-
-Array *get_runtime();
 Value* bi_plus();
 Value* bi_minus();
 Value* bi_mul();
@@ -80,12 +40,43 @@ Value* bi_root();
 Value* bi_floor();
 Value* bi_ceil();
 Value* bi_stile();
+
+// Bool
+CXBQN_BUILTIN_DECL(Not, "¬");
+CXBQN_BUILTIN_DECL(And, "∧");
+CXBQN_BUILTIN_DECL(Or, "∨");
+CXBQN_BUILTIN_DECL(LT, "<");
+CXBQN_BUILTIN_DECL(GT, ">");
+CXBQN_BUILTIN_DECL(NE, "≠");
+CXBQN_BUILTIN_DECL(EQ, "=");
+CXBQN_BUILTIN_DECL(LE, "≤");
+CXBQN_BUILTIN_DECL(GE, "≥");
+CXBQN_BUILTIN_DECL(FEQ, "feq");
+CXBQN_BUILTIN_DECL(FNE, "fne");
+Value* bi_not();
+Value* bi_and();
+Value* bi_or();
+Value* bi_lt();
+Value* bi_gt();
+Value* bi_ne();
+Value* bi_eq();
+Value* bi_le();
+Value* bi_ge();
 Value* bi_feq();
 Value* bi_fne();
+
+// Only some of these are needed to bootstrap the runtime
+CXBQN_BUILTIN_DECL(Ltack, "⊣");
+CXBQN_BUILTIN_DECL(Rtack, "⊢");
+CXBQN_BUILTIN_DECL(ArrayDepth, "≡");
+CXBQN_BUILTIN_DECL(Type, "•Type");
+CXBQN_BUILTIN_DECL(Table, "⌜");
 Value* bi_ltack();
 Value* bi_rtack();
 Value* bi_arraydepth();
 Value* bi_type();
 Value* bi_table();
+
+#undef CXBQN_BUILTIN_DECL
 
 } // namespace cxbqn::provides
