@@ -1,7 +1,3 @@
-set(HAS_FIND OFF)
-set(HAS_CLANGFORMAT OFF)
-set(HAS_CMAKEFORMAT OFF)
-
 find_package(UnixCommands REQUIRED)
 find_program(GIT_EXE "git" CACHE PATH "")
 find_program(CLANGFORMAT_EXE "clang-format" CACHE PATH "")

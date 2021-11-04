@@ -12,11 +12,28 @@ foreach(test ${tests})
   add_test(NAME ${test} COMMAND $<TARGET_FILE:${test}>)
 endforeach()
 
-include(GenBytecodeTests)
-add_dependencies(test_bc gen_bc_test)
-
-include(GenPrimTests)
-add_dependencies(test_prim gen_prim_test)
-
-include(GenSimpleTests)
-add_dependencies(test_simple gen_simple_test)
+if(CXBQN_REGEN_TESTS)
+  include(GenBytecodeTests)
+  include(GenPrimTests)
+  include(GenSimpleTests)
+  add_custom_target(format-gen-tests
+    COMMAND ${CLANGFORMAT_EXE} -i ${PROJECT_BINARY_DIR}/test_bc.cpp
+    COMMAND ${CLANGFORMAT_EXE} -i ${PROJECT_BINARY_DIR}/test_prim.cpp
+    COMMAND ${CLANGFORMAT_EXE} -i ${PROJECT_BINARY_DIR}/test_simple.cpp
+    COMMENT "Formatting generated sources..."
+    )
+  add_custom_target(gentests
+    COMMAND ${CMAKE_COMMAND} -E rm ${CMAKE_CURRENT_SOURCE_DIR}/test_bc.cpp
+    COMMAND ${CMAKE_COMMAND} -E rm ${CMAKE_CURRENT_SOURCE_DIR}/test_prim.cpp
+    COMMAND ${CMAKE_COMMAND} -E rm ${CMAKE_CURRENT_SOURCE_DIR}/test_simple.cpp
+    COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_BINARY_DIR}/test_bc.cpp ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_BINARY_DIR}/test_prim.cpp ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_BINARY_DIR}/test_simple.cpp ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMENT "Installing generated sources into the source tree..."
+    )
+  if(NOT ${CLANGFORMAT_EXE} STREQUAL "")
+    add_dependencies(gentests format-gen-tests)
+  else()
+    message(WARNING "Generated sources will not be formatted, as clang-format could not be found.")
+  endif()
+endif()

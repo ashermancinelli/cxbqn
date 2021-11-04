@@ -150,18 +150,17 @@ Value* bi_nothing();
 using OwnedV = std::shared_ptr<Value>;
 using WeakV = std::weak_ptr<Value>;
 
-struct Character : public Value {
-  char v;
-  Character(char c) : v{c} {}
-  virtual TypeType t() const { return TypeType{t_Character}; }
-  std::ostream &repr(std::ostream &os) const override { return os << v; }
-};
-
 struct Number : public Value {
   f64 v;
   Number(f64 v) : v{v} {}
   virtual TypeType t() const { return TypeType{t_Number}; }
   std::ostream &repr(std::ostream &os) const override { return os << v; }
+};
+
+struct Character : public Number {
+  Character(char c) : Number{static_cast<f64>(c)} {}
+  virtual TypeType t() const { return TypeType{t_Character}; }
+  std::ostream &repr(std::ostream &os) const override { return os << '\'' << static_cast<char>(v) << '\''; }
 };
 
 struct Array : public Value {

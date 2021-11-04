@@ -16,6 +16,7 @@ set(CXBQN_INIT_STACK_SIZE
 
 set(CMAKE_CXX_FLAGS "-Wall -Wextra ${CMAKE_CXX_FLAGS}" CACHE STRING "")
 
+set(CXBQN_REGEN_TESTS OFF CACHE BOOL "Regenerate bytecode, simple, and primitive tests")
 set(CXBQN_PROFILE_VM ON CACHE BOOL "Output profiling information from the VM")
 set(CXBQN_DEBUG_VM ON CACHE BOOL "Verbose output in the VM for debugging")
 set(CXBQN_DEEPCHECKS ON CACHE BOOL "Deep null checking and debugging information")

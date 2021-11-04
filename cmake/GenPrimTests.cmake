@@ -1,43 +1,53 @@
-add_custom_target(gen_prim_test ALL)
-
 if(HAS_BQN_EXE)
   find_package(UnixCommands REQUIRED)
-  message(STATUS "Dynamically generating primitive tests")
+  message(STATUS "Generating primitive tests")
   set(P_TESTS
     "0≡¯2+2"
+    "1e4≡5e3+5e3"
+    "'c'≡'a'+2"
+    )
+  set(P_ANS
+    "1"
+    "1"
+    "1"
     )
 
-  set(GEN_P_TEST_FILE "${PROJECT_BINARY_DIR}/gen-prim-test.sh")
-  file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/include/prim_tests)
-  file(REMOVE ${GEN_P_TEST_FILE})
-  file(WRITE ${GEN_P_TEST_FILE} "cd ${CXBQN_EXT_DIR}/cbqn\n")
+  set(P_TEST_SOURCE "${PROJECT_BINARY_DIR}/test_prim.cpp")
+  file(REMOVE ${P_TEST_SOURCE})
+  file(WRITE ${P_TEST_SOURCE} "
+#include <cxbqn/cxbqn.hpp>
+#include \"utils.hpp\"
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#include <doctest/doctest.h>
 
-  set(i 0)
-  foreach(P_TEST ${P_TESTS})
-    file(
-      APPEND ${GEN_P_TEST_FILE}
-      "echo -e '/* ${P_TEST} */' > ${PROJECT_BINARY_DIR}/include/prim_tests/t${i}.hpp
-${BQN_EXE} ${CMAKE_CURRENT_SOURCE_DIR}/ccxx.bqn ${CXBQN_EXT_DIR}/bqn '${P_TEST}' >> ${PROJECT_BINARY_DIR}/include/prim_tests/t${i}.hpp\n"
-    )
-    math(EXPR i "${i} + 1")
+using namespace cxbqn;
+using namespace cxbqn::types;
+using namespace cxbqn::provides;
+")
+
+  foreach(test ans IN ZIP_LISTS P_TESTS P_ANS)
+    execute_process(
+      COMMAND ${BASH} -c "${BQN_EXE} ${CMAKE_CURRENT_SOURCE_DIR}/ccxx.bqn ${CXBQN_EXT_DIR}/bqn \"${test}\""
+      WORKING_DIRECTORY "${CXBQN_EXT_DIR}/cbqn"
+      OUTPUT_VARIABLE compiled_test
+      )
+    file(APPEND ${P_TEST_SOURCE} "
+TEST_CASE(\"${test}\") {
+  spdlog::critical(\"test={}, ans={}\", \"${test}\", \"${ans}\");
+  const auto rt = provides::get_runtime();
+  const auto runtime = rt->values;
+  CompileParams p{
+    ${compiled_test}
+  };
+  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  REQUIRE(nullptr != ret.v);
+  REQUIRE(nullptr != ret.scp);
+  Number *n = dynamic_cast<Number *>(ret.v);
+  REQUIRE(nullptr != n);
+  CHECK(${ans} == doctest::Approx(n->v));
+}
+")
   endforeach()
-
-  add_custom_command(
-    COMMENT "Generating primitive tests"
-    DEPENDS ccxx.bqn
-    COMMAND bash ${GEN_P_TEST_FILE}
-    OUTPUT ${PROJECT_BINARY_DIR}/include/prim_tests/t0.hpp)
-  add_custom_target(
-    do_gen_prim_test
-    DEPENDS ${PROJECT_BINARY_DIR}/include/prim_tests/t0.hpp
-            ccxx.bqn)
 else()
-  add_custom_target(
-    do_gen_prim_test
-    COMMAND
-      ${CMAKE_COMMAND} -E echo
-      "prim tests could not be generated becuase no BQN executable could be found."
-  )
+  message(WARNING "Attempted to generate primitive tests, but no BQN executable was found.")
 endif()
-
-add_dependencies(gen_prim_test do_gen_prim_test)

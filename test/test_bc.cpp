@@ -1,408 +1,582 @@
+
+#include "utils.hpp"
 #include <cxbqn/cxbqn.hpp>
-#include <cxbqn/debug.hpp>
-#include <spdlog/spdlog.h>
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include <doctest/doctest.h>
 
-#include "utils.hpp"
-
 using namespace cxbqn;
-using namespace cxbqn::vm;
 using namespace cxbqn::types;
 using namespace cxbqn::provides;
 
-TEST_CASE("bc0-9") {
-  CXBQN_SETLOGSTR();
+TEST_CASE("5") {
+  spdlog::critical("test={}, ans={}", "5", "5");
+  const auto rt = provides::get_runtime();
+  const auto runtime = rt->values;
+  CompileParams p{{0, 0, 7}, {5}, {{0, 1, 0}}, {{0, 0}}
 
-  SUBCASE("t0") {
-    CXBQN_LOG_TESTN(0);
-    CompileParams p{
-#include <bc_tests/t0.hpp>
-    };
-
-    auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
-
-    Number *n = dynamic_cast<Number *>(ret.v);
-    REQUIRE(nullptr != n);
-    CHECK(5.0 == doctest::Approx(n->v));
-  }
-
-  SUBCASE("t1") {
-    CXBQN_LOG_TESTN(1);
-    CompileParams p{
-#include <bc_tests/t1.hpp>
-    };
-
-    auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
-
-    Number *n = dynamic_cast<Number *>(ret.v);
-    REQUIRE(nullptr != n);
-    CHECK(3.0 == doctest::Approx(n->v));
-  }
-
-  SUBCASE("t2") {
-    CXBQN_LOG_TESTN(2);
-    CompileParams p{
-#include <bc_tests/t2.hpp>
-    };
-
-    auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
-
-    REQUIRE(nullptr != ret.v);
-    REQUIRE(nullptr != ret.scp);
-    Number *n = dynamic_cast<Number *>(ret.v);
-    REQUIRE(nullptr != n);
-    CHECK(5.0 == doctest::Approx(n->v));
-  }
-
-  SUBCASE("t3") {
-    CXBQN_LOG_TESTN(3);
-    CompileParams p{
-#include <bc_tests/t3.hpp>
-    };
-
-    auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
-    REQUIRE(nullptr != ret.scp);
-    REQUIRE(nullptr != ret.v);
-    auto *n = dynamic_cast<Number *>(ret.v);
-    REQUIRE(nullptr != n);
-    CHECK(4.0 == doctest::Approx(n->v));
-  }
-
-  SUBCASE("t4") {
-    CXBQN_LOG_TESTN(4);
-    CompileParams p{
-#include <bc_tests/t4.hpp>
-    };
-    auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
-    REQUIRE(nullptr != ret.scp);
-    REQUIRE(nullptr != ret.v);
-    auto *n = dynamic_cast<Number *>(ret.v);
-    REQUIRE(nullptr != n);
-    CHECK(2.0 == doctest::Approx(n->v));
-  }
-
-  SUBCASE("t5") {
-    CXBQN_LOG_TESTN(5);
-    CompileParams p{
-#include <bc_tests/t5.hpp>
-    };
-    auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
-    REQUIRE(nullptr != ret.scp);
-    REQUIRE(nullptr != ret.v);
-    auto *n = dynamic_cast<Number *>(ret.v);
-    REQUIRE(nullptr != n);
-    CHECK(1.0 == doctest::Approx(n->v));
-  }
-
-  SUBCASE("t6") {
-    CXBQN_LOG_TESTN(6);
-    CompileParams p{
-#include <bc_tests/t6.hpp>
-    };
-    auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
-    REQUIRE(nullptr != ret.scp);
-    REQUIRE(nullptr != ret.v);
-    auto *n = dynamic_cast<Number *>(ret.v);
-    REQUIRE(nullptr != n);
-    CHECK(2.0 == doctest::Approx(n->v));
-  }
-
-  SUBCASE("t7") {
-    CXBQN_LOG_TESTN(7);
-    CompileParams p{
-#include <bc_tests/t7.hpp>
-    };
-    auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
-    REQUIRE(nullptr != ret.scp);
-    REQUIRE(nullptr != ret.v);
-    auto *n = dynamic_cast<Number *>(ret.v);
-    REQUIRE(nullptr != n);
-    CHECK(6.0 == doctest::Approx(n->v));
-  }
-
-  /*  A←{𝕨}⋄3 A 4           #    dyadic block function
-   * {1,1,33,0,0,48,6,0,1,34,0,0,0,0,17,7,34,0,2,7},
-   * {3,4},
-   * {{0,1,0},{0,0,{{},{1}}}},
-   * {{0,1},{16,3}}
-   */
-  SUBCASE("t8") {
-    CXBQN_LOG_TESTN(8);
-    CompileParams p{
-#include <bc_tests/t8.hpp>
-    };
-    auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
-    REQUIRE(nullptr != ret.scp);
-    REQUIRE(nullptr != ret.v);
-    auto* n = dynamic_cast<Number*>(ret.v);
-    REQUIRE(nullptr != n);
-    CHECK(3.0 == doctest::Approx(n->v));
-  }
-
-  /*  a‿b←7‿2⋄a             # 11 ARRO, 12 ARRM
-   * {0,0,0,1,11,2,33,0,0,33,0,1,12,2,48,6,34,0,0,7},
-   * {7,2},
-   * {{0,1,0}},
-   * {{0,2}} 
-   */
-  SUBCASE("t9") {
-    CXBQN_LOG_TESTN(9);
-    CompileParams p{
-#include <bc_tests/t9.hpp>
-    };
-    auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
-    REQUIRE(nullptr != ret.scp);
-    REQUIRE(nullptr != ret.v);
-    auto* n = dynamic_cast<Number*>(ret.v);
-    REQUIRE(nullptr != n);
-    CHECK(7.0 == doctest::Approx(n->v));
-  }
-}
-
-TEST_CASE("t10") {
-  CXBQN_LOG_TESTN(10);
-  CompileParams p{
-#include <bc_tests/t10.hpp>
   };
   auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
-  REQUIRE(nullptr != ret.scp);
   REQUIRE(nullptr != ret.v);
-  auto* n = dynamic_cast<Number*>(ret.v);
+  REQUIRE(nullptr != ret.scp);
+  Number *n = dynamic_cast<Number *>(ret.v);
   REQUIRE(nullptr != n);
-  CHECK(4.0 == doctest::Approx(n->v));
+  CHECK(5 == doctest::Approx(n->v));
 }
 
-TEST_CASE("t11") {
-  CXBQN_LOG_TESTN(11);
-  CompileParams p{
-#include <bc_tests/t11.hpp>
+TEST_CASE("4⋄3") {
+  spdlog::critical("test={}, ans={}", "4⋄3", "3");
+  const auto rt = provides::get_runtime();
+  const auto runtime = rt->values;
+  CompileParams p{{0, 0, 6, 0, 1, 7}, {4, 3}, {{0, 1, 0}}, {{0, 0}}
+
   };
   auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
-  REQUIRE(nullptr != ret.scp);
   REQUIRE(nullptr != ret.v);
-  auto* n = dynamic_cast<Number*>(ret.v);
+  REQUIRE(nullptr != ret.scp);
+  Number *n = dynamic_cast<Number *>(ret.v);
   REQUIRE(nullptr != n);
-  CHECK(6.0 == doctest::Approx(n->v));
+  CHECK(3 == doctest::Approx(n->v));
 }
 
-TEST_CASE("t12") {
-  CXBQN_LOG_TESTN(12);
-  CompileParams p{
-#include <bc_tests/t12.hpp>
+TEST_CASE("a←5") {
+  spdlog::critical("test={}, ans={}", "a←5", "5");
+  const auto rt = provides::get_runtime();
+  const auto runtime = rt->values;
+  CompileParams p{{0, 0, 33, 0, 0, 48, 7}, {5}, {{0, 1, 0}}, {{0, 1}}
+
   };
   auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
-  REQUIRE(nullptr != ret.scp);
   REQUIRE(nullptr != ret.v);
-  auto* n = dynamic_cast<Number*>(ret.v);
+  REQUIRE(nullptr != ret.scp);
+  Number *n = dynamic_cast<Number *>(ret.v);
   REQUIRE(nullptr != n);
-  CHECK(1.0 == doctest::Approx(n->v));
+  CHECK(5 == doctest::Approx(n->v));
 }
 
-TEST_CASE("t13") {
-  CXBQN_LOG_TESTN(13);
-  CompileParams p{
-#include <bc_tests/t13.hpp>
+TEST_CASE("a←5⋄a↩4") {
+  spdlog::critical("test={}, ans={}", "a←5⋄a↩4", "4");
+  const auto rt = provides::get_runtime();
+  const auto runtime = rt->values;
+  CompileParams p{{0, 0, 33, 0, 0, 48, 6, 0, 1, 33, 0, 0, 49, 7},
+                  {5, 4},
+                  {{0, 1, 0}},
+                  {{0, 1}}
+
   };
   auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
-  REQUIRE(nullptr != ret.scp);
   REQUIRE(nullptr != ret.v);
-  auto* n = dynamic_cast<Number*>(ret.v);
+  REQUIRE(nullptr != ret.scp);
+  Number *n = dynamic_cast<Number *>(ret.v);
   REQUIRE(nullptr != n);
-  CHECK(2.0 == doctest::Approx(n->v));
+  CHECK(4 == doctest::Approx(n->v));
 }
 
-TEST_CASE("t14") {
-  CXBQN_LOG_TESTN(14);
-  CompileParams p{
-#include <bc_tests/t14.hpp>
+TEST_CASE("a←2⋄b←3⋄a") {
+  spdlog::critical("test={}, ans={}", "a←2⋄b←3⋄a", "2");
+  const auto rt = provides::get_runtime();
+  const auto runtime = rt->values;
+  CompileParams p{{0, 0, 33, 0, 0, 48, 6, 0, 1, 33, 0, 1, 48, 6, 34, 0, 0, 7},
+                  {2, 3},
+                  {{0, 1, 0}},
+                  {{0, 2}}
+
   };
   auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
-  REQUIRE(nullptr != ret.scp);
   REQUIRE(nullptr != ret.v);
-  auto* n = dynamic_cast<Number*>(ret.v);
+  REQUIRE(nullptr != ret.scp);
+  Number *n = dynamic_cast<Number *>(ret.v);
   REQUIRE(nullptr != n);
-  CHECK(3.0 == doctest::Approx(n->v));
+  CHECK(2 == doctest::Approx(n->v));
 }
 
-TEST_CASE("t15") {
-  CXBQN_LOG_TESTN(15);
-  CompileParams p{
-#include <bc_tests/t15.hpp>
+TEST_CASE("a←1⋄A 4") {
+  spdlog::critical("test={}, ans={}", "a←1⋄A 4", "1");
+  const auto rt = provides::get_runtime();
+  const auto runtime = rt->values;
+  CompileParams p{{0, 0, 33, 0, 0, 48, 6, 0, 1, 34, 0, 0, 16, 7},
+                  {1, 4},
+                  {{0, 1, 0}},
+                  {{0, 1}}
+
   };
   auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
-  REQUIRE(nullptr != ret.scp);
   REQUIRE(nullptr != ret.v);
-  auto* n = dynamic_cast<Number*>(ret.v);
+  REQUIRE(nullptr != ret.scp);
+  Number *n = dynamic_cast<Number *>(ret.v);
   REQUIRE(nullptr != n);
-  CHECK(4.0 == doctest::Approx(n->v));
+  CHECK(1 == doctest::Approx(n->v));
 }
 
-TEST_CASE("t16") {
-  CXBQN_LOG_TESTN(16);
-  CompileParams p{
-#include <bc_tests/t16.hpp>
+TEST_CASE("a←2⋄3 A 4") {
+  spdlog::critical("test={}, ans={}", "a←2⋄3 A 4", "2");
+  const auto rt = provides::get_runtime();
+  const auto runtime = rt->values;
+  CompileParams p{{0, 0, 33, 0, 0, 48, 6, 0, 2, 34, 0, 0, 0, 1, 17, 7},
+                  {2, 3, 4},
+                  {{0, 1, 0}},
+                  {{0, 1}}
+
   };
   auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
-  REQUIRE(nullptr != ret.scp);
   REQUIRE(nullptr != ret.v);
-  auto* n = dynamic_cast<Number*>(ret.v);
+  REQUIRE(nullptr != ret.scp);
+  Number *n = dynamic_cast<Number *>(ret.v);
   REQUIRE(nullptr != n);
-  CHECK(2.0 == doctest::Approx(n->v));
+  CHECK(2 == doctest::Approx(n->v));
 }
 
-TEST_CASE("t17") {
-  CXBQN_LOG_TESTN(17);
-  CompileParams p{
-#include <bc_tests/t17.hpp>
+TEST_CASE("{𝕩}6") {
+  spdlog::critical("test={}, ans={}", "{𝕩}6", "6");
+  const auto rt = provides::get_runtime();
+  const auto runtime = rt->values;
+  CompileParams p{{0, 0, 1, 1, 16, 7, 34, 0, 1, 7},
+                  {6},
+                  {{0, 1, 0}, {0, 0, 1}},
+                  {{0, 0}, {6, 3}}
+
   };
   auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
-  REQUIRE(nullptr != ret.scp);
   REQUIRE(nullptr != ret.v);
-  auto* n = dynamic_cast<Number*>(ret.v);
+  REQUIRE(nullptr != ret.scp);
+  Number *n = dynamic_cast<Number *>(ret.v);
   REQUIRE(nullptr != n);
-  CHECK(2.0 == doctest::Approx(n->v));
+  CHECK(6 == doctest::Approx(n->v));
 }
 
-TEST_CASE("t18") {
-  CXBQN_LOG_TESTN(18);
+TEST_CASE("A←{𝕨}⋄3 A 4") {
+  spdlog::critical("test={}, ans={}", "A←{𝕨}⋄3 A 4", "3");
+  const auto rt = provides::get_runtime();
+  const auto runtime = rt->values;
   CompileParams p{
-#include <bc_tests/t18.hpp>
+      {1, 1, 33, 0, 0, 48, 6, 0, 1, 34, 0, 0, 0, 0, 17, 7, 34, 0, 2, 7},
+      {3, 4},
+      {{0, 1, 0}, {0, 0, {{}, {1}}}},
+      {{0, 1}, {16, 3}}
+
   };
   auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
-  REQUIRE(nullptr != ret.scp);
   REQUIRE(nullptr != ret.v);
-  auto* n = dynamic_cast<Number*>(ret.v);
+  REQUIRE(nullptr != ret.scp);
+  Number *n = dynamic_cast<Number *>(ret.v);
   REQUIRE(nullptr != n);
-  CHECK(8.0 == doctest::Approx(n->v));
+  CHECK(3 == doctest::Approx(n->v));
 }
 
-TEST_CASE("t19") {
-  CXBQN_LOG_TESTN(19);
+TEST_CASE("a‿b←7‿2⋄a") {
+  spdlog::critical("test={}, ans={}", "a‿b←7‿2⋄a", "7");
+  const auto rt = provides::get_runtime();
+  const auto runtime = rt->values;
   CompileParams p{
-#include <bc_tests/t19.hpp>
+      {0, 0, 0, 1, 11, 2, 33, 0, 0, 33, 0, 1, 12, 2, 48, 6, 34, 0, 0, 7},
+      {7, 2},
+      {{0, 1, 0}},
+      {{0, 2}}
+
   };
   auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
-  REQUIRE(nullptr != ret.scp);
   REQUIRE(nullptr != ret.v);
-  auto* n = dynamic_cast<Number*>(ret.v);
+  REQUIRE(nullptr != ret.scp);
+  Number *n = dynamic_cast<Number *>(ret.v);
   REQUIRE(nullptr != n);
-  CHECK(5.0 == doctest::Approx(n->v));
+  CHECK(7 == doctest::Approx(n->v));
 }
 
-TEST_CASE("t20") {
-  CXBQN_LOG_TESTN(20);
-  CompileParams p{
-#include <bc_tests/t20.hpp>
+TEST_CASE("4{𝔽}") {
+  spdlog::critical("test={}, ans={}", "4{𝔽}", "4");
+  const auto rt = provides::get_runtime();
+  const auto runtime = rt->values;
+  CompileParams p{{1, 1, 0, 0, 26, 7, 34, 0, 1, 7},
+                  {4},
+                  {{0, 1, 0}, {1, 1, 1}},
+                  {{0, 0}, {6, 2}}
+
   };
   auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
-  REQUIRE(nullptr != ret.scp);
   REQUIRE(nullptr != ret.v);
-  auto* n = dynamic_cast<Number*>(ret.v);
+  REQUIRE(nullptr != ret.scp);
+  Number *n = dynamic_cast<Number *>(ret.v);
   REQUIRE(nullptr != n);
-  CHECK(1.0 == doctest::Approx(n->v));
+  CHECK(4 == doctest::Approx(n->v));
 }
 
-TEST_CASE("t21") {
-  CXBQN_LOG_TESTN(21);
-  CompileParams p{
-#include <bc_tests/t21.hpp>
+TEST_CASE("4{𝔽⋄𝕩}6") {
+  spdlog::critical("test={}, ans={}", "4{𝔽⋄𝕩}6", "6");
+  const auto rt = provides::get_runtime();
+  const auto runtime = rt->values;
+  CompileParams p{{0, 1, 1, 1, 0, 0, 26, 16, 7, 34, 0, 4, 6, 34, 0, 1, 7},
+                  {4, 6},
+                  {{0, 1, 0}, {1, 0, 1}},
+                  {{0, 0}, {9, 5}}
+
   };
   auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
-  REQUIRE(nullptr != ret.scp);
   REQUIRE(nullptr != ret.v);
-  auto* n = dynamic_cast<Number*>(ret.v);
+  REQUIRE(nullptr != ret.scp);
+  Number *n = dynamic_cast<Number *>(ret.v);
   REQUIRE(nullptr != n);
-  CHECK(4.0 == doctest::Approx(n->v));
+  CHECK(6 == doctest::Approx(n->v));
 }
 
-TEST_CASE("t22") {
-  CXBQN_LOG_TESTN(22);
-  CompileParams p{
-#include <bc_tests/t22.hpp>
+TEST_CASE("3{𝔾}{𝕩} 1") {
+  spdlog::critical("test={}, ans={}", "3{𝔾}{𝕩} 1", "1");
+  const auto rt = provides::get_runtime();
+  const auto runtime = rt->values;
+  CompileParams p{{0, 1, 1, 1, 1, 2, 0, 0, 27, 16, 7, 34, 0, 1, 7, 34, 0, 2, 7},
+                  {3, 1},
+                  {{0, 1, 0}, {0, 0, 1}, {2, 1, 2}},
+                  {{0, 0}, {11, 3}, {15, 3}}
+
   };
   auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
-  REQUIRE(nullptr != ret.scp);
   REQUIRE(nullptr != ret.v);
-  auto* n = dynamic_cast<Number*>(ret.v);
+  REQUIRE(nullptr != ret.scp);
+  Number *n = dynamic_cast<Number *>(ret.v);
   REQUIRE(nullptr != n);
-  CHECK(1.0 == doctest::Approx(n->v));
+  CHECK(1 == doctest::Approx(n->v));
 }
 
-TEST_CASE("t23") {
-  CXBQN_LOG_TESTN(23);
+TEST_CASE("(2{𝔽}{𝕩})3") {
+  spdlog::critical("test={}, ans={}", "(2{𝔽}{𝕩})3", "2");
+  const auto rt = provides::get_runtime();
+  const auto runtime = rt->values;
   CompileParams p{
-#include <bc_tests/t23.hpp>
+      {0, 1, 1, 1, 1, 2, 0, 0, 26, 20, 16, 7, 34, 0, 1, 7, 34, 0, 1, 7},
+      {2, 3},
+      {{0, 1, 0}, {0, 0, 1}, {1, 1, 2}},
+      {{0, 0}, {12, 3}, {16, 2}}
+
   };
   auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
-  REQUIRE(nullptr != ret.scp);
   REQUIRE(nullptr != ret.v);
-  auto* n = dynamic_cast<Number*>(ret.v);
+  REQUIRE(nullptr != ret.scp);
+  Number *n = dynamic_cast<Number *>(ret.v);
   REQUIRE(nullptr != n);
-  CHECK(2.0 == doctest::Approx(n->v));
+  CHECK(2 == doctest::Approx(n->v));
 }
 
-TEST_CASE("t24") {
-  CXBQN_LOG_TESTN(24);
+TEST_CASE("3({a‿b←𝕩⋄a}{𝕨‿𝕩})4") {
+  spdlog::critical("test={}, ans={}", "3({a‿b←𝕩⋄a}{𝕨‿𝕩})4", "3");
+  const auto rt = provides::get_runtime();
+  const auto runtime = rt->values;
   CompileParams p{
-#include <bc_tests/t24.hpp>
+      {0, 1,  1, 1, 1,  2, 20, 0,  0, 17, 7,  34, 0,  2, 34, 0, 1, 11, 2,
+       7, 34, 0, 1, 33, 0, 3,  33, 0, 4,  12, 2,  48, 6, 34, 0, 3, 7},
+      {3, 4},
+      {{0, 1, 0}, {0, 0, {{}, {1}}}, {0, 0, 2}},
+      {{0, 0}, {11, 3}, {20, 5}}
+
   };
   auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
-  REQUIRE(nullptr != ret.scp);
   REQUIRE(nullptr != ret.v);
-  auto* n = dynamic_cast<Number*>(ret.v);
+  REQUIRE(nullptr != ret.scp);
+  Number *n = dynamic_cast<Number *>(ret.v);
   REQUIRE(nullptr != n);
-  CHECK(6.0 == doctest::Approx(n->v));
+  CHECK(3 == doctest::Approx(n->v));
 }
 
-TEST_CASE("t25") {
-  CXBQN_LOG_TESTN(25);
-  CompileParams p{
-#include <bc_tests/t25.hpp>
+TEST_CASE("4({𝕨‿𝕩}{𝕩}{𝕨})5") {
+  spdlog::critical("test={}, ans={}", "4({𝕨‿𝕩}{𝕩}{𝕨})5", "4");
+  const auto rt = provides::get_runtime();
+  const auto runtime = rt->values;
+  CompileParams p{{0, 1, 1,  1, 1, 2, 1,  3, 21, 0,  0, 17, 7,  34, 0,
+                   2, 7, 34, 0, 1, 7, 34, 0, 2,  34, 0, 1,  11, 2,  7},
+                  {4, 5},
+                  {{0, 1, 0}, {0, 0, {{}, {1}}}, {0, 0, 2}, {0, 0, {{}, {3}}}},
+                  {{0, 0}, {13, 3}, {17, 3}, {21, 3}}
+
   };
   auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
-  REQUIRE(nullptr != ret.scp);
   REQUIRE(nullptr != ret.v);
-  auto* n = dynamic_cast<Number*>(ret.v);
+  REQUIRE(nullptr != ret.scp);
+  Number *n = dynamic_cast<Number *>(ret.v);
   REQUIRE(nullptr != n);
-  CHECK(5.0 == doctest::Approx(n->v));
+  CHECK(4 == doctest::Approx(n->v));
 }
 
-TEST_CASE("t26") {
-  CXBQN_LOG_TESTN(26);
+TEST_CASE("a‿b←(2{𝕨‿𝕩}{𝕩})5⋄a") {
+  spdlog::critical("test={}, ans={}", "a‿b←(2{𝕨‿𝕩}{𝕩})5⋄a", "2");
+  const auto rt = provides::get_runtime();
+  const auto runtime = rt->values;
   CompileParams p{
-#include <bc_tests/t26.hpp>
+      {0, 1,  1, 1, 1, 2,  0, 0, 21, 16, 33, 0, 0,  33, 0, 1,  12, 2, 48,
+       6, 34, 0, 0, 7, 34, 0, 1, 7,  34, 0,  2, 34, 0,  1, 11, 2,  7},
+      {2, 5},
+      {{0, 1, 0}, {0, 0, 1}, {0, 0, {{}, {2}}}},
+      {{0, 2}, {24, 3}, {28, 3}}
+
   };
   auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
-  REQUIRE(nullptr != ret.scp);
   REQUIRE(nullptr != ret.v);
-  auto* n = dynamic_cast<Number*>(ret.v);
+  REQUIRE(nullptr != ret.scp);
+  Number *n = dynamic_cast<Number *>(ret.v);
   REQUIRE(nullptr != n);
-  CHECK(3.0 == doctest::Approx(n->v));
+  CHECK(2 == doctest::Approx(n->v));
 }
 
-TEST_CASE("t27") {
-  CXBQN_LOG_TESTN(27);
-  CompileParams p{
-#include <bc_tests/t27.hpp>
+TEST_CASE("({a↩2⋄𝕩}{𝕩⋄a}{a↩3⋄𝕩})a←4") {
+  spdlog::critical("test={}, ans={}", "({a↩2⋄𝕩}{𝕩⋄a}{a↩3⋄𝕩})a←4", "2");
+  const auto rt = provides::get_runtime();
+  const auto runtime = rt->values;
+  CompileParams p{{0,  2, 33, 0, 0, 48, 1,  1,  1, 2,  1, 3,  21, 16, 7,
+                   0,  1, 33, 1, 0, 49, 6,  34, 0, 1,  7, 34, 0,  1,  6,
+                   32, 1, 0,  7, 0, 0,  33, 1,  0, 49, 6, 34, 0,  1,  7},
+                  {2, 3, 4},
+                  {{0, 1, 0}, {0, 0, 1}, {0, 0, 2}, {0, 0, 3}},
+                  {{0, 1}, {15, 3}, {26, 3}, {34, 3}}
+
   };
   auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
-  REQUIRE(nullptr != ret.scp);
   REQUIRE(nullptr != ret.v);
-  auto* n = dynamic_cast<Number*>(ret.v);
+  REQUIRE(nullptr != ret.scp);
+  Number *n = dynamic_cast<Number *>(ret.v);
   REQUIRE(nullptr != n);
-  CHECK(1.0 == doctest::Approx(n->v));
+  CHECK(2 == doctest::Approx(n->v));
 }
 
-TEST_CASE("t28") {
-  CXBQN_LOG_TESTN(28);
-  CompileParams p{
-#include <bc_tests/t28.hpp>
+TEST_CASE("a←3⋄a{𝕩}↩8⋄a") {
+  spdlog::critical("test={}, ans={}", "a←3⋄a{𝕩}↩8⋄a", "8");
+  const auto rt = provides::get_runtime();
+  const auto runtime = rt->values;
+  CompileParams p{{0, 0, 33, 0, 0,  48, 6, 0, 1,  1, 1, 33,
+                   0, 0, 50, 6, 34, 0,  0, 7, 34, 0, 1, 7},
+                  {3, 8},
+                  {{0, 1, 0}, {0, 0, 1}},
+                  {{0, 1}, {20, 3}}
+
   };
   auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
-  REQUIRE(nullptr != ret.scp);
   REQUIRE(nullptr != ret.v);
-  auto* n = dynamic_cast<Number*>(ret.v);
+  REQUIRE(nullptr != ret.scp);
+  Number *n = dynamic_cast<Number *>(ret.v);
   REQUIRE(nullptr != n);
-  CHECK(2.0 == doctest::Approx(n->v));
+  CHECK(8 == doctest::Approx(n->v));
+}
+
+TEST_CASE("a←4⋄a{𝕨⋄5}↩6") {
+  spdlog::critical("test={}, ans={}", "a←4⋄a{𝕨⋄5}↩6", "5");
+  const auto rt = provides::get_runtime();
+  const auto runtime = rt->values;
+  CompileParams p{{0, 0, 33, 0, 0,  48, 6, 0, 2, 1, 1, 33,
+                   0, 0, 50, 7, 34, 0,  2, 6, 0, 1, 7},
+                  {4, 5, 6},
+                  {{0, 1, 0}, {0, 0, 1}},
+                  {{0, 1}, {16, 3}}
+
+  };
+  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  REQUIRE(nullptr != ret.v);
+  REQUIRE(nullptr != ret.scp);
+  Number *n = dynamic_cast<Number *>(ret.v);
+  REQUIRE(nullptr != n);
+  CHECK(5 == doctest::Approx(n->v));
+}
+
+TEST_CASE("a←3⋄a{𝕩⋄1}↩⋄a") {
+  spdlog::critical("test={}, ans={}", "a←3⋄a{𝕩⋄1}↩⋄a", "1");
+  const auto rt = provides::get_runtime();
+  const auto runtime = rt->values;
+  CompileParams p{{0, 0,  33, 0, 0, 48, 6, 1, 1, 33, 0, 0, 51,
+                   6, 34, 0,  0, 7, 34, 0, 1, 6, 0,  1, 7},
+                  {3, 1},
+                  {{0, 1, 0}, {0, 0, 1}},
+                  {{0, 1}, {18, 3}}
+
+  };
+  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  REQUIRE(nullptr != ret.v);
+  REQUIRE(nullptr != ret.scp);
+  Number *n = dynamic_cast<Number *>(ret.v);
+  REQUIRE(nullptr != n);
+  CHECK(1 == doctest::Approx(n->v));
+}
+
+TEST_CASE("a‿b←2‿1⋄a‿b{𝕩‿𝕨}↩4⋄a") {
+  spdlog::critical("test={}, ans={}", "a‿b←2‿1⋄a‿b{𝕩‿𝕨}↩4⋄a", "4");
+  const auto rt = provides::get_runtime();
+  const auto runtime = rt->values;
+  CompileParams p{{0,  0, 0, 1, 11, 2,  33, 0,  0,  33, 0,  1,  12, 2,  48,
+                   6,  0, 2, 1, 1,  33, 0,  0,  33, 0,  1,  12, 2,  50, 6,
+                   34, 0, 0, 7, 34, 0,  1,  34, 0,  2,  11, 2,  7},
+                  {2, 1, 4},
+                  {{0, 1, 0}, {0, 0, {{}, {1}}}},
+                  {{0, 2}, {34, 3}}
+
+  };
+  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  REQUIRE(nullptr != ret.v);
+  REQUIRE(nullptr != ret.scp);
+  Number *n = dynamic_cast<Number *>(ret.v);
+  REQUIRE(nullptr != n);
+  CHECK(4 == doctest::Approx(n->v));
+}
+
+TEST_CASE("a←1⋄{a←2}⋄a") {
+  spdlog::critical("test={}, ans={}", "a←1⋄{a←2}⋄a", "1");
+  const auto rt = provides::get_runtime();
+  const auto runtime = rt->values;
+  CompileParams p{
+      {0, 0, 33, 0, 0, 48, 6, 1, 1, 6, 34, 0, 0, 7, 0, 1, 33, 0, 0, 48, 7},
+      {1, 2},
+      {{0, 1, 0}, {0, 1, 1}},
+      {{0, 1}, {14, 1}}
+
+  };
+  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  REQUIRE(nullptr != ret.v);
+  REQUIRE(nullptr != ret.scp);
+  Number *n = dynamic_cast<Number *>(ret.v);
+  REQUIRE(nullptr != n);
+  CHECK(1 == doctest::Approx(n->v));
+}
+
+TEST_CASE("a←1⋄{a↩2}⋄a") {
+  spdlog::critical("test={}, ans={}", "a←1⋄{a↩2}⋄a", "2");
+  const auto rt = provides::get_runtime();
+  const auto runtime = rt->values;
+  CompileParams p{
+      {0, 0, 33, 0, 0, 48, 6, 1, 1, 6, 32, 0, 0, 7, 0, 1, 33, 1, 0, 49, 7},
+      {1, 2},
+      {{0, 1, 0}, {0, 1, 1}},
+      {{0, 1}, {14, 0}}
+
+  };
+  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  REQUIRE(nullptr != ret.v);
+  REQUIRE(nullptr != ret.scp);
+  Number *n = dynamic_cast<Number *>(ret.v);
+  REQUIRE(nullptr != n);
+  CHECK(2 == doctest::Approx(n->v));
+}
+
+TEST_CASE("f‿g←{a←2⋄{a↩𝕩}‿{𝕩⋄a}}⋄F 6⋄G 0") {
+  spdlog::critical("test={}, ans={}", "f‿g←{a←2⋄{a↩𝕩}‿{𝕩⋄a}}⋄F 6⋄G 0", "6");
+  const auto rt = provides::get_runtime();
+  const auto runtime = rt->values;
+  CompileParams p{
+      {1, 1, 33, 0, 0, 33, 0, 1, 12, 2,  48, 6, 0,  1, 34, 0, 0, 16, 6,
+       0, 2, 34, 0, 1, 16, 7, 0, 0,  33, 0,  0, 48, 6, 1,  2, 1, 3,  11,
+       2, 7, 34, 0, 1, 33, 1, 0, 49, 7,  34, 0, 1,  6, 32, 1, 0, 7},
+      {2, 6, 0},
+      {{0, 1, 0}, {0, 1, 1}, {0, 0, 2}, {0, 0, 3}},
+      {{0, 2}, {26, 1}, {40, 3}, {48, 3}}
+
+  };
+  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  REQUIRE(nullptr != ret.v);
+  REQUIRE(nullptr != ret.scp);
+  Number *n = dynamic_cast<Number *>(ret.v);
+  REQUIRE(nullptr != n);
+  CHECK(6 == doctest::Approx(n->v));
+}
+
+TEST_CASE("L←{𝕩{𝕏𝕗}}⋄{𝕏𝕤}L L L 5") {
+  spdlog::critical("test={}, ans={}", "L←{𝕩{𝕏𝕗}}⋄{𝕏𝕤}L L L 5", "5");
+  const auto rt = provides::get_runtime();
+  const auto runtime = rt->values;
+  CompileParams p{
+      {1,  1,  33, 0,  0,  48, 6,  0,  0,  32, 0, 0,  16, 32, 0,  0,
+       16, 34, 0,  0,  16, 1,  2,  16, 7,  1,  3, 34, 0,  1,  26, 7,
+       34, 0,  0,  34, 0,  1,  16, 7,  34, 0,  4, 34, 0,  1,  16, 7},
+      {5},
+      {{0, 1, 0}, {0, 0, 1}, {0, 0, 2}, {1, 0, 3}},
+      {{0, 1}, {25, 3}, {32, 3}, {40, 5}}
+
+  };
+  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  REQUIRE(nullptr != ret.v);
+  REQUIRE(nullptr != ret.scp);
+  Number *n = dynamic_cast<Number *>(ret.v);
+  REQUIRE(nullptr != n);
+  CHECK(5 == doctest::Approx(n->v));
+}
+
+TEST_CASE("_l←{𝕩{𝕏𝕗} 𝔽}⋄{𝕏𝕤} {𝕩}_l 3 _l 5") {
+  spdlog::critical("test={}, ans={}", "_l←{𝕩{𝕏𝕗} 𝔽}⋄{𝕏𝕤} {𝕩}_l 3 _l 5", "3");
+  const auto rt = provides::get_runtime();
+  const auto runtime = rt->values;
+  CompileParams p{
+      {1, 1,  33, 0, 0, 48, 6, 0,  1,  32, 0,  0, 0,  0,  26, 16, 34, 0, 0,  1,
+       2, 26, 16, 1, 3, 16, 7, 34, 0,  4,  1,  4, 34, 0,  1,  26, 20, 7, 34, 0,
+       1, 7,  34, 0, 0, 34, 0, 1,  16, 7,  34, 0, 4,  34, 0,  1,  16, 7},
+      {3, 5},
+      {{0, 1, 0}, {1, 0, 1}, {0, 0, 2}, {0, 0, 3}, {1, 0, 4}},
+      {{0, 1}, {27, 5}, {38, 3}, {42, 3}, {50, 5}}
+
+  };
+  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  REQUIRE(nullptr != ret.v);
+  REQUIRE(nullptr != ret.scp);
+  Number *n = dynamic_cast<Number *>(ret.v);
+  REQUIRE(nullptr != n);
+  CHECK(3 == doctest::Approx(n->v));
+}
+
+TEST_CASE("1{𝕨}{𝔽{𝕩𝔽𝕨}𝔾𝔽}{𝕩}0") {
+  spdlog::critical("test={}, ans={}", "1{𝕨}{𝔽{𝕩𝔽𝕨}𝔾𝔽}{𝕩}0", "1");
+  const auto rt = provides::get_runtime();
+  const auto runtime = rt->values;
+  CompileParams p{
+      {0, 1,  1, 1,  1,  2, 1,  3, 27, 0,  0, 17, 7,  34, 0, 1,
+       7, 32, 0, 1,  34, 0, 2,  1, 4,  34, 0, 1,  26, 21, 7, 34,
+       0, 2,  7, 34, 0,  2, 34, 0, 4,  34, 0, 1,  17, 7},
+      {1, 0},
+      {{0, 1, 0}, {0, 0, 1}, {2, 1, 2}, {0, 0, {{}, {3}}}, {1, 0, {{}, {4}}}},
+      {{0, 0}, {13, 3}, {17, 3}, {31, 3}, {35, 5}}
+
+  };
+  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  REQUIRE(nullptr != ret.v);
+  REQUIRE(nullptr != ret.scp);
+  Number *n = dynamic_cast<Number *>(ret.v);
+  REQUIRE(nullptr != n);
+  CHECK(1 == doctest::Approx(n->v));
+}
+
+TEST_CASE("0‿(0‿{𝕩}){{a‿b←𝕩⋄t←𝕤⋄{𝕤⋄T↩{𝕤⋄{a‿b←𝕩⋄a}}}{B𝕗}0⋄(T b){a‿b←𝕩⋄𝔽b}}𝕗} "
+          "0‿(1‿(2‿(3‿(4‿{𝕩}))))") {
+  spdlog::critical("test={}, ans={}",
+                   "0‿(0‿{𝕩}){{a‿b←𝕩⋄t←𝕤⋄{𝕤⋄T↩{𝕤⋄{a‿b←𝕩⋄a}}}{B𝕗}0⋄(T "
+                   "b){a‿b←𝕩⋄𝔽b}}𝕗} 0‿(1‿(2‿(3‿(4‿{𝕩}))))",
+                   "2");
+  const auto rt = provides::get_runtime();
+  const auto runtime = rt->values;
+  CompileParams p{
+      {0,  0,  0,  1,  0,  2,  0,  3,  0,  4,  1,  1,  11, 2,  11, 2,  11, 2,
+       11, 2,  11, 2,  1,  2,  0,  0,  0,  0,  1,  3,  11, 2,  11, 2,  26, 16,
+       7,  34, 0,  1,  7,  34, 0,  1,  1,  4,  16, 7,  34, 0,  1,  7,  34, 0,
+       1,  33, 0,  3,  33, 0,  4,  12, 2,  48, 6,  34, 0,  0,  33, 0,  5,  48,
+       6,  0,  0,  1,  5,  1,  6,  26, 16, 6,  1,  7,  32, 0,  4,  32, 0,  5,
+       16, 26, 7,  34, 0,  1,  32, 1,  4,  16, 7,  34, 0,  0,  6,  1,  8,  33,
+       1,  5,  49, 7,  34, 0,  1,  33, 0,  5,  33, 0,  6,  12, 2,  48, 6,  34,
+       0,  6,  34, 0,  4,  16, 7,  34, 0,  0,  6,  1,  9,  7,  34, 0,  1,  33,
+       0,  3,  33, 0,  4,  12, 2,  48, 6,  34, 0,  3,  7},
+      {0, 1, 2, 3, 4},
+      {{0, 1, 0},
+       {0, 0, 1},
+       {1, 1, 2},
+       {0, 0, 3},
+       {0, 0, 4},
+       {1, 1, 5},
+       {0, 0, 6},
+       {1, 0, 7},
+       {0, 0, 8},
+       {0, 0, 9}},
+      {{0, 0},
+       {37, 3},
+       {41, 2},
+       {48, 3},
+       {52, 6},
+       {93, 2},
+       {101, 3},
+       {112, 7},
+       {133, 3},
+       {140, 5}}
+
+  };
+  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  REQUIRE(nullptr != ret.v);
+  REQUIRE(nullptr != ret.scp);
+  Number *n = dynamic_cast<Number *>(ret.v);
+  REQUIRE(nullptr != n);
+  CHECK(2 == doctest::Approx(n->v));
 }
