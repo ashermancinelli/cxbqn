@@ -1,6 +1,6 @@
+#include <cmath>
 #include <cxbqn/debug.hpp>
 #include <cxbqn/provides.hpp>
-#include <cmath>
 
 namespace cxbqn::provides {
 
@@ -16,7 +16,12 @@ Array *get_runtime() {
   rt->values[5] = bi_root();
   rt->values[6] = bi_floor();
   rt->values[7] = bi_ceil();
-  rt->values[18] = new FEQ();
+  rt->values[8] = bi_stile();
+  rt->values[17] = bi_feq();
+  rt->values[18] = bi_fne();
+  rt->values[20] = bi_ltack();
+  rt->values[21] = bi_rtack();
+  rt->values[48] = bi_table();
   return rt;
 }
 
@@ -24,55 +29,65 @@ Value *bi_plus() {
   static Plus p;
   return &p;
 }
-
 Value *bi_minus() {
   static Minus m;
   return &m;
 }
-
 Value *bi_mul() {
   static Mul m;
   return &m;
 }
 Value *bi_div() {
-  static Minus m;
-  return &m;
+  static Div d;
+  return &d;
 }
 Value *bi_power() {
-  static Minus m;
-  return &m;
+  static Power x;
+  return &x;
 }
 Value *bi_root() {
-  static Minus m;
-  return &m;
+  static Root r;
+  return &r;
 }
 Value *bi_floor() {
-  static Floor m;
-  return &m;
+  static Floor f;
+  return &f;
 }
 Value *bi_ceil() {
-  static Ceil m;
-  return &m;
+  static Ceil c;
+  return &c;
+}
+Value *bi_stile() {
+  static Stile s;
+  return &s;
 }
 Value *bi_feq() {
-  static Minus m;
-  return &m;
+  static FEQ f;
+  return &f;
 }
 Value *bi_fne() {
-  static Minus m;
-  return &m;
+  static FNE f;
+  return &f;
+}
+Value *bi_ltack() {
+  static Ltack lt;
+  return &lt;
+}
+Value *bi_rtack() {
+  static Rtack rt;
+  return &rt;
 }
 Value *bi_arraydepth() {
-  static Minus m;
-  return &m;
+  static ArrayDepth f;
+  return &f;
 }
 Value *bi_type() {
-  static Minus m;
-  return &m;
+  static Type t;
+  return &t;
 }
 Value *bi_table() {
-  static Minus m;
-  return &m;
+  static Table t;
+  return &t;
 }
 
 namespace {
@@ -169,24 +184,46 @@ Value *Minus::call(u8 nargs, std::vector<Value *> args) {
   CXBQN_DEBUG("-:nargs={},args={}", nargs, args);
   auto *x = dynamic_cast<Number *>(args[1]);
   auto *w = dynamic_cast<Number *>(args[2]);
-  return new Number(2 == args.size() ? w->v - x->v : -x->v);
+  return new Number(2 == nargs ? w->v - x->v : -x->v);
 }
 
 Value *Mul::call(u8 nargs, std::vector<Value *> args) {
   CXBQN_DEBUG("×:nargs={},args={}", nargs, args);
   auto *x = dynamic_cast<Number *>(args[1]);
   auto *w = dynamic_cast<Number *>(args[2]);
-  if (2 == args.size()) {
+  if (2 == nargs) {
     return new Number(w->v * x->v);
   }
-  return new Number(feq_helper(0., x->v) ? 0 : x->v > 0 ? 1 : 0);
+  return new Number(feq_helper(0.0, x->v) ? 0 : x->v > 0 ? 1 : 0);
+}
+
+Value *Div::call(u8 nargs, std::vector<Value *> args) {
+  CXBQN_DEBUG("÷:nargs={},args={}", nargs, args);
+  auto *x = dynamic_cast<Number *>(args[1]);
+  auto *w = dynamic_cast<Number *>(args[2]);
+  return new Number(2 == nargs ? w->v / x->v : 1 / x->v);
+}
+
+Value *Power::call(u8 nargs, std::vector<Value *> args) {
+  CXBQN_DEBUG("÷:nargs={},args={}", nargs, args);
+  auto *x = dynamic_cast<Number *>(args[1]);
+  auto *w = dynamic_cast<Number *>(args[2]);
+  return new Number(2 == nargs ? std::pow(w->v, x->v) : std::exp(x->v));
+}
+
+Value *Root::call(u8 nargs, std::vector<Value *> args) {
+  CXBQN_DEBUG("÷:nargs={},args={}", nargs, args);
+  auto *x = dynamic_cast<Number *>(args[1]);
+  auto *w = dynamic_cast<Number *>(args[2]);
+  return new Number(2 == nargs ? std::pow(x->v, 1 / w->v)
+                                     : std::sqrt(x->v));
 }
 
 Value *Floor::call(u8 nargs, std::vector<Value *> args) {
   CXBQN_DEBUG("⌊:nargs={},args={}", nargs, args);
   auto *x = dynamic_cast<Number *>(args[1]);
   auto *w = dynamic_cast<Number *>(args[2]);
-  if (2 == args.size()) {
+  if (2 == nargs) {
     return new Number(std::min(w->v, x->v));
   }
   return new Number(std::floor(x->v));
@@ -196,10 +233,20 @@ Value *Ceil::call(u8 nargs, std::vector<Value *> args) {
   CXBQN_DEBUG("⌈:nargs={},args={}", nargs, args);
   auto *x = dynamic_cast<Number *>(args[1]);
   auto *w = dynamic_cast<Number *>(args[2]);
-  if (2 == args.size()) {
+  if (2 == nargs) {
     return new Number(std::max(w->v, x->v));
   }
   return new Number(std::ceil(x->v));
+}
+
+Value *Stile::call(u8 nargs, std::vector<Value *> args) {
+  CXBQN_DEBUG("⌈:nargs={},args={}", nargs, args);
+  auto *x = dynamic_cast<Number *>(args[1]);
+  auto *w = dynamic_cast<Number *>(args[2]);
+  if (2 == nargs) {
+    return new Number(std::max(w->v, x->v));
+  }
+  return new Number(2 == nargs ? std::fmod(w->v, x->v) : std::abs(x->v));
 }
 
 Value *FEQ::call(u8 nargs, std::vector<Value *> args) {
@@ -207,6 +254,23 @@ Value *FEQ::call(u8 nargs, std::vector<Value *> args) {
   auto *x = dynamic_cast<Number *>(args[1]);
   auto *w = dynamic_cast<Number *>(args[2]);
   return new Number(static_cast<f64>(feq_helper(x->v, w->v)));
+}
+
+Value *FNE::call(u8 nargs, std::vector<Value *> args) {
+  CXBQN_DEBUG("fne:nargs={},args={}", nargs, args);
+  auto *x = dynamic_cast<Number *>(args[1]);
+  auto *w = dynamic_cast<Number *>(args[2]);
+  return new Number(static_cast<f64>(!feq_helper(x->v, w->v)));
+}
+
+Value *Ltack::call(u8 nargs, std::vector<Value *> args) {
+  CXBQN_DEBUG("⊣:nargs={},args={}", nargs, args);
+  return args[2];
+}
+
+Value *Rtack::call(u8 nargs, std::vector<Value *> args) {
+  CXBQN_DEBUG("⊢:nargs={},args={}", nargs, args);
+  return args[1];
 }
 
 // Value *Type::call(u8 nargs, std::vector<Value *> args) { }

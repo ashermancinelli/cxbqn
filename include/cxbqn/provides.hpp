@@ -27,9 +27,13 @@ CXBQN_BUILTIN_DECL(Power, "⋆");
 CXBQN_BUILTIN_DECL(Root, "√");
 CXBQN_BUILTIN_DECL(Floor, "⌊");
 CXBQN_BUILTIN_DECL(Ceil, "⌈");
+CXBQN_BUILTIN_DECL(Stile, "|");
 //
 CXBQN_BUILTIN_DECL(FEQ, "feq");
 CXBQN_BUILTIN_DECL(FNE, "fne");
+CXBQN_BUILTIN_DECL(Ltack, "⊣");
+CXBQN_BUILTIN_DECL(Rtack, "⊢");
+
 CXBQN_BUILTIN_DECL(ArrayDepth, "≡");
 CXBQN_BUILTIN_DECL(Type, "•Type");
 CXBQN_BUILTIN_DECL(Table, "⌜");
@@ -75,8 +79,11 @@ Value* bi_power();
 Value* bi_root();
 Value* bi_floor();
 Value* bi_ceil();
+Value* bi_stile();
 Value* bi_feq();
 Value* bi_fne();
+Value* bi_ltack();
+Value* bi_rtack();
 Value* bi_arraydepth();
 Value* bi_type();
 Value* bi_table();
