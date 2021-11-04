@@ -23,6 +23,7 @@ set(CXBQN_COLOR ON CACHE BOOL "Output VM information in color")
 set(CXBQN_LOGLEVEL "level::debug" CACHE STRING "Log level spdlog will be set to")
 set(CHECK_SUBMODULES ON CACHE BOOL "Check git submodules on every build")
 set(HAS_BQN_EXE OFF)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CXBQN_EXT_DIR ${PROJECT_SOURCE_DIR}/ext/)
 include(CMakePrintHelpers)
 

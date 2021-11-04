@@ -35,187 +35,77 @@ static uz array_depth_helper(uz init, Value *v) {
     return 1 + init;
 }
 
+// For floating point comparisons, we use 10 times the machine precision.
+// Subject to change.
 static bool feq_helper(f64 a, f64 b) {
-  return std::abs(a - b) < std::numeric_limits<f64>::epsilon();
+  return std::abs(a - b) < (10 * std::numeric_limits<f64>::epsilon());
 }
 
 } // namespace
 
-Value *Plus::call(u8 nargs, std::vector<Value *> args) {
-  CXBQN_DEBUG("+:nargs={},args={}", nargs, args);
-  if (1 == nargs)
-    return args[1];
+// I promise this makes the definitions more readable :)
+#define NN(x) new Number(x)
 
-  auto *x = dynamic_cast<Number *>(args[1]);
-  auto *w = dynamic_cast<Number *>(args[2]);
-  return new Number(x->v + w->v);
-}
+// "new number casted", creates a new number after casting some expression into
+// an f64
+#define NNC(x) new Number(static_cast<f64>(x))
 
-Value *Minus::call(u8 nargs, std::vector<Value *> args) {
-  CXBQN_DEBUG("-:nargs={},args={}", nargs, args);
-  auto *x = dynamic_cast<Number *>(args[1]);
-  auto *w = dynamic_cast<Number *>(args[2]);
-  return new Number(2 == nargs ? w->v - x->v : -x->v);
-}
+// Shorthand to define the call method of a given builtin type
+#define CXBQN_BI_CALL_DEF_NUMONLY(TYPE, SYMBOL, PREAMBLE, RETURN)              \
+  Value *TYPE::call(u8 nargs, std::vector<Value *> args) {                     \
+    CXBQN_DEBUG(SYMBOL ":nargs={},args={}", nargs, args);                      \
+    auto *x = dynamic_cast<Number *>(args[1]);                                 \
+    auto *w = dynamic_cast<Number *>(args[2]);                                 \
+    PREAMBLE;                                                                  \
+    return (RETURN);                                                           \
+  }
 
+CXBQN_BI_CALL_DEF_NUMONLY(Plus, "+", {},
+                          1 == nargs ? args[1] : NN(x->v + w->v));
+CXBQN_BI_CALL_DEF_NUMONLY(Minus, "-", {}, NN(2 == nargs ? w->v - x->v : -x->v));
 Value *Mul::call(u8 nargs, std::vector<Value *> args) {
   CXBQN_DEBUG("×:nargs={},args={}", nargs, args);
   auto *x = dynamic_cast<Number *>(args[1]);
   auto *w = dynamic_cast<Number *>(args[2]);
-  if (2 == nargs) {
-    return new Number(w->v * x->v);
-  }
-  return new Number(feq_helper(0.0, x->v) ? 0 : x->v > 0 ? 1 : 0);
+  if (2 == nargs)
+    return NN(w->v * x->v);
+  return NN(feq_helper(0.0, x->v) ? 0 : x->v > 0 ? 1 : 0);
 }
+CXBQN_BI_CALL_DEF_NUMONLY(Div, "÷", {},
+                          NN(2 == nargs ? w->v / x->v : 1 / x->v));
+CXBQN_BI_CALL_DEF_NUMONLY(Power, "×", {},
+                          NN(2 == nargs ? std::pow(w->v, x->v)
+                                        : std::exp(x->v)));
+CXBQN_BI_CALL_DEF_NUMONLY(Root, "√", {},
+                          NN(2 == nargs ? std::pow(x->v, 1 / w->v)
+                                        : std::sqrt(x->v)));
 
-Value *Div::call(u8 nargs, std::vector<Value *> args) {
-  CXBQN_DEBUG("÷:nargs={},args={}", nargs, args);
-  auto *x = dynamic_cast<Number *>(args[1]);
-  auto *w = dynamic_cast<Number *>(args[2]);
-  return new Number(2 == nargs ? w->v / x->v : 1 / x->v);
-}
-
-Value *Power::call(u8 nargs, std::vector<Value *> args) {
-  CXBQN_DEBUG("÷:nargs={},args={}", nargs, args);
-  auto *x = dynamic_cast<Number *>(args[1]);
-  auto *w = dynamic_cast<Number *>(args[2]);
-  return new Number(2 == nargs ? std::pow(w->v, x->v) : std::exp(x->v));
-}
-
-Value *Root::call(u8 nargs, std::vector<Value *> args) {
-  CXBQN_DEBUG("÷:nargs={},args={}", nargs, args);
-  auto *x = dynamic_cast<Number *>(args[1]);
-  auto *w = dynamic_cast<Number *>(args[2]);
-  return new Number(2 == nargs ? std::pow(x->v, 1 / w->v) : std::sqrt(x->v));
-}
-
-Value *Floor::call(u8 nargs, std::vector<Value *> args) {
-  CXBQN_DEBUG("⌊:nargs={},args={}", nargs, args);
-  auto *x = dynamic_cast<Number *>(args[1]);
-  auto *w = dynamic_cast<Number *>(args[2]);
-  if (2 == nargs) {
-    return new Number(std::min(w->v, x->v));
-  }
-  return new Number(std::floor(x->v));
-}
-
-Value *Ceil::call(u8 nargs, std::vector<Value *> args) {
-  CXBQN_DEBUG("⌈:nargs={},args={}", nargs, args);
-  auto *x = dynamic_cast<Number *>(args[1]);
-  auto *w = dynamic_cast<Number *>(args[2]);
-  if (2 == nargs) {
-    return new Number(std::max(w->v, x->v));
-  }
-  return new Number(std::ceil(x->v));
-}
-
-Value *Stile::call(u8 nargs, std::vector<Value *> args) {
-  CXBQN_DEBUG("⌈:nargs={},args={}", nargs, args);
-  auto *x = dynamic_cast<Number *>(args[1]);
-  auto *w = dynamic_cast<Number *>(args[2]);
-  if (2 == nargs) {
-    return new Number(std::max(w->v, x->v));
-  }
-  return new Number(2 == nargs ? std::fmod(w->v, x->v) : std::abs(x->v));
-}
-
-Value* Not::call(u8 nargs, std::vector<Value*>args) {
-  CXBQN_DEBUG("¬:nargs={},args={}", nargs, args);
-  auto *x = dynamic_cast<Number *>(args[1]);
-  auto *w = dynamic_cast<Number *>(args[2]);
-  return nullptr;
-};
-
-Value* And::call(u8 nargs, std::vector<Value*>args) {
-  CXBQN_DEBUG("∧:nargs={},args={}", nargs, args);
-  auto *x = dynamic_cast<Number *>(args[1]);
-  auto *w = dynamic_cast<Number *>(args[2]);
-  return nullptr;
-};
-
-Value* Or::call(u8 nargs, std::vector<Value*>args) {
-  CXBQN_DEBUG("∨:nargs={},args={}", nargs, args);
-  auto *x = dynamic_cast<Number *>(args[1]);
-  auto *w = dynamic_cast<Number *>(args[2]);
-  return nullptr;
-};
-
-Value* LT::call(u8 nargs, std::vector<Value*>args) {
-  CXBQN_DEBUG("<:nargs={},args={}", nargs, args);
-  auto *x = dynamic_cast<Number *>(args[1]);
-  auto *w = dynamic_cast<Number *>(args[2]);
-  return nullptr;
-};
-
-Value* GT::call(u8 nargs, std::vector<Value*>args) {
-  CXBQN_DEBUG(">:nargs={},args={}", nargs, args);
-  auto *x = dynamic_cast<Number *>(args[1]);
-  auto *w = dynamic_cast<Number *>(args[2]);
-  return nullptr;
-};
-
-Value* NE::call(u8 nargs, std::vector<Value*>args) {
-  CXBQN_DEBUG("≠:nargs={},args={}", nargs, args);
-  auto *x = dynamic_cast<Number *>(args[1]);
-  auto *w = dynamic_cast<Number *>(args[2]);
-  return nullptr;
-};
-
-Value* EQ::call(u8 nargs, std::vector<Value*>args) {
-  CXBQN_DEBUG("=:nargs={},args={}", nargs, args);
-  auto *x = dynamic_cast<Number *>(args[1]);
-  auto *w = dynamic_cast<Number *>(args[2]);
-  return nullptr;
-};
-
-Value* LE::call(u8 nargs, std::vector<Value*>args) {
-  CXBQN_DEBUG("≤:nargs={},args={}", nargs, args);
-  auto *x = dynamic_cast<Number *>(args[1]);
-  auto *w = dynamic_cast<Number *>(args[2]);
-  return nullptr;
-};
-
-Value* GE::call(u8 nargs, std::vector<Value*>args) {
-  CXBQN_DEBUG("≥:nargs={},args={}", nargs, args);
-  auto *x = dynamic_cast<Number *>(args[1]);
-  auto *w = dynamic_cast<Number *>(args[2]);
-  return nullptr;
-};
-
-Value *FEQ::call(u8 nargs, std::vector<Value *> args) {
-  CXBQN_DEBUG("feq:nargs={},args={}", nargs, args);
-  auto *x = dynamic_cast<Number *>(args[1]);
-  auto *w = dynamic_cast<Number *>(args[2]);
-  return new Number(static_cast<f64>(feq_helper(x->v, w->v)));
-}
-
-Value *FNE::call(u8 nargs, std::vector<Value *> args) {
-  CXBQN_DEBUG("fne:nargs={},args={}", nargs, args);
-  auto *x = dynamic_cast<Number *>(args[1]);
-  auto *w = dynamic_cast<Number *>(args[2]);
-  return new Number(static_cast<f64>(!feq_helper(x->v, w->v)));
-}
-
-Value *Ltack::call(u8 nargs, std::vector<Value *> args) {
-  CXBQN_DEBUG("⊣:nargs={},args={}", nargs, args);
-  return args[2];
-}
-
-Value *Rtack::call(u8 nargs, std::vector<Value *> args) {
-  CXBQN_DEBUG("⊢:nargs={},args={}", nargs, args);
-  return args[1];
-}
-
-Value *Type::call(u8 nargs, std::vector<Value *> args) {
-  CXBQN_DEBUG("•Type::call:nargs={},args={}", nargs, args);
-#ifdef CXBQN_DEEPCHECKS
-  if (args.size() < 2)
-    throw std::runtime_error("type got <2 args");
-  if (nullptr == /*𝕩=*/args[1])
-    throw std::runtime_error("type got nullptr for 𝕩");
-#endif
-  return new Number(static_cast<f64>(type_builtin(args[1])));
-}
+CXBQN_BI_CALL_DEF_NUMONLY(Floor, "⌊", {},
+                          NN(2 == nargs ? std::min(w->v, x->v)
+                                        : std::floor(x->v)));
+CXBQN_BI_CALL_DEF_NUMONLY(Ceil, "⌈", {},
+                          NN(2 == nargs ? std::max(w->v, x->v)
+                                        : std::ceil(x->v)));
+CXBQN_BI_CALL_DEF_NUMONLY(Stile, "|", {},
+                          NN(2 == nargs ? std::fmod(w->v, x->v)
+                                        : std::abs(x->v)));
+CXBQN_BI_CALL_DEF_NUMONLY(Not, "¬", {},
+                          NN(2 == nargs ? 1 + (w->v - x->v) : 1 - x->v));
+CXBQN_BI_CALL_DEF_NUMONLY(And, "∧", {}, NN(w->v * x->v));
+CXBQN_BI_CALL_DEF_NUMONLY(Or, "∨", {},
+                          (2 == nargs ? NN((w->v + x->v) - (w->v * x->v))
+                                      : args[1]));
+CXBQN_BI_CALL_DEF_NUMONLY(LT, "<", {}, NNC(w->v < x->v));
+CXBQN_BI_CALL_DEF_NUMONLY(GT, ">", {}, NNC(w->v > x->v));
+CXBQN_BI_CALL_DEF_NUMONLY(NE, "≠", {}, NNC(!feq_helper(x->v, w->v)));
+CXBQN_BI_CALL_DEF_NUMONLY(EQ, "=", {}, NNC(feq_helper(x->v, w->v)));
+CXBQN_BI_CALL_DEF_NUMONLY(LE, "≤", {}, NNC(w->v < x->v || feq_helper(x->v, w->v)));
+CXBQN_BI_CALL_DEF_NUMONLY(GE, "≥", {}, NNC(w->v > x->v || feq_helper(x->v, w->v)));
+CXBQN_BI_CALL_DEF_NUMONLY(FEQ, "feq", {}, NNC(feq_helper(x->v, w->v)));
+CXBQN_BI_CALL_DEF_NUMONLY(FNE, "fne", {}, NNC(!feq_helper(x->v, w->v)));
+CXBQN_BI_CALL_DEF_NUMONLY(Ltack, "⊣", {}, args[2]);
+CXBQN_BI_CALL_DEF_NUMONLY(Rtack, "⊣", {}, args[1]);
+CXBQN_BI_CALL_DEF_NUMONLY(Type, "•Type", {}, NNC(type_builtin(args[1])));
 
 Value *Table::call(u8 nargs, std::vector<Value *> args) {
   CXBQN_DEBUG("⌜: nargs={},args={}", nargs, args);
