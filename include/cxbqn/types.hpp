@@ -9,6 +9,7 @@
 #include <optional>
 #include <span>
 #include <spdlog/fmt/ostr.h>
+#include <spdlog/fmt/bundled/ostream.h>
 #include <tuple>
 #include <type_traits>
 #include <variant>
@@ -167,13 +168,14 @@ struct Number : public Value {
 };
 
 struct Character : public Number {
-  Character(char c) : Number{static_cast<f64>(c)} {}
+  Character(c32 c) : Number{static_cast<f64>(c)} {}
   TypeType t() const override {
     return TypeType{t_Character | annot(t_DataValue)};
   }
-  inline char c() const { return static_cast<char>(v); }
+  inline c32 c() const { return static_cast<c32>(v); }
   std::ostream &repr(std::ostream &os) const override {
-    return os << "\'" << static_cast<char>(v) << "\'";
+    fmt::print(os, "'{}'", static_cast<c32>(v));
+    return os;
   }
 };
 

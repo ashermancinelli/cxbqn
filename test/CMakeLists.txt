@@ -13,6 +13,7 @@ foreach(test ${tests})
 endforeach()
 
 if(CXBQN_REGEN_TESTS)
+  include(GenHelpers)
   include(GenBytecodeTests)
   include(GenPrimTests)
   include(GenSimpleTests)

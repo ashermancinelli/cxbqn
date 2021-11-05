@@ -5,7 +5,16 @@ namespace cxbqn::provides {
 
 using namespace cxbqn::types;
 
+/*
+ * The runtime as needed by the the final compiler
+ */
 Array *get_runtime();
+
+/* 
+ * The core runtime as specified at [this link](https://mlochbaum.github.io/BQN/implementation/vm.html#runtime).
+ * This is used to bootstrap the self-hosted runtime and compiler.
+ */
+Array *get_provides();
 
 struct Provides : public Function {
   TypeType t() const override {
@@ -71,11 +80,17 @@ CXBQN_BUILTIN_DECL(Rtack, "⊢");
 CXBQN_BUILTIN_DECL(ArrayDepth, "≡");
 CXBQN_BUILTIN_DECL(Type, "•Type");
 CXBQN_BUILTIN_DECL(Table, "⌜");
+CXBQN_BUILTIN_DECL(Fill, "Fill");
+CXBQN_BUILTIN_DECL(Log, "Log");
+CXBQN_BUILTIN_DECL(Assert, "!");
 Value* bi_ltack();
 Value* bi_rtack();
 Value* bi_arraydepth();
 Value* bi_type();
 Value* bi_table();
+Value* bi_fill();
+Value* bi_log();
+Value* bi_assert();
 
 #undef CXBQN_BUILTIN_DECL
 

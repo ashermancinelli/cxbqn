@@ -46,17 +46,7 @@ if(HAS_BQN_EXE)
       "1")
 
   set(S_TEST_SOURCE ${PROJECT_BINARY_DIR}/test_simple.cpp)
-  file(REMOVE ${S_TEST_SOURCE})
-  file(WRITE ${S_TEST_SOURCE} "
-#include <cxbqn/cxbqn.hpp>
-#include \"utils.hpp\"
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-#include <doctest/doctest.h>
-
-using namespace cxbqn;
-using namespace cxbqn::types;
-using namespace cxbqn::provides;
-")
+  init_gen_file(${S_TEST_SOURCE})
 
   foreach(test ans IN ZIP_LISTS S_TESTS S_ANS)
     execute_process(

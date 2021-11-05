@@ -3,6 +3,12 @@
 #include <cxbqn/debug.hpp>
 
 namespace cxbqn::provides {
+types::Array *get_provides() {
+  CXBQN_DEBUG("provides::get_provides");
+  static Array prov;
+  prov.values.resize(21);
+  return &prov;
+}
 
 types::Array *get_runtime() {
   CXBQN_DEBUG("provides::get_runtime");

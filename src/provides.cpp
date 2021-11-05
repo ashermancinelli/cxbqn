@@ -13,10 +13,10 @@ static inline auto type_builtin(const Value *v) {
 }
 
 #define CHR_MAX 1114111
-static inline Value* check_char(Value* v) {
+static inline Value *check_char(Value *v) {
   if (t_Character != type_builtin(v))
     throw std::runtime_error("internal: invalid value passed to check_char");
-  auto f = dynamic_cast<Character*>(v)->v;
+  auto f = dynamic_cast<Character *>(v)->v;
   if (f < 0 || f > CHR_MAX)
     throw std::runtime_error("invalid code point");
   return v;
@@ -100,8 +100,7 @@ Value *Plus::call(u8 nargs, std::vector<Value *> args) {
 CXBQN_BI_CALL_DEF_NUMONLY(
     Minus, "-",
     {
-      if (t_Character == type_builtin(ow) and t_Number == type_builtin(ox))
-      {
+      if (t_Character == type_builtin(ow) and t_Number == type_builtin(ox)) {
         return check_char(new Character(w->v - x->v));
       }
       if (t_Character == type_builtin(ow) and t_Character == type_builtin(ox)) {
@@ -192,6 +191,22 @@ Value *ArrayDepth::call(u8 nargs, std::vector<Value *> args) {
   return new Number(static_cast<f64>(array_depth_helper(0, args[1])));
 }
 
-// Value *Type::call(u8 nargs, std::vector<Value *> args) { }
+CXBQN_BI_CALL_DEF_NUMONLY(Fill, "Fill", {}, 2 == nargs ? args[1] : NN(0));
+CXBQN_BI_CALL_DEF_NUMONLY(Log, "Log", {},
+                          2 == nargs ? NN(std::log(w->v) / std::log(x->v))
+                                     : NN(std::log(x->v)));
+Value *Assert::call(u8 nargs, std::vector<Value *> args) {
+  CXBQN_DEBUG("!: nargs={},args={}", nargs, args);
+  bool shoulddie = false;
+  if (t_Number != type_builtin(args[1]))
+    shoulddie = true;
+  if (!feq_helper(1., dynamic_cast<Number*>(args[1])->v))
+    shoulddie = true;
+  if(shoulddie) {
+    CXBQN_CRIT("{} ! {}", (2 == nargs ? CXBQN_STR_NC(args[2]) : ""), CXBQN_STR_NC(args[1]));
+    throw std::runtime_error("!");
+  }
+  return args[1];
+}
 
 } // namespace cxbqn::provides

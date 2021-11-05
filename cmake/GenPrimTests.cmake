@@ -17,14 +17,6 @@ if(HAS_BQN_EXE)
       "3≡'d'-'a'"
       "'Q'≡'q'+'A'-'a'"
       "97-'a'"
-      "@-1"
-      "-'a'"
-      "F←÷⋄-f"
-      "1.5≡3×0.5"
-      "2×'a'"
-      "4≡÷0.25"
-      "∞≡÷0"
-      "0≡÷∞"
   )
   set(P_ANS
       1
@@ -42,31 +34,9 @@ if(HAS_BQN_EXE)
       1
       1
       throws
-      throws
-      throws
-      throws
-      1
-      throws
-      1
-      1
-      1
   )
-
   set(P_TEST_SOURCE "${PROJECT_BINARY_DIR}/test_prim.cpp")
-  file(REMOVE ${P_TEST_SOURCE})
-  file(
-    WRITE ${P_TEST_SOURCE}
-    "
-#include <cxbqn/cxbqn.hpp>
-#include \"utils.hpp\"
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-#include <doctest/doctest.h>
-
-using namespace cxbqn;
-using namespace cxbqn::types;
-using namespace cxbqn::provides;
-"
-  )
+  init_gen_file(${P_TEST_SOURCE})
 
   foreach(test ans IN ZIP_LISTS P_TESTS P_ANS)
     execute_process(

@@ -13,6 +13,7 @@ using u16 = uint16_t;
 using u32 = uint32_t;
 using u64 = uint64_t;
 using uz = std::size_t;
+using c32 = char32_t;
 
 static_assert("Only 64b systems" && sizeof(double) == 8);
 using f32 = float;
