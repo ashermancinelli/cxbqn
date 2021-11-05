@@ -180,11 +180,20 @@ struct Character : public Number {
 };
 
 struct Array : public Value {
-  uz N;
   std::vector<Value *> values;
   std::vector<uz> shape;
-  Array(const ByteCode::value_type N, std::deque<Value *> &stk);
-  Array(uz N) : N{N} {
+  Array(const uz N, std::deque<Value *> &stk);
+  Array(std::vector<Value *> vs) : values{vs}, shape{vs.size()} {}
+  inline const uz N() const {
+    const auto N = values.size();
+#ifdef CXBQN_DEEPCHECKS
+    if (N !=
+        std::accumulate(shape.begin(), shape.end(), 1, std::multiplies<uz>()))
+      throw std::runtime_error("cxbqn internal:shape does not match values");
+#endif
+    return N;
+  }
+  Array(uz N) {
     shape.push_back(N);
     values.resize(N);
   }
@@ -279,6 +288,7 @@ struct Md1Deferred : public Function {
   Value *f, *m1;
   Md1Deferred(Value *f, Value *m1) : f{f}, m1{m1} {}
   Value *call(u8 nargs = 0, std::vector<Value *> args = {}) override;
+  std::ostream &repr(std::ostream &os) const override;
 };
 
 /*
@@ -289,6 +299,7 @@ struct Md2Deferred : public Function {
   Value *f, *m2, *g;
   Md2Deferred(Value *f, Value *m2, Value *g) : f{f}, m2{m2}, g{g} {}
   Value *call(u8 nargs = 0, std::vector<Value *> args = {}) override;
+  std::ostream &repr(std::ostream &os) const override;
 };
 
 struct CompilationResult {

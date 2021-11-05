@@ -36,7 +36,7 @@ static Value *safe_set_refer(Value *opaque_refer, Value *value, Scope *scp) {
       throw std::runtime_error("setn: Could not cast value to type Array when "
                                "assigning to RefArray");
 #endif
-    for (int i = 0; i < aval->N; i++)
+    for (int i = 0; i < aval->N(); i++)
       scp->set(ShouldVarBeSet, aref->getref(i), aval->values[i]);
     return aval;
 
@@ -80,10 +80,10 @@ static Value *setm_ref(Value *F, Value *x, Value *r, Scope *scp) {
 
 static Value *setm_refarray(Value *F, Value *x, Value *r, Scope *scp) {
   auto *refarr = dynamic_cast<RefArray *>(r);
-  auto *varr = new Array(refarr->N);
+  auto *varr = new Array(refarr->N());
 
   // create an array from the reference array to pass into F
-  for (int i = 0; i < refarr->N; i++)
+  for (int i = 0; i < refarr->N(); i++)
     varr->values.push_back(scp->get(refarr->getref(i)));
 
   auto *v = F->call(2, {F, x, varr});

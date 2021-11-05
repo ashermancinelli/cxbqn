@@ -4,27 +4,32 @@
 
 namespace cxbqn::types {
 
-Value* bi_nothing() {
+Value *bi_nothing() {
   static Nothing n;
   return &n;
 }
 
-Array::Array(const ByteCode::value_type N, std::deque<Value *> &stk)
-    : N{static_cast<uz>(N)} {
+Array::Array(const uz N, std::deque<Value *> &stk) {
   shape.push_back(N);
   values.assign(stk.begin() + (stk.size() - N), stk.end());
   stk.resize(stk.size() - N);
 }
 
 std::ostream &Array::repr(std::ostream &os) const {
-  os << "⟨";
-  for (int i=0; i<values.size(); i++) {
+  os << "⟨sh=⟨";
+  for (int i = 0; i < shape.size(); i++) {
+    os << shape[i];
+    if (i + 1 < shape.size())
+      os << ",";
+  }
+  os << "⟩";
+  for (int i = 0; i < values.size(); i++) {
     auto e = values[i];
     if (e)
       e->repr(os);
     else
       os << "null";
-    if (i+1 < values.size())
+    if (i + 1 < values.size())
       os << ",";
   }
   return os << "⟩";
@@ -32,13 +37,13 @@ std::ostream &Array::repr(std::ostream &os) const {
 
 std::ostream &RefArray::repr(std::ostream &os) const {
   os << "r⟨";
-  for (int i=0; i<values.size(); i++) {
+  for (int i = 0; i < values.size(); i++) {
     auto e = values[i];
     if (e)
       e->repr(os);
     else
       os << "null";
-    if (i+1 < values.size())
+    if (i + 1 < values.size())
       os << ",";
   }
   return os << "⟩";
@@ -46,7 +51,7 @@ std::ostream &RefArray::repr(std::ostream &os) const {
 
 Reference *RefArray::getref(uz idx) {
 #ifdef CXBQN_DEEPCHECKS
-  if (idx >= N)
+  if (idx >= N())
     throw std::runtime_error("RefArray::getref: idx >= N");
 #endif
   auto *v = values[idx];
@@ -258,10 +263,10 @@ Value *Fork::call(u8 nargs, std::vector<Value *> args) {
 
   // Pass 𝕩 and 𝕨 (if exists)
   args[0] = h;
-  auto* r = h->call(nargs, args);
+  auto *r = h->call(nargs, args);
 
   args[0] = f;
-  auto* l = f->call(nargs, args);
+  auto *l = f->call(nargs, args);
 
   // nargs will always be two for the inner function of a fork
   auto *ret = g->call(2, {g, r, l});
@@ -279,12 +284,21 @@ Value *Md1Deferred::call(u8 nargs, std::vector<Value *> args) {
   args.push_back(f);
   return m1->call(nargs, args);
 }
+std::ostream &Md1Deferred::repr(std::ostream &os) const {
+  fmt::print(os, "{}{}", CXBQN_STR_NC(f), CXBQN_STR_NC(m1));
+  return os;
+}
 
 Value *Md2Deferred::call(u8 nargs, std::vector<Value *> args) {
   args.push_back(m2);
   args.push_back(f);
   args.push_back(g);
   return m2->call(nargs, args);
+}
+
+std::ostream &Md2Deferred::repr(std::ostream &os) const {
+  fmt::print(os, "{}{}{}", CXBQN_STR_NC(f), CXBQN_STR_NC(m2), CXBQN_STR_NC(g));
+  return os;
 }
 
 } // namespace cxbqn::types

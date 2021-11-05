@@ -36,6 +36,7 @@ types::Array *get_runtime() {
   rt.values[19] = bi_fne();
   rt.values[20] = bi_ltack();
   rt.values[21] = bi_rtack();
+  rt.values[22] = bi_deshape();
   rt.values[27] = bi_range();
   rt.values[47] = bi_table();
   rt.values[51] = bi_scan();
@@ -167,7 +168,7 @@ Value *bi_shape() {
   return &v;
 }
 Value *bi_deshape() {
-  static Shape v;
+  static Deshape v;
   return &v;
 }
 Value* bi_scan() {

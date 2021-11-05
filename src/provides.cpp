@@ -1,5 +1,6 @@
 #include <cmath>
 #include <cxbqn/debug.hpp>
+#include <cxbqn/fmt.hpp>
 #include <cxbqn/provides.hpp>
 
 namespace cxbqn::provides {
@@ -20,15 +21,6 @@ static inline Value *check_char(Value *v) {
   if (f < 0 || f > CHR_MAX)
     throw std::runtime_error("invalid code point");
   return v;
-}
-
-// When we "reshape" an array, we just allocate enough memory to hold all the
-// elements and assign the shape feild to be the shape we expect.
-static inline void reshape(Array *arr, std::initializer_list<uz> shape) {
-  const auto n =
-      std::accumulate(shape.begin(), shape.end(), 1, std::multiplies<uz>());
-  arr->N = n;
-  arr->values.resize(n);
 }
 
 // Recursively find the max depth of each element, and max reduce
@@ -169,10 +161,10 @@ Value *Table::call(u8 nargs, std::vector<Value *> args) {
   const auto &xv = x->values;
   auto *w = dynamic_cast<Array *>(args[2]);
   const auto &wv = w->values;
-  auto *ret = new Array(x->N * w->N);
-  for (int iw = 0; iw < w->N; iw++)
-    for (int ix = 0; ix < x->N; ix++) {
-      ret->values[(iw * x->N) + ix] = F->call(2, {F, xv[ix], wv[iw]});
+  auto *ret = new Array(x->N() * w->N());
+  for (int iw = 0; iw < w->N(); iw++)
+    for (int ix = 0; ix < x->N(); ix++) {
+      ret->values[(iw * x->N()) + ix] = F->call(2, {F, xv[ix], wv[iw]});
     }
   ret->shape.assign(w->shape.begin(), w->shape.end());
   ret->shape.insert(ret->shape.end(), x->shape.begin(), x->shape.end());
@@ -206,7 +198,7 @@ Value *Range::call(u8 nargs, std::vector<Value *> args) {
   CXBQN_DEBUG("↕: nargs={},args={}", nargs, args);
   auto n = static_cast<uz>(dynamic_cast<Number *>(args[1])->v);
   auto *arr = new Array(n);
-  for (int i = 0; i < arr->N; i++)
+  for (int i = 0; i < arr->N(); i++)
     arr->values[i] = new Number(i);
   return arr;
 }
@@ -229,28 +221,95 @@ Value *Shape::call(u8 nargs, std::vector<Value *> args) {
 
 Value *Deshape::call(u8 nargs, std::vector<Value *> args) {
   CXBQN_DEBUG("⥊: nargs={},args={}", nargs, args);
+
+  const bool iswarr = t_Array == type_builtin(args[2]);
+  const bool isxarr = t_Array == type_builtin(args[1]);
+  auto *xarr = isxarr ? dynamic_cast<Array *>(args[1]) : nullptr;
+
+  if (1 == nargs) {
+    if (isxarr) {
+      xarr->shape.assign({xarr->N()});
+      return xarr;
+    } else {
+      return new Array({args[1]});
+    }
+  }
+
   auto *ret = new Array();
-  auto *ar = dynamic_cast<Array *>(args[1]);
-  ret->shape.assign({ar->N});
-  std::copy(ar->values.begin(), ar->values.end(), ret->values.begin());
+  if (iswarr) {
+    auto *warr = dynamic_cast<Array *>(args[2]);
+    for (int i = 0; i < warr->N(); i++)
+      ret->shape.push_back(
+          static_cast<uz>(dynamic_cast<Number *>(warr->values[i])->v));
+  } else {
+    ret->shape.push_back(static_cast<uz>(dynamic_cast<Number *>(args[2])->v));
+  }
+
+  const auto cnt = std::accumulate(ret->shape.begin(), ret->shape.end(), 1,
+                                   std::multiplies<uz>());
+  ret->values.resize(cnt);
+
+  if (!isxarr)
+    for (int i = 0; i < cnt; i++)
+      ret->values[i] = args[1];
+  else
+    for (int i = 0; i < cnt; i++)
+      ret->values[i] =
+          xarr->values[i %
+                       xarr->N()]; // values wrap when 𝕩 has insufficient length
   return ret;
 }
 
-/* see these docs https://mlochbaum.github.io/BQN/doc/scan.html
- * you'll use more 𝕨, 𝕩 and 𝕗 from args, so probs do some length checking on
- * args before you try to grab the modified function from there
- * sxwrfg
- */
 Value *Scan::call(u8 nargs, std::vector<Value *> args) {
   CXBQN_DEBUG("`: nargs={},args={}", nargs, args);
-  auto *ar = dynamic_cast<Array *>(args[1]);
+  if (t_Array != type_builtin(args[1]))
+    throw std::runtime_error("`: 𝕩 must have rank at least 1");
+
+  auto *x = dynamic_cast<Array *>(args[1]);
+  auto *w = args[2];
   auto *F = args[4];
-  auto *ret = new Array(ar->N);
-  ret->values[0] = 2 == nargs ? args[2] : ar->values[0];
-  for (int i = 1; i < ar->N; i++) {
-    ret->values[i] = F->call(2, {F, ar->values[i], ret->values[i - 1]});
-    CXBQN_DEBUG("ret[{}]={}", i, CXBQN_STR_NC(ret->values[i]));
+
+  auto sh = x->shape;
+  auto iswarr = (t_Array == type_builtin(w));
+  if (2 == nargs) {
+    auto w_rank = iswarr ? dynamic_cast<Array *>(w)->shape.size() : 0;
+    if (1 + w_rank != x->shape.size())
+      throw std::runtime_error("`: rank of 𝕨 must be cell rank of 𝕩");
+    if (iswarr) {
+      const auto &wsh = dynamic_cast<Array *>(w)->shape;
+      for (int i = 0; i < x->shape.size() - 1; i++)
+        if (wsh[i] != x->shape[i + 1])
+          throw std::runtime_error("`: shape of 𝕨 must be cell shape of 𝕩");
+    }
   }
+
+  auto *ret = new Array();
+  ret->values.resize(x->N());
+  ret->shape.resize(x->shape.size());
+  std::copy(x->shape.begin(), x->shape.end(), ret->shape.begin());
+
+  // product reduction of shape of cells of 𝕩
+  // const auto cnt = std::accumulate(x->shape.begin() + 1, x->shape.end(), 1,
+  // std::multiplies<uz>());
+  int cnt = 1;
+  for (int i = 1; i < x->shape.size(); i++) cnt *= x->shape[i];
+  int i = 0;
+  auto *warr = iswarr ? dynamic_cast<Array *>(w) : new Array({w});
+  CXBQN_DEBUG("cnt={},warr={}", cnt, CXBQN_STR_NC((Value *)warr));
+  if (1 == nargs)
+    for (; i < cnt; i++)
+      ret->values[i] = x->values[i];
+  else
+    for (; i < cnt; i++)
+    {
+      auto *xv = x->values[i];
+      auto *wv = warr->values[i];
+      CXBQN_DEBUG("xv={},wv={},i={}", CXBQN_STR_NC(xv), CXBQN_STR_NC(wv),i);
+      ret->values[i] = F->call(2, {F, x->values[i], warr->values[i]});
+    }
+
+  for (; i < x->N(); i++)
+    ret->values[i] = F->call(2, {F, x->values[i], ret->values[i - cnt]});
   return ret;
 }
 
