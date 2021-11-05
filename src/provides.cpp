@@ -58,6 +58,9 @@ template <typename T = f64> static bool feq_helper(T a, T b) {
 // an f64
 #define NNC(x) new Number(static_cast<f64>(x))
 
+// "dynamic cast to a number"
+#define DCN(x) dynamic_cast<Number*>(x)
+
 // Shorthand to define the call method of a given builtin type.
 // `ox` and `ow` are short for the opaque pointers to each argument, in case the
 // operator needs to do some checks on the values before casting them.
@@ -140,7 +143,13 @@ CXBQN_BI_CALL_DEF_NUMONLY(Or, "∨", {},
 CXBQN_BI_CALL_DEF_NUMONLY(LT, "<", {}, NNC(w->v < x->v));
 CXBQN_BI_CALL_DEF_NUMONLY(GT, ">", {}, NNC(w->v > x->v));
 CXBQN_BI_CALL_DEF_NUMONLY(NE, "≠", {}, NNC(!feq_helper(x->v, w->v)));
-CXBQN_BI_CALL_DEF_NUMONLY(EQ, "=", {}, NNC(feq_helper(x->v, w->v)));
+CXBQN_BI_CALL_DEF_NUMONLY(
+    EQ, "=",
+    {
+      if (1 == nargs)
+        return args[1];
+    },
+    NNC(feq_helper(x->v, w->v)));
 CXBQN_BI_CALL_DEF_NUMONLY(LE, "≤", {},
                           NNC(w->v < x->v || feq_helper(x->v, w->v)));
 CXBQN_BI_CALL_DEF_NUMONLY(GE, "≥", {},
@@ -292,7 +301,8 @@ Value *Scan::call(u8 nargs, std::vector<Value *> args) {
   // const auto cnt = std::accumulate(x->shape.begin() + 1, x->shape.end(), 1,
   // std::multiplies<uz>());
   int cnt = 1;
-  for (int i = 1; i < x->shape.size(); i++) cnt *= x->shape[i];
+  for (int i = 1; i < x->shape.size(); i++)
+    cnt *= x->shape[i];
   int i = 0;
   auto *warr = iswarr ? dynamic_cast<Array *>(w) : new Array({w});
   CXBQN_DEBUG("cnt={},warr={}", cnt, CXBQN_STR_NC((Value *)warr));
@@ -300,17 +310,67 @@ Value *Scan::call(u8 nargs, std::vector<Value *> args) {
     for (; i < cnt; i++)
       ret->values[i] = x->values[i];
   else
-    for (; i < cnt; i++)
-    {
+    for (; i < cnt; i++) {
       auto *xv = x->values[i];
       auto *wv = warr->values[i];
-      CXBQN_DEBUG("xv={},wv={},i={}", CXBQN_STR_NC(xv), CXBQN_STR_NC(wv),i);
+      CXBQN_DEBUG("xv={},wv={},i={}", CXBQN_STR_NC(xv), CXBQN_STR_NC(wv), i);
       ret->values[i] = F->call(2, {F, x->values[i], warr->values[i]});
     }
 
   for (; i < x->N(); i++)
     ret->values[i] = F->call(2, {F, x->values[i], ret->values[i - cnt]});
   return ret;
+}
+
+/*
+ * let group_len = (x,w) => { // ≠¨⊔ for a valid list argument
+ *   let l=x.reduce((a,b)=>Math.max(a,b),(w||0)-1);
+ *   let r=Array(l+1).fill(0);
+ *   x.map(e=>{if(e>=0)r[e]+=1;});
+ *   return list(r,0);
+ * }
+ */
+#define SYMBOL "≠¨⊔𝕩"
+Value *GroupLen::call(u8 nargs, std::vector<Value *> args) {
+  CXBQN_DEBUG(SYMBOL ": nargs={},args={}", nargs, args);
+  auto *x = dynamic_cast<Array *>(args[1]);
+  auto *w = dynamic_cast<Number *>(args[2]); // only use if nargs == 2!
+  const f64 init = (2 == nargs ? w->v : 0) - 1;
+  const auto l = std::accumulate(x->values.begin(), x->values.end(), init,
+                                 [](auto *a, auto *b) {
+                                    return std::max(DCN(a)->v, DCN(b)->v);
+                                 });
+  auto *ret = new Array(static_cast<uz>(l+1));
+  std::fill(ret->values.begin(), ret->values.end(), 0);
+  for (const auto *e : x->values)
+    if (DCN(e)->v > 0 or feq_helper(0.0, DCN(e)->v))
+      ret->values[static_cast<uz>(DCN(e)->v)]++;
+  return ret;
+}
+
+/*
+ * let group_ord = (x,w) => { // ∾⊔x assuming w=group_len(x)
+ *   let l=0,s=w.map(n=>{let l0=l;l+=n;return l0;});
+ *   let r=Array(l);
+ *   x.map((e,i)=>{if(e>=0)r[s[e]++]=i;});
+ *   return list(r,x.fill);
+ * }
+ */
+#define SYMBOL "∾⊔𝕩"
+Value *GroupOrd::call(u8 nargs, std::vector<Value *> args) {
+  CXBQN_DEBUG(SYMBOL ": nargs={},args={}", nargs, args);
+  auto *w = dynamic_cast<Array*>(args[2]);
+  auto *x = dynamic_cast<Array*>(args[1]);
+  auto len = 0;
+  std::vector<Value*> v(w->N(), nullptr);
+  for (int i=0; i < w->N(); i++) {
+    v[i] = len;
+    len += w->values[i];
+  }
+  auto *ret = new Array(static_cast<uz>(len));
+  for (int i=0; i < x->N(); i++) {
+    const auto *e = x->values[i];
+  }
 }
 
 } // namespace cxbqn::provides

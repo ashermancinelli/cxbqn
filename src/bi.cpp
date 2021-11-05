@@ -175,5 +175,13 @@ Value* bi_scan() {
   static Scan v;
   return &v;
 }
+Value* bi_grouplen() {
+  static GroupLen g;
+  return &g;
+}
+Value *bi_groupord() {
+  static GroupOrd g;
+  return &g;
+}
 
 } // namespace cxbqn::provides
