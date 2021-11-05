@@ -13,7 +13,7 @@ types::Array *get_provides() {
 types::Array *get_runtime() {
   CXBQN_DEBUG("provides::get_runtime");
   static Array rt;
-  rt.values.resize(50);
+  rt.values.resize(60);
   rt.values[0] = bi_plus();
   rt.values[1] = bi_minus();
   rt.values[2] = bi_mul();
@@ -36,7 +36,9 @@ types::Array *get_runtime() {
   rt.values[19] = bi_fne();
   rt.values[20] = bi_ltack();
   rt.values[21] = bi_rtack();
+  rt.values[27] = bi_range();
   rt.values[48] = bi_table();
+  rt.values[51] = bi_scan();
   return &rt;
 }
 

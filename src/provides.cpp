@@ -159,32 +159,34 @@ CXBQN_BI_CALL_DEF_NUMONLY(Ltack, "⊣", {}, args[2]);
 CXBQN_BI_CALL_DEF_NUMONLY(Rtack, "⊣", {}, args[1]);
 CXBQN_BI_CALL_DEF_NUMONLY(Type, "•Type", {}, NNC(type_builtin(args[1])));
 
+/* need to use modified functions from args instead of x and w */
 Value *Table::call(u8 nargs, std::vector<Value *> args) {
   CXBQN_DEBUG("⌜: nargs={},args={}", nargs, args);
-  if (1 == nargs)
-    throw std::runtime_error("⌜: no monadic definition");
-  if (0 != type_builtin(args[1]))
-    throw std::runtime_error("⌜: 𝕩 must be an array");
-  if (0 != type_builtin(args[2]))
-    throw std::runtime_error("⌜: 𝕨 must be an array");
-  auto *x = dynamic_cast<Array *>(args[1]);
-  auto *w = dynamic_cast<Array *>(args[2]);
-  auto *ret = new Array(x->N * w->N);
-  CXBQN_DEBUG("⌜:create return array with size={}", ret->N);
-  for (int i = 0; i < x->N; i++)
-    for (int j = 0; j < w->N; j++)
-      ret->values[(i * x->N) + w->N] =
-          args[0]->call(2, {args[0], x->values[i], w->values[j]});
+  // if (1 == nargs)
+  //  throw std::runtime_error("⌜: no monadic definition");
+  // if (0 != type_builtin(args[1]))
+  //  throw std::runtime_error("⌜: 𝕩 must be an array");
+  // if (0 != type_builtin(args[2]))
+  //  throw std::runtime_error("⌜: 𝕨 must be an array");
+  // auto *x = dynamic_cast<Array *>(args[1]);
+  // auto *w = dynamic_cast<Array *>(args[2]);
+  // auto *ret = new Array(x->N * w->N);
+  // CXBQN_DEBUG("⌜:create return array with size={}", ret->N);
+  // for (int i = 0; i < x->N; i++)
+  //  for (int j = 0; j < w->N; j++)
+  //    ret->values[(i * x->N) + w->N] =
+  //        args[0]->call(2, {args[0], x->values[i], w->values[j]});
 
-  CXBQN_DEBUG("⌜:assigned all values. setting shape of return value.");
+  // CXBQN_DEBUG("⌜:assigned all values. setting shape of return value.");
 
-  // The return value has shape {shape w destructured, shape x destructured},
-  // so we will copy the contents of the shape of w to the return value's shape,
-  // and then extend with the shape of x.
-  ret->shape.clear();
-  std::copy(w->shape.begin(), w->shape.end(), std::back_inserter(ret->shape));
-  std::copy(x->shape.begin(), x->shape.end(), std::back_inserter(ret->shape));
-  return ret;
+  //// The return value has shape {shape w destructured, shape x destructured},
+  //// so we will copy the contents of the shape of w to the return value's
+  ///shape, / and then extend with the shape of x.
+  // ret->shape.clear();
+  // std::copy(w->shape.begin(), w->shape.end(),
+  // std::back_inserter(ret->shape)); std::copy(x->shape.begin(), x->shape.end(),
+  // std::back_inserter(ret->shape)); return ret;
+  return nullptr;
 }
 
 Value *ArrayDepth::call(u8 nargs, std::vector<Value *> args) {
@@ -214,7 +216,8 @@ Value *Range::call(u8 nargs, std::vector<Value *> args) {
   CXBQN_DEBUG("↕: nargs={},args={}", nargs, args);
   auto n = static_cast<uz>(dynamic_cast<Number *>(args[1])->v);
   auto *arr = new Array(n);
-  std::iota(arr->values.begin(), arr->values.end(), 0);
+  for (int i = 0; i < arr->N; i++)
+    arr->values[i] = new Number(i);
   return arr;
 }
 
@@ -224,14 +227,15 @@ Value *Pick::call(u8 nargs, std::vector<Value *> args) {
   return dynamic_cast<Array *>(args[1])->values[n];
 }
 
-CXBQN_BI_CALL_DEF_NUMONLY(
-    Shape, "≢",
-    {
-      auto *ret = new Array();
-      auto sh = dynamic_cast<Array *>(args[1])->shape;
-      ret->values.assign(sh.begin(), sh.end());
-    },
-    ret);
+Value *Shape::call(u8 nargs, std::vector<Value *> args) {
+  CXBQN_DEBUG("≢: nargs={},args={}", nargs, args);
+  auto *ret = new Array();
+  auto sh = dynamic_cast<Array *>(args[1])->shape;
+  ret->values.resize(sh.size());
+  for(int i=0; i<sh.size(); i++)
+    ret->values[i] = new Number(sh[i]);
+  return ret;
+}
 
 Value *Deshape::call(u8 nargs, std::vector<Value *> args) {
   CXBQN_DEBUG("⥊: nargs={},args={}", nargs, args);
@@ -244,18 +248,20 @@ Value *Deshape::call(u8 nargs, std::vector<Value *> args) {
 
 /* see these docs https://mlochbaum.github.io/BQN/doc/scan.html
  * you'll use more 𝕨, 𝕩 and 𝕗 from args, so probs do some length checking on
- * args before you try to grab the modified function from there */
+ * args before you try to grab the modified function from there
+ * sxwrfg
+ */
 Value *Scan::call(u8 nargs, std::vector<Value *> args) {
   CXBQN_DEBUG("`: nargs={},args={}", nargs, args);
-  return nullptr;
-  //auto *rhs = dynamic_cast<Array *>(args[1]);
-  //auto *ret = new Array(rhs->N);
-  //Value *acc;
-  //ret->values[0] = acc = lhs->call(2, rhs->values[0], rhs->values[1]);
-  //for (int i = 2; i < rhs->N; i++) {
-  //  ret->values[i - 1] = lhs->call(2, rhs->values[i], rhs->values[i - 1]);
-  //}
-  //return ret;
+  auto *ar = dynamic_cast<Array *>(args[1]);
+  auto *F = args[4];
+  auto *ret = new Array(ar->N);
+  ret->values[0] = 2 == nargs ? args[2] : ar->values[0];
+  for (int i = 1; i < ar->N; i++) {
+    ret->values[i] = F->call(2, {F, ar->values[i], ret->values[i-1]});
+    CXBQN_DEBUG("ret[{}]={}", i, CXBQN_STR_NC(ret->values[i]));
+  }
+  return ret;
 }
 
 } // namespace cxbqn::provides

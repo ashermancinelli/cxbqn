@@ -4,6 +4,7 @@ set(tests
     test_bc
     test_prim
     test_simple
+    test_bi
 )
 
 foreach(test ${tests})
