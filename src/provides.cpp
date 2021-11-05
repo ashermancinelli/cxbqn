@@ -200,13 +200,62 @@ Value *Assert::call(u8 nargs, std::vector<Value *> args) {
   bool shoulddie = false;
   if (t_Number != type_builtin(args[1]))
     shoulddie = true;
-  if (!feq_helper(1., dynamic_cast<Number*>(args[1])->v))
+  if (!feq_helper(1., dynamic_cast<Number *>(args[1])->v))
     shoulddie = true;
-  if(shoulddie) {
-    CXBQN_CRIT("{} ! {}", (2 == nargs ? CXBQN_STR_NC(args[2]) : ""), CXBQN_STR_NC(args[1]));
+  if (shoulddie) {
+    CXBQN_CRIT("{} ! {}", (2 == nargs ? CXBQN_STR_NC(args[2]) : ""),
+               CXBQN_STR_NC(args[1]));
     throw std::runtime_error("!");
   }
   return args[1];
+}
+
+Value *Range::call(u8 nargs, std::vector<Value *> args) {
+  CXBQN_DEBUG("↕: nargs={},args={}", nargs, args);
+  auto n = static_cast<uz>(dynamic_cast<Number *>(args[1])->v);
+  auto *arr = new Array(n);
+  std::iota(arr->values.begin(), arr->values.end(), 0);
+  return arr;
+}
+
+Value *Pick::call(u8 nargs, std::vector<Value *> args) {
+  CXBQN_DEBUG("⊑: nargs={},args={}", nargs, args);
+  auto n = static_cast<uz>(dynamic_cast<Number *>(args[2])->v);
+  return dynamic_cast<Array *>(args[1])->values[n];
+}
+
+CXBQN_BI_CALL_DEF_NUMONLY(
+    Shape, "≢",
+    {
+      auto *ret = new Array();
+      auto sh = dynamic_cast<Array *>(args[1])->shape;
+      ret->values.assign(sh.begin(), sh.end());
+    },
+    ret);
+
+Value *Deshape::call(u8 nargs, std::vector<Value *> args) {
+  CXBQN_DEBUG("⥊: nargs={},args={}", nargs, args);
+  auto *ret = new Array();
+  auto *ar = dynamic_cast<Array *>(args[1]);
+  ret->shape.assign({ar->N});
+  std::copy(ar->values.begin(), ar->values.end(), ret->values.begin());
+  return ret;
+}
+
+/* see these docs https://mlochbaum.github.io/BQN/doc/scan.html
+ * you'll use more 𝕨, 𝕩 and 𝕗 from args, so probs do some length checking on
+ * args before you try to grab the modified function from there */
+Value *Scan::call(u8 nargs, std::vector<Value *> args) {
+  CXBQN_DEBUG("`: nargs={},args={}", nargs, args);
+  return nullptr;
+  //auto *rhs = dynamic_cast<Array *>(args[1]);
+  //auto *ret = new Array(rhs->N);
+  //Value *acc;
+  //ret->values[0] = acc = lhs->call(2, rhs->values[0], rhs->values[1]);
+  //for (int i = 2; i < rhs->N; i++) {
+  //  ret->values[i - 1] = lhs->call(2, rhs->values[i], rhs->values[i - 1]);
+  //}
+  //return ret;
 }
 
 } // namespace cxbqn::provides

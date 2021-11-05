@@ -8,8 +8,8 @@
 #include <numeric>
 #include <optional>
 #include <span>
-#include <spdlog/fmt/ostr.h>
 #include <spdlog/fmt/bundled/ostream.h>
+#include <spdlog/fmt/ostr.h>
 #include <tuple>
 #include <type_traits>
 #include <variant>
@@ -184,7 +184,10 @@ struct Array : public Value {
   std::vector<Value *> values;
   std::vector<uz> shape;
   Array(const ByteCode::value_type N, std::deque<Value *> &stk);
-  Array(uz N) : N{N} { shape.push_back(N); }
+  Array(uz N) : N{N} {
+    shape.push_back(N);
+    values.resize(N);
+  }
   Array() {}
   ~Array() {}
   Value *operator[](const std::size_t &i) { return values[i]; }

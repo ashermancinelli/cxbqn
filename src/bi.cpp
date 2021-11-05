@@ -1,6 +1,6 @@
 #include <cmath>
-#include <cxbqn/provides.hpp>
 #include <cxbqn/debug.hpp>
+#include <cxbqn/provides.hpp>
 
 namespace cxbqn::provides {
 types::Array *get_provides() {
@@ -139,6 +139,38 @@ Value *bi_type() {
 Value *bi_table() {
   static Table t;
   return &t;
+}
+Value *bi_fill() {
+  static Fill v;
+  return &v;
+}
+Value *bi_log() {
+  static Log v;
+  return &v;
+}
+Value *bi_assert() {
+  static Assert v;
+  return &v;
+}
+Value *bi_range() {
+  static Range v;
+  return &v;
+}
+Value *bi_pick() {
+  static Pick v;
+  return &v;
+}
+Value *bi_shape() {
+  static Shape v;
+  return &v;
+}
+Value *bi_deshape() {
+  static Shape v;
+  return &v;
+}
+Value* bi_scan() {
+  static Scan v;
+  return &v;
 }
 
 } // namespace cxbqn::provides

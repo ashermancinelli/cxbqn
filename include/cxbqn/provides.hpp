@@ -83,6 +83,11 @@ CXBQN_BUILTIN_DECL(Table, "⌜");
 CXBQN_BUILTIN_DECL(Fill, "Fill");
 CXBQN_BUILTIN_DECL(Log, "Log");
 CXBQN_BUILTIN_DECL(Assert, "!");
+CXBQN_BUILTIN_DECL(Range, "↕");
+CXBQN_BUILTIN_DECL(Pick, "⊑");
+CXBQN_BUILTIN_DECL(Shape, "≢");
+CXBQN_BUILTIN_DECL(Deshape, "⥊");
+CXBQN_BUILTIN_DECL(Scan, "`");
 Value* bi_ltack();
 Value* bi_rtack();
 Value* bi_arraydepth();
@@ -91,6 +96,11 @@ Value* bi_table();
 Value* bi_fill();
 Value* bi_log();
 Value* bi_assert();
+Value* bi_range();
+Value* bi_pick();
+Value* bi_shape();
+Value* bi_deshape();
+Value* bi_scan();
 
 #undef CXBQN_BUILTIN_DECL
 
