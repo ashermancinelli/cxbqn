@@ -159,34 +159,24 @@ CXBQN_BI_CALL_DEF_NUMONLY(Ltack, "⊣", {}, args[2]);
 CXBQN_BI_CALL_DEF_NUMONLY(Rtack, "⊣", {}, args[1]);
 CXBQN_BI_CALL_DEF_NUMONLY(Type, "•Type", {}, NNC(type_builtin(args[1])));
 
-/* need to use modified functions from args instead of x and w */
 Value *Table::call(u8 nargs, std::vector<Value *> args) {
   CXBQN_DEBUG("⌜: nargs={},args={}", nargs, args);
-  // if (1 == nargs)
-  //  throw std::runtime_error("⌜: no monadic definition");
-  // if (0 != type_builtin(args[1]))
-  //  throw std::runtime_error("⌜: 𝕩 must be an array");
-  // if (0 != type_builtin(args[2]))
-  //  throw std::runtime_error("⌜: 𝕨 must be an array");
-  // auto *x = dynamic_cast<Array *>(args[1]);
-  // auto *w = dynamic_cast<Array *>(args[2]);
-  // auto *ret = new Array(x->N * w->N);
-  // CXBQN_DEBUG("⌜:create return array with size={}", ret->N);
-  // for (int i = 0; i < x->N; i++)
-  //  for (int j = 0; j < w->N; j++)
-  //    ret->values[(i * x->N) + w->N] =
-  //        args[0]->call(2, {args[0], x->values[i], w->values[j]});
+  auto *F = args[4];
+  if (0 != type_builtin(args[1]) or 0 != type_builtin(args[2]))
+    throw std::runtime_error("⌜: 𝕩 and 𝕨 must be arrays");
 
-  // CXBQN_DEBUG("⌜:assigned all values. setting shape of return value.");
-
-  //// The return value has shape {shape w destructured, shape x destructured},
-  //// so we will copy the contents of the shape of w to the return value's
-  ///shape, / and then extend with the shape of x.
-  // ret->shape.clear();
-  // std::copy(w->shape.begin(), w->shape.end(),
-  // std::back_inserter(ret->shape)); std::copy(x->shape.begin(), x->shape.end(),
-  // std::back_inserter(ret->shape)); return ret;
-  return nullptr;
+  auto *x = dynamic_cast<Array *>(args[1]);
+  const auto &xv = x->values;
+  auto *w = dynamic_cast<Array *>(args[2]);
+  const auto &wv = w->values;
+  auto *ret = new Array(x->N * w->N);
+  for (int iw = 0; iw < w->N; iw++)
+    for (int ix = 0; ix < x->N; ix++) {
+      ret->values[(iw * x->N) + ix] = F->call(2, {F, xv[ix], wv[iw]});
+    }
+  ret->shape.assign(w->shape.begin(), w->shape.end());
+  ret->shape.insert(ret->shape.end(), x->shape.begin(), x->shape.end());
+  return ret;
 }
 
 Value *ArrayDepth::call(u8 nargs, std::vector<Value *> args) {
@@ -232,7 +222,7 @@ Value *Shape::call(u8 nargs, std::vector<Value *> args) {
   auto *ret = new Array();
   auto sh = dynamic_cast<Array *>(args[1])->shape;
   ret->values.resize(sh.size());
-  for(int i=0; i<sh.size(); i++)
+  for (int i = 0; i < sh.size(); i++)
     ret->values[i] = new Number(sh[i]);
   return ret;
 }
@@ -258,7 +248,7 @@ Value *Scan::call(u8 nargs, std::vector<Value *> args) {
   auto *ret = new Array(ar->N);
   ret->values[0] = 2 == nargs ? args[2] : ar->values[0];
   for (int i = 1; i < ar->N; i++) {
-    ret->values[i] = F->call(2, {F, ar->values[i], ret->values[i-1]});
+    ret->values[i] = F->call(2, {F, ar->values[i], ret->values[i - 1]});
     CXBQN_DEBUG("ret[{}]={}", i, CXBQN_STR_NC(ret->values[i]));
   }
   return ret;

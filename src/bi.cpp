@@ -37,7 +37,7 @@ types::Array *get_runtime() {
   rt.values[20] = bi_ltack();
   rt.values[21] = bi_rtack();
   rt.values[27] = bi_range();
-  rt.values[48] = bi_table();
+  rt.values[47] = bi_table();
   rt.values[51] = bi_scan();
   return &rt;
 }
