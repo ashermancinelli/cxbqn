@@ -108,12 +108,14 @@ CXBQN_BI_CALL_DEF_NUMONLY(
         return NN(w->v - x->v);
       }
       if (t_Number != type_builtin(ox))
-        throw std::runtime_error("can only negate numbers");
+        throw std::runtime_error("-: can only negate numbers");
     },
     NN(2 == nargs ? w->v - x->v : -x->v));
 CXBQN_BI_CALL_DEF_NUMONLY(
     Mul, "×",
     {
+      if (t_Number != type_builtin(ox) || t_Number != type_builtin(ow))
+        throw std::runtime_error("×: arguments must be numbers");
       if (2 == nargs)
         return NN(w->v * x->v);
     },
@@ -122,7 +124,7 @@ CXBQN_BI_CALL_DEF_NUMONLY(
                              : 0));
 CXBQN_BI_CALL_DEF_NUMONLY(Div, "÷", {},
                           NN(2 == nargs ? w->v / x->v : 1 / x->v));
-CXBQN_BI_CALL_DEF_NUMONLY(Power, "×", {},
+CXBQN_BI_CALL_DEF_NUMONLY(Power, "⋆", {},
                           NN(2 == nargs ? std::pow(w->v, x->v)
                                         : std::exp(x->v)));
 CXBQN_BI_CALL_DEF_NUMONLY(Root, "√", {},
@@ -152,8 +154,8 @@ CXBQN_BI_CALL_DEF_NUMONLY(LE, "≤", {},
                           NNC(w->v < x->v || feq_helper(x->v, w->v)));
 CXBQN_BI_CALL_DEF_NUMONLY(GE, "≥", {},
                           NNC(w->v > x->v || feq_helper(x->v, w->v)));
-CXBQN_BI_CALL_DEF_NUMONLY(FEQ, "feq", {}, NNC(feq_helper(x->v, w->v)));
-CXBQN_BI_CALL_DEF_NUMONLY(FNE, "fne", {}, NNC(!feq_helper(x->v, w->v)));
+CXBQN_BI_CALL_DEF_NUMONLY(FEQ, "≡", {}, NNC(feq_helper(x->v, w->v)));
+CXBQN_BI_CALL_DEF_NUMONLY(FNE, "≢", {}, NNC(!feq_helper(x->v, w->v)));
 CXBQN_BI_CALL_DEF_NUMONLY(Ltack, "⊣", {}, args[2]);
 CXBQN_BI_CALL_DEF_NUMONLY(Rtack, "⊣", {}, args[1]);
 CXBQN_BI_CALL_DEF_NUMONLY(Type, "•Type", {}, NNC(type_builtin(args[1])));

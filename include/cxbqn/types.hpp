@@ -144,7 +144,7 @@ struct Nothing : public Value {
   TypeType t() const override { return TypeType{annot(t_Nothing)}; }
   std::ostream &repr(std::ostream &os) const override { return os << "·"; }
 };
-Value* bi_nothing();
+Value *bi_nothing();
 
 // Managed Value
 // Currently unused, but might be used for managing memory later on. The stack
@@ -156,15 +156,25 @@ using WeakV = std::weak_ptr<Value>;
 struct Number : public Value {
   f64 v;
   Number(f64 v) : v{v} {}
-  TypeType t() const override { return TypeType{t_Number | annot(t_DataValue)}; }
-  std::ostream &repr(std::ostream &os) const override { return os << v; }
+  TypeType t() const override {
+    return TypeType{t_Number | annot(t_DataValue)};
+  }
+  std::ostream &repr(std::ostream &os) const override {
+    return (v == std::numeric_limits<f64>::infinity()    ? os << "∞"
+            : v == -std::numeric_limits<f64>::infinity() ? os << "¯∞"
+                                                         : os << v);
+  }
 };
 
 struct Character : public Number {
   Character(char c) : Number{static_cast<f64>(c)} {}
-  TypeType t() const override { return TypeType{t_Character | annot(t_DataValue)}; }
+  TypeType t() const override {
+    return TypeType{t_Character | annot(t_DataValue)};
+  }
   inline char c() const { return static_cast<char>(v); }
-  std::ostream &repr(std::ostream &os) const override { return os << "\'" << static_cast<char>(v) << "\'"; }
+  std::ostream &repr(std::ostream &os) const override {
+    return os << "\'" << static_cast<char>(v) << "\'";
+  }
 };
 
 struct Array : public Value {
@@ -172,9 +182,7 @@ struct Array : public Value {
   std::vector<Value *> values;
   std::vector<uz> shape;
   Array(const ByteCode::value_type N, std::deque<Value *> &stk);
-  Array(uz N) : N{N} {
-    shape.push_back(N);
-  }
+  Array(uz N) : N{N} { shape.push_back(N); }
   Array() {}
   ~Array() {}
   Value *operator[](const std::size_t &i) { return values[i]; }

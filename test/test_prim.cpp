@@ -15,9 +15,7 @@ TEST_CASE("0≡¯2+2") {
   CompileParams p{{0, 4, 0, 0, 0, 3, 17, 0, 1, 0, 2, 17, 7},
                   {runtime[0], runtime[18], 0, -2, 2},
                   {{0, 1, 0}},
-                  {{0, 0}}
-
-  };
+                  {{0, 0}}};
 
   auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
@@ -34,9 +32,7 @@ TEST_CASE("1e4≡5e3+5e3") {
   CompileParams p{{0, 3, 0, 0, 0, 3, 17, 0, 1, 0, 2, 17, 7},
                   {runtime[0], runtime[18], 10000, 5000},
                   {{0, 1, 0}},
-                  {{0, 0}}
-
-  };
+                  {{0, 0}}};
 
   auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
@@ -54,9 +50,7 @@ TEST_CASE("'c'≡'a'+2") {
       {0, 2, 0, 0, 0, 4, 17, 0, 1, 0, 3, 17, 7},
       {runtime[0], runtime[18], 2, new Character('c'), new Character('a')},
       {{0, 1, 0}},
-      {{0, 0}}
-
-  };
+      {{0, 0}}};
 
   auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
@@ -74,9 +68,7 @@ TEST_CASE("'a'≡¯2+'c'") {
       {0, 4, 0, 0, 0, 2, 17, 0, 1, 0, 3, 17, 7},
       {runtime[0], runtime[18], -2, new Character('a'), new Character('c')},
       {{0, 1, 0}},
-      {{0, 0}}
-
-  };
+      {{0, 0}}};
 
   auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
@@ -93,9 +85,7 @@ TEST_CASE("'a'+'c'") {
   CompileParams p{{0, 2, 0, 0, 0, 1, 17, 7},
                   {runtime[0], new Character('a'), new Character('c')},
                   {{0, 1, 0}},
-                  {{0, 0}}
-
-  };
+                  {{0, 0}}};
 
   REQUIRE_THROWS(vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies));
 }
@@ -107,9 +97,7 @@ TEST_CASE("F←-⋄f+2") {
   CompileParams p{{0, 1, 33, 0, 0, 48, 6, 0, 2, 0, 0, 34, 0, 0, 17, 7},
                   {runtime[0], runtime[1], 2},
                   {{0, 1, 0}},
-                  {{0, 1}}
-
-  };
+                  {{0, 1}}};
 
   REQUIRE_THROWS(vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies));
 }
@@ -122,9 +110,7 @@ TEST_CASE("¯∞≡1e6-∞") {
                   {runtime[1], runtime[18], new Number(-1.0 / 0.0), 1000000,
                    new Number(1.0 / 0.0)},
                   {{0, 1, 0}},
-                  {{0, 0}}
-
-  };
+                  {{0, 0}}};
 
   auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
@@ -141,9 +127,7 @@ TEST_CASE("4≡-¯4") {
   CompileParams p{{0, 3, 0, 0, 16, 0, 1, 0, 2, 17, 7},
                   {runtime[1], runtime[18], 4, -4},
                   {{0, 1, 0}},
-                  {{0, 0}}
-
-  };
+                  {{0, 0}}};
 
   auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
@@ -161,9 +145,7 @@ TEST_CASE("¯∞≡-∞") {
       {0, 3, 0, 0, 16, 0, 1, 0, 2, 17, 7},
       {runtime[1], runtime[18], new Number(-1.0 / 0.0), new Number(1.0 / 0.0)},
       {{0, 1, 0}},
-      {{0, 0}}
-
-  };
+      {{0, 0}}};
 
   auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
@@ -181,9 +163,7 @@ TEST_CASE("∞≡-¯∞") {
       {0, 3, 0, 0, 16, 0, 1, 0, 2, 17, 7},
       {runtime[1], runtime[18], new Number(1.0 / 0.0), new Number(-1.0 / 0.0)},
       {{0, 1, 0}},
-      {{0, 0}}
-
-  };
+      {{0, 0}}};
 
   auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
@@ -200,9 +180,7 @@ TEST_CASE("4≡9-5") {
   CompileParams p{{0, 4, 0, 0, 0, 3, 17, 0, 1, 0, 2, 17, 7},
                   {runtime[1], runtime[18], 4, 9, 5},
                   {{0, 1, 0}},
-                  {{0, 0}}
-
-  };
+                  {{0, 0}}};
 
   auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
@@ -220,9 +198,7 @@ TEST_CASE("@≡'a'-97") {
       {0, 2, 0, 0, 0, 4, 17, 0, 1, 0, 3, 17, 7},
       {runtime[1], runtime[18], 97, new Character('\0'), new Character('a')},
       {{0, 1, 0}},
-      {{0, 0}}
-
-  };
+      {{0, 0}}};
 
   auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
@@ -240,9 +216,7 @@ TEST_CASE("3≡'d'-'a'") {
       {0, 4, 0, 0, 0, 3, 17, 0, 1, 0, 2, 17, 7},
       {runtime[1], runtime[18], 3, new Character('d'), new Character('a')},
       {{0, 1, 0}},
-      {{0, 0}}
-
-  };
+      {{0, 0}}};
 
   auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
@@ -260,9 +234,7 @@ TEST_CASE("'Q'≡'q'+'A'-'a'") {
                   {runtime[0], runtime[1], runtime[18], new Character('Q'),
                    new Character('q'), new Character('A'), new Character('a')},
                   {{0, 1, 0}},
-                  {{0, 0}}
-
-  };
+                  {{0, 0}}};
 
   auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
@@ -279,9 +251,7 @@ TEST_CASE("97-'a'") {
   CompileParams p{{0, 2, 0, 0, 0, 1, 17, 7},
                   {runtime[1], 97, new Character('a')},
                   {{0, 1, 0}},
-                  {{0, 0}}
-
-  };
+                  {{0, 0}}};
 
   REQUIRE_THROWS(vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies));
 }
@@ -293,9 +263,7 @@ TEST_CASE("@-1") {
   CompileParams p{{0, 1, 0, 0, 0, 2, 17, 7},
                   {runtime[1], 1, new Character('\0')},
                   {{0, 1, 0}},
-                  {{0, 0}}
-
-  };
+                  {{0, 0}}};
 
   REQUIRE_THROWS(vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies));
 }
@@ -307,9 +275,7 @@ TEST_CASE("-'a'") {
   CompileParams p{{0, 1, 0, 0, 16, 7},
                   {runtime[1], new Character('a')},
                   {{0, 1, 0}},
-                  {{0, 0}}
-
-  };
+                  {{0, 0}}};
 
   REQUIRE_THROWS(vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies));
 }
@@ -321,9 +287,87 @@ TEST_CASE("F←÷⋄-f") {
   CompileParams p{{0, 1, 33, 0, 0, 48, 6, 34, 0, 0, 0, 0, 16, 7},
                   {runtime[1], runtime[3]},
                   {{0, 1, 0}},
-                  {{0, 1}}
-
-  };
+                  {{0, 1}}};
 
   REQUIRE_THROWS(vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies));
 }
+
+//TEST_CASE("1.5≡3×0.5") {
+//  spdlog::critical("test='{}', ans='{}'", "1.5≡3×0.5", "1");
+//  const auto rt = provides::get_runtime();
+//  const auto runtime = rt->values;
+//  CompileParams p{{0, 4, 0, 0, 0, 3, 17, 0, 1, 0, 2, 17, 7},
+//                  {runtime[2], runtime[18], 1.5, 3, 0.5},
+//                  {{0, 1, 0}},
+//                  {{0, 0}}};
+//
+//  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+//  REQUIRE(nullptr != ret.v);
+//  REQUIRE(nullptr != ret.scp);
+//  Number *n = dynamic_cast<Number *>(ret.v);
+//  REQUIRE(nullptr != n);
+//  CHECK(1 == doctest::Approx(n->v));
+//}
+
+TEST_CASE("2×'a'") {
+  spdlog::critical("test='{}', ans='{}'", "2×'a'", "throws");
+  const auto rt = provides::get_runtime();
+  const auto runtime = rt->values;
+  CompileParams p{{0, 2, 0, 0, 0, 1, 17, 7},
+                  {runtime[2], 2, new Character('a')},
+                  {{0, 1, 0}},
+                  {{0, 0}}};
+
+  REQUIRE_THROWS(vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies));
+}
+
+//TEST_CASE("4≡÷0.25") {
+//  spdlog::critical("test='{}', ans='{}'", "4≡÷0.25", "1");
+//  const auto rt = provides::get_runtime();
+//  const auto runtime = rt->values;
+//  CompileParams p{{0, 3, 0, 0, 16, 0, 1, 0, 2, 17, 7},
+//                  {runtime[3], runtime[18], 4, 0.25},
+//                  {{0, 1, 0}},
+//                  {{0, 0}}};
+//
+//  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+//  REQUIRE(nullptr != ret.v);
+//  REQUIRE(nullptr != ret.scp);
+//  Number *n = dynamic_cast<Number *>(ret.v);
+//  REQUIRE(nullptr != n);
+//  CHECK(1 == doctest::Approx(n->v));
+//}
+//
+//TEST_CASE("∞≡÷0") {
+//  spdlog::critical("test='{}', ans='{}'", "∞≡÷0", "1");
+//  const auto rt = provides::get_runtime();
+//  const auto runtime = rt->values;
+//  CompileParams p{{0, 3, 0, 0, 16, 0, 1, 0, 2, 17, 7},
+//                  {runtime[3], runtime[18], new Number(1.0 / 0.0), 0},
+//                  {{0, 1, 0}},
+//                  {{0, 0}}};
+//
+//  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+//  REQUIRE(nullptr != ret.v);
+//  REQUIRE(nullptr != ret.scp);
+//  Number *n = dynamic_cast<Number *>(ret.v);
+//  REQUIRE(nullptr != n);
+//  CHECK(1 == doctest::Approx(n->v));
+//}
+//
+//TEST_CASE("0≡÷∞") {
+//  spdlog::critical("test='{}', ans='{}'", "0≡÷∞", "1");
+//  const auto rt = provides::get_runtime();
+//  const auto runtime = rt->values;
+//  CompileParams p{{0, 3, 0, 0, 16, 0, 1, 0, 2, 17, 7},
+//                  {runtime[3], runtime[18], 0, new Number(1.0 / 0.0)},
+//                  {{0, 1, 0}},
+//                  {{0, 0}}};
+//
+//  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+//  REQUIRE(nullptr != ret.v);
+//  REQUIRE(nullptr != ret.scp);
+//  Number *n = dynamic_cast<Number *>(ret.v);
+//  REQUIRE(nullptr != n);
+//  CHECK(1 == doctest::Approx(n->v));
+//}

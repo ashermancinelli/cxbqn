@@ -19,7 +19,13 @@ if(HAS_BQN_EXE)
       "97-'a'"
       "@-1"
       "-'a'"
-      "F←÷⋄-f")
+      "F←÷⋄-f"
+      "1.5≡3×0.5"
+      "2×'a'"
+      "4≡÷0.25"
+      "∞≡÷0"
+      "0≡÷∞"
+  )
   set(P_ANS
       1
       1
@@ -38,7 +44,13 @@ if(HAS_BQN_EXE)
       throws
       throws
       throws
-      throws)
+      throws
+      1
+      throws
+      1
+      1
+      1
+  )
 
   set(P_TEST_SOURCE "${PROJECT_BINARY_DIR}/test_prim.cpp")
   file(REMOVE ${P_TEST_SOURCE})
@@ -53,7 +65,8 @@ if(HAS_BQN_EXE)
 using namespace cxbqn;
 using namespace cxbqn::types;
 using namespace cxbqn::provides;
-")
+"
+  )
 
   foreach(test ans IN ZIP_LISTS P_TESTS P_ANS)
     execute_process(
@@ -61,7 +74,8 @@ using namespace cxbqn::provides;
         ${BASH} -c
         "${BQN_EXE} ${CMAKE_CURRENT_SOURCE_DIR}/ccxx.bqn ${CXBQN_EXT_DIR}/bqn \"${test}\""
       WORKING_DIRECTORY "${CXBQN_EXT_DIR}/cbqn"
-      OUTPUT_VARIABLE compiled_test)
+      OUTPUT_VARIABLE compiled_test
+    )
     file(
       APPEND ${P_TEST_SOURCE}
       "
@@ -69,10 +83,9 @@ TEST_CASE(\"${test}\") {
   spdlog::critical(\"test='{}', ans='{}'\", \"${test}\", \"${ans}\");
   const auto rt = provides::get_runtime();
   const auto runtime = rt->values;
-  CompileParams p{
-    ${compiled_test}
-  };
-")
+  CompileParams p{ ${compiled_test} };
+"
+    )
 
     if("${ans}" STREQUAL "throws")
       file(
@@ -90,11 +103,13 @@ TEST_CASE(\"${test}\") {
   REQUIRE(nullptr != n);
   CHECK(${ans} == doctest::Approx(n->v));
 }
-")
+"
+      )
     endif()
   endforeach()
 else()
   message(
     WARNING
-      "Attempted to generate primitive tests, but no BQN executable was found.")
+      "Attempted to generate primitive tests, but no BQN executable was found."
+  )
 endif()

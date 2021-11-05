@@ -7,7 +7,7 @@ namespace cxbqn::provides {
 types::Array *get_runtime() {
   CXBQN_DEBUG("provides::get_runtime");
   static Array rt;
-  rt.values.resize(23);
+  rt.values.resize(50);
   rt.values[0] = bi_plus();
   rt.values[1] = bi_minus();
   rt.values[2] = bi_mul();
