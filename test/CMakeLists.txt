@@ -13,6 +13,12 @@ foreach(test ${tests})
   add_test(NAME ${test} COMMAND $<TARGET_FILE:${test}>)
 endforeach()
 
+file(REMOVE ${PROJECT_BINARY_DIR}/bcgen.sh)
+file(WRITE ${PROJECT_BINARY_DIR}/bcgen.sh "
+cd ${PROJECT_SOURCE_DIR}/ext/cbqn
+${BQN_EXE} ${CMAKE_CURRENT_SOURCE_DIR}/ccxx.bqn ${PROJECT_SOURCE_DIR}/ext//bqn \"$@\"
+")
+
 if(CXBQN_REGEN_TESTS)
   include(GenHelpers)
   include(GenBytecodeTests)

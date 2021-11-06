@@ -103,6 +103,8 @@ Value* bi_pick();
 Value* bi_shape();
 Value* bi_deshape();
 Value* bi_scan();
+Value* bi_grouplen();
+Value* bi_groupord();
 
 #undef CXBQN_BUILTIN_DECL
 
