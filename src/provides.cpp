@@ -49,6 +49,14 @@ template <typename T = f64> static bool feq_helper(T a, T b) {
   return std::abs(a - b) < (10 * std::numeric_limits<T>::epsilon());
 }
 
+template<typename T = f64> static bool fge_helper(T a, T b) {
+  return feq_helper(a, b) or a > b;
+}
+
+template<typename T = f64> static bool fle_helper(T a, T b) {
+  return feq_helper(a, b) or a < b;
+}
+
 } // namespace
 
 // I promise this makes the definitions more readable :)
@@ -59,7 +67,7 @@ template <typename T = f64> static bool feq_helper(T a, T b) {
 #define NNC(x) new Number(static_cast<f64>(x))
 
 // "dynamic cast to a number"
-#define DCN(x) dynamic_cast<Number*>(x)
+#define DCN(x) dynamic_cast<Number *>(x)
 
 // Shorthand to define the call method of a given builtin type.
 // `ox` and `ow` are short for the opaque pointers to each argument, in case the
@@ -113,9 +121,7 @@ CXBQN_BI_CALL_DEF_NUMONLY(
       if (2 == nargs)
         return NN(w->v * x->v);
     },
-    NN(feq_helper(0.0, x->v) ? 0
-       : x->v > 0            ? 1
-                             : 0));
+    NN(feq_helper(0.0, x->v) ? 0 : x->v > 0 ? 1 : 0));
 CXBQN_BI_CALL_DEF_NUMONLY(Div, "÷", {},
                           NN(2 == nargs ? w->v / x->v : 1 / x->v));
 CXBQN_BI_CALL_DEF_NUMONLY(Power, "⋆", {},
@@ -335,18 +341,23 @@ Value *GroupLen::call(u8 nargs, std::vector<Value *> args) {
   CXBQN_DEBUG(SYMBOL ": nargs={},args={}", nargs, args);
   auto *x = dynamic_cast<Array *>(args[1]);
   auto *w = dynamic_cast<Number *>(args[2]); // only use if nargs == 2!
-  const f64 init = (2 == nargs ? w->v : 0) - 1;
-  const auto l = std::accumulate(x->values.begin(), x->values.end(), init,
-                                 [](auto *a, auto *b) {
-                                    return std::max(DCN(a)->v, DCN(b)->v);
-                                 });
-  auto *ret = new Array(static_cast<uz>(l+1));
-  std::fill(ret->values.begin(), ret->values.end(), 0);
-  for (const auto *e : x->values)
-    if (DCN(e)->v > 0 or feq_helper(0.0, DCN(e)->v))
-      ret->values[static_cast<uz>(DCN(e)->v)]++;
+  const auto init = (2 == nargs ? w->v : 0) - 1;
+  std::vector<f64> xs(x->N(), 0);
+  for (int i = 0; i < x->N(); i++)
+    xs[i] = DCN(x->values[i])->v;
+  const auto l = std::accumulate(xs.begin(), xs.end(), init,
+                                 [](auto a, auto b) { return std::max(a, b); });
+  std::vector<f64> retv(static_cast<uz>(l+1), 0);
+  std::fill(retv.begin(), retv.end(), 0);
+  for (auto e : xs)
+    if (fge_helper(e, 0.0))
+      retv[static_cast<uz>(e)]++;
+  auto *ret = new Array(retv.size());
+  for (int i=0; i < ret->N(); i++)
+    ret->values[i] = NN(retv[i]);
   return ret;
 }
+#undef SYMBOL
 
 /*
  * let group_ord = (x,w) => { // ∾⊔x assuming w=group_len(x)
@@ -361,16 +372,29 @@ Value *GroupOrd::call(u8 nargs, std::vector<Value *> args) {
   CXBQN_DEBUG(SYMBOL ": nargs={},args={}", nargs, args);
   auto *w = dynamic_cast<Array*>(args[2]);
   auto *x = dynamic_cast<Array*>(args[1]);
-  auto len = 0;
-  std::vector<Value*> v(w->N(), nullptr);
+
+  uz len = 0;
+  std::vector<uz> v(w->N(), 0);
   for (int i=0; i < w->N(); i++) {
     v[i] = len;
-    len += w->values[i];
+    len += static_cast<uz>(DCN(w->values[i])->v);
   }
-  auto *ret = new Array(static_cast<uz>(len));
+
+  std::vector<f64> retv(x->N(), 0);
   for (int i=0; i < x->N(); i++) {
-    const auto *e = x->values[i];
+    const auto e = DCN(x->values[i])->v;
+    if (fge_helper(e, 0.0)) {
+      const auto idx = static_cast<uz>(e);
+      retv[v[idx]++] = static_cast<f64>(i);
+    }
   }
+
+  auto *ret = new Array(len);
+  for (int i=0; i < x->N(); i++) {
+    ret->values[i] = new Number(retv[i]);
+  }
+  return ret;
 }
+#undef SYMBOL
 
 } // namespace cxbqn::provides

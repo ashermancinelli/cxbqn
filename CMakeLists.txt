@@ -68,6 +68,5 @@ add_subdirectory(ext)
 configure_file(include/cxbqn/config.hpp.in
                ${PROJECT_BINARY_DIR}/include/cxbqn/config.hpp)
 
-add_subdirectory(include)
 add_subdirectory(src)
 add_subdirectory(test)
