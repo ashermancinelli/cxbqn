@@ -360,37 +360,63 @@ Value *GroupLen::call(u8 nargs, std::vector<Value *> args) {
 #undef SYMBOL
 
 /*
+ * js:
  * let group_ord = (x,w) => { // ∾⊔x assuming w=group_len(x)
  *   let l=0,s=w.map(n=>{let l0=l;l+=n;return l0;});
  *   let r=Array(l);
  *   x.map((e,i)=>{if(e>=0)r[s[e]++]=i;});
  *   return list(r,x.fill);
  * }
+ *
+ * cbqn
+ * B grOrd_c2(B t, B w, B x) { // assumes valid arguments
+ *   usz wia = a(w)->ia;
+ *   usz xia = a(x)->ia;
+ *   if (wia==0) { dec(w); dec(x); return emptyIVec(); }
+ *   if (xia==0) { dec(w); return x; }
+ *   SGetU(w)
+ *   SGetU(x)
+ *   TALLOC(usz, tmp, wia);
+ *   tmp[0] = 0;
+ *   for (usz i = 1; i < wia; i++) tmp[i] = tmp[i-1]+o2su(GetU(w,i-1));
+ *   usz ria = tmp[wia-1]+o2su(GetU(w,wia-1));
+ *   i32* rp; B r = m_i32arrv(&rp, ria);
+ *   if (xia>=I32_MAX) thrM("⊔: Too large");
+ *   for (usz i = 0; i < xia; i++) {
+ *     i64 c = o2i64(GetU(x,i));
+ *     if (c>=0) rp[tmp[c]++] = i;
+ *   }
+ *   dec(w); dec(x); TFREE(tmp);
+ *   return r;
+ * }
  */
-#define SYMBOL "∾⊔𝕩"
+#define SYMBOL "∾∘⊔"
 Value *GroupOrd::call(u8 nargs, std::vector<Value *> args) {
   CXBQN_DEBUG(SYMBOL ": nargs={},args={}", nargs, args);
   auto *w = dynamic_cast<Array*>(args[2]);
   auto *x = dynamic_cast<Array*>(args[1]);
 
-  uz len = 0;
-  std::vector<uz> v(w->N(), 0);
-  for (int i=0; i < w->N(); i++) {
-    v[i] = len;
-    len += static_cast<uz>(DCN(w->values[i])->v);
+  std::vector<uz> tmp(w->N(), 0);
+  CXBQN_DEBUG("wn={},xn={},tmpn={}", w->N(), x->N(), tmp.size());
+  for (int i=1; i < w->N(); i++) {
+    tmp[i] = tmp[i-1] + static_cast<uz>(DCN(w->values[i-1])->v);
+    CXBQN_DEBUG("tmp[{}]={} w[i]={}", i, tmp[i], CXBQN_STR_NC(w->values[i-1]));
   }
 
-  std::vector<f64> retv(x->N(), 0);
+  const auto retlen = tmp.back() + static_cast<uz>(DCN(w->values.back())->v);
+  CXBQN_DEBUG("return len={}", retlen);
+
+  std::vector<f64> retv(retlen, 0);
   for (int i=0; i < x->N(); i++) {
     const auto e = DCN(x->values[i])->v;
     if (fge_helper(e, 0.0)) {
       const auto idx = static_cast<uz>(e);
-      retv[v[idx]++] = static_cast<f64>(i);
+      retv[tmp[idx]++] = static_cast<f64>(i);
     }
   }
 
-  auto *ret = new Array(len);
-  for (int i=0; i < x->N(); i++) {
+  auto *ret = new Array(retlen);
+  for (int i=0; i < retlen; i++) {
     ret->values[i] = new Number(retv[i]);
   }
   return ret;

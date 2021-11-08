@@ -89,7 +89,7 @@ CXBQN_BUILTIN_DECL(Shape, "≢");
 CXBQN_BUILTIN_DECL(Deshape, "⥊");
 CXBQN_BUILTIN_DECL(Scan, "`");
 CXBQN_BUILTIN_DECL(GroupLen, "≠¨⊔");
-CXBQN_BUILTIN_DECL(GroupOrd, "∾⊔x");
+CXBQN_BUILTIN_DECL(GroupOrd, "∾∘⊔");
 Value* bi_ltack();
 Value* bi_rtack();
 Value* bi_arraydepth();

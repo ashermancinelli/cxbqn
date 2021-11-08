@@ -136,22 +136,76 @@ TEST_CASE(T) {
 }
 #undef T
 
-#define T "GroupOrd 0‿¯1‿0‿4‿3‿4‿4"
+#define T "Dyadic GroupLen 2 {≠¨(∾⟜𝕨⊔⊢) 𝕩} 3‿1‿4‿1‿5‿9‿¯1‿¯1"
 TEST_CASE(T) {
   spdlog::critical("test={}", T);
   const auto rt = provides::get_runtime();
   const auto runtime = rt->values;
-  CompileParams p{
-      {0, 1, 0, 2, 0, 1, 0, 3, 0, 4, 0, 3, 0, 3, 11, 7, 0, 0, 16, 7},
-      {bi_groupord(), 0, -1, 4, 3},
-      {{0, 1, 0}},
-      {{0, 0}}};
+  CompileParams p{{0, 2, 0, 3, 0,  4, 0, 3, 0, 5, 0,  6,
+                   0, 7, 0, 7, 11, 8, 0, 0, 0, 1, 17, 7},
+                  {bi_grouplen(), 2, 3, 1, 4, 5, 9, -1},
+                  {{0, 1, 0}},
+                  {{0, 0}}};
   auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto *a = dynamic_cast<Array *>(ret.v);
   REQUIRE(nullptr != a);
-  std::vector<int> ans{0, 2, 4, 3, 5, 6};
+  std::vector<int> ans{0, 2, 0, 1, 1, 1, 0, 0, 0, 1};
+  REQUIRE(ans.size() == a->N());
+
+  for (int i = 0; i < a->N(); i++) {
+    auto *n = dynamic_cast<Number *>(a->values[i]);
+    REQUIRE(nullptr != n);
+    REQUIRE(ans[i] == doctest::Approx(n->v));
+  }
+}
+#undef T
+
+#define T "Dyadic GroupLen 20 {≠¨(∾⟜𝕨⊔⊢) 𝕩} 3‿1‿4‿1‿5‿9‿¯1‿¯1"
+TEST_CASE(T) {
+  spdlog::critical("test={}", T);
+  const auto rt = provides::get_runtime();
+  const auto runtime = rt->values;
+  CompileParams p{{0, 2, 0, 3, 0,  4, 0, 3, 0, 5, 0,  6,
+                   0, 7, 0, 7, 11, 8, 0, 0, 0, 1, 17, 7},
+                  {bi_grouplen(), 20, 3, 1, 4, 5, 9, -1},
+                  {{0, 1, 0}},
+                  {{0, 0}}};
+  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  REQUIRE(nullptr != ret.v);
+  REQUIRE(nullptr != ret.scp);
+  auto *a = dynamic_cast<Array *>(ret.v);
+  REQUIRE(nullptr != a);
+  std::vector<int> ans{0, 2, 0, 1, 1, 1, 0, 0, 0, 1,
+                       0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  REQUIRE(ans.size() == a->N());
+
+  for (int i = 0; i < a->N(); i++) {
+    auto *n = dynamic_cast<Number *>(a->values[i]);
+    REQUIRE(nullptr != n);
+    REQUIRE(ans[i] == doctest::Approx(n->v));
+  }
+}
+#undef T
+
+#define T "0‿¯1‿¯1‿2‿0 GroupOrd 0‿1‿2‿3‿4"
+TEST_CASE(T) {
+  spdlog::critical("test={}", T);
+  const auto rt = provides::get_runtime();
+  const auto runtime = rt->values;
+  CompileParams p{{0, 2, 0, 4, 0, 4, 0, 1, 0,  2, 11, 5,
+                   0, 0, 0, 1, 0, 2, 0, 3, 11, 3, 17, 7},
+                  {bi_groupord(), 2, 0, 1, -1},
+                  {{0, 1, 0}},
+                  {{0, 0}}};
+  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  REQUIRE(nullptr != ret.v);
+  REQUIRE(nullptr != ret.scp);
+  auto *a = dynamic_cast<Array *>(ret.v);
+  REQUIRE(nullptr != a);
+  std::vector<int> ans{0, 4, 3};
+  REQUIRE(ans.size() == a->N());
 
   for (int i = 0; i < a->N(); i++) {
     auto *n = dynamic_cast<Number *>(a->values[i]);
