@@ -5,8 +5,31 @@
 namespace cxbqn::provides {
 types::Array *get_provides() {
   CXBQN_DEBUG("provides::get_provides");
-  static Array prov;
-  prov.values.resize(21);
+  static Array prov(23);
+
+  prov.values[0] = bi_type();
+  prov.values[1] = bi_fill();
+  prov.values[2] = bi_log();
+  prov.values[3] = bi_grouplen();
+  prov.values[4] = bi_groupord();
+  prov.values[5] = bi_assert();
+  prov.values[6] = bi_plus();
+  prov.values[7] = bi_minus();
+  prov.values[8] = bi_mul();
+  prov.values[9] = bi_div();
+  prov.values[10] = bi_power();
+  prov.values[11] = bi_floor();
+  prov.values[12] = bi_eq();
+  prov.values[13] = bi_le();
+  prov.values[14] = bi_fne();
+  prov.values[15] = bi_deshape();
+  prov.values[16] = bi_pick();
+  prov.values[17] = bi_range();
+  prov.values[18] = bi_table();
+  prov.values[19] = bi_scan();
+  prov.values[20] = bi_fillby();
+  prov.values[21] = bi_catch();
+  
   return &prov;
 }
 
@@ -182,6 +205,14 @@ Value* bi_grouplen() {
 Value *bi_groupord() {
   static GroupOrd g;
   return &g;
+}
+Value *bi_fillby() {
+  static FillBy fb;
+  return &fb;
+}
+Value *bi_catch() {
+  static Catch c;
+  return &c;
 }
 
 } // namespace cxbqn::provides

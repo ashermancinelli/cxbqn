@@ -328,15 +328,7 @@ Value *Scan::call(u8 nargs, std::vector<Value *> args) {
   return ret;
 }
 
-/*
- * let group_len = (x,w) => { // ≠¨⊔ for a valid list argument
- *   let l=x.reduce((a,b)=>Math.max(a,b),(w||0)-1);
- *   let r=Array(l+1).fill(0);
- *   x.map(e=>{if(e>=0)r[e]+=1;});
- *   return list(r,0);
- * }
- */
-#define SYMBOL "≠¨⊔𝕩"
+#define SYMBOL "GroupLen"
 Value *GroupLen::call(u8 nargs, std::vector<Value *> args) {
   CXBQN_DEBUG(SYMBOL ": nargs={},args={}", nargs, args);
   auto *x = dynamic_cast<Array *>(args[1]);
@@ -359,38 +351,7 @@ Value *GroupLen::call(u8 nargs, std::vector<Value *> args) {
 }
 #undef SYMBOL
 
-/*
- * js:
- * let group_ord = (x,w) => { // ∾⊔x assuming w=group_len(x)
- *   let l=0,s=w.map(n=>{let l0=l;l+=n;return l0;});
- *   let r=Array(l);
- *   x.map((e,i)=>{if(e>=0)r[s[e]++]=i;});
- *   return list(r,x.fill);
- * }
- *
- * cbqn
- * B grOrd_c2(B t, B w, B x) { // assumes valid arguments
- *   usz wia = a(w)->ia;
- *   usz xia = a(x)->ia;
- *   if (wia==0) { dec(w); dec(x); return emptyIVec(); }
- *   if (xia==0) { dec(w); return x; }
- *   SGetU(w)
- *   SGetU(x)
- *   TALLOC(usz, tmp, wia);
- *   tmp[0] = 0;
- *   for (usz i = 1; i < wia; i++) tmp[i] = tmp[i-1]+o2su(GetU(w,i-1));
- *   usz ria = tmp[wia-1]+o2su(GetU(w,wia-1));
- *   i32* rp; B r = m_i32arrv(&rp, ria);
- *   if (xia>=I32_MAX) thrM("⊔: Too large");
- *   for (usz i = 0; i < xia; i++) {
- *     i64 c = o2i64(GetU(x,i));
- *     if (c>=0) rp[tmp[c]++] = i;
- *   }
- *   dec(w); dec(x); TFREE(tmp);
- *   return r;
- * }
- */
-#define SYMBOL "∾∘⊔"
+#define SYMBOL "GroupOrd"
 Value *GroupOrd::call(u8 nargs, std::vector<Value *> args) {
   CXBQN_DEBUG(SYMBOL ": nargs={},args={}", nargs, args);
   auto *w = dynamic_cast<Array*>(args[2]);
@@ -422,5 +383,15 @@ Value *GroupOrd::call(u8 nargs, std::vector<Value *> args) {
   return ret;
 }
 #undef SYMBOL
+
+Value *FillBy::call(u8 nargs, std::vector<Value *> args) {
+  CXBQN_DEBUG("_fillBy_: nargs={},args={}", nargs, args);
+  auto *F = args[4];
+  return F->call(nargs, {F, args[1], args[2]});
+}
+
+Value *Catch::call(u8 nargs, std::vector<Value *> args) {
+  CXBQN_DEBUG("⊘: nargs={},args={}", nargs, args);
+}
 
 } // namespace cxbqn::provides
