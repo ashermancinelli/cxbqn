@@ -105,6 +105,8 @@ Value *Plus::call(u8 nargs, std::vector<Value *> args) {
   CXBQN_DEBUG("+:nargs={},args={}", nargs, args);
   auto *ox = args[1];
   auto *ow = args[2];
+  if (1 == nargs)
+    return args[1];
   auto *x = dynamic_cast<Number *>(args[1]);
   auto *w = dynamic_cast<Number *>(args[2]);
   if (t_Character == type_builtin(ox) and t_Character == type_builtin(ow))
