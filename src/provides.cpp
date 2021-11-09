@@ -109,8 +109,10 @@ Value *Plus::call(u8 nargs, std::vector<Value *> args) {
   auto *w = dynamic_cast<Number *>(args[2]);
   if (t_Character == type_builtin(ox) and t_Character == type_builtin(ow))
     throw std::runtime_error("+: Cannot add two characters");
-  if (!ox->t()[t_DataValue] or !ow->t()[t_DataValue])
-    throw std::runtime_error("+: Cannot add non-data values");
+  if (!ox->t()[t_DataValue] or !ow->t()[t_DataValue]) {
+    CXBQN_CRIT("Got x={}, w={}", CXBQN_STR_NC(ox), CXBQN_STR_NC(ow));
+    throw std::runtime_error("+: Cannot add non-data values.");
+  }
   if (t_Character == type_builtin(ox) || t_Character == type_builtin(ow)) {
     return check_char(new Character(x->v + w->v));
   }
@@ -170,7 +172,8 @@ CXBQN_BI_CALL_DEF_NUMONLY(
     EQ, "=",
     {
       if (1 == nargs and t_Array == type_builtin(args[1]))
-        return new Number(static_cast<f64>(dynamic_cast<Array*>(args[1])->shape.size()));
+        return new Number(
+            static_cast<f64>(dynamic_cast<Array *>(args[1])->shape.size()));
       if (1 == nargs)
         return args[1];
     },
@@ -191,9 +194,9 @@ Value *FNE::call(u8 nargs, std::vector<Value *> args) {
   CXBQN_DEBUG("≢:nargs={},args={}", nargs, args);
   if (2 == nargs)
     throw std::runtime_error("≢: provided function expected only one arg");
-  auto *arr = dynamic_cast<Array*>(args[1]);
+  auto *arr = dynamic_cast<Array *>(args[1]);
   auto *ret = new Array(arr->shape.size());
-  for (int i=0; i < ret->N(); i++)
+  for (int i = 0; i < ret->N(); i++)
     ret->values[i] = new Number(static_cast<f64>(arr->shape[i]));
   return ret;
 }
@@ -201,11 +204,19 @@ Value *FNE::call(u8 nargs, std::vector<Value *> args) {
 Value *Table::call(u8 nargs, std::vector<Value *> args) {
   CXBQN_DEBUG("⌜: nargs={},args={}", nargs, args);
   auto *F = args[4];
-  if (0 != type_builtin(args[1]) or 0 != type_builtin(args[2]))
+  if (t_Array != type_builtin(args[1]) or t_Array != type_builtin(args[2]))
     throw std::runtime_error("⌜: 𝕩 and 𝕨 must be arrays");
 
   auto *x = dynamic_cast<Array *>(args[1]);
   const auto &xv = x->values;
+
+  if (1 == nargs) {
+    auto *ret = new Array(x->N());
+    for (int i = 0; i < x->N(); i++)
+      ret->values[i] = F->call(1, {F, x->values[i], bi_nothing()});
+    return ret;
+  }
+
   auto *w = dynamic_cast<Array *>(args[2]);
   const auto &wv = w->values;
   auto *ret = new Array(x->N() * w->N());

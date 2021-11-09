@@ -85,7 +85,7 @@ Scope::Scope(Scope *parent, std::span<Block> blks, uz blk_idx,
     throw std::runtime_error("Scope::Scope: both parent=null and consts=null");
 #endif
   this->consts = nullptr == parent ? consts.value() : parent->consts;
-  vars.resize(3 + blks[blk_idx].max_nvars());
+  vars.resize(6 + blks[blk_idx].max_nvars());
   std::fill(vars.begin(), vars.end(), nullptr);
 }
 

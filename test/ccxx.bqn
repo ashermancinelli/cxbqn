@@ -22,7 +22,7 @@ Esc←{
   ∾(i<≠in) /⟜"\"⊸∾¨ 𝕩        # Insert \
 }
 
-OStr ← "new String(U"""∾Esc∾""")"˙  # A BQN string
+OStr ← "new Array(U"""∾Esc∾""")"˙  # A BQN string
 OChr ← {"new Character(U'"∾(Esc⥊𝕩)∾"')"} # A BQN character
 ONum ← {s←"-"/˜𝕩<0 ⋄ ∞⊸=∘|◶⟨""∾""∾˜s∾F∘| ⋄ "new Number("∾s∾"1.0/0.0)"⟩𝕩} # Format number
 OAny ← ≡◶⟨@⊸≤◶ONum‿OChr, OStr, ⊑⟩

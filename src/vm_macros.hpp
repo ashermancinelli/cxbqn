@@ -120,6 +120,7 @@ static cxbqn::u8 indent;
 #else
 #define CXBQN_NEWEVAL(...)
 #define CXBQN_ENDEVAL(...)
+#define INSTR_INIT(...)
 #define INSTR(...)
 #define INSTR1(...)
 #define INSTR2(...)

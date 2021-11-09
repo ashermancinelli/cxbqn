@@ -62,6 +62,7 @@ types::Array *get_runtime() {
   rt.values[21] = bi_rtack();
   rt.values[22] = bi_deshape();
   rt.values[27] = bi_range();
+  rt.values[36] = bi_pick();
   rt.values[47] = bi_table();
   rt.values[51] = bi_scan();
   return &rt;
