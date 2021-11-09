@@ -49,6 +49,22 @@ template <typename T = f64> static bool feq_helper(T a, T b) {
   return std::abs(a - b) < (10 * std::numeric_limits<T>::epsilon());
 }
 
+static bool equivilant_helper(Value *a, Value *b) {
+  if (a->t()[t_DataValue] and b->t()[t_DataValue])
+    return feq_helper(dynamic_cast<Number*>(a)->v, dynamic_cast<Number*>(b)->v);
+  else if (t_Array == type_builtin(a) and t_Array == type_builtin(b))
+  {
+    auto *av = dynamic_cast<Array*>(a);
+    auto *bv = dynamic_cast<Array*>(b);
+    if (av->N() != bv->N()) return false;
+    for (int i=0; i < av->N(); i++)
+      if (!equivilant_helper(av->values[i], bv->values[i]))
+        return false;
+  }
+  throw std::runtime_error("equivilant_helper: something went wrong");
+  return false;
+}
+
 template<typename T = f64> static bool fge_helper(T a, T b) {
   return feq_helper(a, b) or a > b;
 }
@@ -160,11 +176,18 @@ CXBQN_BI_CALL_DEF_NUMONLY(LE, "≤", {},
                           NNC(w->v < x->v || feq_helper(x->v, w->v)));
 CXBQN_BI_CALL_DEF_NUMONLY(GE, "≥", {},
                           NNC(w->v > x->v || feq_helper(x->v, w->v)));
-CXBQN_BI_CALL_DEF_NUMONLY(FEQ, "≡", {}, NNC(feq_helper(x->v, w->v)));
-CXBQN_BI_CALL_DEF_NUMONLY(FNE, "≢", {}, NNC(!feq_helper(x->v, w->v)));
 CXBQN_BI_CALL_DEF_NUMONLY(Ltack, "⊣", {}, args[2]);
 CXBQN_BI_CALL_DEF_NUMONLY(Rtack, "⊣", {}, args[1]);
 CXBQN_BI_CALL_DEF_NUMONLY(Type, "•Type", {}, NNC(type_builtin(args[1])));
+
+Value* FEQ::call(u8 nargs, std::vector<Value *>args){
+  CXBQN_DEBUG("≡:nargs={},args={}", nargs, args);
+  return NNC(equivilant_helper(args[1], args[2]));
+}
+Value* FNE::call(u8 nargs, std::vector<Value *>args){
+  CXBQN_DEBUG("≢:nargs={},args={}", nargs, args);
+  return NNC(!equivilant_helper(args[1], args[2]));
+}
 
 Value *Table::call(u8 nargs, std::vector<Value *> args) {
   CXBQN_DEBUG("⌜: nargs={},args={}", nargs, args);
