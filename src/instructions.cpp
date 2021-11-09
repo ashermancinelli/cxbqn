@@ -173,7 +173,7 @@ void varo(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk, Scope *scp) {
   stk.push_back(scp->vars[local_variable_idx]);
 }
 
-void fn10(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk) {
+void fn1c(std::deque<Value *> &stk) {
   auto *S = stk.back();
   stk.pop_back();
 
@@ -182,23 +182,38 @@ void fn10(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk) {
 
 #ifdef CXBQN_DEEPCHECKS
   if (nullptr == x)
-    throw std::runtime_error("fn10: got nullptr for x");
+    throw std::runtime_error("fn1c: got nullptr for x");
   if (nullptr == S)
-    throw std::runtime_error("fn10: got nullptr for S");
+    throw std::runtime_error("fn1c: got nullptr for S");
 #endif
 
-  CXBQN_DEBUG("fn10:calling S={} on x={}", CXBQN_STR_NC(S), CXBQN_STR_NC(x));
+  CXBQN_DEBUG("fn1c:calling S={} on x={}", CXBQN_STR_NC(S), CXBQN_STR_NC(x));
   auto *v = S->call(1, {S, x, bi_nothing()});
-  CXBQN_DEBUG("fn10:returning {}", CXBQN_STR_NC(v));
+  CXBQN_DEBUG("fn1c:returning {}", CXBQN_STR_NC(v));
 #ifdef CXBQN_DEEPCHECKS
   if (nullptr == v)
-    throw std::runtime_error("fn10: S returned nullptr");
+    throw std::runtime_error("fn1c: S returned nullptr");
 #endif
 
   stk.push_back(v);
 }
 
-void fn20(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk) {
+void fn1o(std::deque<Value *> &stk) {
+  auto *S = stk.back();
+  stk.pop_back();
+
+  auto *x = stk.back();
+  stk.pop_back();
+
+  if (x->t()[t_Nothing]) {
+    stk.push_back(bi_nothing());
+    return;
+  }
+
+  stk.push_back(S->call(1, {S, x, bi_nothing()}));
+}
+
+void fn2c(std::deque<Value *> &stk) {
   auto *w = stk.back();
   stk.pop_back();
 
@@ -210,20 +225,47 @@ void fn20(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk) {
 
 #ifdef CXBQN_DEEPCHECKS
   if (nullptr == x)
-    throw std::runtime_error("fn20: got nullptr for x");
+    throw std::runtime_error("fn2c: got nullptr for x");
   if (nullptr == w)
-    throw std::runtime_error("fn20: got nullptr for w");
+    throw std::runtime_error("fn2c: got nullptr for w");
   if (nullptr == S)
-    throw std::runtime_error("fn20: got nullptr for S");
+    throw std::runtime_error("fn2c: got nullptr for S");
 #endif
 
   auto *v = S->call(2, {S, x, w});
 
 #ifdef CXBQN_DEEPCHECKS
   if (nullptr == v)
-    throw std::runtime_error("fn20: F returned nullptr");
+    throw std::runtime_error("fn2c: F returned nullptr");
 #endif
 
+  stk.push_back(v);
+}
+
+void fn2o(std::deque<Value *> &stk) {
+  auto *w = stk.back();
+  stk.pop_back();
+
+  auto *S = stk.back();
+  stk.pop_back();
+
+  auto *x = stk.back();
+  stk.pop_back();
+
+  if (w->t()[t_Nothing]) {
+    if (x->t()[t_Nothing]) {
+      CXBQN_DEBUG("fn2o: got nothing for 𝕩 and 𝕨, just pushing nothing");
+      stk.push_back(bi_nothing());
+      return;
+    }
+
+    CXBQN_DEBUG("fn2o: got nothing for 𝕩 and 𝕨, just pushing nothing");
+    stk.push_back(S->call(1, {S, x, bi_nothing()}));
+    return;
+  }
+
+  CXBQN_DEBUG("fn2o: got vals for both 𝕩 and 𝕨, calling dyadically");
+  auto *v = S->call(2, {S, x, w});
   stk.push_back(v);
 }
 
@@ -259,7 +301,7 @@ void arrm(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk) {
   stk.push_back(ar);
 }
 
-void md1c(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk, Scope *scp) {
+void md1c(std::deque<Value *> &stk) {
   auto *f = stk.back();
   stk.pop_back();
 
@@ -277,7 +319,7 @@ void md1c(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk, Scope *scp) {
   }
 }
 
-void md2c(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk, Scope *scp) {
+void md2c(std::deque<Value *> &stk) {
   auto *f = stk.back();
   stk.pop_back();
 
@@ -300,7 +342,7 @@ void md2c(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk, Scope *scp) {
   }
 }
 
-void tr2d(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk, Scope *scp) {
+void tr2d(std::deque<Value *> &stk) {
   auto *f = stk.back();
   stk.pop_back();
 
@@ -313,7 +355,7 @@ void tr2d(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk, Scope *scp) {
 }
 
 // fork: ⟨…,h,g,f⟩ → (f g h)
-void tr3d(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk, Scope *scp) {
+void tr3d(std::deque<Value *> &stk) {
   auto *f = stk.back();
   stk.pop_back();
 
@@ -327,6 +369,29 @@ void tr3d(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk, Scope *scp) {
               CXBQN_STR_NC(h));
 
   stk.push_back(new Fork(f, g, h));
+}
+
+void tr3o(std::deque<Value *> &stk) {
+  auto *f = stk.back();
+  stk.pop_back();
+
+  auto *g = stk.back();
+  stk.pop_back();
+
+  auto *h = stk.back();
+  stk.pop_back();
+
+  CXBQN_DEBUG("tr3d:f={},g={},h={}", CXBQN_STR_NC(f), CXBQN_STR_NC(g),
+              CXBQN_STR_NC(h));
+
+  if (h->t()[t_Nothing]) {
+    CXBQN_DEBUG("tr3o: pushing atop, h was nothing");
+    stk.push_back(new Atop(f, g));
+  }
+  else {
+    CXBQN_DEBUG("tr3o: pushing fork, h was not nothing");
+    stk.push_back(new Fork(f, g, h));
+  }
 }
 
 } // namespace cxbqn::vm::instructions

@@ -51,13 +51,14 @@ template <typename T = f64> static bool feq_helper(T a, T b) {
 
 static bool equivilant_helper(Value *a, Value *b) {
   if (a->t()[t_DataValue] and b->t()[t_DataValue])
-    return feq_helper(dynamic_cast<Number*>(a)->v, dynamic_cast<Number*>(b)->v);
-  else if (t_Array == type_builtin(a) and t_Array == type_builtin(b))
-  {
-    auto *av = dynamic_cast<Array*>(a);
-    auto *bv = dynamic_cast<Array*>(b);
-    if (av->N() != bv->N()) return false;
-    for (int i=0; i < av->N(); i++)
+    return feq_helper(dynamic_cast<Number *>(a)->v,
+                      dynamic_cast<Number *>(b)->v);
+  else if (t_Array == type_builtin(a) and t_Array == type_builtin(b)) {
+    auto *av = dynamic_cast<Array *>(a);
+    auto *bv = dynamic_cast<Array *>(b);
+    if (av->N() != bv->N())
+      return false;
+    for (int i = 0; i < av->N(); i++)
       if (!equivilant_helper(av->values[i], bv->values[i]))
         return false;
   }
@@ -65,11 +66,11 @@ static bool equivilant_helper(Value *a, Value *b) {
   return false;
 }
 
-template<typename T = f64> static bool fge_helper(T a, T b) {
+template <typename T = f64> static bool fge_helper(T a, T b) {
   return feq_helper(a, b) or a > b;
 }
 
-template<typename T = f64> static bool fle_helper(T a, T b) {
+template <typename T = f64> static bool fle_helper(T a, T b) {
   return feq_helper(a, b) or a < b;
 }
 
@@ -168,6 +169,8 @@ CXBQN_BI_CALL_DEF_NUMONLY(NE, "≠", {}, NNC(!feq_helper(x->v, w->v)));
 CXBQN_BI_CALL_DEF_NUMONLY(
     EQ, "=",
     {
+      if (1 == nargs and t_Array == type_builtin(args[1]))
+        return new Number(static_cast<f64>(dynamic_cast<Array*>(args[1])->shape.size()));
       if (1 == nargs)
         return args[1];
     },
@@ -180,13 +183,19 @@ CXBQN_BI_CALL_DEF_NUMONLY(Ltack, "⊣", {}, args[2]);
 CXBQN_BI_CALL_DEF_NUMONLY(Rtack, "⊣", {}, args[1]);
 CXBQN_BI_CALL_DEF_NUMONLY(Type, "•Type", {}, NNC(type_builtin(args[1])));
 
-Value* FEQ::call(u8 nargs, std::vector<Value *>args){
+Value *FEQ::call(u8 nargs, std::vector<Value *> args) {
   CXBQN_DEBUG("≡:nargs={},args={}", nargs, args);
   return NNC(equivilant_helper(args[1], args[2]));
 }
-Value* FNE::call(u8 nargs, std::vector<Value *>args){
+Value *FNE::call(u8 nargs, std::vector<Value *> args) {
   CXBQN_DEBUG("≢:nargs={},args={}", nargs, args);
-  return NNC(!equivilant_helper(args[1], args[2]));
+  if (2 == nargs)
+    throw std::runtime_error("≢: provided function expected only one arg");
+  auto *arr = dynamic_cast<Array*>(args[1]);
+  auto *ret = new Array(arr->shape.size());
+  for (int i=0; i < ret->N(); i++)
+    ret->values[i] = new Number(static_cast<f64>(arr->shape[i]));
+  return ret;
 }
 
 Value *Table::call(u8 nargs, std::vector<Value *> args) {
@@ -362,13 +371,13 @@ Value *GroupLen::call(u8 nargs, std::vector<Value *> args) {
     xs[i] = DCN(x->values[i])->v;
   const auto l = std::accumulate(xs.begin(), xs.end(), init,
                                  [](auto a, auto b) { return std::max(a, b); });
-  std::vector<f64> retv(static_cast<uz>(l+1), 0);
+  std::vector<f64> retv(static_cast<uz>(l + 1), 0);
   std::fill(retv.begin(), retv.end(), 0);
   for (auto e : xs)
     if (fge_helper(e, 0.0))
       retv[static_cast<uz>(e)]++;
   auto *ret = new Array(retv.size());
-  for (int i=0; i < ret->N(); i++)
+  for (int i = 0; i < ret->N(); i++)
     ret->values[i] = NN(retv[i]);
   return ret;
 }
@@ -377,21 +386,22 @@ Value *GroupLen::call(u8 nargs, std::vector<Value *> args) {
 #define SYMBOL "GroupOrd"
 Value *GroupOrd::call(u8 nargs, std::vector<Value *> args) {
   CXBQN_DEBUG(SYMBOL ": nargs={},args={}", nargs, args);
-  auto *w = dynamic_cast<Array*>(args[2]);
-  auto *x = dynamic_cast<Array*>(args[1]);
+  auto *w = dynamic_cast<Array *>(args[2]);
+  auto *x = dynamic_cast<Array *>(args[1]);
 
   std::vector<uz> tmp(w->N(), 0);
   CXBQN_DEBUG("wn={},xn={},tmpn={}", w->N(), x->N(), tmp.size());
-  for (int i=1; i < w->N(); i++) {
-    tmp[i] = tmp[i-1] + static_cast<uz>(DCN(w->values[i-1])->v);
-    CXBQN_DEBUG("tmp[{}]={} w[i]={}", i, tmp[i], CXBQN_STR_NC(w->values[i-1]));
+  for (int i = 1; i < w->N(); i++) {
+    tmp[i] = tmp[i - 1] + static_cast<uz>(DCN(w->values[i - 1])->v);
+    CXBQN_DEBUG("tmp[{}]={} w[i]={}", i, tmp[i],
+                CXBQN_STR_NC(w->values[i - 1]));
   }
 
   const auto retlen = tmp.back() + static_cast<uz>(DCN(w->values.back())->v);
   CXBQN_DEBUG("return len={}", retlen);
 
   std::vector<f64> retv(retlen, 0);
-  for (int i=0; i < x->N(); i++) {
+  for (int i = 0; i < x->N(); i++) {
     const auto e = DCN(x->values[i])->v;
     if (fge_helper(e, 0.0)) {
       const auto idx = static_cast<uz>(e);
@@ -400,7 +410,7 @@ Value *GroupOrd::call(u8 nargs, std::vector<Value *> args) {
   }
 
   auto *ret = new Array(retlen);
-  for (int i=0; i < retlen; i++) {
+  for (int i = 0; i < retlen; i++) {
     ret->values[i] = new Number(retv[i]);
   }
   return ret;
@@ -414,17 +424,22 @@ Value *FillBy::call(u8 nargs, std::vector<Value *> args) {
 }
 
 Value *Catch::call(u8 nargs, std::vector<Value *> args) {
-  CXBQN_DEBUG("⊘: nargs={},args={}", nargs, args);
+  CXBQN_DEBUG("⎊: nargs={},args={}", nargs, args);
   try {
     auto *F = args[4];
     auto *ret = F->call(nargs, {F, args[1], args[2]});
     return ret;
-  }
-  catch (std::exception& e) {
+  } catch (std::exception &e) {
     auto *G = args[5];
     auto *ret = G->call(nargs, {G, args[1], args[2]});
     return ret;
   }
+}
+
+Value *Valence::call(u8 nargs, std::vector<Value *> args) {
+  CXBQN_DEBUG("⊘: nargs={},args={}", nargs, args);
+  return 1 == nargs ? args[4]->call(1, {args[4], args[1], bi_nothing()})
+                    : args[5]->call(2, {args[5], args[1], args[2]});
 }
 
 } // namespace cxbqn::provides

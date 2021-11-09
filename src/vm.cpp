@@ -59,7 +59,7 @@ Value *vm(ByteCodeRef bc, std::span<Value *> consts, std::deque<Value *> stk,
 
   CXBQN_DEBUG("enter interpreter loop");
   while (1) {
-    CXBQN_INFO("bc={},pc={},stack={},scope={}", bc[pc], pc, stk, *scope);
+    // CXBQN_INFO("bc={},pc={},stack={},scope={}", bc[pc], pc, stk, *scope);
     switch (bc[pc]) {
     case op::PUSH:
       INSTR1("PUSH");
@@ -101,12 +101,12 @@ Value *vm(ByteCodeRef bc, std::span<Value *> consts, std::deque<Value *> stk,
       break;
     case op::FN1C:
       INSTR("FN1C");
-      instructions::fn10(bc, pc, stk);
+      instructions::fn1c(stk);
       INSTR("FN1C");
       break;
     case op::FN2C:
       INSTR("FN2C");
-      instructions::fn20(bc, pc, stk);
+      instructions::fn2c(stk);
       INSTR("FN2C");
       break;
     case op::DFND:
@@ -126,22 +126,22 @@ Value *vm(ByteCodeRef bc, std::span<Value *> consts, std::deque<Value *> stk,
       break;
     case op::MD1C:
       INSTR("MD1C");
-      instructions::md1c(bc, pc, stk, scope);
+      instructions::md1c(stk);
       INSTR("MD1C");
       break;
     case op::MD2C:
       INSTR("MD2C");
-      instructions::md2c(bc, pc, stk, scope);
+      instructions::md2c(stk);
       INSTR("MD2C");
       break;
     case op::TR2D:
       INSTR("TR2D");
-      instructions::tr2d(bc, pc, stk, scope);
+      instructions::tr2d(stk);
       INSTR("TR2D");
       break;
     case op::TR3D:
       INSTR("TR3D");
-      instructions::tr3d(bc, pc, stk, scope);
+      instructions::tr3d(stk);
       INSTR("TR3D");
       break;
     case op::SETM:
@@ -153,6 +153,22 @@ Value *vm(ByteCodeRef bc, std::span<Value *> consts, std::deque<Value *> stk,
       INSTR("SETC");
       instructions::setc(stk, scope);
       INSTR("SETC");
+      break;
+    case op::FN1O:
+      INSTR("FN1O");
+      instructions::fn1o(stk);
+      INSTR("FN1O");
+      break;
+    case op::FN2O:
+      INSTR("FN2O");
+      instructions::fn2o(stk);
+      INSTR("FN2O");
+      break;
+    case op::CHKV:
+      INSTR("CHKV");
+      if ((stk.back())->t()[t_Nothing])
+        throw std::runtime_error("chkv: top of stack is ·");
+      INSTR("CHKV");
       break;
     default:
       CXBQN_CRIT("unreachable code {}", bc[pc]);

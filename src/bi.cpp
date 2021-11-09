@@ -6,7 +6,7 @@ namespace cxbqn::provides {
 types::Array *get_provides() {
   CXBQN_DEBUG("provides::get_provides");
   static Array prov(23);
-
+  
   prov.values[0] = bi_type();
   prov.values[1] = bi_fill();
   prov.values[2] = bi_log();
@@ -28,7 +28,8 @@ types::Array *get_provides() {
   prov.values[18] = bi_table();
   prov.values[19] = bi_scan();
   prov.values[20] = bi_fillby();
-  prov.values[21] = bi_catch();
+  prov.values[21] = bi_valence();
+  prov.values[22] = bi_catch();
   
   return &prov;
 }
@@ -209,6 +210,10 @@ Value *bi_groupord() {
 Value *bi_fillby() {
   static FillBy fb;
   return &fb;
+}
+Value *bi_valence() {
+  static Valence v;
+  return &v;
 }
 Value *bi_catch() {
   static Catch c;

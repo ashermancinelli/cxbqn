@@ -31,15 +31,18 @@ void setm(std::deque<Value *> &stk, Scope *);
 void setc(std::deque<Value *> &stk, Scope *);
 void varm(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk);
 void varo(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk, Scope *scp);
-void fn10(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk);
-void fn20(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk);
+void fn1c(std::deque<Value *> &stk);
+void fn1o(std::deque<Value *> &stk);
+void fn2c(std::deque<Value *> &stk);
+void fn2o(std::deque<Value *> &stk);
 void dfnd(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk, Scope *scp);
 void arro(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk);
 void arrm(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk);
-void md1c(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk, Scope *scp);
-void md2c(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk, Scope *scp);
-void tr2d(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk, Scope *scp);
-void tr3d(const ByteCodeRef bc, uz &pc, std::deque<Value *> &stk, Scope *scp);
+void md1c(std::deque<Value *> &stk);
+void md2c(std::deque<Value *> &stk);
+void tr2d(std::deque<Value *> &stk);
+void tr3d(std::deque<Value *> &stk);
+void tr3o(std::deque<Value *> &stk);
 
 } // namespace instructions
 

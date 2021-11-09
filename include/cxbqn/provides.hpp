@@ -91,7 +91,8 @@ CXBQN_BUILTIN_DECL(Scan, "`");
 CXBQN_BUILTIN_DECL(GroupLen, "GroupLen");
 CXBQN_BUILTIN_DECL(GroupOrd, "GroupOrd");
 CXBQN_BUILTIN_DECL(FillBy, "_fillBy_");
-CXBQN_BUILTIN_DECL(Catch, "⊘");
+CXBQN_BUILTIN_DECL(Valence, "⊘");
+CXBQN_BUILTIN_DECL(Catch, "⎊");
 Value* bi_ltack();
 Value* bi_rtack();
 Value* bi_arraydepth();
@@ -108,6 +109,7 @@ Value* bi_scan();
 Value* bi_grouplen();
 Value* bi_groupord();
 Value* bi_fillby();
+Value* bi_valence();
 Value* bi_catch();
 
 #undef CXBQN_BUILTIN_DECL

@@ -8,7 +8,7 @@ using namespace cxbqn::types;
 using namespace cxbqn::provides;
 
 TEST_CASE("Evaluate Runtime") {
-  const auto _provide = provides::get_runtime();
+  const auto _provide = provides::get_provides();
   const auto provide = _provide->values;
   CompileParams p{
       {0,   74,  33,  0,   0,   48,  6,   1,   1,   33,  0,   1,   48,  6,
@@ -1718,7 +1718,8 @@ TEST_CASE("Evaluate Runtime") {
        new Character(U'⊘'),
        new Character(U'⊸'),
        new Character(U'⟜'),
-       new Array(U"+-×÷⋆√⌊⌈|¬∧∨<>≠=≤≥≡≢⊣⊢⥊∾≍↑↓↕«»⌽⍉/⍋⍒⊏⊑⊐⊒∊⍷⊔!˙˜˘¨⌜⁼´˝`∘○⊸⟜⌾⊘◶⎉⚇⍟⎊%"),
+       new Array(
+           U"+-×÷⋆√⌊⌈|¬∧∨<>≠=≤≥≡≢⊣⊢⥊∾≍↑↓↕«»⌽⍉/⍋⍒⊏⊑⊐⊒∊⍷⊔!˙˜˘¨⌜⁼´˝`∘○⊸⟜⌾⊘◶⎉⚇⍟⎊%"),
        new Array(U"´: Identity not found"),
        new Array(U"´: 𝕩 must be a list"),
        new Array(U"Mapping: Equal-rank argument shapes don\'t agree"),
@@ -1799,7 +1800,8 @@ TEST_CASE("Evaluate Runtime") {
        new Array(U"∘⌊⌽↑"),
        new Array(U"𝕨⥊𝕩: 𝕨 must have rank at most 1"),
        new Array(U"𝕨⥊𝕩: 𝕨 must consist of natural numbers"),
-       new Array(U"𝕨⥊𝕩: Can\'t compute axis length when rest of shape is empty"),
+       new Array(
+           U"𝕨⥊𝕩: Can\'t compute axis length when rest of shape is empty"),
        new Array(U"𝕨⥊𝕩: 𝕨 must consist of natural numbers or ∘ ⌊ ⌽ ↑"),
        new Array(U"𝕨⥊𝕩: Shape must be exact when reshaping with ∘"),
        new Array(U"𝕨⥊𝕩: Can\'t produce non-empty array from empty 𝕩"),
@@ -1808,7 +1810,7 @@ TEST_CASE("Evaluate Runtime") {
        new Array(U"⊔𝕩: 𝕩 must be a list"),
        new Array(U"𝕨⊔𝕩: Rank of simple 𝕨 must be at most rank of 𝕩"),
        new Array(U"𝕨⊔𝕩: Lengths of 𝕨 must equal to 𝕩, or one more only in a "
-                  "rank-1 component"),
+                 "rank-1 component"),
        new Array(U"𝕨⊔𝕩: 𝕩 must be an array"),
        new Array(U"⎉ or ⚇: 𝔾 result must have rank at most 1"),
        new Array(U"⎉ or ⚇: 𝔾 result must have 1 to 3 elements"),
