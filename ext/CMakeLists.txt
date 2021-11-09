@@ -3,9 +3,11 @@ if(NOT TARGET spdlog::spdlog)
   message(STATUS "Cant find external spdlog, building it as a subproject")
   add_subdirectory(spdlog)
 endif()
-target_link_libraries(tpl INTERFACE spdlog::spdlog)
 
 add_subdirectory(doctest)
+add_subdirectory(utfcpp)
+
+target_link_libraries(tpl INTERFACE spdlog::spdlog utf8::cpp)
 
 include(CheckCXXSourceCompiles)
 check_cxx_source_compiles("

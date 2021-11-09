@@ -16,3 +16,6 @@
 [submodule "ext/doctest"]
 	path = ext/doctest
 	url = https://github.com/onqtam/doctest.git
+[submodule "ext/utfcpp"]
+	path = ext/utfcpp
+	url = https://github.com/nemtrif/utfcpp.git

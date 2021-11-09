@@ -392,6 +392,16 @@ Value *FillBy::call(u8 nargs, std::vector<Value *> args) {
 
 Value *Catch::call(u8 nargs, std::vector<Value *> args) {
   CXBQN_DEBUG("⊘: nargs={},args={}", nargs, args);
+  try {
+    auto *F = args[4];
+    auto *ret = F->call(nargs, {F, args[1], args[2]});
+    return ret;
+  }
+  catch (std::exception& e) {
+    auto *G = args[5];
+    auto *ret = G->call(nargs, {G, args[1], args[2]});
+    return ret;
+  }
 }
 
 } // namespace cxbqn::provides

@@ -5,6 +5,7 @@ set(tests
     test_prim
     test_simple
     test_bi
+    test_provide
 )
 
 foreach(test ${tests})

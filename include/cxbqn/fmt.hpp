@@ -64,6 +64,35 @@ template <> struct fmt::formatter<Scope> {
   }
 };
 
+template <> struct fmt::formatter<Character> {
+  constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin()) {
+    return ctx.end();
+  }
+  template <typename FormatContext>
+  auto format(Character const &v, FormatContext &ctx) -> decltype(ctx.out()) {
+    auto &&out = ctx.out();
+    format_to(out, L"{}", (char32_t)v.c());
+    return out;
+  }
+};
+
+template <> struct fmt::formatter<Array> {
+  constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin()) {
+    return ctx.end();
+  }
+  template <typename FormatContext>
+  auto format(Array const &v, FormatContext &ctx) -> decltype(ctx.out()) {
+    auto &&out = ctx.out();
+    if (v.t()[t_String]) {
+      for (const auto* e : v.values)
+        format_to(out, L"{}", std::string(dynamic_cast<Character*>(e)->c()));
+      return out;
+    }
+    format_to(out, "{}", v);
+    return out;
+  }
+};
+
 template <> struct fmt::formatter<Value> {
   constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin()) {
     return ctx.end();

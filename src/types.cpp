@@ -1,5 +1,6 @@
 #include <cxbqn/cxbqn.hpp>
 #include <cxbqn/debug.hpp>
+#include <utf8.h>
 #include <deque>
 
 namespace cxbqn::types {
@@ -16,6 +17,12 @@ Array::Array(const uz N, std::deque<Value *> &stk) {
 }
 
 std::ostream &Array::repr(std::ostream &os) const {
+  if (t()[t_String]) {
+    std::string s;
+    for (const auto *e : values)
+      utf8::append(dynamic_cast<const Character*>(e)->c(), s);
+    return os << "\"" << s << "\"";
+  }
   os << "⟨sh=⟨";
   for (int i = 0; i < shape.size(); i++) {
     os << shape[i];

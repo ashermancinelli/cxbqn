@@ -1,6 +1,7 @@
 #pragma once
 #include <bitset>
 #include <cxbqn/scalar_types.hpp>
+#include <utf8.h>
 #include <deque>
 #include <functional>
 #include <initializer_list>
@@ -95,6 +96,7 @@ enum TypeAnnotations {
 
   // Some operations can only take certain combinations of data values, eg +.
   t_DataValue,
+  t_String,
 };
 
 static constexpr u32 annot(TypeAnnotations ta) { return 1 << ta; }
@@ -174,7 +176,9 @@ struct Character : public Number {
   }
   inline c32 c() const { return static_cast<c32>(v); }
   std::ostream &repr(std::ostream &os) const override {
-    fmt::print(os, "'{}'", static_cast<c32>(v));
+    std::string s;
+    utf8::append(c(), s);
+    fmt::print(os, "'{}'", s);
     return os;
   }
 };
@@ -197,11 +201,17 @@ struct Array : public Value {
     shape.push_back(N);
     values.resize(N);
   }
+  Array(const std::u32string& s) {
+    shape.push_back(s.size());
+    values.reserve(s.size());
+    for (const auto& c : s)
+      values.push_back(new Character(c));
+    extra_annot |= annot(t_String);
+  }
   Array() {}
   ~Array() {}
-  Value *operator[](const std::size_t &i) { return values[i]; }
-  const Value *operator[](const std::size_t &i) const { return values[i]; }
-  TypeType t() const override { return TypeType{t_Array}; }
+  TypeType extra_annot{0};
+  TypeType t() const override { return TypeType{t_Array} | extra_annot; }
   std::ostream &repr(std::ostream &os) const override;
 };
 

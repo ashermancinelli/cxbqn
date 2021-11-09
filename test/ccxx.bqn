@@ -22,8 +22,8 @@ Esc←{
   ∾(i<≠in) /⟜"\"⊸∾¨ 𝕩        # Insert \
 }
 
-OStr ← "m_str32(U"""∾Esc∾""")"˙  # A BQN string
-OChr ← {"new Character('"∾(Esc⥊𝕩)∾"')"} # A BQN character
+OStr ← "new String(U"""∾Esc∾""")"˙  # A BQN string
+OChr ← {"new Character(L'"∾(Esc⥊𝕩)∾"')"} # A BQN character
 ONum ← {s←"-"/˜𝕩<0 ⋄ ∞⊸=∘|◶⟨""∾""∾˜s∾F∘| ⋄ "new Number("∾s∾"1.0/0.0)"⟩𝕩} # Format number
 OAny ← ≡◶⟨@⊸≤◶ONum‿OChr, OStr, ⊑⟩
 
@@ -49,7 +49,7 @@ LFC ← Long∘Fout∘Comp
 
 RT ← {
   src‿need‿inputs←𝕩Import"pr.bqn"
-  pr←"runtime_0"‿"provide"{(∾𝕨<⊸(<∘{∾""‿𝕨‿"["‿𝕩‿"])"}⟜F¨)⟜(↕≠)¨𝕩)⊏˜(∾𝕩)⊐∾need}○((-1+1=𝕩)⊸↑)inputs
+  pr←"runtime_0"‿"provide"{(∾𝕨<⊸(<∘{∾""‿𝕨‿"["‿𝕩‿"]"}⟜F¨)⟜(↕≠)¨𝕩)⊏˜(∾𝕩)⊐∾need}○((-1+1=𝕩)⊸↑)inputs
   Long Fout pr need _getComp src
 }
 CArg ← {J (¯5⊸↓∾𝕩˙)⌾⊑ FLines "c.bqn"}
