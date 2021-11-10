@@ -6,7 +6,8 @@ set(tests
     test_simple
     test_bi
     test_provide
-    test_r1
+    test_preruntime
+    test_runtime
 )
 
 foreach(test ${tests})

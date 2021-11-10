@@ -1,7 +1,7 @@
 #include <cxbqn/cxbqn.hpp>
 #include <cxbqn/debug.hpp>
-#include <utf8.h>
 #include <deque>
+#include <utf8.h>
 
 namespace cxbqn::types {
 
@@ -20,7 +20,7 @@ std::ostream &Array::repr(std::ostream &os) const {
   if (t()[t_String]) {
     std::string s;
     for (const auto *e : values)
-      utf8::append(dynamic_cast<const Character*>(e)->c(), s);
+      utf8::append(dynamic_cast<const Character *>(e)->c(), s);
     return os << "\"" << s << "\"";
   }
   os << "⟨sh=⟨";
@@ -75,7 +75,7 @@ Reference *RefArray::getref(uz idx) {
   return r;
 }
 
-Scope::Scope(Scope *parent, std::span<Block> blks, uz blk_idx,
+Scope::Scope(Scope *parent, std::vector<Block> blks, uz blk_idx,
              std::optional<std::span<Value *>> consts)
     : blks{blks}, blk_idx{blk_idx} {
   CXBQN_DEBUG("Scope::Scope");

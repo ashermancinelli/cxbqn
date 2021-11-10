@@ -171,8 +171,10 @@ Value *vm(ByteCodeRef bc, std::span<Value *> consts, std::deque<Value *> stk,
       INSTR("CHKV");
       break;
     default:
-      CXBQN_CRIT("unreachable code {}", bc[pc]);
-      throw std::runtime_error("vm::vm: unreachable code");
+      std::stringstream ss;
+      ss << "vm::vm: unreachable code " << bc[pc];
+      CXBQN_CRIT("{}", ss.str());
+      throw std::runtime_error(ss.str());
     }
     pc++;
   }

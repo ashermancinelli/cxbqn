@@ -176,6 +176,9 @@ struct Character : public Number {
   }
   inline c32 c() const { return static_cast<c32>(v); }
   std::ostream &repr(std::ostream &os) const override {
+    if (c() == '\0') {
+      return os << "'@'";
+    }
     std::string s;
     utf8::append(c(), s);
     fmt::print(os, "'{}'", s);
@@ -379,9 +382,9 @@ struct Scope {
   Scope *parent;
   std::vector<Value *> vars;
   std::span<Value *> consts;
-  std::span<Block> blks;
+  std::vector<Block> blks;
   const uz blk_idx;
-  Scope(Scope *parent, std::span<Block> blks, uz blk_idx,
+  Scope(Scope *parent, std::vector<Block> blks, uz blk_idx,
         std::optional<std::span<Value *>> consts = nullopt);
   Value *get(Reference *r);
   void set(bool should_var_be_set, Reference *r, Value *v);
