@@ -1,6 +1,7 @@
 #include <cmath>
 #include <cxbqn/debug.hpp>
 #include <cxbqn/provides.hpp>
+#include <cxbqn/comp_utils.hpp>
 
 namespace cxbqn::provides {
 types::Array *get_provides() {
@@ -34,8 +35,25 @@ types::Array *get_provides() {
   return &prov;
 }
 
+static Array* rt_ = nullptr;
 types::Array *get_runtime() {
   CXBQN_DEBUG("provides::get_runtime");
+  if (nullptr != rt_)
+    return rt_;
+  const auto _provide = provides::get_provides();
+  const auto provide = _provide->values;
+  static CompileParams p{
+#include "compiled_runtime"
+  };
+  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto *runtime_ret = dynamic_cast<Array *>(ret.v);
+  auto *rt = dynamic_cast<Array *>(runtime_ret->values[0]);
+  rt_ = rt;
+  return get_runtime();
+}
+
+Array *get_runtime_bionly() {
+  CXBQN_DEBUG("provides::get_runtime_bionly");
   static Array rt;
   rt.values.resize(60);
   rt.values[0] = bi_plus();

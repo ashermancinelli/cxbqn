@@ -79,7 +79,7 @@ if(HAS_BQN_EXE)
       "
 TEST_CASE(\"${test}\") {
   spdlog::critical(\"test='{}', ans='{}'\", \"${test}\", \"${ans}\");
-  const auto rt = provides::get_runtime();
+  const auto rt = provides::get_runtime_bionly();
   const auto runtime = rt->values;
   CompileParams p{
     ${compiled_test}

@@ -1,4 +1,4 @@
-#include "utils.hpp"
+#include <cxbqn/comp_utils.hpp>
 #include <cxbqn/cxbqn.hpp>
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include <doctest/doctest.h>

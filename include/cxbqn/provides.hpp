@@ -10,6 +10,15 @@ using namespace cxbqn::types;
  */
 Array *get_runtime();
 
+/*
+ * The parts of the runtime given in the `provides` array, but in the positions
+ * needed by the `runtime` array. This is useful for testing the input to
+ * provides on bytecode tests generated from the `simple.bqn` or `prim.bqn`
+ * tests.
+ *
+ */
+Array *get_runtime_bionly();
+
 /* 
  * The core runtime as specified at [this link](https://mlochbaum.github.io/BQN/implementation/vm.html#runtime).
  * This is used to bootstrap the self-hosted runtime and compiler.

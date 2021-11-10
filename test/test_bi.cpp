@@ -1,4 +1,4 @@
-#include "utils.hpp"
+#include <cxbqn/comp_utils.hpp>
 #include <cxbqn/cxbqn.hpp>
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include <doctest/doctest.h>
@@ -9,7 +9,7 @@ using namespace cxbqn::provides;
 
 TEST_CASE("0 +` ↕5") {
   spdlog::critical("test='{}', ans='{}'", "0 +` ↕5", "⟨ 0 1 3 6 10 ⟩");
-  const auto rt = provides::get_runtime();
+  const auto rt = provides::get_runtime_bionly();
   const auto runtime = rt->values;
   CompileParams p{{0, 4, 0, 1, 16, 0, 2, 0, 0, 26, 0, 3, 17, 7},
                   {runtime[0], runtime[27], runtime[51], 0, 5},
@@ -31,7 +31,7 @@ TEST_CASE("0 +` ↕5") {
 TEST_CASE("(↕4) ×⌜ ↕3") {
   spdlog::critical("test='{}', ans='{}'", "(↕4) ×⌜ ↕3",
                    "⟨ 0 0 0 0 1 2 0 2 4 0 3 6 ⟩");
-  const auto rt = provides::get_runtime();
+  const auto rt = provides::get_runtime_bionly();
   const auto runtime = rt->values;
   CompileParams p{{0, 4, 0, 1, 16, 0, 2, 0, 0, 26, 0, 3, 0, 1, 16, 17, 7},
                   {runtime[2], runtime[27], runtime[47], 4, 3},
@@ -59,7 +59,7 @@ TEST_CASE("(↕4) ×⌜ ↕3") {
 
 TEST_CASE("1 +` 1") {
   spdlog::critical("test='{}', ans='{}'", "1 +` 1", "throws");
-  const auto rt = provides::get_runtime();
+  const auto rt = provides::get_runtime_bionly();
   const auto runtime = rt->values;
   CompileParams p{{0, 3, 0, 2, 0, 0, 26, 16, 0, 1, 16, 7},
                   {runtime[0], runtime[15], runtime[51], 1},
@@ -70,7 +70,7 @@ TEST_CASE("1 +` 1") {
 
 TEST_CASE("0‿0 +` 3‿2") {
   spdlog::critical("test='{}', ans='{}'", "0‿0 +` 3‿2", "throws");
-  const auto rt = provides::get_runtime();
+  const auto rt = provides::get_runtime_bionly();
   const auto runtime = rt->values;
   CompileParams p{{0, 3, 0, 2, 0, 0, 26, 16, 0, 1, 16, 7},
                   {runtime[0], runtime[15], runtime[51], 1},
@@ -82,7 +82,7 @@ TEST_CASE("0‿0 +` 3‿2") {
 #define T "(3‿2⥊1) +` (4‿3‿2⥊1)"
 TEST_CASE(T) {
   spdlog::critical("test={}", T);
-  const auto rt = provides::get_runtime();
+  const auto rt = provides::get_runtime_bionly();
   const auto runtime = rt->values;
   CompileParams p{{0, 5,  0, 1, 0, 6, 0, 3, 0, 4, 11, 3, 17, 0,  2, 0,
                    0, 26, 0, 5, 0, 1, 0, 3, 0, 4, 11, 2, 17, 17, 7},
@@ -114,7 +114,7 @@ TEST_CASE(T) {
 #define T "GroupLen 0‿¯1‿0‿4‿3‿4‿4"
 TEST_CASE(T) {
   spdlog::critical("test={}", T);
-  const auto rt = provides::get_runtime();
+  const auto rt = provides::get_runtime_bionly();
   const auto runtime = rt->values;
   CompileParams p{
       {0, 1, 0, 2, 0, 1, 0, 3, 0, 4, 0, 3, 0, 3, 11, 7, 0, 0, 16, 7},
@@ -139,7 +139,7 @@ TEST_CASE(T) {
 #define T "Dyadic GroupLen 2 {≠¨(∾⟜𝕨⊔⊢) 𝕩} 3‿1‿4‿1‿5‿9‿¯1‿¯1"
 TEST_CASE(T) {
   spdlog::critical("test={}", T);
-  const auto rt = provides::get_runtime();
+  const auto rt = provides::get_runtime_bionly();
   const auto runtime = rt->values;
   CompileParams p{{0, 2, 0, 3, 0,  4, 0, 3, 0, 5, 0,  6,
                    0, 7, 0, 7, 11, 8, 0, 0, 0, 1, 17, 7},
@@ -165,7 +165,7 @@ TEST_CASE(T) {
 #define T "Dyadic GroupLen 20 {≠¨(∾⟜𝕨⊔⊢) 𝕩} 3‿1‿4‿1‿5‿9‿¯1‿¯1"
 TEST_CASE(T) {
   spdlog::critical("test={}", T);
-  const auto rt = provides::get_runtime();
+  const auto rt = provides::get_runtime_bionly();
   const auto runtime = rt->values;
   CompileParams p{{0, 2, 0, 3, 0,  4, 0, 3, 0, 5, 0,  6,
                    0, 7, 0, 7, 11, 8, 0, 0, 0, 1, 17, 7},
@@ -192,7 +192,7 @@ TEST_CASE(T) {
 #define T "0‿¯1‿¯1‿2‿0 GroupOrd 0‿1‿2‿3‿4"
 TEST_CASE(T) {
   spdlog::critical("test={}", T);
-  const auto rt = provides::get_runtime();
+  const auto rt = provides::get_runtime_bionly();
   const auto runtime = rt->values;
   CompileParams p{{0, 2, 0, 4, 0, 4, 0, 1, 0,  2, 11, 5,
                    0, 0, 0, 1, 0, 2, 0, 3, 11, 3, 17, 7},
