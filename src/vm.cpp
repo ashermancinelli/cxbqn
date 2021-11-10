@@ -8,7 +8,7 @@ namespace cxbqn::vm {
 using namespace types;
 
 RunResult run(std::vector<i32> bc, std::vector<Value *> consts,
-              std::vector<BlockDef> blk_defs, std::vector<Body> bodies) {
+              std::vector<BlockDef> blk_defs, std::vector<Body>& bodies) {
 
   CXBQN_SETLOGSTR();
   CXBQN_DEBUG("vm::run");

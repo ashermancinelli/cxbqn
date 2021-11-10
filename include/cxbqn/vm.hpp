@@ -18,7 +18,7 @@ struct RunResult {
 };
 
 RunResult run(ByteCode bc, std::vector<Value *> consts,
-              std::vector<BlockDef> blks, std::vector<Body> bds);
+              std::vector<BlockDef> blks, std::vector<Body>& bds);
 
 Value *vm(ByteCodeRef bc, std::span<Value *> consts, std::deque<Value *> stk,
           Scope *scope);

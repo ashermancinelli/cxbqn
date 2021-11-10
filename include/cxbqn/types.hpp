@@ -176,6 +176,7 @@ struct Character : public Number {
   }
   inline c32 c() const { return static_cast<c32>(v); }
   std::ostream &repr(std::ostream &os) const override {
+    return os << "ch=" << v;
     if (c() == '\0') {
       return os << "'@'";
     }
