@@ -8,7 +8,7 @@ using namespace cxbqn::types;
 /*
  * The runtime as needed by the the final compiler
  */
-Array *get_runtime();
+O<Array> get_runtime();
 
 /*
  * The parts of the runtime given in the `provides` array, but in the positions
@@ -17,13 +17,14 @@ Array *get_runtime();
  * tests.
  *
  */
-Array *get_runtime_bionly();
+O<Array> get_runtime_bionly();
 
-/* 
- * The core runtime as specified at [this link](https://mlochbaum.github.io/BQN/implementation/vm.html#runtime).
- * This is used to bootstrap the self-hosted runtime and compiler.
+/*
+ * The core runtime as specified at [this
+ * link](https://mlochbaum.github.io/BQN/implementation/vm.html#runtime). This
+ * is used to bootstrap the self-hosted runtime and compiler.
  */
-Array *get_provides();
+O<Array> get_provides();
 
 struct Provides : public Function {
   TypeType t() const override {
@@ -36,9 +37,9 @@ struct Provides : public Function {
     std::ostream &repr(std::ostream &os) const override {                      \
       return os << __VA_ARGS__;                                                \
     }                                                                          \
-    Value *call(u8 nargs = 0, std::vector<Value *> args = {}) override;        \
-  }; \
-  Value *bi_##T();
+    O<Value> call(u8 nargs = 0, std::vector<O<Value>> args = {}) override;     \
+  };                                                                           \
+  O<Value> bi_##T();
 
 // Arithmatic
 CXBQN_BUILTIN_DECL(Plus, "+");

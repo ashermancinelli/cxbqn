@@ -5,12 +5,12 @@
 
 namespace cxbqn::types {
 
-Value *bi_Nothing() {
+O<Value> bi_Nothing() {
   static Nothing n;
-  return &n;
+  return std::shared_ptr<Nothing>(&n, [](Nothing *) {});
 }
 
-Array::Array(const uz N, std::deque<Value *> &stk) {
+Array::Array(const uz N, std::deque<O<Value> > &stk) {
   shape.push_back(N);
   values.assign(stk.begin() + (stk.size() - N), stk.end());
   stk.resize(stk.size() - N);
@@ -76,7 +76,7 @@ Reference *RefArray::getref(uz idx) {
 }
 
 Scope::Scope(Scope *parent, std::vector<Block> blks, uz blk_idx,
-             std::optional<std::vector<Value *>> consts)
+             std::optional<std::vector<O<Value> >> consts)
     : blks{blks}, blk_idx{blk_idx} {
   CXBQN_DEBUG("Scope::Scope");
   this->parent = parent;
@@ -89,7 +89,7 @@ Scope::Scope(Scope *parent, std::vector<Block> blks, uz blk_idx,
   std::fill(vars.begin(), vars.end(), nullptr);
 }
 
-Value *Scope::get(Reference *r) {
+O<Value> Scope::get(Reference *r) {
 
 #ifdef CXBQN_DEEPCHECKS
   if (nullptr == r)
@@ -102,7 +102,7 @@ Value *Scope::get(Reference *r) {
   return scp->vars[r->position_in_parent];
 }
 
-void Scope::set(bool should_var_be_set, Reference *r, Value *v) {
+void Scope::set(bool should_var_be_set, Reference *r, O<Value> v) {
 
 #ifdef CXBQN_DEEPCHECKS
   if (nullptr == r)
@@ -234,7 +234,7 @@ bool BlockInst::imm() const {
   return this->scp->blks[this->blk_idx].def.immediate;
 }
 
-Value *BlockInst::call(u8 nargs, std::vector<Value *> args) {
+O<Value> BlockInst::call(u8 nargs, std::vector<O<Value> > args) {
 
   const auto blk = scp->blks[blk_idx];
 
@@ -246,7 +246,7 @@ Value *BlockInst::call(u8 nargs, std::vector<Value *> args) {
   CXBQN_DEBUG("BlockInst::call:nargs={},childscope={},blk={}", args.size(),
               *child, blk);
 
-  std::deque<Value *> stk;
+  std::deque<O<Value> > stk;
 
   CXBQN_DEBUG("BlockInst::call:recursing into vm");
   auto *ret = vm::vm(bc, child->consts, stk, child);
@@ -255,7 +255,7 @@ Value *BlockInst::call(u8 nargs, std::vector<Value *> args) {
   return ret;
 }
 
-Value *Atop::call(u8 nargs, std::vector<Value *> args) {
+O<Value> Atop::call(u8 nargs, std::vector<O<Value> > args) {
   CXBQN_DEBUG("Atop::call:nargs={},args={}", nargs, args);
   auto *ret = g->call(nargs, args);
 
@@ -266,7 +266,7 @@ std::ostream &Atop::repr(std::ostream &os) const {
   return os << "(atop f=" << CXBQN_STR_NC(f) << ",g=" << CXBQN_STR_NC(g) << ")";
 }
 
-Value *Fork::call(u8 nargs, std::vector<Value *> args) {
+O<Value> Fork::call(u8 nargs, std::vector<O<Value> > args) {
   CXBQN_DEBUG("Fork::call:nargs={},args={}", nargs, args);
 
   // Pass 𝕩 and 𝕨 (if exists)
@@ -287,7 +287,7 @@ std::ostream &Fork::repr(std::ostream &os) const {
             << ",h=" << CXBQN_STR_NC(h) << ")";
 }
 
-Value *Md1Deferred::call(u8 nargs, std::vector<Value *> args) {
+O<Value> Md1Deferred::call(u8 nargs, std::vector<O<Value> > args) {
   args.push_back(m1);
   args.push_back(f);
   return m1->call(nargs, args);
@@ -297,7 +297,7 @@ std::ostream &Md1Deferred::repr(std::ostream &os) const {
   return os;
 }
 
-Value *Md2Deferred::call(u8 nargs, std::vector<Value *> args) {
+O<Value> Md2Deferred::call(u8 nargs, std::vector<O<Value> > args) {
   args.push_back(m2);
   args.push_back(f);
   args.push_back(g);

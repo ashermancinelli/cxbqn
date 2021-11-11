@@ -1,7 +1,6 @@
 #pragma once
 #include <bitset>
 #include <cxbqn/scalar_types.hpp>
-#include <utf8.h>
 #include <deque>
 #include <functional>
 #include <initializer_list>
@@ -13,6 +12,7 @@
 #include <spdlog/fmt/ostr.h>
 #include <tuple>
 #include <type_traits>
+#include <utf8.h>
 #include <variant>
 #include <vector>
 
@@ -112,6 +112,12 @@ using TypeType = std::bitset<32>;
 using ByteCode = std::vector<i32>;
 using ByteCodeRef = std::span<i32>;
 
+// "Owned Value"
+template <typename T> using O = std::shared_ptr<T>;
+
+// "Weak/Unowned Value"
+template <typename T> using W = std::weak_ptr<T>;
+
 struct Scope;
 struct Block;
 
@@ -123,7 +129,7 @@ struct Value {
   // this case, when the modifier is defined, 𝕣 𝕗 and 𝕘 are stored in
   // deferred_args so they can be copied into the scope when the function
   // arguments are present.
-  std::vector<Value *> deferred_args;
+  std::vector<O<Value>> deferred_args;
   Value() : deferred_args(6, nullptr) {}
 
   virtual ~Value() {}
@@ -136,8 +142,8 @@ struct Value {
 
   // If a value type does not define it's own call, we probably just push it
   // back on the stack.
-  virtual Value *call(u8 nargs = 0, std::vector<Value *> args = {}) {
-    return this;
+  virtual O<Value> call(u8 nargs = 0, std::vector<O<Value>> args = {}) {
+    return std::shared_ptr<Value>(this);
   };
 
   virtual std::ostream &repr(std::ostream &os) const { return os << "V"; }
@@ -147,18 +153,7 @@ struct Nothing : public Value {
   TypeType t() const override { return TypeType{annot(t_Nothing)}; }
   std::ostream &repr(std::ostream &os) const override { return os << "·"; }
 };
-Value *bi_Nothing();
-
-// Managed Value
-// Currently unused, but might be used for managing memory later on. The stack
-// and scope will likely own their values, while all other values can just hold
-// a weak reference since they share a common ancestor (the root scope).
-
-// "Owned Value"
-using OV = std::shared_ptr<Value>;
-
-// "Weak/Unowned Value"
-using WV = std::weak_ptr<Value>;
+O<Value> bi_Nothing();
 
 struct Number : public Value {
   f64 v;
@@ -167,9 +162,10 @@ struct Number : public Value {
     return TypeType{t_Number | annot(t_DataValue)};
   }
   std::ostream &repr(std::ostream &os) const override {
-    return (v == std::numeric_limits<f64>::infinity()    ? os << "∞"
-            : v == -std::numeric_limits<f64>::infinity() ? os << "¯∞"
-                                                         : os << v);
+    return (v == std::numeric_limits<f64>::infinity()
+                ? os << "∞"
+                : v == -std::numeric_limits<f64>::infinity() ? os << "¯∞"
+                                                             : os << v);
   }
 };
 
@@ -192,10 +188,10 @@ struct Character : public Number {
 };
 
 struct Array : public Value {
-  std::vector<Value *> values;
+  std::vector<O<Value>> values;
   std::vector<uz> shape;
-  Array(const uz N, std::deque<Value *> &stk);
-  Array(std::vector<Value *> vs) : values{vs}, shape{vs.size()} {}
+  Array(const uz N, std::deque<O<Value>> &stk);
+  Array(std::vector<O<Value>> vs) : values{vs}, shape{vs.size()} {}
   inline const uz N() const {
     const auto N = values.size();
 #ifdef CXBQN_DEEPCHECKS
@@ -209,11 +205,11 @@ struct Array : public Value {
     shape.push_back(N);
     values.resize(N);
   }
-  Array(const std::u32string& s) {
+  Array(const std::u32string &s) {
     shape.push_back(s.size());
     values.reserve(s.size());
-    for (const auto& c : s)
-      values.push_back(new Character(c));
+    for (const auto &c : s)
+      values.push_back(O<Value>(new Character(c)));
     extra_annot |= annot(t_String);
   }
   Array() {}
@@ -234,7 +230,7 @@ struct Reference : public Value {
 };
 
 struct RefArray : public Array {
-  RefArray(const ByteCode::value_type N, std::deque<Value *> &stk)
+  RefArray(const ByteCode::value_type N, std::deque<O<Value>> &stk)
       : Array(N, stk) {}
   Reference *getref(uz idx);
   TypeType t() const override {
@@ -257,24 +253,24 @@ struct BlockInst : public Function {
 
   TypeType t() const override { return TypeType{annot(t_BlockInst)}; }
   BlockInst(Scope *scp, uz blk_idx) : scp{scp}, blk_idx{blk_idx} {}
-  Value *call(u8 nargs = 0, std::vector<Value *> args = {}) override;
+  O<Value> call(u8 nargs = 0, std::vector<O<Value>> args = {}) override;
   std::ostream &repr(std::ostream &os) const override {
     return os << "Block{i=" << blk_idx << "}";
   }
 };
 
 struct Fork : public Function {
-  Value *f, *g, *h;
-  Fork(Value *f, Value *g, Value *h) : f{f}, g{g}, h{h} {}
+  O<Value> f, g, h;
+  Fork(O<Value> f, O<Value> g, O<Value> h) : f{f}, g{g}, h{h} {}
   TypeType t() const override { return TypeType{t_Function}; }
-  Value *call(u8 nargs = 0, std::vector<Value *> args = {}) override;
+  O<Value> call(u8 nargs = 0, std::vector<O<Value>> args = {}) override;
   std::ostream &repr(std::ostream &os) const override;
 };
 
 struct Atop : public Function {
-  Value *g, *f;
-  Atop(Value *f, Value *g) : f{f}, g{g} {}
-  Value *call(u8 nargs = 0, std::vector<Value *> args = {}) override;
+  O<Value> g, f;
+  Atop(O<Value> f, O<Value> g) : f{f}, g{g} {}
+  O<Value> call(u8 nargs = 0, std::vector<O<Value>> args = {}) override;
   std::ostream &repr(std::ostream &os) const override;
 };
 
@@ -304,9 +300,9 @@ struct UserMd2 : public Md2 {
  */
 struct Md1Deferred : public Function {
   TypeType t() const override { return TypeType{t_Md1 | annot(t_Deferred)}; }
-  Value *f, *m1;
-  Md1Deferred(Value *f, Value *m1) : f{f}, m1{m1} {}
-  Value *call(u8 nargs = 0, std::vector<Value *> args = {}) override;
+  O<Value> f, m1;
+  Md1Deferred(O<Value> f, O<Value> m1) : f{f}, m1{m1} {}
+  O<Value> call(u8 nargs = 0, std::vector<O<Value>> args = {}) override;
   std::ostream &repr(std::ostream &os) const override;
 };
 
@@ -315,15 +311,15 @@ struct Md1Deferred : public Function {
  */
 struct Md2Deferred : public Function {
   TypeType t() const override { return TypeType{t_Md2 | annot(t_Deferred)}; }
-  Value *f, *m2, *g;
-  Md2Deferred(Value *f, Value *m2, Value *g) : f{f}, m2{m2}, g{g} {}
-  Value *call(u8 nargs = 0, std::vector<Value *> args = {}) override;
+  O<Value> f, m2, g;
+  Md2Deferred(O<Value> f, O<Value> m2, O<Value> g) : f{f}, m2{m2}, g{g} {}
+  O<Value> call(u8 nargs = 0, std::vector<O<Value>> args = {}) override;
   std::ostream &repr(std::ostream &os) const override;
 };
 
 struct CompilationResult {
   i32 *bc;
-  Value *objs;
+  O<Value> objs;
 };
 
 enum class BlockType {
@@ -386,14 +382,14 @@ private:
 
 struct Scope {
   Scope *parent;
-  std::vector<Value *> vars;
-  std::vector<Value *> consts;
+  std::vector<O<Value>> vars;
+  std::vector<O<Value>> consts;
   std::vector<Block> blks;
   const uz blk_idx;
   Scope(Scope *parent, std::vector<Block> blks, uz blk_idx,
-        std::optional<std::vector<Value *>> consts = nullopt);
-  Value *get(Reference *r);
-  void set(bool should_var_be_set, Reference *r, Value *v);
+        std::optional<std::vector<O<Value>>> consts = nullopt);
+  O<Value> get(Reference *r);
+  void set(bool should_var_be_set, Reference *r, O<Value> v);
   Scope *get_nth_parent(uz depth);
 };
 

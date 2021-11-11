@@ -7,7 +7,7 @@ namespace cxbqn::vm {
 
 using namespace types;
 
-RunResult run(std::vector<i32> bc, std::vector<Value *> consts,
+RunResult run(std::vector<i32> bc, std::vector<O<Value>> consts,
               std::vector<BlockDef> blk_defs, std::vector<Body>& bodies) {
 
   CXBQN_SETLOGSTR();
@@ -27,7 +27,7 @@ RunResult run(std::vector<i32> bc, std::vector<Value *> consts,
 
   CXBQN_DEBUG("blocks={}", std::span(blks));
 
-  std::deque<Value *> stk;
+  std::deque<O<Value>> stk;
 
   RunResult ret;
 
@@ -45,7 +45,7 @@ RunResult run(std::vector<i32> bc, std::vector<Value *> consts,
   return ret;
 }
 
-Value *vm(ByteCodeRef bc, std::span<Value *> consts, std::deque<Value *> stk,
+Value *vm(ByteCodeRef bc, std::span<O<Value>> consts, std::deque<O<Value>> stk,
           Scope *scope) {
 
   CXBQN_NEWEVAL();

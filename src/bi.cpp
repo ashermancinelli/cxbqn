@@ -1,13 +1,13 @@
 #include <cmath>
+#include <cxbqn/comp_utils.hpp>
 #include <cxbqn/debug.hpp>
 #include <cxbqn/provides.hpp>
-#include <cxbqn/comp_utils.hpp>
 
 namespace cxbqn::provides {
-types::Array *get_provides() {
+O<types::Array> get_provides() {
   CXBQN_DEBUG("provides::get_provides");
   static Array prov(23);
-  
+
   prov.values[0] = bi_Type();
   prov.values[1] = bi_Fill();
   prov.values[2] = bi_Log();
@@ -31,14 +31,14 @@ types::Array *get_provides() {
   prov.values[20] = bi_FillBy();
   prov.values[21] = bi_Valence();
   prov.values[22] = bi_Catch();
-  
-  return &prov;
+
+  return std::shared_ptr<Array>(&prov, [](Array *) {});
 }
 
-static Array* rt_ = nullptr;
-types::Array *get_runtime() {
+O<types::Array> get_runtime() {
   CXBQN_DEBUG("provides::get_runtime");
-  if (nullptr != rt_)
+  static O<Array> rt_ = nullptr;
+  if (rt_)
     return rt_;
   const auto _provide = provides::get_provides();
   const auto provide = _provide->values;
@@ -46,13 +46,13 @@ types::Array *get_runtime() {
 #include "compiled_runtime"
   };
   auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
-  auto *runtime_ret = dynamic_cast<Array *>(ret.v);
-  auto *rt = dynamic_cast<Array *>(runtime_ret->values[0]);
+  auto runtime_ret = std::dynamic_pointer_cast<Array>(ret.v);
+  auto rt = std::dynamic_pointer_cast<Array>(runtime_ret->values[0]);
   rt_ = rt;
   return get_runtime();
 }
 
-Array *get_runtime_bionly() {
+O<Array> get_runtime_bionly() {
   CXBQN_DEBUG("provides::get_runtime_bionly");
   static Array rt;
   rt.values.resize(60);
@@ -83,10 +83,15 @@ Array *get_runtime_bionly() {
   rt.values[36] = bi_Pick();
   rt.values[47] = bi_Table();
   rt.values[51] = bi_Scan();
-  return &rt;
+
+  return std::shared_ptr<Array>(&rt, [](Array *) {});
 }
 
-#define BI_DEF(T) Value* bi_##T() { static T v; return &v; }
+#define BI_DEF(T)                                                              \
+  O<Value> bi_##T() {                                                            \
+    static T v;                                                                \
+    return std::shared_ptr<T>(&v, [](T *) {});                                 \
+  }
 BI_DEF(Plus);
 BI_DEF(Minus);
 BI_DEF(Mul);

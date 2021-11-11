@@ -134,7 +134,29 @@ template <> struct fmt::formatter<Value> {
       }                                                                        \
       return format_to(out, "{}", "⟩");                                        \
     }                                                                          \
+  }; \
+  template <> struct fmt::formatter<Container<O<ValueType>>> {                  \
+    constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin()) { \
+      return ctx.end();                                                        \
+    }                                                                          \
+    template <typename FormatContext>                                          \
+    auto format(const Container<O<ValueType>> &vs, FormatContext &ctx)          \
+        -> decltype(ctx.out()) {                                               \
+      auto &&out = ctx.out();                                                  \
+      std::vector<O<ValueType>> vvs(vs.begin(), vs.end());                      \
+      format_to(out, "{}", "⟨");                                               \
+      for (int i = 0; i < vvs.size(); i++) {                                   \
+        if (nullptr == vvs[i])                                                 \
+          format_to(out, "{}", "null");                                        \
+        else                                                                   \
+          format_to(out, "{}", *vvs[i]);                                       \
+        if (i + 1 < vvs.size())                                                \
+          format_to(out, "{}", ",");                                           \
+      }                                                                        \
+      return format_to(out, "{}", "⟩");                                        \
+    }                                                                          \
   };
+
 
 FMT_PTR_CONTAINER(std::vector, Value);
 FMT_PTR_CONTAINER(std::deque, Value);
