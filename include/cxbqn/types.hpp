@@ -125,7 +125,7 @@ using std::static_pointer_cast;
 struct Scope;
 struct Block;
 
-struct Value {
+struct Value : public std::enable_shared_from_this<Value> {
 
   // When blocks are not immediate, we sometimes need to cache arguments to be
   // referred to later. For example, a modifier block may need to refer both to
@@ -147,7 +147,7 @@ struct Value {
   // If a value type does not define it's own call, we probably just push it
   // back on the stack.
   virtual O<Value> call(u8 nargs = 0, std::vector<O<Value>> args = {}) {
-    return std::shared_ptr<Value>(this);
+    return shared_from_this();
   };
 
   virtual std::ostream &repr(std::ostream &os) const { return os << "V"; }
