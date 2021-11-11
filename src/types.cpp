@@ -76,7 +76,7 @@ Reference *RefArray::getref(uz idx) {
 }
 
 Scope::Scope(Scope *parent, std::vector<Block> blks, uz blk_idx,
-             std::optional<std::span<Value *>> consts)
+             std::optional<std::vector<Value *>> consts)
     : blks{blks}, blk_idx{blk_idx} {
   CXBQN_DEBUG("Scope::Scope");
   this->parent = parent;
@@ -181,7 +181,8 @@ BlockDef::BlockDef(uz ty, uz immediate, std::vector<std::vector<uz>> indices)
 BlockDef::~BlockDef() {}
 
 Block::Block(std::span<i32> bc, BlockDef bd, std::span<Body> bods)
-    : def{bd}, bc{bc}, bods{bods}, cached_max_nvars{nullopt} {}
+    : def{bd}, bc(bc.begin(), bc.end()),
+      bods(bods.begin(), bods.end()), cached_max_nvars{nullopt} {}
 
 uz Block::max_nvars() const {
   CXBQN_DEBUG("Block::max_nvars()");
@@ -202,12 +203,12 @@ uz Block::max_nvars() const {
   return max_nvars();
 }
 
-std::pair<ByteCodeRef, uz> Block::body(u8 nargs) const {
+std::pair<ByteCode, uz> Block::body(u8 nargs) const {
   CXBQN_DEBUG("Block::body: nargs={}", nargs);
 
   if (def.immediate) {
     auto bod = bods[def.body_idx];
-    auto _bc = bc.subspan(bod.bc_offset);
+    const auto _bc = ByteCode(bc.begin() + bod.bc_offset, bc.end());
     return std::make_pair(_bc, bod.var_count);
   }
 
@@ -215,18 +216,18 @@ std::pair<ByteCodeRef, uz> Block::body(u8 nargs) const {
     auto bod = bods[def.mon_body_idxs[0]];
     CXBQN_DEBUG("Block::body:monadic bodies:offset={},nvars={}", bod.bc_offset,
                 bod.var_count);
-    auto _bc = bc.subspan(bod.bc_offset);
+    const auto _bc = ByteCode(bc.begin() + bod.bc_offset, bc.end());
     return std::make_pair(_bc, bod.var_count);
   } else if (2 == nargs) {
     auto bod = bods[def.dya_body_idxs[0]];
     CXBQN_DEBUG("Block::body:dyadic bodies:offset={},nvars={}", bod.bc_offset,
                 bod.var_count);
-    auto _bc = bc.subspan(bod.bc_offset);
+    const auto _bc = ByteCode(bc.begin() + bod.bc_offset, bc.end());
     return std::make_pair(_bc, bod.var_count);
   }
 
   throw std::runtime_error("Block::body: unreachable");
-  return std::make_pair(ByteCodeRef{}, 0);
+  return std::make_pair(ByteCode{}, 0);
 }
 
 bool BlockInst::imm() const {

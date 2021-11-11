@@ -40,7 +40,7 @@ RunResult run(std::vector<i32> bc, std::vector<Value *> consts,
     throw std::runtime_error("vm::run: vm returned nullptr");
 #endif
 
-  INSTR_REPORT()
+  INSTR_REPORT();
 
   return ret;
 }

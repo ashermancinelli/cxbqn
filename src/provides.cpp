@@ -107,6 +107,8 @@ Value *Plus::call(u8 nargs, std::vector<Value *> args) {
   auto *ow = args[2];
   if (1 == nargs)
     return args[1];
+
+  /* compare by value for data types */
   auto *x = dynamic_cast<Number *>(args[1]);
   auto *w = dynamic_cast<Number *>(args[2]);
   if (t_Character == type_builtin(ox) and t_Character == type_builtin(ow))
@@ -170,16 +172,46 @@ CXBQN_BI_CALL_DEF_NUMONLY(Or, "∨", {},
 CXBQN_BI_CALL_DEF_NUMONLY(LT, "<", {}, NNC(w->v < x->v));
 CXBQN_BI_CALL_DEF_NUMONLY(GT, ">", {}, NNC(w->v > x->v));
 CXBQN_BI_CALL_DEF_NUMONLY(NE, "≠", {}, NNC(!feq_helper(x->v, w->v)));
-CXBQN_BI_CALL_DEF_NUMONLY(
-    EQ, "=",
-    {
-      if (1 == nargs and t_Array == type_builtin(args[1]))
-        return new Number(
-            static_cast<f64>(dynamic_cast<Array *>(args[1])->shape.size()));
-      if (1 == nargs)
-        return args[1];
-    },
-    NNC(feq_helper(x->v, w->v)));
+
+Value *EQ::call(u8 nargs, std::vector<Value *> args) {
+  CXBQN_DEBUG("=:nargs={},args={}", nargs, args);
+  auto *ox = args[1];
+  auto *ow = args[2];
+
+  if (1 == nargs and t_Array == type_builtin(ox))
+    return new Number(
+        static_cast<f64>(dynamic_cast<Array *>(ox)->shape.size()));
+
+  if (1 == nargs)
+    return args[1];
+
+  /* If the builtin types differ, that's an easy case to rule out */
+  if (type_builtin(ox) != type_builtin(ow))
+    return NNC(false);
+
+  /* pointer comparison for functions and modifiers */
+  if (auto *xf = dynamic_cast<Fork *>(ox)) {
+    auto *wf = dynamic_cast<Fork *>(ow);
+    return NNC(xf->f == wf->f && xf->g == wf->g && xf->h == wf->h);
+  }
+  if (auto *xf = dynamic_cast<Atop *>(ox)) {
+    auto *wf = dynamic_cast<Atop *>(ow);
+    return NNC(xf->f == wf->f && xf->g == wf->g);
+  }
+  if (auto *xf = dynamic_cast<Md2Deferred *>(ox)) {
+    auto *wf = dynamic_cast<Md2Deferred *>(ow);
+    return NNC(xf->f == wf->f && xf->m2 == wf->m2 && xf->g == wf->g);
+  }
+  if (auto *xf = dynamic_cast<Md1Deferred *>(ox)) {
+    auto *wf = dynamic_cast<Md1Deferred *>(ow);
+    return NNC(xf->f == wf->f && xf->m1 == wf->m1);
+  }
+
+  // If it's none of the types we check for above, it's gotta be a number/char
+  return NNC(
+      feq_helper(dynamic_cast<Number *>(ox)->v, dynamic_cast<Number *>(ow)->v));
+}
+
 CXBQN_BI_CALL_DEF_NUMONLY(LE, "≤", {},
                           NNC(w->v < x->v || feq_helper(x->v, w->v)));
 CXBQN_BI_CALL_DEF_NUMONLY(GE, "≥", {},

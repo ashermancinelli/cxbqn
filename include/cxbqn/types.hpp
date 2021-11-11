@@ -262,6 +262,7 @@ struct BlockInst : public Function {
 struct Fork : public Function {
   Value *f, *g, *h;
   Fork(Value *f, Value *g, Value *h) : f{f}, g{g}, h{h} {}
+  TypeType t() const override { return TypeType{t_Function}; }
   Value *call(u8 nargs = 0, std::vector<Value *> args = {}) override;
   std::ostream &repr(std::ostream &os) const override;
 };
@@ -361,7 +362,7 @@ struct Block {
   const BlockDef def;
 
   // Gives the bytecode and number of variables for a given call
-  std::pair<ByteCodeRef, uz> body(u8 nargs = 0) const;
+  std::pair<ByteCode, uz> body(u8 nargs = 0) const;
 
   uz max_nvars() const;
 
@@ -374,19 +375,19 @@ private:
 
   // Span of bytecode, so we can retrieve a subspan for a
   // monadic/dyadic/immediate invokation of the block as needed.
-  ByteCodeRef bc;
+  ByteCode bc;
 
-  std::span<Body> bods;
+  std::vector<Body> bods;
 };
 
 struct Scope {
   Scope *parent;
   std::vector<Value *> vars;
-  std::span<Value *> consts;
+  std::vector<Value *> consts;
   std::vector<Block> blks;
   const uz blk_idx;
   Scope(Scope *parent, std::vector<Block> blks, uz blk_idx,
-        std::optional<std::span<Value *>> consts = nullopt);
+        std::optional<std::vector<Value *>> consts = nullopt);
   Value *get(Reference *r);
   void set(bool should_var_be_set, Reference *r, Value *v);
   Scope *get_nth_parent(uz depth);
