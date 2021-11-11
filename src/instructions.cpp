@@ -1,6 +1,5 @@
 #include <cxbqn/cxbqn.hpp>
 #include <cxbqn/debug.hpp>
-#include <deque>
 #include <sstream>
 
 namespace cxbqn::vm::instructions {
@@ -55,7 +54,7 @@ static O<Value> safe_set_refer(O<Value> opaque_refer, O<Value> value,
 }
 
 template <bool ShouldVarBeSet>
-static O<Value> set_un_helper(std::deque<O<Value>> &stk, Scope *scp) {
+static O<Value> set_un_helper(std::vector<O<Value>> &stk, Scope *scp) {
   // Reference this instruction is assigning to
   auto opaque_refer = stk.back();
   stk.pop_back();
@@ -96,15 +95,15 @@ static O<Value> setm_refarray(O<Value> F, O<Value> x, O<Value> r, Scope *scp) {
 
 } // namespace
 
-void setu(std::deque<O<Value>> &stk, Scope *scp) {
+void setu(std::vector<O<Value>> &stk, Scope *scp) {
   stk.push_back(set_un_helper<true>(stk, scp));
 }
 
-void setn(std::deque<O<Value>> &stk, Scope *scp) {
+void setn(std::vector<O<Value>> &stk, Scope *scp) {
   stk.push_back(set_un_helper<false>(stk, scp));
 }
 
-void setm(std::deque<O<Value>> &stk, Scope *scp) {
+void setm(std::vector<O<Value>> &stk, Scope *scp) {
   auto r = stk.back();
   stk.pop_back();
 
@@ -138,7 +137,7 @@ void setm(std::deque<O<Value>> &stk, Scope *scp) {
   }
 }
 
-void setc(std::deque<O<Value>> &stk, Scope *scp) {
+void setc(std::vector<O<Value>> &stk, Scope *scp) {
   auto r = stk.back();
   stk.pop_back();
 
@@ -157,14 +156,14 @@ void setc(std::deque<O<Value>> &stk, Scope *scp) {
   stk.push_back(v);
 }
 
-void varm(const ByteCodeRef bc, uz &pc, std::deque<O<Value>> &stk) {
+void varm(const ByteCodeRef bc, uz &pc, std::vector<O<Value>> &stk) {
   const auto depth = bc[++pc];
   const auto pos_in_parent = bc[++pc];
   stk.push_back(make_shared<Reference>(static_cast<uz>(depth),
                                      static_cast<uz>(pos_in_parent)));
 }
 
-void varo(const ByteCodeRef bc, uz &pc, std::deque<O<Value>> &stk, Scope *scp) {
+void varo(const ByteCodeRef bc, uz &pc, std::vector<O<Value>> &stk, Scope *scp) {
   const auto n_frames_up = bc[++pc];
   const auto local_variable_idx = bc[++pc];
   scp = scp->get_nth_parent(n_frames_up);
@@ -174,7 +173,7 @@ void varo(const ByteCodeRef bc, uz &pc, std::deque<O<Value>> &stk, Scope *scp) {
   stk.push_back(scp->vars[local_variable_idx]);
 }
 
-void fn1c(std::deque<O<Value>> &stk) {
+void fn1c(std::vector<O<Value>> &stk) {
   auto S = stk.back();
   stk.pop_back();
 
@@ -199,7 +198,7 @@ void fn1c(std::deque<O<Value>> &stk) {
   stk.push_back(std::move(v));
 }
 
-void fn1o(std::deque<O<Value>> &stk) {
+void fn1o(std::vector<O<Value>> &stk) {
   auto S = stk.back();
   stk.pop_back();
 
@@ -214,7 +213,7 @@ void fn1o(std::deque<O<Value>> &stk) {
   stk.push_back(S->call(1, {S, x, bi_Nothing()}));
 }
 
-void fn2c(std::deque<O<Value>> &stk) {
+void fn2c(std::vector<O<Value>> &stk) {
   auto w = stk.back();
   stk.pop_back();
 
@@ -243,7 +242,7 @@ void fn2c(std::deque<O<Value>> &stk) {
   stk.push_back(v);
 }
 
-void fn2o(std::deque<O<Value>> &stk) {
+void fn2o(std::vector<O<Value>> &stk) {
   auto w = stk.back();
   stk.pop_back();
 
@@ -270,7 +269,7 @@ void fn2o(std::deque<O<Value>> &stk) {
   stk.push_back(v);
 }
 
-void dfnd(const ByteCodeRef bc, uz &pc, std::deque<O<Value>> &stk, Scope *scp) {
+void dfnd(const ByteCodeRef bc, uz &pc, std::vector<O<Value>> &stk, Scope *scp) {
   auto blk_idx = bc[++pc];
 
   const auto blk = scp->blks[blk_idx];
@@ -280,7 +279,7 @@ void dfnd(const ByteCodeRef bc, uz &pc, std::deque<O<Value>> &stk, Scope *scp) {
     auto *child = new Scope(scp, scp->blks, blk_idx);
     const auto blk = scp->blks[blk_idx];
     auto [bc, nvars] = blk.body();
-    std::deque<O<Value>> stk_;
+    std::vector<O<Value>> stk_;
 
     CXBQN_DEBUG("dfnd:recursing into vm");
     auto ret = vm::vm(bc, child->consts, stk_, child);
@@ -290,19 +289,19 @@ void dfnd(const ByteCodeRef bc, uz &pc, std::deque<O<Value>> &stk, Scope *scp) {
   }
 }
 
-void arro(const ByteCodeRef bc, uz &pc, std::deque<O<Value>> &stk) {
+void arro(const ByteCodeRef bc, uz &pc, std::vector<O<Value>> &stk) {
   const auto list_len = bc[++pc];
   auto ar = make_shared<Array>(list_len, stk);
   stk.push_back(ar);
 }
 
-void arrm(const ByteCodeRef bc, uz &pc, std::deque<O<Value>> &stk) {
+void arrm(const ByteCodeRef bc, uz &pc, std::vector<O<Value>> &stk) {
   const auto list_len = bc[++pc];
   auto ar = make_shared<RefArray>(list_len, stk);
   stk.push_back(ar);
 }
 
-void md1c(std::deque<O<Value>> &stk) {
+void md1c(std::vector<O<Value>> &stk) {
   auto f = stk.back();
   stk.pop_back();
 
@@ -320,7 +319,7 @@ void md1c(std::deque<O<Value>> &stk) {
   }
 }
 
-void md2c(std::deque<O<Value>> &stk) {
+void md2c(std::vector<O<Value>> &stk) {
   auto f = stk.back();
   stk.pop_back();
 
@@ -343,7 +342,7 @@ void md2c(std::deque<O<Value>> &stk) {
   }
 }
 
-void tr2d(std::deque<O<Value>> &stk) {
+void tr2d(std::vector<O<Value>> &stk) {
   auto f = stk.back();
   stk.pop_back();
 
@@ -356,7 +355,7 @@ void tr2d(std::deque<O<Value>> &stk) {
 }
 
 // fork: ⟨…,h,g,f⟩ → (f g h)
-void tr3d(std::deque<O<Value>> &stk) {
+void tr3d(std::vector<O<Value>> &stk) {
   auto f = stk.back();
   stk.pop_back();
 
@@ -372,7 +371,7 @@ void tr3d(std::deque<O<Value>> &stk) {
   stk.push_back(make_shared<Fork>(f, g, h));
 }
 
-void tr3o(std::deque<O<Value>> &stk) {
+void tr3o(std::vector<O<Value>> &stk) {
   auto f = stk.back();
   stk.pop_back();
 

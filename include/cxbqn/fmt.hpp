@@ -1,6 +1,5 @@
 #pragma once
 #include <cxbqn/types.hpp>
-#include <deque>
 #include <iostream>
 #include <spdlog/fmt/bundled/format.h>
 #include <spdlog/spdlog.h>
@@ -159,7 +158,6 @@ template <> struct fmt::formatter<Value> {
 
 
 FMT_PTR_CONTAINER(std::vector, Value);
-FMT_PTR_CONTAINER(std::deque, Value);
 FMT_PTR_CONTAINER(std::span, Value);
 FMT_PTR_CONTAINER(std::initializer_list, Value);
 

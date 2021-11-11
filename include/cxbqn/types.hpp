@@ -1,7 +1,6 @@
 #pragma once
 #include <bitset>
 #include <cxbqn/scalar_types.hpp>
-#include <deque>
 #include <functional>
 #include <initializer_list>
 #include <memory>
@@ -194,7 +193,7 @@ struct Character : public Number {
 struct Array : public Value {
   std::vector<O<Value>> values;
   std::vector<uz> shape;
-  Array(const uz N, std::deque<O<Value>> &stk);
+  Array(const uz N, std::vector<O<Value>> &stk);
   Array(std::vector<O<Value>> vs) : values{vs}, shape{vs.size()} {}
   inline const uz N() const {
     const auto N = values.size();
@@ -234,7 +233,7 @@ struct Reference : public Value {
 };
 
 struct RefArray : public Array {
-  RefArray(const ByteCode::value_type N, std::deque<O<Value>> &stk)
+  RefArray(const ByteCode::value_type N, std::vector<O<Value>> &stk)
       : Array(N, stk) {}
   O<Reference> getref(uz idx);
   TypeType t() const override {

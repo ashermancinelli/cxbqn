@@ -1,17 +1,15 @@
 #include <cxbqn/cxbqn.hpp>
 #include <cxbqn/debug.hpp>
-#include <deque>
 #include <utf8.h>
 
 namespace cxbqn::types {
 
 O<Value> bi_Nothing() {
-  // static Nothing n;
-  // return std::shared_ptr<Nothing>(&n, [](Nothing *) {});
-  return make_shared<Nothing>();
+  static Nothing n;
+  return std::shared_ptr<Nothing>(&n, [](Nothing *) {});
 }
 
-Array::Array(const uz N, std::deque<O<Value>> &stk) {
+Array::Array(const uz N, std::vector<O<Value>> &stk) {
   shape.push_back(N);
   values.assign(stk.begin() + (stk.size() - N), stk.end());
   stk.resize(stk.size() - N);
@@ -247,7 +245,7 @@ O<Value> BlockInst::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("BlockInst::call:nargs={},childscope={},blk={}", args.size(),
               *child, blk);
 
-  std::deque<O<Value>> stk;
+  std::vector<O<Value>> stk;
 
   CXBQN_DEBUG("BlockInst::call:recursing into vm");
   auto ret = vm::vm(bc, child->consts, stk, child);

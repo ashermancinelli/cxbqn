@@ -1,6 +1,5 @@
 #include "vm_macros.hpp"
 #include <cxbqn/cxbqn.hpp>
-#include <deque>
 #include <sstream>
 
 namespace cxbqn::vm {
@@ -27,7 +26,7 @@ RunResult run(std::vector<i32> bc, std::vector<O<Value>> consts,
 
   CXBQN_DEBUG("blocks={}", std::span(blks));
 
-  std::deque<O<Value>> stk;
+  std::vector<O<Value>> stk;
 
   RunResult ret;
 
@@ -46,7 +45,7 @@ RunResult run(std::vector<i32> bc, std::vector<O<Value>> consts,
 }
 
 O<Value> vm(ByteCodeRef bc, std::span<O<Value>> consts,
-            std::deque<O<Value>> stk, Scope *scope) {
+            std::vector<O<Value>> stk, Scope *scope) {
 
   CXBQN_NEWEVAL();
 
