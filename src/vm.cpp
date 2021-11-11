@@ -1,5 +1,5 @@
-#include <cxbqn/cxbqn.hpp>
 #include "vm_macros.hpp"
+#include <cxbqn/cxbqn.hpp>
 #include <deque>
 #include <sstream>
 
@@ -8,7 +8,7 @@ namespace cxbqn::vm {
 using namespace types;
 
 RunResult run(std::vector<i32> bc, std::vector<O<Value>> consts,
-              std::vector<BlockDef> blk_defs, std::vector<Body>& bodies) {
+              std::vector<BlockDef> blk_defs, std::vector<Body> &bodies) {
 
   CXBQN_SETLOGSTR();
   CXBQN_DEBUG("vm::run");
@@ -45,8 +45,8 @@ RunResult run(std::vector<i32> bc, std::vector<O<Value>> consts,
   return ret;
 }
 
-Value *vm(ByteCodeRef bc, std::span<O<Value>> consts, std::deque<O<Value>> stk,
-          Scope *scope) {
+O<Value> vm(ByteCodeRef bc, std::span<O<Value>> consts,
+            std::deque<O<Value>> stk, Scope *scope) {
 
   CXBQN_NEWEVAL();
 
@@ -55,7 +55,7 @@ Value *vm(ByteCodeRef bc, std::span<O<Value>> consts, std::deque<O<Value>> stk,
   // program counter
   uz pc = 0;
 
-  Value* ret=nullptr;
+  O<Value> ret = nullptr;
 
   CXBQN_DEBUG("enter interpreter loop");
   while (1) {

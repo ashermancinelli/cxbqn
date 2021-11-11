@@ -118,6 +118,10 @@ template <typename T> using O = std::shared_ptr<T>;
 // "Weak/Unowned Value"
 template <typename T> using W = std::weak_ptr<T>;
 
+using std::make_shared;
+using std::dynamic_pointer_cast;
+using std::static_pointer_cast;
+
 struct Scope;
 struct Block;
 
@@ -232,7 +236,7 @@ struct Reference : public Value {
 struct RefArray : public Array {
   RefArray(const ByteCode::value_type N, std::deque<O<Value>> &stk)
       : Array(N, stk) {}
-  Reference *getref(uz idx);
+  O<Reference> getref(uz idx);
   TypeType t() const override {
     return TypeType{t_Array | annot(t_Reference) | annot(t_RefArray)};
   }
@@ -388,8 +392,8 @@ struct Scope {
   const uz blk_idx;
   Scope(Scope *parent, std::vector<Block> blks, uz blk_idx,
         std::optional<std::vector<O<Value>>> consts = nullopt);
-  O<Value> get(Reference *r);
-  void set(bool should_var_be_set, Reference *r, O<Value> v);
+  O<Value> get(O<Reference> r);
+  void set(bool should_var_be_set, O<Reference> r, O<Value> v);
   Scope *get_nth_parent(uz depth);
 };
 

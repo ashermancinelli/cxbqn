@@ -9,25 +9,25 @@ namespace {
 
 // The t() method on all values in cxbqn uses higher bits to indicate internal
 // type annotations. We only want the lowest 3 bits for the builtin •Type.
-static inline auto type_builtin(const Value *v) {
+static inline auto type_builtin(const O<Value> v) {
   return (v->t() & TypeType{0b111}).to_ulong();
 }
 
 #define CHR_MAX 1114111
-static inline Value *check_char(Value *v) {
+static inline O<Value> check_char(O<Value> v) {
   if (t_Character != type_builtin(v))
     throw std::runtime_error("internal: invalid value passed to check_char");
-  auto f = dynamic_cast<Character *>(v)->v;
+  auto f = std::dynamic_pointer_cast<Character>(v)->v;
   if (f < 0 || f > CHR_MAX)
     throw std::runtime_error("invalid code point");
   return v;
 }
 
 // Recursively find the max depth of each element, and max reduce
-static uz array_depth_helper(uz init, Value *v) {
+static uz array_depth_helper(uz init, O<Value> v) {
   CXBQN_DEBUG("array_depth_helper:init={},value={}", init, CXBQN_STR_NC(v));
   if (t_Array == type_builtin(v)) {
-    auto *ar = dynamic_cast<Array *>(v);
+    auto ar = std::dynamic_pointer_cast<Array>(v);
     return init +
            std::accumulate(ar->values.begin(), ar->values.end(), 1,
                            [](uz acc, auto b) {
@@ -49,13 +49,13 @@ template <typename T = f64> static bool feq_helper(T a, T b) {
   return std::abs(a - b) < (10 * std::numeric_limits<T>::epsilon());
 }
 
-static bool equivilant_helper(Value *a, Value *b) {
+static bool equivilant_helper(O<Value> a, O<Value> b) {
   if (a->t()[t_DataValue] and b->t()[t_DataValue])
-    return feq_helper(dynamic_cast<Number *>(a)->v,
-                      dynamic_cast<Number *>(b)->v);
+    return feq_helper(std::dynamic_pointer_cast<Number>(a)->v,
+                      std::dynamic_pointer_cast<Number>(b)->v);
   else if (t_Array == type_builtin(a) and t_Array == type_builtin(b)) {
-    auto *av = dynamic_cast<Array *>(a);
-    auto *bv = dynamic_cast<Array *>(b);
+    auto av = std::dynamic_pointer_cast<Array>(a);
+    auto bv = std::dynamic_pointer_cast<Array>(b);
     if (av->N() != bv->N())
       return false;
     for (int i = 0; i < av->N(); i++)
@@ -77,40 +77,40 @@ template <typename T = f64> static bool fle_helper(T a, T b) {
 } // namespace
 
 // I promise this makes the definitions more readable :)
-#define NN(x) new Number(x)
+#define NN(x) make_shared<Number>(x)
 
 // "new number casted", creates a new number after casting some expression into
 // an f64
-#define NNC(x) new Number(static_cast<f64>(x))
+#define NNC(x) make_shared<Number>(static_cast<f64>(x))
 
 // "dynamic cast to a number"
-#define DCN(x) dynamic_cast<Number *>(x)
+#define DCN(x) std::dynamic_pointer_cast<Number>(x)
 
 // Shorthand to define the call method of a given builtin type.
 // `ox` and `ow` are short for the opaque pointers to each argument, in case the
 // operator needs to do some checks on the values before casting them.
 #define CXBQN_BI_CALL_DEF_NUMONLY(TYPE, SYMBOL, PREAMBLE, RETURN)              \
-  Value *TYPE::call(u8 nargs, std::vector<Value *> args) {                     \
+  O<Value> TYPE::call(u8 nargs, std::vector<O<Value>> args) {                  \
     CXBQN_DEBUG(SYMBOL ":nargs={},args={}", nargs, args);                      \
-    auto *ox = args[1];                                                        \
-    auto *ow = args[2];                                                        \
-    auto *x = dynamic_cast<Number *>(args[1]);                                 \
-    auto *w = dynamic_cast<Number *>(args[2]);                                 \
+    auto ox = args[1];                                                         \
+    auto ow = args[2];                                                         \
+    auto x = std::dynamic_pointer_cast<Number>(args[1]);                       \
+    auto w = std::dynamic_pointer_cast<Number>(args[2]);                       \
     PREAMBLE;                                                                  \
-    auto *ret = (RETURN);                                                      \
+    auto ret = (RETURN);                                                       \
     return ret;                                                                \
   }
 
-Value *Plus::call(u8 nargs, std::vector<Value *> args) {
+O<Value> Plus::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("+:nargs={},args={}", nargs, args);
-  auto *ox = args[1];
-  auto *ow = args[2];
+  auto ox = args[1];
+  auto ow = args[2];
   if (1 == nargs)
     return args[1];
 
   /* compare by value for data types */
-  auto *x = dynamic_cast<Number *>(args[1]);
-  auto *w = dynamic_cast<Number *>(args[2]);
+  auto x = std::dynamic_pointer_cast<Number>(args[1]);
+  auto w = std::dynamic_pointer_cast<Number>(args[2]);
   if (t_Character == type_builtin(ox) and t_Character == type_builtin(ow))
     throw std::runtime_error("+: Cannot add two characters");
   if (!ox->t()[t_DataValue] or !ow->t()[t_DataValue]) {
@@ -118,7 +118,7 @@ Value *Plus::call(u8 nargs, std::vector<Value *> args) {
     throw std::runtime_error("+: Cannot add non-data values.");
   }
   if (t_Character == type_builtin(ox) || t_Character == type_builtin(ow)) {
-    return check_char(new Character(x->v + w->v));
+    return check_char(make_shared<Character>(x->v + w->v));
   }
   return NN(x->v + w->v);
 }
@@ -127,7 +127,7 @@ CXBQN_BI_CALL_DEF_NUMONLY(
     Minus, "-",
     {
       if (t_Character == type_builtin(ow) and t_Number == type_builtin(ox)) {
-        return check_char(new Character(w->v - x->v));
+        return check_char(make_shared<Character>(w->v - x->v));
       }
       if (t_Character == type_builtin(ow) and t_Character == type_builtin(ox)) {
         return NN(w->v - x->v);
@@ -173,14 +173,14 @@ CXBQN_BI_CALL_DEF_NUMONLY(LT, "<", {}, NNC(w->v < x->v));
 CXBQN_BI_CALL_DEF_NUMONLY(GT, ">", {}, NNC(w->v > x->v));
 CXBQN_BI_CALL_DEF_NUMONLY(NE, "≠", {}, NNC(!feq_helper(x->v, w->v)));
 
-Value *EQ::call(u8 nargs, std::vector<Value *> args) {
+O<Value> EQ::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("=:nargs={},args={}", nargs, args);
-  auto *ox = args[1];
-  auto *ow = args[2];
+  auto ox = args[1];
+  auto ow = args[2];
 
   if (1 == nargs and t_Array == type_builtin(ox))
-    return new Number(
-        static_cast<f64>(dynamic_cast<Array *>(ox)->shape.size()));
+    return make_shared<Number>(
+        (static_cast<f64>(std::dynamic_pointer_cast<Array>(ox)->shape.size())));
 
   if (1 == nargs)
     return args[1];
@@ -190,26 +190,26 @@ Value *EQ::call(u8 nargs, std::vector<Value *> args) {
     return NNC(false);
 
   /* pointer comparison for functions and modifiers */
-  if (auto *xf = dynamic_cast<Fork *>(ox)) {
-    auto *wf = dynamic_cast<Fork *>(ow);
+  if (auto xf = std::dynamic_pointer_cast<Fork>(ox)) {
+    auto wf = std::dynamic_pointer_cast<Fork>(ow);
     return NNC(xf->f == wf->f && xf->g == wf->g && xf->h == wf->h);
   }
-  if (auto *xf = dynamic_cast<Atop *>(ox)) {
-    auto *wf = dynamic_cast<Atop *>(ow);
+  if (auto xf = std::dynamic_pointer_cast<Atop>(ox)) {
+    auto wf = std::dynamic_pointer_cast<Atop>(ow);
     return NNC(xf->f == wf->f && xf->g == wf->g);
   }
-  if (auto *xf = dynamic_cast<Md2Deferred *>(ox)) {
-    auto *wf = dynamic_cast<Md2Deferred *>(ow);
+  if (auto xf = std::dynamic_pointer_cast<Md2Deferred>(ox)) {
+    auto wf = std::dynamic_pointer_cast<Md2Deferred>(ow);
     return NNC(xf->f == wf->f && xf->m2 == wf->m2 && xf->g == wf->g);
   }
-  if (auto *xf = dynamic_cast<Md1Deferred *>(ox)) {
-    auto *wf = dynamic_cast<Md1Deferred *>(ow);
+  if (auto xf = std::dynamic_pointer_cast<Md1Deferred>(ox)) {
+    auto wf = std::dynamic_pointer_cast<Md1Deferred>(ow);
     return NNC(xf->f == wf->f && xf->m1 == wf->m1);
   }
 
   // If it's none of the types we check for above, it's gotta be a number/char
-  return NNC(
-      feq_helper(dynamic_cast<Number *>(ox)->v, dynamic_cast<Number *>(ow)->v));
+  return NNC(feq_helper(std::dynamic_pointer_cast<Number>(ox)->v,
+                        std::dynamic_pointer_cast<Number>(ow)->v));
 }
 
 CXBQN_BI_CALL_DEF_NUMONLY(LE, "≤", {},
@@ -220,40 +220,40 @@ CXBQN_BI_CALL_DEF_NUMONLY(Ltack, "⊣", {}, args[2]);
 CXBQN_BI_CALL_DEF_NUMONLY(Rtack, "⊣", {}, args[1]);
 CXBQN_BI_CALL_DEF_NUMONLY(Type, "•Type", {}, NNC(type_builtin(args[1])));
 
-Value *FEQ::call(u8 nargs, std::vector<Value *> args) {
+O<Value> FEQ::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("≡:nargs={},args={}", nargs, args);
   return NNC(equivilant_helper(args[1], args[2]));
 }
-Value *FNE::call(u8 nargs, std::vector<Value *> args) {
+O<Value> FNE::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("≢:nargs={},args={}", nargs, args);
   if (2 == nargs)
     throw std::runtime_error("≢: provided function expected only one arg");
-  auto *arr = dynamic_cast<Array *>(args[1]);
-  auto *ret = new Array(arr->shape.size());
+  auto arr = std::dynamic_pointer_cast<Array>(args[1]);
+  auto ret = make_shared<Array>(arr->shape.size());
   for (int i = 0; i < ret->N(); i++)
-    ret->values[i] = new Number(static_cast<f64>(arr->shape[i]));
+    ret->values[i] = make_shared<Number>(static_cast<f64>(arr->shape[i]));
   return ret;
 }
 
-Value *Table::call(u8 nargs, std::vector<Value *> args) {
+O<Value> Table::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("⌜: nargs={},args={}", nargs, args);
-  auto *F = args[4];
+  auto F = args[4];
   if (t_Array != type_builtin(args[1]) or t_Array != type_builtin(args[2]))
     throw std::runtime_error("⌜: 𝕩 and 𝕨 must be arrays");
 
-  auto *x = dynamic_cast<Array *>(args[1]);
+  auto x = std::dynamic_pointer_cast<Array>(args[1]);
   const auto &xv = x->values;
 
   if (1 == nargs) {
-    auto *ret = new Array(x->N());
+    auto ret = make_shared<Array>(x->N());
     for (int i = 0; i < x->N(); i++)
       ret->values[i] = F->call(1, {F, x->values[i], bi_Nothing()});
     return ret;
   }
 
-  auto *w = dynamic_cast<Array *>(args[2]);
+  auto w = std::dynamic_pointer_cast<Array>(args[2]);
   const auto &wv = w->values;
-  auto *ret = new Array(x->N() * w->N());
+  auto ret = make_shared<Array>(x->N() * w->N());
   for (int iw = 0; iw < w->N(); iw++)
     for (int ix = 0; ix < x->N(); ix++) {
       ret->values[(iw * x->N()) + ix] = F->call(2, {F, xv[ix], wv[iw]});
@@ -263,20 +263,20 @@ Value *Table::call(u8 nargs, std::vector<Value *> args) {
   return ret;
 }
 
-Value *ArrayDepth::call(u8 nargs, std::vector<Value *> args) {
-  return new Number(static_cast<f64>(array_depth_helper(0, args[1])));
+O<Value> ArrayDepth::call(u8 nargs, std::vector<O<Value>> args) {
+  return make_shared<Number>(static_cast<f64>(array_depth_helper(0, args[1])));
 }
 
 CXBQN_BI_CALL_DEF_NUMONLY(Fill, "Fill", {}, 2 == nargs ? args[1] : NN(0));
 CXBQN_BI_CALL_DEF_NUMONLY(Log, "Log", {},
                           2 == nargs ? NN(std::log(w->v) / std::log(x->v))
                                      : NN(std::log(x->v)));
-Value *Assert::call(u8 nargs, std::vector<Value *> args) {
+O<Value> Assert::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("!: nargs={},args={}", nargs, args);
   bool shoulddie = false;
   if (t_Number != type_builtin(args[1]))
     shoulddie = true;
-  if (!feq_helper(1., dynamic_cast<Number *>(args[1])->v))
+  if (!feq_helper(1., std::dynamic_pointer_cast<Number>(args[1])->v))
     shoulddie = true;
   if (shoulddie) {
     CXBQN_CRIT("{} ! {}", (2 == nargs ? CXBQN_STR_NC(args[2]) : ""),
@@ -286,55 +286,56 @@ Value *Assert::call(u8 nargs, std::vector<Value *> args) {
   return args[1];
 }
 
-Value *Range::call(u8 nargs, std::vector<Value *> args) {
+O<Value> Range::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("↕: nargs={},args={}", nargs, args);
-  auto n = static_cast<uz>(dynamic_cast<Number *>(args[1])->v);
-  auto *arr = new Array(n);
+  auto n = static_cast<uz>(std::dynamic_pointer_cast<Number>(args[1])->v);
+  auto arr = make_shared<Array>(n);
   for (int i = 0; i < arr->N(); i++)
-    arr->values[i] = new Number(i);
+    arr->values[i] = make_shared<Number>(i);
   return arr;
 }
 
-Value *Pick::call(u8 nargs, std::vector<Value *> args) {
+O<Value> Pick::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("⊑: nargs={},args={}", nargs, args);
-  auto n = static_cast<uz>(dynamic_cast<Number *>(args[2])->v);
-  return dynamic_cast<Array *>(args[1])->values[n];
+  auto n = static_cast<uz>(std::dynamic_pointer_cast<Number>(args[2])->v);
+  return std::dynamic_pointer_cast<Array>(args[1])->values[n];
 }
 
-Value *Shape::call(u8 nargs, std::vector<Value *> args) {
+O<Value> Shape::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("≢: nargs={},args={}", nargs, args);
-  auto *ret = new Array();
-  auto sh = dynamic_cast<Array *>(args[1])->shape;
+  auto ret = make_shared<Array>();
+  auto sh = std::dynamic_pointer_cast<Array>(args[1])->shape;
   ret->values.resize(sh.size());
   for (int i = 0; i < sh.size(); i++)
-    ret->values[i] = new Number(sh[i]);
+    ret->values[i] = make_shared<Number>(sh[i]);
   return ret;
 }
 
-Value *Deshape::call(u8 nargs, std::vector<Value *> args) {
+O<Value> Deshape::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("⥊: nargs={},args={}", nargs, args);
 
   const bool iswarr = t_Array == type_builtin(args[2]);
   const bool isxarr = t_Array == type_builtin(args[1]);
-  auto *xarr = isxarr ? dynamic_cast<Array *>(args[1]) : nullptr;
+  auto xarr = isxarr ? std::dynamic_pointer_cast<Array>(args[1]) : nullptr;
 
   if (1 == nargs) {
     if (isxarr) {
       xarr->shape.assign({xarr->N()});
       return xarr;
     } else {
-      return new Array({args[1]});
+      return std::shared_ptr<Array>(new Array({args[1]}));
     }
   }
 
-  auto *ret = new Array();
+  auto ret = make_shared<Array>();
   if (iswarr) {
-    auto *warr = dynamic_cast<Array *>(args[2]);
+    auto warr = std::dynamic_pointer_cast<Array>(args[2]);
     for (int i = 0; i < warr->N(); i++)
-      ret->shape.push_back(
-          static_cast<uz>(dynamic_cast<Number *>(warr->values[i])->v));
+      ret->shape.push_back(static_cast<uz>(
+          std::dynamic_pointer_cast<Number>(warr->values[i])->v));
   } else {
-    ret->shape.push_back(static_cast<uz>(dynamic_cast<Number *>(args[2])->v));
+    ret->shape.push_back(
+        static_cast<uz>(std::dynamic_pointer_cast<Number>(args[2])->v));
   }
 
   const auto cnt = std::accumulate(ret->shape.begin(), ret->shape.end(), 1,
@@ -352,30 +353,31 @@ Value *Deshape::call(u8 nargs, std::vector<Value *> args) {
   return ret;
 }
 
-Value *Scan::call(u8 nargs, std::vector<Value *> args) {
+O<Value> Scan::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("`: nargs={},args={}", nargs, args);
   if (t_Array != type_builtin(args[1]))
     throw std::runtime_error("`: 𝕩 must have rank at least 1");
 
-  auto *x = dynamic_cast<Array *>(args[1]);
-  auto *w = args[2];
-  auto *F = args[4];
+  auto x = std::dynamic_pointer_cast<Array>(args[1]);
+  auto w = args[2];
+  auto F = args[4];
 
   auto sh = x->shape;
   auto iswarr = (t_Array == type_builtin(w));
   if (2 == nargs) {
-    auto w_rank = iswarr ? dynamic_cast<Array *>(w)->shape.size() : 0;
+    auto w_rank =
+        iswarr ? std::dynamic_pointer_cast<Array>(w)->shape.size() : 0;
     if (1 + w_rank != x->shape.size())
       throw std::runtime_error("`: rank of 𝕨 must be cell rank of 𝕩");
     if (iswarr) {
-      const auto &wsh = dynamic_cast<Array *>(w)->shape;
+      const auto &wsh = std::dynamic_pointer_cast<Array>(w)->shape;
       for (int i = 0; i < x->shape.size() - 1; i++)
         if (wsh[i] != x->shape[i + 1])
           throw std::runtime_error("`: shape of 𝕨 must be cell shape of 𝕩");
     }
   }
 
-  auto *ret = new Array();
+  auto ret = make_shared<Array>();
   ret->values.resize(x->N());
   ret->shape.resize(x->shape.size());
   std::copy(x->shape.begin(), x->shape.end(), ret->shape.begin());
@@ -387,15 +389,16 @@ Value *Scan::call(u8 nargs, std::vector<Value *> args) {
   for (int i = 1; i < x->shape.size(); i++)
     cnt *= x->shape[i];
   int i = 0;
-  auto *warr = iswarr ? dynamic_cast<Array *>(w) : new Array({w});
-  CXBQN_DEBUG("cnt={},warr={}", cnt, CXBQN_STR_NC((Value *)warr));
+  auto warr = iswarr ? std::dynamic_pointer_cast<Array>(w)
+                     : std::shared_ptr<Array>(new Array({w}));
+  CXBQN_DEBUG("cnt={},warr={}", cnt, CXBQN_STR_NC((O<Value>)warr));
   if (1 == nargs)
     for (; i < cnt; i++)
       ret->values[i] = x->values[i];
   else
     for (; i < cnt; i++) {
-      auto *xv = x->values[i];
-      auto *wv = warr->values[i];
+      auto xv = x->values[i];
+      auto wv = warr->values[i];
       CXBQN_DEBUG("xv={},wv={},i={}", CXBQN_STR_NC(xv), CXBQN_STR_NC(wv), i);
       ret->values[i] = F->call(2, {F, x->values[i], warr->values[i]});
     }
@@ -406,10 +409,11 @@ Value *Scan::call(u8 nargs, std::vector<Value *> args) {
 }
 
 #define SYMBOL "GroupLen"
-Value *GroupLen::call(u8 nargs, std::vector<Value *> args) {
+O<Value> GroupLen::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG(SYMBOL ": nargs={},args={}", nargs, args);
-  auto *x = dynamic_cast<Array *>(args[1]);
-  auto *w = dynamic_cast<Number *>(args[2]); // only use if nargs == 2!
+  auto x = std::dynamic_pointer_cast<Array>(args[1]);
+  auto w =
+      std::dynamic_pointer_cast<Number>(args[2]); // only use if nargs == 2!
   const auto init = (2 == nargs ? w->v : 0) - 1;
   std::vector<f64> xs(x->N(), 0);
   for (int i = 0; i < x->N(); i++)
@@ -421,7 +425,7 @@ Value *GroupLen::call(u8 nargs, std::vector<Value *> args) {
   for (auto e : xs)
     if (fge_helper(e, 0.0))
       retv[static_cast<uz>(e)]++;
-  auto *ret = new Array(retv.size());
+  auto ret = make_shared<Array>(retv.size());
   for (int i = 0; i < ret->N(); i++)
     ret->values[i] = NN(retv[i]);
   return ret;
@@ -429,10 +433,10 @@ Value *GroupLen::call(u8 nargs, std::vector<Value *> args) {
 #undef SYMBOL
 
 #define SYMBOL "GroupOrd"
-Value *GroupOrd::call(u8 nargs, std::vector<Value *> args) {
+O<Value> GroupOrd::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG(SYMBOL ": nargs={},args={}", nargs, args);
-  auto *w = dynamic_cast<Array *>(args[2]);
-  auto *x = dynamic_cast<Array *>(args[1]);
+  auto w = std::dynamic_pointer_cast<Array>(args[2]);
+  auto x = std::dynamic_pointer_cast<Array>(args[1]);
 
   std::vector<uz> tmp(w->N(), 0);
   CXBQN_DEBUG("wn={},xn={},tmpn={}", w->N(), x->N(), tmp.size());
@@ -454,34 +458,34 @@ Value *GroupOrd::call(u8 nargs, std::vector<Value *> args) {
     }
   }
 
-  auto *ret = new Array(retlen);
+  auto ret = make_shared<Array>(retlen);
   for (int i = 0; i < retlen; i++) {
-    ret->values[i] = new Number(retv[i]);
+    ret->values[i] = make_shared<Number>(retv[i]);
   }
   return ret;
 }
 #undef SYMBOL
 
-Value *FillBy::call(u8 nargs, std::vector<Value *> args) {
+O<Value> FillBy::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("_fillBy_: nargs={},args={}", nargs, args);
-  auto *F = args[4];
+  auto F = args[4];
   return F->call(nargs, {F, args[1], args[2]});
 }
 
-Value *Catch::call(u8 nargs, std::vector<Value *> args) {
+O<Value> Catch::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("⎊: nargs={},args={}", nargs, args);
   try {
-    auto *F = args[4];
-    auto *ret = F->call(nargs, {F, args[1], args[2]});
+    auto F = args[4];
+    auto ret = F->call(nargs, {F, args[1], args[2]});
     return ret;
   } catch (std::exception &e) {
-    auto *G = args[5];
-    auto *ret = G->call(nargs, {G, args[1], args[2]});
+    auto G = args[5];
+    auto ret = G->call(nargs, {G, args[1], args[2]});
     return ret;
   }
 }
 
-Value *Valence::call(u8 nargs, std::vector<Value *> args) {
+O<Value> Valence::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("⊘: nargs={},args={}", nargs, args);
   return 1 == nargs ? args[4]->call(1, {args[4], args[1], bi_Nothing()})
                     : args[5]->call(2, {args[5], args[1], args[2]});

@@ -10,7 +10,7 @@ O<Value> bi_Nothing() {
   return std::shared_ptr<Nothing>(&n, [](Nothing *) {});
 }
 
-Array::Array(const uz N, std::deque<O<Value> > &stk) {
+Array::Array(const uz N, std::deque<O<Value>> &stk) {
   shape.push_back(N);
   values.assign(stk.begin() + (stk.size() - N), stk.end());
   stk.resize(stk.size() - N);
@@ -19,8 +19,8 @@ Array::Array(const uz N, std::deque<O<Value> > &stk) {
 std::ostream &Array::repr(std::ostream &os) const {
   if (t()[t_String]) {
     std::string s;
-    for (const auto *e : values)
-      utf8::append(dynamic_cast<const Character *>(e)->c(), s);
+    for (const auto e : values)
+      utf8::append(std::dynamic_pointer_cast<const Character>(e)->c(), s);
     return os << "\"" << s << "\"";
   }
   os << "⟨sh=⟨";
@@ -56,17 +56,17 @@ std::ostream &RefArray::repr(std::ostream &os) const {
   return os << "⟩";
 }
 
-Reference *RefArray::getref(uz idx) {
+O<Reference> RefArray::getref(uz idx) {
 #ifdef CXBQN_DEEPCHECKS
   if (idx >= N())
     throw std::runtime_error("RefArray::getref: idx >= N");
 #endif
-  auto *v = values[idx];
+  auto v = values[idx];
 #ifdef CXBQN_DEEPCHECKS
   if (nullptr == v)
     throw std::runtime_error("RefArray::getref: values[idx] is nullptr");
 #endif
-  auto *r = dynamic_cast<Reference *>(v);
+  auto r = std::dynamic_pointer_cast<Reference>(v);
 #ifdef CXBQN_DEEPCHECKS
   if (nullptr == r)
     throw std::runtime_error(
@@ -76,7 +76,7 @@ Reference *RefArray::getref(uz idx) {
 }
 
 Scope::Scope(Scope *parent, std::vector<Block> blks, uz blk_idx,
-             std::optional<std::vector<O<Value> >> consts)
+             std::optional<std::vector<O<Value>>> consts)
     : blks{blks}, blk_idx{blk_idx} {
   CXBQN_DEBUG("Scope::Scope");
   this->parent = parent;
@@ -89,7 +89,7 @@ Scope::Scope(Scope *parent, std::vector<Block> blks, uz blk_idx,
   std::fill(vars.begin(), vars.end(), nullptr);
 }
 
-O<Value> Scope::get(Reference *r) {
+O<Value> Scope::get(O<Reference> r) {
 
 #ifdef CXBQN_DEEPCHECKS
   if (nullptr == r)
@@ -102,7 +102,7 @@ O<Value> Scope::get(Reference *r) {
   return scp->vars[r->position_in_parent];
 }
 
-void Scope::set(bool should_var_be_set, Reference *r, O<Value> v) {
+void Scope::set(bool should_var_be_set, O<Reference> r, O<Value> v) {
 
 #ifdef CXBQN_DEEPCHECKS
   if (nullptr == r)
@@ -234,7 +234,7 @@ bool BlockInst::imm() const {
   return this->scp->blks[this->blk_idx].def.immediate;
 }
 
-O<Value> BlockInst::call(u8 nargs, std::vector<O<Value> > args) {
+O<Value> BlockInst::call(u8 nargs, std::vector<O<Value>> args) {
 
   const auto blk = scp->blks[blk_idx];
 
@@ -246,18 +246,18 @@ O<Value> BlockInst::call(u8 nargs, std::vector<O<Value> > args) {
   CXBQN_DEBUG("BlockInst::call:nargs={},childscope={},blk={}", args.size(),
               *child, blk);
 
-  std::deque<O<Value> > stk;
+  std::deque<O<Value>> stk;
 
   CXBQN_DEBUG("BlockInst::call:recursing into vm");
-  auto *ret = vm::vm(bc, child->consts, stk, child);
+  auto ret = vm::vm(bc, child->consts, stk, child);
   CXBQN_DEBUG("BlockInst::call:returning {}", CXBQN_STR_NC(ret));
 
   return ret;
 }
 
-O<Value> Atop::call(u8 nargs, std::vector<O<Value> > args) {
+O<Value> Atop::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("Atop::call:nargs={},args={}", nargs, args);
-  auto *ret = g->call(nargs, args);
+  auto ret = g->call(nargs, args);
 
   return f->call(nargs, {f, ret, bi_Nothing()});
 }
@@ -266,18 +266,18 @@ std::ostream &Atop::repr(std::ostream &os) const {
   return os << "(atop f=" << CXBQN_STR_NC(f) << ",g=" << CXBQN_STR_NC(g) << ")";
 }
 
-O<Value> Fork::call(u8 nargs, std::vector<O<Value> > args) {
+O<Value> Fork::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("Fork::call:nargs={},args={}", nargs, args);
 
   // Pass 𝕩 and 𝕨 (if exists)
   args[0] = h;
-  auto *r = h->call(nargs, args);
+  auto r = h->call(nargs, args);
 
   args[0] = f;
-  auto *l = f->call(nargs, args);
+  auto l = f->call(nargs, args);
 
   // nargs will always be two for the inner function of a fork
-  auto *ret = g->call(2, {g, r, l});
+  auto ret = g->call(2, {g, r, l});
 
   return ret;
 }
@@ -287,7 +287,7 @@ std::ostream &Fork::repr(std::ostream &os) const {
             << ",h=" << CXBQN_STR_NC(h) << ")";
 }
 
-O<Value> Md1Deferred::call(u8 nargs, std::vector<O<Value> > args) {
+O<Value> Md1Deferred::call(u8 nargs, std::vector<O<Value>> args) {
   args.push_back(m1);
   args.push_back(f);
   return m1->call(nargs, args);
@@ -297,7 +297,7 @@ std::ostream &Md1Deferred::repr(std::ostream &os) const {
   return os;
 }
 
-O<Value> Md2Deferred::call(u8 nargs, std::vector<O<Value> > args) {
+O<Value> Md2Deferred::call(u8 nargs, std::vector<O<Value>> args) {
   args.push_back(m2);
   args.push_back(f);
   args.push_back(g);
