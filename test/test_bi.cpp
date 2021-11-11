@@ -118,7 +118,7 @@ TEST_CASE(T) {
   const auto runtime = rt->values;
   CompileParams p{
       {0, 1, 0, 2, 0, 1, 0, 3, 0, 4, 0, 3, 0, 3, 11, 7, 0, 0, 16, 7},
-      {bi_grouplen(), 0, -1, 4, 3},
+      {bi_GroupLen(), 0, -1, 4, 3},
       {{0, 1, 0}},
       {{0, 0}}};
   auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
@@ -143,7 +143,7 @@ TEST_CASE(T) {
   const auto runtime = rt->values;
   CompileParams p{{0, 2, 0, 3, 0,  4, 0, 3, 0, 5, 0,  6,
                    0, 7, 0, 7, 11, 8, 0, 0, 0, 1, 17, 7},
-                  {bi_grouplen(), 2, 3, 1, 4, 5, 9, -1},
+                  {bi_GroupLen(), 2, 3, 1, 4, 5, 9, -1},
                   {{0, 1, 0}},
                   {{0, 0}}};
   auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
@@ -169,7 +169,7 @@ TEST_CASE(T) {
   const auto runtime = rt->values;
   CompileParams p{{0, 2, 0, 3, 0,  4, 0, 3, 0, 5, 0,  6,
                    0, 7, 0, 7, 11, 8, 0, 0, 0, 1, 17, 7},
-                  {bi_grouplen(), 20, 3, 1, 4, 5, 9, -1},
+                  {bi_GroupLen(), 20, 3, 1, 4, 5, 9, -1},
                   {{0, 1, 0}},
                   {{0, 0}}};
   auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
@@ -196,7 +196,7 @@ TEST_CASE(T) {
   const auto runtime = rt->values;
   CompileParams p{{0, 2, 0, 4, 0, 4, 0, 1, 0,  2, 11, 5,
                    0, 0, 0, 1, 0, 2, 0, 3, 11, 3, 17, 7},
-                  {bi_groupord(), 2, 0, 1, -1},
+                  {bi_GroupOrd(), 2, 0, 1, -1},
                   {{0, 1, 0}},
                   {{0, 0}}};
   auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);

@@ -247,7 +247,7 @@ Value *Table::call(u8 nargs, std::vector<Value *> args) {
   if (1 == nargs) {
     auto *ret = new Array(x->N());
     for (int i = 0; i < x->N(); i++)
-      ret->values[i] = F->call(1, {F, x->values[i], bi_nothing()});
+      ret->values[i] = F->call(1, {F, x->values[i], bi_Nothing()});
     return ret;
   }
 
@@ -483,7 +483,7 @@ Value *Catch::call(u8 nargs, std::vector<Value *> args) {
 
 Value *Valence::call(u8 nargs, std::vector<Value *> args) {
   CXBQN_DEBUG("⊘: nargs={},args={}", nargs, args);
-  return 1 == nargs ? args[4]->call(1, {args[4], args[1], bi_nothing()})
+  return 1 == nargs ? args[4]->call(1, {args[4], args[1], bi_Nothing()})
                     : args[5]->call(2, {args[5], args[1], args[2]});
 }
 

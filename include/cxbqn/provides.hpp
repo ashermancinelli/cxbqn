@@ -37,7 +37,8 @@ struct Provides : public Function {
       return os << __VA_ARGS__;                                                \
     }                                                                          \
     Value *call(u8 nargs = 0, std::vector<Value *> args = {}) override;        \
-  };
+  }; \
+  Value *bi_##T();
 
 // Arithmatic
 CXBQN_BUILTIN_DECL(Plus, "+");
@@ -49,15 +50,6 @@ CXBQN_BUILTIN_DECL(Root, "√");
 CXBQN_BUILTIN_DECL(Floor, "⌊");
 CXBQN_BUILTIN_DECL(Ceil, "⌈");
 CXBQN_BUILTIN_DECL(Stile, "|");
-Value* bi_plus();
-Value* bi_minus();
-Value* bi_mul();
-Value* bi_div();
-Value* bi_power();
-Value* bi_root();
-Value* bi_floor();
-Value* bi_ceil();
-Value* bi_stile();
 
 // Bool
 CXBQN_BUILTIN_DECL(Not, "¬");
@@ -71,17 +63,6 @@ CXBQN_BUILTIN_DECL(LE, "≤");
 CXBQN_BUILTIN_DECL(GE, "≥");
 CXBQN_BUILTIN_DECL(FEQ, "≡");
 CXBQN_BUILTIN_DECL(FNE, "≢");
-Value* bi_not();
-Value* bi_and();
-Value* bi_or();
-Value* bi_lt();
-Value* bi_gt();
-Value* bi_ne();
-Value* bi_eq();
-Value* bi_le();
-Value* bi_ge();
-Value* bi_feq();
-Value* bi_fne();
 
 // Only some of these are needed to bootstrap the runtime
 CXBQN_BUILTIN_DECL(Ltack, "⊣");
@@ -102,24 +83,6 @@ CXBQN_BUILTIN_DECL(GroupOrd, "GroupOrd");
 CXBQN_BUILTIN_DECL(FillBy, "_fillBy_");
 CXBQN_BUILTIN_DECL(Valence, "⊘");
 CXBQN_BUILTIN_DECL(Catch, "⎊");
-Value* bi_ltack();
-Value* bi_rtack();
-Value* bi_arraydepth();
-Value* bi_type();
-Value* bi_table();
-Value* bi_fill();
-Value* bi_log();
-Value* bi_assert();
-Value* bi_range();
-Value* bi_pick();
-Value* bi_shape();
-Value* bi_deshape();
-Value* bi_scan();
-Value* bi_grouplen();
-Value* bi_groupord();
-Value* bi_fillby();
-Value* bi_valence();
-Value* bi_catch();
 
 #undef CXBQN_BUILTIN_DECL
 

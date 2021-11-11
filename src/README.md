@@ -6,7 +6,7 @@ The functions return a pointer to a builtin `Value` that doesn't need to be
 deallocated. For example, when we need to pass a `Nothing` to something that
 expects a `Value*`, we don't want to allocate a new `Nothing` every time so we
 just return a pointer to a statically alloctated `Nothing` by calling
-`bi_nothing()`;
+`bi_Nothing()`;
 
 #### intructions.cpp
 

@@ -5,7 +5,7 @@
 
 namespace cxbqn::types {
 
-Value *bi_nothing() {
+Value *bi_Nothing() {
   static Nothing n;
   return &n;
 }
@@ -259,7 +259,7 @@ Value *Atop::call(u8 nargs, std::vector<Value *> args) {
   CXBQN_DEBUG("Atop::call:nargs={},args={}", nargs, args);
   auto *ret = g->call(nargs, args);
 
-  return f->call(nargs, {f, ret, bi_nothing()});
+  return f->call(nargs, {f, ret, bi_Nothing()});
 }
 
 std::ostream &Atop::repr(std::ostream &os) const {

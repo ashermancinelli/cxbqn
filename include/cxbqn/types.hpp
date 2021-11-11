@@ -147,14 +147,18 @@ struct Nothing : public Value {
   TypeType t() const override { return TypeType{annot(t_Nothing)}; }
   std::ostream &repr(std::ostream &os) const override { return os << "·"; }
 };
-Value *bi_nothing();
+Value *bi_Nothing();
 
 // Managed Value
 // Currently unused, but might be used for managing memory later on. The stack
 // and scope will likely own their values, while all other values can just hold
 // a weak reference since they share a common ancestor (the root scope).
-using OwnedV = std::shared_ptr<Value>;
-using WeakV = std::weak_ptr<Value>;
+
+// "Owned Value"
+using OV = std::shared_ptr<Value>;
+
+// "Weak/Unowned Value"
+using WV = std::weak_ptr<Value>;
 
 struct Number : public Value {
   f64 v;

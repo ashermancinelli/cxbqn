@@ -148,7 +148,7 @@ void setc(std::deque<Value *> &stk, Scope *scp) {
 
   // F is called with 𝕩 and dereferenced r
   auto *refer = dynamic_cast<Reference *>(r);
-  auto *v = F->call(2, {F, scp->get(refer), bi_nothing()});
+  auto *v = F->call(2, {F, scp->get(refer), bi_Nothing()});
 
   // Set the new value of the reference, and push it back on the stack
   scp->set(true, refer, v);
@@ -188,7 +188,7 @@ void fn1c(std::deque<Value *> &stk) {
 #endif
 
   CXBQN_DEBUG("fn1c:calling S={} on x={}", CXBQN_STR_NC(S), CXBQN_STR_NC(x));
-  auto *v = S->call(1, {S, x, bi_nothing()});
+  auto *v = S->call(1, {S, x, bi_Nothing()});
   CXBQN_DEBUG("fn1c:returning {}", CXBQN_STR_NC(v));
 #ifdef CXBQN_DEEPCHECKS
   if (nullptr == v)
@@ -206,11 +206,11 @@ void fn1o(std::deque<Value *> &stk) {
   stk.pop_back();
 
   if (x->t()[t_Nothing]) {
-    stk.push_back(bi_nothing());
+    stk.push_back(bi_Nothing());
     return;
   }
 
-  stk.push_back(S->call(1, {S, x, bi_nothing()}));
+  stk.push_back(S->call(1, {S, x, bi_Nothing()}));
 }
 
 void fn2c(std::deque<Value *> &stk) {
@@ -255,12 +255,12 @@ void fn2o(std::deque<Value *> &stk) {
   if (w->t()[t_Nothing]) {
     if (x->t()[t_Nothing]) {
       CXBQN_DEBUG("fn2o: got nothing for 𝕩 and 𝕨, just pushing nothing");
-      stk.push_back(bi_nothing());
+      stk.push_back(bi_Nothing());
       return;
     }
 
     CXBQN_DEBUG("fn2o: got nothing for 𝕩 and 𝕨, just pushing nothing");
-    stk.push_back(S->call(1, {S, x, bi_nothing()}));
+    stk.push_back(S->call(1, {S, x, bi_Nothing()}));
     return;
   }
 
