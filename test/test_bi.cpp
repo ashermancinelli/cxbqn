@@ -18,11 +18,11 @@ TEST_CASE("0 +` ↕5") {
   auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto *a = dynamic_cast<Array *>(ret.v);
+  auto a = dynamic_pointer_cast<Array>(ret.v);
   REQUIRE(nullptr != a);
   std::vector<int> ans{0, 1, 3, 6, 10};
   for (int i = 0; i < a->N(); i++) {
-    auto *n = dynamic_cast<Number *>(a->values[i]);
+    auto n = dynamic_pointer_cast<Number>(a->values[i]);
     REQUIRE(nullptr != n);
     REQUIRE(ans[i] == doctest::Approx(n->v));
   }
@@ -40,7 +40,7 @@ TEST_CASE("(↕4) ×⌜ ↕3") {
   auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto *a = dynamic_cast<Array *>(ret.v);
+  auto a = dynamic_pointer_cast<Array>(ret.v);
   REQUIRE(nullptr != a);
   std::vector<int> ans{0, 0, 0, 0, 1, 2, 0, 2, 4, 0, 3, 6};
   std::vector<int> sh{4, 3};
@@ -51,7 +51,7 @@ TEST_CASE("(↕4) ×⌜ ↕3") {
 
   // Enusre the values match
   for (int i = 0; i < a->N(); i++) {
-    auto *n = dynamic_cast<Number *>(a->values[i]);
+    auto n = dynamic_pointer_cast<Number>(a->values[i]);
     REQUIRE(nullptr != n);
     REQUIRE(ans[i] == doctest::Approx(n->v));
   }
@@ -92,7 +92,7 @@ TEST_CASE(T) {
   auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto *a = dynamic_cast<Array *>(ret.v);
+  auto a = dynamic_pointer_cast<Array>(ret.v);
   REQUIRE(nullptr != a);
   std::vector<int> ans{2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3,
                        4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5};
@@ -104,7 +104,7 @@ TEST_CASE(T) {
 
   // Ensure the values match
   for (int i = 0; i < a->N(); i++) {
-    auto *n = dynamic_cast<Number *>(a->values[i]);
+    auto n = dynamic_pointer_cast<Number>(a->values[i]);
     REQUIRE(nullptr != n);
     REQUIRE(ans[i] == doctest::Approx(n->v));
   }
@@ -124,12 +124,12 @@ TEST_CASE(T) {
   auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto *a = dynamic_cast<Array *>(ret.v);
+  auto a = dynamic_pointer_cast<Array>(ret.v);
   REQUIRE(nullptr != a);
   std::vector<int> ans{2, 0, 0, 1, 3};
 
   for (int i = 0; i < a->N(); i++) {
-    auto *n = dynamic_cast<Number *>(a->values[i]);
+    auto n = dynamic_pointer_cast<Number>(a->values[i]);
     REQUIRE(nullptr != n);
     REQUIRE(ans[i] == doctest::Approx(n->v));
   }
@@ -149,13 +149,13 @@ TEST_CASE(T) {
   auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto *a = dynamic_cast<Array *>(ret.v);
+  auto a = dynamic_pointer_cast<Array>(ret.v);
   REQUIRE(nullptr != a);
   std::vector<int> ans{0, 2, 0, 1, 1, 1, 0, 0, 0, 1};
   REQUIRE(ans.size() == a->N());
 
   for (int i = 0; i < a->N(); i++) {
-    auto *n = dynamic_cast<Number *>(a->values[i]);
+    auto n = dynamic_pointer_cast<Number>(a->values[i]);
     REQUIRE(nullptr != n);
     REQUIRE(ans[i] == doctest::Approx(n->v));
   }
@@ -175,14 +175,14 @@ TEST_CASE(T) {
   auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto *a = dynamic_cast<Array *>(ret.v);
+  auto a = dynamic_pointer_cast<Array>(ret.v);
   REQUIRE(nullptr != a);
   std::vector<int> ans{0, 2, 0, 1, 1, 1, 0, 0, 0, 1,
                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
   REQUIRE(ans.size() == a->N());
 
   for (int i = 0; i < a->N(); i++) {
-    auto *n = dynamic_cast<Number *>(a->values[i]);
+    auto n = dynamic_pointer_cast<Number>(a->values[i]);
     REQUIRE(nullptr != n);
     REQUIRE(ans[i] == doctest::Approx(n->v));
   }
@@ -202,13 +202,13 @@ TEST_CASE(T) {
   auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto *a = dynamic_cast<Array *>(ret.v);
+  auto a = dynamic_pointer_cast<Array>(ret.v);
   REQUIRE(nullptr != a);
   std::vector<int> ans{0, 4, 3};
   REQUIRE(ans.size() == a->N());
 
   for (int i = 0; i < a->N(); i++) {
-    auto *n = dynamic_cast<Number *>(a->values[i]);
+    auto n = dynamic_pointer_cast<Number>(a->values[i]);
     REQUIRE(nullptr != n);
     REQUIRE(ans[i] == doctest::Approx(n->v));
   }

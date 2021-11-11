@@ -106,11 +106,12 @@ O<Value> Plus::call(u8 nargs, std::vector<O<Value>> args) {
   auto ox = args[1];
   auto ow = args[2];
   if (1 == nargs)
-    return args[1];
+    return ox;
 
   /* compare by value for data types */
-  auto x = std::dynamic_pointer_cast<Number>(args[1]);
-  auto w = std::dynamic_pointer_cast<Number>(args[2]);
+  auto x = std::dynamic_pointer_cast<Number>(ox);
+  auto w = std::dynamic_pointer_cast<Number>(ow);
+
   if (t_Character == type_builtin(ox) and t_Character == type_builtin(ow))
     throw std::runtime_error("+: Cannot add two characters");
   if (!ox->t()[t_DataValue] or !ow->t()[t_DataValue]) {
@@ -130,7 +131,7 @@ CXBQN_BI_CALL_DEF_NUMONLY(
         return check_char(make_shared<Character>(w->v - x->v));
       }
       if (t_Character == type_builtin(ow) and t_Character == type_builtin(ox)) {
-        return NN(w->v - x->v);
+        return make_shared<Number>(w->v - x->v);
       }
       if (t_Number != type_builtin(ox))
         throw std::runtime_error("-: can only negate numbers");

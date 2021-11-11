@@ -6,8 +6,9 @@
 namespace cxbqn::types {
 
 O<Value> bi_Nothing() {
-  static Nothing n;
-  return std::shared_ptr<Nothing>(&n, [](Nothing *) {});
+  // static Nothing n;
+  // return std::shared_ptr<Nothing>(&n, [](Nothing *) {});
+  return make_shared<Nothing>();
 }
 
 Array::Array(const uz N, std::deque<O<Value>> &stk) {
@@ -270,11 +271,13 @@ O<Value> Fork::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("Fork::call:nargs={},args={}", nargs, args);
 
   // Pass 𝕩 and 𝕨 (if exists)
-  args[0] = h;
-  auto r = h->call(nargs, args);
+  std::vector<O<Value>> rargs{h, args[1],
+                              (2 == nargs ? args[2] : bi_Nothing())};
+  auto r = h->call(nargs, rargs);
 
-  args[0] = f;
-  auto l = f->call(nargs, args);
+  std::vector<O<Value>> largs{f, args[1],
+                              (2 == nargs ? args[2] : bi_Nothing())};
+  auto l = f->call(nargs, largs);
 
   // nargs will always be two for the inner function of a fork
   auto ret = g->call(2, {g, r, l});

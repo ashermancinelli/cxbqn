@@ -82,7 +82,7 @@ TEST_CASE(\"${test}\") {
   auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  Number *n = dynamic_cast<Number *>(ret.v);
+  auto n = dynamic_pointer_cast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
