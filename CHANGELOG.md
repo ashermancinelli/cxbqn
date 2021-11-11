@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] 11-11-2021
+
+* passing all simple and primitive tests
+* successfully loading runtime
+* added some memory management
+    * memory still going wild when loading the compiler
+
 ## [0.1.0] 11-4-2021
 
 ### Added
