@@ -5,10 +5,33 @@
 
 namespace cxbqn::types {
 
+  /*
+static O<Scope> Scope::root_scope(std::vector<Block> blks, ByteCode bc,
+                           std::vector<O<Value>> consts) {
+  auto scp = make_shared<Scope>();
+  scp->_bc = bc;
+  scp->_consts = consts;
+  scp->_blks = blks;
+  scp->blk_idx = 0;
+  scp->vars.resize(6 + blks[blk_idx].max_nvars());
+  std::fill(scp->vars.begin(), scp->vars.end(), nullptr);
+  return scp;
+}
+
+static O<Scope> Scope::child_scope(W<Scope> parent, uz blk_idx) {
+  auto scp = make_shared<Scope>();
+  scp->parent = parent;
+  scp->blk_idx = blk_idx;
+  scp->vars.resize(6 + blks[blk_idx].max_nvars());
+  std::fill(scp->vars.begin(), scp->vars.end(), nullptr);
+  return scp;
+}
+*/
+
 Scope::Scope(Scope *parent, uz blk_idx, std::vector<Block> blks,
              std::optional<ByteCode> bc,
              std::optional<std::vector<O<Value>>> consts)
-    : blks{blks}, blk_idx{blk_idx}, _bc{bc} {
+    : _blks{blks}, blk_idx{blk_idx}, _bc{bc} {
   CXBQN_DEBUG("Scope::Scope");
   this->parent = parent;
 #ifdef CXBQN_DEEPCHECKS
@@ -17,7 +40,7 @@ Scope::Scope(Scope *parent, uz blk_idx, std::vector<Block> blks,
 #endif
   if (consts.has_value())
     _consts = consts.value();
-  vars.resize(6 + blks[blk_idx].max_nvars());
+  vars.resize(6 + _blks[blk_idx].max_nvars());
   std::fill(vars.begin(), vars.end(), nullptr);
 }
 
@@ -28,6 +51,10 @@ std::vector<O<Value>> Scope::consts() const {
                              "parent, but neither is the case.");
 #endif
   return _consts.has_value() ? _consts.value() : parent->consts();
+}
+
+std::span<const Block> Scope::blocks() const {
+  return _blks;
 }
 
 const ByteCodeRef Scope::bc() const {
@@ -97,4 +124,4 @@ Scope *Scope::get_nth_parent(uz depth) {
   return scp;
 }
 
-}
+} // namespace cxbqn::types

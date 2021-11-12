@@ -384,9 +384,17 @@ private:
 };
 
 struct Scope {
+
   Scope(Scope *parent, uz blk_idx, std::vector<Block> blks,
         std::optional<ByteCode> bc = nullopt,
         std::optional<std::vector<O<Value>>> consts = nullopt);
+
+  /* Create a new root scope */
+  static O<Scope> root_scope(std::vector<Block> blks, ByteCode bc,
+                             std::vector<O<Value>> consts);
+
+  /* Create a new child scope */
+  static O<Scope> child_scope(W<Scope> parent, uz blk_idx);
 
   /*
    * Get a span of the bytecode owned by a scope somewhere up the scope lineage,
@@ -395,6 +403,8 @@ struct Scope {
   const ByteCodeRef bc() const;
 
   std::vector<O<Value>> consts() const;
+
+  std::span<const Block> blocks() const;
 
   /* Get a reference by traversing the scope lineage */
   O<Value> get(O<Reference> r);
@@ -430,9 +440,12 @@ struct Scope {
    */
   std::optional<const ByteCode> _bc;
 
-  std::vector<Block> blks;
+  std::vector<Block> _blks;
 
   const uz blk_idx;
+
+private:
+  Scope(uz bi) : blk_idx{bi} {}
 };
 
 } // namespace types
