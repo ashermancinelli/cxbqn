@@ -6,35 +6,21 @@
 namespace cxbqn::types {
 
 O<Scope> Scope::root_scope(std::vector<Block> blks, ByteCode bytecode,
-                           std::vector<O<Value>> consts) {
+                           std::vector<O<Value>> consts, std::vector<Body> bods) {
   auto scp = make_shared<Scope>(0);
+  scp->_bods = bods;
   scp->_bc = bytecode;
   scp->_consts = consts;
   scp->_blks = blks;
-  scp->vars.resize(6 + blks[scp->blk_idx].max_nvars());
+  scp->vars.resize(6 + blks[scp->blk_idx].max_nvars(bods));
   return scp;
 }
 
 O<Scope> Scope::child_scope(W<Scope> parent, uz blk_idx) {
   auto scp = make_shared<Scope>(blk_idx);
   scp->parent = parent;
-  scp->vars.resize(6 + scp->blocks()[scp->blk_idx].max_nvars());
+  scp->vars.resize(6 + scp->blocks()[scp->blk_idx].max_nvars(scp->bodies()));
   return scp;
-}
-
-Scope::Scope(W<Scope> parent, uz blk_idx, std::vector<Block> blks,
-             std::optional<ByteCode> bc,
-             std::optional<std::vector<O<Value>>> consts)
-    : _blks{blks}, blk_idx{blk_idx}, _bc{bc} {
-  CXBQN_DEBUG("Scope::Scope");
-  this->parent = parent;
-#ifdef CXBQN_DEEPCHECKS
-  if (nullptr == parent and nullopt == consts)
-    throw std::runtime_error("Scope::Scope: both parent=null and consts=null");
-#endif
-  if (consts.has_value())
-    _consts = consts.value();
-  vars.resize(6 + blocks()[blk_idx].max_nvars());
 }
 
 std::vector<O<Value>> Scope::consts() const {
@@ -44,6 +30,15 @@ std::vector<O<Value>> Scope::consts() const {
                              "parent, but neither is the case.");
 #endif
   return _consts.has_value() ? _consts.value() : parent.lock()->consts();
+}
+
+std::span<const Body> Scope::bodies() const {
+#ifdef CXBQN_DEEPCHECKS
+  if (nullopt == _bods and nullptr == parent)
+    throw std::runtime_error("scope: expected to either own blocks or to have "
+                             "parent, but neither is the case.");
+#endif
+  return _bods.has_value() ? _bods.value() : parent.lock()->bodies(); 
 }
 
 std::span<const Block> Scope::blocks() const {

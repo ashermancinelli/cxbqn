@@ -27,7 +27,7 @@ RunResult run(std::vector<i32> bc, std::vector<O<Value>> consts,
   std::vector<Block> blks;
 
   for (auto &blkd : blk_defs)
-    blks.emplace_back(blkd, bodies);
+    blks.emplace_back(blkd);
 
   CXBQN_DEBUG("blocks={}", std::span(blks));
 
@@ -35,7 +35,7 @@ RunResult run(std::vector<i32> bc, std::vector<O<Value>> consts,
 
   RunResult ret;
 
-  ret.scp = Scope::root_scope(blks, bc, consts);
+  ret.scp = Scope::root_scope(blks, bc, consts, bodies);
 
   ret.v = vm::vm(bc, consts, stk, ret.scp);
 

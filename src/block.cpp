@@ -1,4 +1,3 @@
-
 #include <cxbqn/cxbqn.hpp>
 #include <cxbqn/debug.hpp>
 #include <unistd.h>
@@ -6,10 +5,9 @@
 
 namespace cxbqn::types {
 
-Block::Block(BlockDef bd, std::span<Body> bods)
-    : def{bd}, bods(bods.begin(), bods.end()) {}
+Block::Block(BlockDef bd) : def{bd} {}
 
-uz Block::max_nvars() const {
+uz Block::max_nvars(std::span<const Body> bods) const {
   CXBQN_DEBUG("Block::max_nvars()");
   if (def.immediate)
     return bods[def.body_idx].var_count;
@@ -23,7 +21,8 @@ uz Block::max_nvars() const {
   }
 }
 
-std::pair<ByteCodeRef, uz> Block::body(const ByteCodeRef bc, u8 nargs) const {
+std::pair<ByteCodeRef, uz> Block::body(const ByteCodeRef bc,
+                                       std::span<const Body> bods, u8 nargs) const {
   CXBQN_DEBUG("Block::body: nargs={}", nargs);
 
   if (def.immediate) {
@@ -49,5 +48,5 @@ std::pair<ByteCodeRef, uz> Block::body(const ByteCodeRef bc, u8 nargs) const {
   throw std::runtime_error("Block::body: unreachable");
   return {};
 }
- 
-}
+
+} // namespace cxbqn::types

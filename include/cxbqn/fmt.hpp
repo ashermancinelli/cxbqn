@@ -1,5 +1,5 @@
 #pragma once
-#include <cxbqn/types.hpp>
+#include <cxbqn/cxbqn.hpp>
 #include <iostream>
 #include <spdlog/fmt/bundled/format.h>
 #include <spdlog/spdlog.h>

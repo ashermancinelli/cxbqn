@@ -1,4 +1,3 @@
-
 #include <cxbqn/cxbqn.hpp>
 #include <cxbqn/debug.hpp>
 #include <unistd.h>
@@ -16,7 +15,7 @@ O<Value> BlockInst::call(u8 nargs, std::vector<O<Value>> args) {
 
   auto child = Scope::child_scope(scp, blk_idx);
 
-  auto [bc, nvars] = blk.body(child->bc(), nargs);
+  auto [bc, nvars] = blk.body(child->bc(), child->bodies(), nargs);
   std::copy(args.begin(), args.end(), child->vars.begin());
 
   CXBQN_DEBUG("BlockInst::call:nargs={},childscope={},blk={}", args.size(),

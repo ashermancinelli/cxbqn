@@ -1,7 +1,7 @@
 #include <cmath>
 #include <cxbqn/comp_utils.hpp>
+#include <cxbqn/cxbqn.hpp>
 #include <cxbqn/debug.hpp>
-#include <cxbqn/provides.hpp>
 
 namespace cxbqn::provides {
 O<types::Array> get_provides() {
