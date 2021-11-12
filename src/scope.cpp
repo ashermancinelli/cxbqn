@@ -5,28 +5,22 @@
 
 namespace cxbqn::types {
 
-  /*
-static O<Scope> Scope::root_scope(std::vector<Block> blks, ByteCode bc,
+O<Scope> Scope::root_scope(std::vector<Block> blks, ByteCode bytecode,
                            std::vector<O<Value>> consts) {
-  auto scp = make_shared<Scope>();
-  scp->_bc = bc;
+  auto scp = make_shared<Scope>(0);
+  scp->_bc = bytecode;
   scp->_consts = consts;
   scp->_blks = blks;
-  scp->blk_idx = 0;
-  scp->vars.resize(6 + blks[blk_idx].max_nvars());
-  std::fill(scp->vars.begin(), scp->vars.end(), nullptr);
+  scp->vars.resize(6 + blks[scp->blk_idx].max_nvars());
   return scp;
 }
 
-static O<Scope> Scope::child_scope(W<Scope> parent, uz blk_idx) {
-  auto scp = make_shared<Scope>();
+O<Scope> Scope::child_scope(W<Scope> parent, uz blk_idx) {
+  auto scp = make_shared<Scope>(blk_idx);
   scp->parent = parent;
-  scp->blk_idx = blk_idx;
-  scp->vars.resize(6 + blks[blk_idx].max_nvars());
-  std::fill(scp->vars.begin(), scp->vars.end(), nullptr);
+  scp->vars.resize(6 + scp->blocks()[scp->blk_idx].max_nvars());
   return scp;
 }
-*/
 
 Scope::Scope(W<Scope> parent, uz blk_idx, std::vector<Block> blks,
              std::optional<ByteCode> bc,
@@ -40,8 +34,7 @@ Scope::Scope(W<Scope> parent, uz blk_idx, std::vector<Block> blks,
 #endif
   if (consts.has_value())
     _consts = consts.value();
-  vars.resize(6 + _blks[blk_idx].max_nvars());
-  std::fill(vars.begin(), vars.end(), nullptr);
+  vars.resize(6 + blocks()[blk_idx].max_nvars());
 }
 
 std::vector<O<Value>> Scope::consts() const {
@@ -54,7 +47,16 @@ std::vector<O<Value>> Scope::consts() const {
 }
 
 std::span<const Block> Scope::blocks() const {
-  return _blks;
+#ifdef CXBQN_DEEPCHECKS
+  if (nullopt == _blks and nullptr == parent)
+    throw std::runtime_error("scope: expected to either own blocks or to have "
+                             "parent, but neither is the case.");
+#endif
+  // return _blks.has_value() ? _blks.value() : parent.lock()->blocks(); 
+  if (_blks.has_value()) 
+    return std::span(_blks.value().begin(), _blks.value().size());
+  return parent.lock()->blocks();
+    // ? _blks.value() : parent.lock()->blocks(); 
 }
 
 const ByteCodeRef Scope::bc() const {

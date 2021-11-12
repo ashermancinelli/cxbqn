@@ -12,9 +12,9 @@ bool BlockInst::imm() const {
 
 O<Value> BlockInst::call(u8 nargs, std::vector<O<Value>> args) {
 
-  const auto blk = scp->_blks[blk_idx];
+  const auto blk = scp->blocks()[blk_idx];
 
-  auto child = make_shared<Scope>(scp, blk_idx, scp->_blks);
+  auto child = Scope::child_scope(scp, blk_idx);
 
   auto [bc, nvars] = blk.body(child->bc(), nargs);
   std::copy(args.begin(), args.end(), child->vars.begin());

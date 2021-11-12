@@ -35,7 +35,7 @@ RunResult run(std::vector<i32> bc, std::vector<O<Value>> consts,
 
   RunResult ret;
 
-  ret.scp = make_shared<Scope>(O<Scope>{}, 0, blks, bc, consts);
+  ret.scp = Scope::root_scope(blks, bc, consts);
 
   ret.v = vm::vm(bc, consts, stk, ret.scp);
 

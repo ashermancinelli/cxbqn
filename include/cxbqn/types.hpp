@@ -325,7 +325,7 @@ struct CompilationResult {
   O<Value> objs;
 };
 
-enum class BlockType {
+enum class BlockType : u8 {
   func = 0,
   md1 = 1,
   md2 = 2,
@@ -345,7 +345,6 @@ struct Body {
 struct BlockDef {
   BlockType type;
   bool immediate;
-  CompilationResult *comp;
 
   // FIXME: body_idx and mon/dya indices should really be a variant
 
@@ -358,11 +357,10 @@ struct BlockDef {
 
   BlockDef(uz ty, uz immediate, uz idx);
   BlockDef(uz ty, uz immediate, std::vector<std::vector<uz>> indices);
-  ~BlockDef();
 };
 
 struct Block {
-  const BlockDef def;
+  BlockDef def;
 
   // Gives the bytecode and number of variables for a given call
   std::pair<ByteCodeRef, uz> body(const ByteCodeRef bc, u8 nargs = 0) const;
@@ -372,10 +370,6 @@ struct Block {
   Block(BlockDef bd, std::span<Body> bods);
 
 private:
-  // modification of this should not affect constness since it doesn't affect
-  // idempotency of the call, in particular `max_nvars`
-  mutable std::optional<uz> cached_max_nvars;
-
   // Span of bytecode, so we can retrieve a subspan for a
   // monadic/dyadic/immediate invokation of the block as needed.
   // ByteCodeRef bc;
@@ -438,13 +432,12 @@ struct Scope : public std::enable_shared_from_this<Scope> {
    * \see Block::body()
    * \see Scope::bc()
    */
-  std::optional<const ByteCode> _bc;
+  std::optional<ByteCode> _bc;
 
-  std::vector<Block> _blks;
+  std::optional<std::vector<Block>> _blks;
 
   const uz blk_idx;
 
-private:
   Scope(uz bi) : blk_idx{bi}, parent{O<Scope>{}} {}
 };
 

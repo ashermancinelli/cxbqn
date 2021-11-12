@@ -272,11 +272,11 @@ void fn2o(std::vector<O<Value>> &stk) {
 void dfnd(const ByteCodeRef bc, uz &pc, std::vector<O<Value>> &stk, O<Scope> scp) {
   auto blk_idx = bc[++pc];
 
-  const auto blk = scp->_blks[blk_idx];
+  const auto blk = scp->blocks()[blk_idx];
   CXBQN_DEBUG("dfnd:pc={},block={}", pc, blk);
 
   if (blk.def.type == BlockType::func && blk.def.immediate) {
-    auto child = make_shared<Scope>(scp, blk_idx, scp->_blks);
+    auto child = Scope::child_scope(scp, blk_idx);
     auto [blk_bc, nvars] = blk.body(child->bc());
     std::vector<O<Value>> stk_;
 

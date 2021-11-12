@@ -35,7 +35,4 @@ BlockDef::BlockDef(uz ty, uz immediate, std::vector<std::vector<uz>> indices)
     dya_body_idxs.push_back(indices[1][0]);
   }
 }
-
-BlockDef::~BlockDef() {}
-
 }
