@@ -8,6 +8,7 @@ set(tests
     test_provide
     test_preruntime
     test_runtime
+    test_debug
 )
 
 foreach(test ${tests})

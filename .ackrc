@@ -1,2 +1,3 @@
 --ignore-dir=ext
 --ignore-dir=build
+--ignore-dir=include/cxbqn/__

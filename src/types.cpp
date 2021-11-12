@@ -1,5 +1,6 @@
 #include <cxbqn/cxbqn.hpp>
 #include <cxbqn/debug.hpp>
+#include <unistd.h>
 #include <utf8.h>
 
 namespace cxbqn::types {
@@ -202,26 +203,34 @@ uz Block::max_nvars() const {
   return max_nvars();
 }
 
+static int thing=0;
 std::pair<ByteCode, uz> Block::body(u8 nargs) const {
   CXBQN_DEBUG("Block::body: nargs={}", nargs);
+  spdlog::critical("body 158 called {} times", thing);
 
   if (def.immediate) {
+    if (def.body_idx == 158) thing++;
+      // CXBQN_ATTACH_DEBUGGER_SET_VAR_I_EQ_1_TO_CONTINUE();
     auto bod = bods[def.body_idx];
-    const auto _bc = ByteCode(bc.begin() + bod.bc_offset, bc.end());
+    const auto _bc = ByteCode(bc.begin()+bod.bc_offset, bc.end());
     return std::make_pair(_bc, bod.var_count);
   }
 
   if (1 == nargs) {
     auto bod = bods[def.mon_body_idxs[0]];
+    if (def.mon_body_idxs[0] == 158) thing++;
+    // if (def.mon_body_idxs[0] == 158) CXBQN_ATTACH_DEBUGGER_SET_VAR_I_EQ_1_TO_CONTINUE();
     CXBQN_DEBUG("Block::body:monadic bodies:offset={},nvars={}", bod.bc_offset,
                 bod.var_count);
-    const auto _bc = ByteCode(bc.begin() + bod.bc_offset, bc.end());
+    const auto _bc = ByteCode(bc.begin()+bod.bc_offset, bc.end());
     return std::make_pair(_bc, bod.var_count);
   } else if (2 == nargs) {
+    if (def.dya_body_idxs[0] == 158) thing++;
     auto bod = bods[def.dya_body_idxs[0]];
+    // if (def.dya_body_idxs[0] == 158) CXBQN_ATTACH_DEBUGGER_SET_VAR_I_EQ_1_TO_CONTINUE();
     CXBQN_DEBUG("Block::body:dyadic bodies:offset={},nvars={}", bod.bc_offset,
                 bod.var_count);
-    const auto _bc = ByteCode(bc.begin() + bod.bc_offset, bc.end());
+    const auto _bc = ByteCode(bc.begin()+bod.bc_offset, bc.end());
     return std::make_pair(_bc, bod.var_count);
   }
 
@@ -256,7 +265,7 @@ O<Value> BlockInst::call(u8 nargs, std::vector<O<Value>> args) {
 
 O<Value> Atop::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("Atop::call:nargs={},args={}", nargs, args);
-  auto ret = g->call(nargs, args);
+  auto ret = g->call(nargs, {g, args[1], args[2]});
 
   return f->call(nargs, {f, ret, bi_Nothing()});
 }

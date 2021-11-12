@@ -195,7 +195,7 @@ void fn1c(std::vector<O<Value>> &stk) {
     throw std::runtime_error("fn1c: S returned nullptr");
 #endif
 
-  stk.push_back(std::move(v));
+  stk.push_back(v);
 }
 
 void fn1o(std::vector<O<Value>> &stk) {

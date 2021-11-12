@@ -25,3 +25,16 @@
 #define CXBQN_STR_NC(x)                                                        \
   static_cast<std::string>((nullptr == x) ? "null" : fmt::format("{}", *x))
 #define CXBQN_DEBUG_NC(fmt, x) CXBQN_DEBUG(fmt, CXBQN_STR_NC(x))
+
+#define CXBQN_ATTACH_DEBUGGER_SET_VAR_I_EQ_1_TO_CONTINUE()                     \
+  do {                                                                         \
+    static bool shouldbreak = false;                                           \
+    if (shouldbreak)                                                           \
+      break;                                                                   \
+    int i = 0;                                                                 \
+    const auto pid = getpid();                                                 \
+    std::cout << "pid=" << pid << "\n";                                        \
+    while (i < 1)                                                              \
+      ;                                                                        \
+    shouldbreak = true;                                                        \
+  } while (0);

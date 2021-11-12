@@ -44,12 +44,13 @@ RunResult run(std::vector<i32> bc, std::vector<O<Value>> consts,
   return ret;
 }
 
+static u64 iii=0;
 O<Value> vm(ByteCodeRef bc, std::span<O<Value>> consts,
             std::vector<O<Value>> stk, Scope *scope) {
 
   CXBQN_NEWEVAL();
 
-  CXBQN_DEBUG("bc={},consts={}", bc, consts);
+  // CXBQN_DEBUG("bc={},consts={}", bc, consts);
 
   // program counter
   uz pc = 0;
@@ -58,6 +59,9 @@ O<Value> vm(ByteCodeRef bc, std::span<O<Value>> consts,
 
   CXBQN_DEBUG("enter interpreter loop");
   while (1) {
+    iii++;
+    if (iii>100)
+      spdlog::critical("stk={},scp={},pc={}", stk, *scope, pc);
     // CXBQN_INFO("bc={},pc={},stack={},scope={}", bc[pc], pc, stk, *scope);
     switch (bc[pc]) {
     case op::PUSH:
