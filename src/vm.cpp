@@ -6,10 +6,15 @@ namespace cxbqn::vm {
 
 using namespace types;
 
+static bool loginit = false;
 RunResult run(std::vector<i32> bc, std::vector<O<Value>> consts,
               std::vector<BlockDef> blk_defs, std::vector<Body> &bodies) {
 
-  CXBQN_SETLOGSTR();
+  if (!loginit) {
+    CXBQN_SETLOGSTR();
+    loginit = true;
+  }
+
   CXBQN_DEBUG("vm::run");
   CXBQN_DEBUG("bc={}", ByteCodeRef(bc));
   INSTR_INIT();
@@ -30,7 +35,7 @@ RunResult run(std::vector<i32> bc, std::vector<O<Value>> consts,
 
   RunResult ret;
 
-  ret.scp = new Scope(nullptr, blks, 0, bc, consts);
+  ret.scp = new Scope(nullptr, 0, blks, bc, consts);
 
   ret.v = vm::vm(bc, consts, stk, ret.scp);
 
@@ -45,7 +50,7 @@ RunResult run(std::vector<i32> bc, std::vector<O<Value>> consts,
 }
 
 static u64 iii=0;
-O<Value> vm(ByteCodeRef bc, std::span<O<Value>> consts,
+O<Value> vm(ByteCodeRef bc, std::vector<O<Value>> consts,
             std::vector<O<Value>> stk, Scope *scope) {
 
   CXBQN_NEWEVAL();

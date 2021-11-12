@@ -384,14 +384,17 @@ private:
 };
 
 struct Scope {
-  Scope(Scope *parent, std::vector<Block> blks, uz blk_idx,
+  Scope(Scope *parent, uz blk_idx, std::vector<Block> blks,
         std::optional<ByteCode> bc = nullopt,
         std::optional<std::vector<O<Value>>> consts = nullopt);
 
   /*
-   * Get a span of the bytecode owned by a scope somewhere up the scope lineage.
+   * Get a span of the bytecode owned by a scope somewhere up the scope lineage,
+   * potentially owned by this scope.
    */
   const ByteCodeRef bc() const;
+
+  std::vector<O<Value>> consts() const;
 
   /* Get a reference by traversing the scope lineage */
   O<Value> get(O<Reference> r);
@@ -412,18 +415,18 @@ struct Scope {
   std::vector<O<Value>> vars;
 
   /*
-   * These are copied from the parent or the constructor if passed so consumers
-   * of the scope are able to access the constants only available in the core
-   * vm loop. This may be removed in the future, as I believe it results in
-   * unneeded copies.
+   * Possibly own the consts passed to the top-level `vm::run` call if this is
+   * a root scope. Otherwise, `Scope::consts` will retrieve the consts from
+   * somewhere up the scope lineage.
    */
-  std::vector<O<Value>> consts;
+  std::optional<std::vector<O<Value>>> _consts;
 
   /*
    * Blocks and bodies use non-owning/reference semantics when passing around
    * bytecode, and Scope is the owner of the bytecode.
    *
-   * \see Block::body
+   * \see Block::body()
+   * \see Scope::bc()
    */
   std::optional<const ByteCode> _bc;
 

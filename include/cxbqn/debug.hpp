@@ -4,22 +4,28 @@
 #include <string>
 
 #ifdef CXBQN_DEEPCHECKS
+#include <spdlog/async.h>
+#include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/spdlog.h>
 #include <sstream>
-#define CXBQN_DEBUG(...) spdlog::debug(__VA_ARGS__);
-#define CXBQN_CRIT(...) spdlog::critical(__VA_ARGS__);
-#define CXBQN_INFO(...) spdlog::info(__VA_ARGS__);
+#define CXBQN_DEBUG(...) spdlog::default_logger_raw()->debug(__VA_ARGS__);
+#define CXBQN_CRIT(...) spdlog::default_logger_raw()->critical(__VA_ARGS__);
+#define CXBQN_INFO(...) spdlog::default_logger_raw()->info(__VA_ARGS__);
 #define CXBQN_SETLOGSTR()                                                      \
   do {                                                                         \
-    spdlog::set_level(spdlog::CXBQN_LOGLEVEL);                                 \
-    spdlog::set_pattern("cxbqn[%^%5l%$]:%v");                                  \
+    auto l = spdlog::create_async<spdlog::sinks::basic_file_sink_mt>(          \
+        "async_file_logger", "cxbqn.log");                                     \
+    l->set_level(spdlog::CXBQN_LOGLEVEL);                                      \
+    l->set_pattern("cxbqn[%^%5l%$]:%v");                                       \
+    spdlog::flush_every(std::chrono::seconds(5));                              \
+    spdlog::set_default_logger(l);                                             \
   } while (0);
 #else
-#define CXBQN_DEBUG(...)
-#define CXBQN_CRIT(...)
-#define CXBQN_INFO(...)
-#define CXBQN_DEREF_OR_NULL(x)
-#define CXBQN_SETLOGSTR()
+#define CXBQN_DEBUG(...) (void)0
+#define CXBQN_CRIT(...) (void)0
+#define CXBQN_INFO(...) (void)0
+#define CXBQN_DEREF_OR_NULL(x) (void)0
+#define CXBQN_SETLOGSTR() (void)0
 #endif
 
 #define CXBQN_STR_NC(x)                                                        \

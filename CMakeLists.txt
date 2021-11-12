@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 project(
   cxbqn
   LANGUAGES CXX
-  VERSION 0.1.0)
+  VERSION 0.2.1)
 
 enable_testing()
 

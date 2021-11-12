@@ -2,6 +2,11 @@ add_library(cxbqn
   bi.cpp
   vm.cpp
   types.cpp
+  array.cpp
+  block.cpp
+  blockdef.cpp
+  blockinst.cpp
+  scope.cpp
   provides.cpp
   op.cpp
   instructions.cpp

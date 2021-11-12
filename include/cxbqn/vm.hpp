@@ -20,7 +20,7 @@ struct RunResult {
 RunResult run(ByteCode bc, std::vector<O<Value>> consts,
               std::vector<BlockDef> blks, std::vector<Body> &bds);
 
-O<Value> vm(ByteCodeRef bc, std::span<O<Value>> consts,
+O<Value> vm(ByteCodeRef bc, std::vector<O<Value>> consts,
             std::vector<O<Value>> stk, Scope *scope);
 
 namespace instructions {
