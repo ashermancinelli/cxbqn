@@ -109,7 +109,7 @@ static constexpr u32 annot(TypeAnnotations ta) { return 1 << ta; }
 using TypeType = std::bitset<32>;
 
 using ByteCode = std::vector<i32>;
-using ByteCodeRef = std::span<i32>;
+using ByteCodeRef = std::span<const i32>;
 
 // "Owned Value"
 template <typename T> using O = std::shared_ptr<T>;
@@ -117,8 +117,8 @@ template <typename T> using O = std::shared_ptr<T>;
 // "Weak/Unowned Value"
 template <typename T> using W = std::weak_ptr<T>;
 
-using std::make_shared;
 using std::dynamic_pointer_cast;
+using std::make_shared;
 using std::static_pointer_cast;
 
 struct Scope;
@@ -365,11 +365,11 @@ struct Block {
   const BlockDef def;
 
   // Gives the bytecode and number of variables for a given call
-  std::pair<ByteCode, uz> body(u8 nargs = 0) const;
+  std::pair<ByteCodeRef, uz> body(const ByteCodeRef bc, u8 nargs = 0) const;
 
   uz max_nvars() const;
 
-  Block(ByteCodeRef bc, BlockDef bd, std::span<Body> bods);
+  Block(BlockDef bd, std::span<Body> bods);
 
 private:
   // modification of this should not affect constness since it doesn't affect
@@ -378,22 +378,58 @@ private:
 
   // Span of bytecode, so we can retrieve a subspan for a
   // monadic/dyadic/immediate invokation of the block as needed.
-  ByteCode bc;
+  // ByteCodeRef bc;
 
   std::vector<Body> bods;
 };
 
 struct Scope {
-  Scope *parent;
-  std::vector<O<Value>> vars;
-  std::vector<O<Value>> consts;
-  std::vector<Block> blks;
-  const uz blk_idx;
   Scope(Scope *parent, std::vector<Block> blks, uz blk_idx,
+        std::optional<ByteCode> bc = nullopt,
         std::optional<std::vector<O<Value>>> consts = nullopt);
+
+  /*
+   * Get a span of the bytecode owned by a scope somewhere up the scope lineage.
+   */
+  const ByteCodeRef bc() const;
+
+  /* Get a reference by traversing the scope lineage */
   O<Value> get(O<Reference> r);
+
+  /* Set a reference by traversing the scope lineage */
   void set(bool should_var_be_set, O<Reference> r, O<Value> v);
+
+  /* Get the parent scope `depth` generations up. */
   Scope *get_nth_parent(uz depth);
+
+  /* When using references, we must have a way to traverse the scope lineage */
+  Scope *parent;
+
+  /*
+   * Each scope contains some number of variables. For functions/modifiers,
+   * the first six will always be the relevant members of 𝕤𝕩𝕨𝕣𝕗𝕘.
+   */
+  std::vector<O<Value>> vars;
+
+  /*
+   * These are copied from the parent or the constructor if passed so consumers
+   * of the scope are able to access the constants only available in the core
+   * vm loop. This may be removed in the future, as I believe it results in
+   * unneeded copies.
+   */
+  std::vector<O<Value>> consts;
+
+  /*
+   * Blocks and bodies use non-owning/reference semantics when passing around
+   * bytecode, and Scope is the owner of the bytecode.
+   *
+   * \see Block::body
+   */
+  std::optional<const ByteCode> _bc;
+
+  std::vector<Block> blks;
+
+  const uz blk_idx;
 };
 
 } // namespace types

@@ -6,6 +6,7 @@ using namespace cxbqn::types;
 using namespace cxbqn::provides;
 using namespace cxbqn::vm;
 
+#if 0
 int main(int argc, char **argv) {
   spdlog::set_pattern("cxbqn:driver[%^%l%$] %v");
   spdlog::set_level(spdlog::level::debug);
@@ -32,3 +33,4 @@ int main(int argc, char **argv) {
   spdlog::debug("cleanup");
   return 0;
 }
+#endif

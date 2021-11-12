@@ -21,21 +21,7 @@ template <typename OS> OS &operator<<(OS &os, const Value *v) {
 
 template <typename OS> OS &operator<<(OS &os, const Block &b) {
   os << "(block type=" << static_cast<int>(b.def.type)
-     << " imm=" << b.def.immediate << " ";
-  if (b.def.immediate) {
-    auto [bc, nvars] = b.body();
-    os << "nvars=" << nvars << " ";
-  } else {
-    if (b.def.mon_body_idxs.size()) {
-      auto [bc, nvars] = b.body(1);
-      os << "nvars1=" << nvars << " ";
-    }
-    if (b.def.dya_body_idxs.size()) {
-      auto [bc, nvars] = b.body(2);
-      os << "nvars2=" << nvars << " ";
-    }
-  }
-  os << ")";
+     << " imm=" << b.def.immediate << ")";
   return os;
 }
 
@@ -83,8 +69,8 @@ template <> struct fmt::formatter<Array> {
   auto format(Array const &v, FormatContext &ctx) -> decltype(ctx.out()) {
     auto &&out = ctx.out();
     if (v.t()[t_String]) {
-      for (const auto* e : v.values)
-        format_to(out, L"{}", std::string(dynamic_cast<Character*>(e)->c()));
+      for (const auto e : v.values)
+        format_to(out, L"{}", std::string(dynamic_pointer_cast<Character>(e)->c()));
       return out;
     }
     format_to(out, "{}", v);

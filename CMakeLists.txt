@@ -25,11 +25,14 @@ set(CXBQN_GEN_CODECOV
     OFF
     CACHE BOOL "Generate code coverage data. Build type must be debug.")
 set(CXBQN_PROFILE_VM
-    ON
+  OFF
     CACHE BOOL "Output profiling information from the VM")
 set(CXBQN_DEBUG_VM
-    ON
+  OFF
     CACHE BOOL "Verbose output in the VM for debugging")
+set(CXBQN_DEBUG_VMSTACK
+  OFF
+    CACHE BOOL "Display the entire stack in the VM for debugging")
 set(CXBQN_DEEPCHECKS
     ON
     CACHE BOOL "Deep null checking and debugging information")
@@ -37,7 +40,7 @@ set(CXBQN_COLOR
     ON
     CACHE BOOL "Output VM information in color")
 set(CXBQN_LOGLEVEL
-    "level::debug"
+    "level::info"
     CACHE STRING "Log level spdlog will be set to")
 set(CHECK_SUBMODULES
     ON

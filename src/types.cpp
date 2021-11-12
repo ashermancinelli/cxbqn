@@ -76,8 +76,9 @@ O<Reference> RefArray::getref(uz idx) {
 }
 
 Scope::Scope(Scope *parent, std::vector<Block> blks, uz blk_idx,
+             std::optional<ByteCode> bc,
              std::optional<std::vector<O<Value>>> consts)
-    : blks{blks}, blk_idx{blk_idx} {
+    : blks{blks}, blk_idx{blk_idx}, _bc{bc} {
   CXBQN_DEBUG("Scope::Scope");
   this->parent = parent;
 #ifdef CXBQN_DEEPCHECKS
@@ -87,6 +88,15 @@ Scope::Scope(Scope *parent, std::vector<Block> blks, uz blk_idx,
   this->consts = nullptr == parent ? consts.value() : parent->consts;
   vars.resize(6 + blks[blk_idx].max_nvars());
   std::fill(vars.begin(), vars.end(), nullptr);
+}
+
+const ByteCodeRef Scope::bc() const {
+  if (_bc.has_value())
+    return _bc.value();
+  if (nullptr == parent)
+    throw std::runtime_error("scope: expected to either own bc or to have "
+                             "parent, but neither is the case.");
+  return parent->bc();
 }
 
 O<Value> Scope::get(O<Reference> r) {
@@ -180,9 +190,8 @@ BlockDef::BlockDef(uz ty, uz immediate, std::vector<std::vector<uz>> indices)
 
 BlockDef::~BlockDef() {}
 
-Block::Block(std::span<i32> bc, BlockDef bd, std::span<Body> bods)
-    : def{bd}, bc(bc.begin(), bc.end()),
-      bods(bods.begin(), bods.end()), cached_max_nvars{nullopt} {}
+Block::Block(BlockDef bd, std::span<Body> bods)
+    : def{bd}, bods(bods.begin(), bods.end()), cached_max_nvars{nullopt} {}
 
 uz Block::max_nvars() const {
   CXBQN_DEBUG("Block::max_nvars()");
@@ -203,39 +212,44 @@ uz Block::max_nvars() const {
   return max_nvars();
 }
 
-static int thing=0;
-std::pair<ByteCode, uz> Block::body(u8 nargs) const {
+// static int thing=0;
+std::pair<ByteCodeRef, uz> Block::body(const ByteCodeRef bc, u8 nargs) const {
   CXBQN_DEBUG("Block::body: nargs={}", nargs);
-  spdlog::critical("body 158 called {} times", thing);
+  // spdlog::critical("body 158 called {} times", thing);
 
   if (def.immediate) {
-    if (def.body_idx == 158) thing++;
-      // CXBQN_ATTACH_DEBUGGER_SET_VAR_I_EQ_1_TO_CONTINUE();
+    // if (def.body_idx == 158) thing++;
+    // CXBQN_ATTACH_DEBUGGER_SET_VAR_I_EQ_1_TO_CONTINUE();
     auto bod = bods[def.body_idx];
-    const auto _bc = ByteCode(bc.begin()+bod.bc_offset, bc.end());
+    // const auto _bc = ByteCode(bc.begin()+bod.bc_offset, bc.end());
+    const auto _bc = bc.subspan(bod.bc_offset);
     return std::make_pair(_bc, bod.var_count);
   }
 
   if (1 == nargs) {
     auto bod = bods[def.mon_body_idxs[0]];
-    if (def.mon_body_idxs[0] == 158) thing++;
-    // if (def.mon_body_idxs[0] == 158) CXBQN_ATTACH_DEBUGGER_SET_VAR_I_EQ_1_TO_CONTINUE();
+    // if (def.mon_body_idxs[0] == 158) thing++;
+    // if (def.mon_body_idxs[0] == 158)
+    // CXBQN_ATTACH_DEBUGGER_SET_VAR_I_EQ_1_TO_CONTINUE();
     CXBQN_DEBUG("Block::body:monadic bodies:offset={},nvars={}", bod.bc_offset,
                 bod.var_count);
-    const auto _bc = ByteCode(bc.begin()+bod.bc_offset, bc.end());
+    // const auto _bc = ByteCode(bc.begin()+bod.bc_offset, bc.end());
+    const auto _bc = bc.subspan(bod.bc_offset);
     return std::make_pair(_bc, bod.var_count);
   } else if (2 == nargs) {
-    if (def.dya_body_idxs[0] == 158) thing++;
+    // if (def.dya_body_idxs[0] == 158) thing++;
     auto bod = bods[def.dya_body_idxs[0]];
-    // if (def.dya_body_idxs[0] == 158) CXBQN_ATTACH_DEBUGGER_SET_VAR_I_EQ_1_TO_CONTINUE();
+    // if (def.dya_body_idxs[0] == 158)
+    // CXBQN_ATTACH_DEBUGGER_SET_VAR_I_EQ_1_TO_CONTINUE();
     CXBQN_DEBUG("Block::body:dyadic bodies:offset={},nvars={}", bod.bc_offset,
                 bod.var_count);
-    const auto _bc = ByteCode(bc.begin()+bod.bc_offset, bc.end());
+    // const auto _bc = ByteCode(bc.begin()+bod.bc_offset, bc.end());
+    const auto _bc = bc.subspan(bod.bc_offset);
     return std::make_pair(_bc, bod.var_count);
   }
 
   throw std::runtime_error("Block::body: unreachable");
-  return std::make_pair(ByteCode{}, 0);
+  return {};
 }
 
 bool BlockInst::imm() const {
@@ -248,7 +262,7 @@ O<Value> BlockInst::call(u8 nargs, std::vector<O<Value>> args) {
 
   auto *child = new Scope(scp, scp->blks, blk_idx);
 
-  auto [bc, nvars] = blk.body(nargs);
+  auto [bc, nvars] = blk.body(child->bc(), nargs);
   std::copy(args.begin(), args.end(), child->vars.begin());
 
   CXBQN_DEBUG("BlockInst::call:nargs={},childscope={},blk={}", args.size(),

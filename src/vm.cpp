@@ -22,7 +22,7 @@ RunResult run(std::vector<i32> bc, std::vector<O<Value>> consts,
   std::vector<Block> blks;
 
   for (auto &blkd : blk_defs)
-    blks.emplace_back(bc, blkd, bodies);
+    blks.emplace_back(blkd, bodies);
 
   CXBQN_DEBUG("blocks={}", std::span(blks));
 
@@ -30,7 +30,7 @@ RunResult run(std::vector<i32> bc, std::vector<O<Value>> consts,
 
   RunResult ret;
 
-  ret.scp = new Scope(nullptr, blks, 0, consts);
+  ret.scp = new Scope(nullptr, blks, 0, bc, consts);
 
   ret.v = vm::vm(bc, consts, stk, ret.scp);
 
@@ -59,10 +59,12 @@ O<Value> vm(ByteCodeRef bc, std::span<O<Value>> consts,
 
   CXBQN_DEBUG("enter interpreter loop");
   while (1) {
-    iii++;
-    if (iii>100)
-      spdlog::critical("stk={},scp={},pc={}", stk, *scope, pc);
-    // CXBQN_INFO("bc={},pc={},stack={},scope={}", bc[pc], pc, stk, *scope);
+    /* Logging the entire stack can severly slow the execution if logging is
+     * enabled, but sometimes it's useful, so it gets its own define.
+     */
+#ifdef CXBQN_DEBUG_VMSTACK
+    CXBQN_INFO("bc={},pc={},stack={},scope={}", bc[pc], pc, stk, *scope);
+#endif
     switch (bc[pc]) {
     case op::PUSH:
       INSTR1("PUSH");
@@ -71,7 +73,7 @@ O<Value> vm(ByteCodeRef bc, std::span<O<Value>> consts,
       break;
     case op::RETN:
       INSTR("RETN");
-      CXBQN_DEBUG_NC("returning {}", stk.back());
+      CXBQN_DEBUG("returning {}", CXBQN_STR_NC(stk.back()));
       ret = stk.back();
       INSTR("RETN");
       goto done;
