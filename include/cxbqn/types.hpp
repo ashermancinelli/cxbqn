@@ -248,14 +248,14 @@ struct Function : public Value {
 };
 
 struct BlockInst : public Function {
-  Scope *scp;
+  O<Scope> scp;
   uz blk_idx;
 
   // Is the block at index blk_idx immediate?
   bool imm() const;
 
   TypeType t() const override { return TypeType{annot(t_BlockInst)}; }
-  BlockInst(Scope *scp, uz blk_idx) : scp{scp}, blk_idx{blk_idx} {}
+  BlockInst(O<Scope> scp, uz blk_idx) : scp{scp}, blk_idx{blk_idx} {}
   O<Value> call(u8 nargs = 0, std::vector<O<Value>> args = {}) override;
   std::ostream &repr(std::ostream &os) const override {
     return os << "Block{i=" << blk_idx << "}";
@@ -383,9 +383,9 @@ private:
   std::vector<Body> bods;
 };
 
-struct Scope {
+struct Scope : public std::enable_shared_from_this<Scope> {
 
-  Scope(Scope *parent, uz blk_idx, std::vector<Block> blks,
+  Scope(W<Scope> parent, uz blk_idx, std::vector<Block> blks,
         std::optional<ByteCode> bc = nullopt,
         std::optional<std::vector<O<Value>>> consts = nullopt);
 
@@ -413,10 +413,10 @@ struct Scope {
   void set(bool should_var_be_set, O<Reference> r, O<Value> v);
 
   /* Get the parent scope `depth` generations up. */
-  Scope *get_nth_parent(uz depth);
+  O<Scope> get_nth_parent(uz depth);
 
   /* When using references, we must have a way to traverse the scope lineage */
-  Scope *parent;
+  W<Scope> parent;
 
   /*
    * Each scope contains some number of variables. For functions/modifiers,
@@ -445,7 +445,7 @@ struct Scope {
   const uz blk_idx;
 
 private:
-  Scope(uz bi) : blk_idx{bi} {}
+  Scope(uz bi) : blk_idx{bi}, parent{O<Scope>{}} {}
 };
 
 } // namespace types

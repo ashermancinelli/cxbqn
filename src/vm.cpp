@@ -35,7 +35,7 @@ RunResult run(std::vector<i32> bc, std::vector<O<Value>> consts,
 
   RunResult ret;
 
-  ret.scp = new Scope(nullptr, 0, blks, bc, consts);
+  ret.scp = make_shared<Scope>(O<Scope>{}, 0, blks, bc, consts);
 
   ret.v = vm::vm(bc, consts, stk, ret.scp);
 
@@ -51,7 +51,7 @@ RunResult run(std::vector<i32> bc, std::vector<O<Value>> consts,
 
 static u64 iii=0;
 O<Value> vm(ByteCodeRef bc, std::vector<O<Value>> consts,
-            std::vector<O<Value>> stk, Scope *scope) {
+            std::vector<O<Value>> stk, O<Scope> scope) {
 
   CXBQN_NEWEVAL();
 

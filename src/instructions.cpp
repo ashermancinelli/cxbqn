@@ -14,7 +14,7 @@ namespace {
 // being set to an array.
 template <bool ShouldVarBeSet>
 static O<Value> safe_set_refer(O<Value> opaque_refer, O<Value> value,
-                               Scope *scp) {
+                               O<Scope> scp) {
 
 #ifdef CXBQN_DEEPCHECKS
   if (not opaque_refer->t()[t_Reference]) {
@@ -54,7 +54,7 @@ static O<Value> safe_set_refer(O<Value> opaque_refer, O<Value> value,
 }
 
 template <bool ShouldVarBeSet>
-static O<Value> set_un_helper(std::vector<O<Value>> &stk, Scope *scp) {
+static O<Value> set_un_helper(std::vector<O<Value>> &stk, O<Scope> scp) {
   // Reference this instruction is assigning to
   auto opaque_refer = stk.back();
   stk.pop_back();
@@ -69,7 +69,7 @@ static O<Value> set_un_helper(std::vector<O<Value>> &stk, Scope *scp) {
   return safe_set_refer<ShouldVarBeSet>(opaque_refer, value, scp);
 }
 
-static O<Value> setm_ref(O<Value> F, O<Value> x, O<Value> r, Scope *scp) {
+static O<Value> setm_ref(O<Value> F, O<Value> x, O<Value> r, O<Scope> scp) {
   auto refer = dynamic_pointer_cast<Reference>(r);
   auto v = F->call(2, {F, x, scp->get(refer)});
 
@@ -78,7 +78,7 @@ static O<Value> setm_ref(O<Value> F, O<Value> x, O<Value> r, Scope *scp) {
   return v;
 }
 
-static O<Value> setm_refarray(O<Value> F, O<Value> x, O<Value> r, Scope *scp) {
+static O<Value> setm_refarray(O<Value> F, O<Value> x, O<Value> r, O<Scope> scp) {
   auto refarr = dynamic_pointer_cast<RefArray>(r);
   auto varr = make_shared<Array>(refarr->N());
 
@@ -95,15 +95,15 @@ static O<Value> setm_refarray(O<Value> F, O<Value> x, O<Value> r, Scope *scp) {
 
 } // namespace
 
-void setu(std::vector<O<Value>> &stk, Scope *scp) {
+void setu(std::vector<O<Value>> &stk, O<Scope> scp) {
   stk.push_back(set_un_helper<true>(stk, scp));
 }
 
-void setn(std::vector<O<Value>> &stk, Scope *scp) {
+void setn(std::vector<O<Value>> &stk, O<Scope> scp) {
   stk.push_back(set_un_helper<false>(stk, scp));
 }
 
-void setm(std::vector<O<Value>> &stk, Scope *scp) {
+void setm(std::vector<O<Value>> &stk, O<Scope> scp) {
   auto r = stk.back();
   stk.pop_back();
 
@@ -137,7 +137,7 @@ void setm(std::vector<O<Value>> &stk, Scope *scp) {
   }
 }
 
-void setc(std::vector<O<Value>> &stk, Scope *scp) {
+void setc(std::vector<O<Value>> &stk, O<Scope> scp) {
   auto r = stk.back();
   stk.pop_back();
 
@@ -163,7 +163,7 @@ void varm(const ByteCodeRef bc, uz &pc, std::vector<O<Value>> &stk) {
                                      static_cast<uz>(pos_in_parent)));
 }
 
-void varo(const ByteCodeRef bc, uz &pc, std::vector<O<Value>> &stk, Scope *scp) {
+void varo(const ByteCodeRef bc, uz &pc, std::vector<O<Value>> &stk, O<Scope> scp) {
   const auto n_frames_up = bc[++pc];
   const auto local_variable_idx = bc[++pc];
   scp = scp->get_nth_parent(n_frames_up);
@@ -269,14 +269,14 @@ void fn2o(std::vector<O<Value>> &stk) {
   stk.push_back(v);
 }
 
-void dfnd(const ByteCodeRef bc, uz &pc, std::vector<O<Value>> &stk, Scope *scp) {
+void dfnd(const ByteCodeRef bc, uz &pc, std::vector<O<Value>> &stk, O<Scope> scp) {
   auto blk_idx = bc[++pc];
 
   const auto blk = scp->_blks[blk_idx];
   CXBQN_DEBUG("dfnd:pc={},block={}", pc, blk);
 
   if (blk.def.type == BlockType::func && blk.def.immediate) {
-    auto *child = new Scope(scp, blk_idx, scp->_blks);
+    auto child = make_shared<Scope>(scp, blk_idx, scp->_blks);
     auto [blk_bc, nvars] = blk.body(child->bc());
     std::vector<O<Value>> stk_;
 

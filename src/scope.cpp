@@ -28,7 +28,7 @@ static O<Scope> Scope::child_scope(W<Scope> parent, uz blk_idx) {
 }
 */
 
-Scope::Scope(Scope *parent, uz blk_idx, std::vector<Block> blks,
+Scope::Scope(W<Scope> parent, uz blk_idx, std::vector<Block> blks,
              std::optional<ByteCode> bc,
              std::optional<std::vector<O<Value>>> consts)
     : _blks{blks}, blk_idx{blk_idx}, _bc{bc} {
@@ -50,7 +50,7 @@ std::vector<O<Value>> Scope::consts() const {
     throw std::runtime_error("scope: expected to either own consts or to have "
                              "parent, but neither is the case.");
 #endif
-  return _consts.has_value() ? _consts.value() : parent->consts();
+  return _consts.has_value() ? _consts.value() : parent.lock()->consts();
 }
 
 std::span<const Block> Scope::blocks() const {
@@ -63,7 +63,7 @@ const ByteCodeRef Scope::bc() const {
     throw std::runtime_error("scope: expected to either own bc or to have "
                              "parent, but neither is the case.");
 #endif
-  return _bc.has_value() ? _bc.value() : parent->bc();
+  return _bc.has_value() ? _bc.value() : parent.lock()->bc();
 }
 
 O<Value> Scope::get(O<Reference> r) {
@@ -74,7 +74,7 @@ O<Value> Scope::get(O<Reference> r) {
 #endif
 
   const auto n = r->depth;
-  Scope *scp = get_nth_parent(n);
+  O<Scope> scp = get_nth_parent(n);
 
   return scp->vars[r->position_in_parent];
 }
@@ -90,7 +90,7 @@ void Scope::set(bool should_var_be_set, O<Reference> r, O<Value> v) {
 
   const auto n = r->depth;
   CXBQN_DEBUG("Scope::set:shoudbeset={},depth={}", should_var_be_set, n);
-  auto *scp = get_nth_parent(n);
+  auto scp = get_nth_parent(n);
   CXBQN_DEBUG_NC("Scope::set:nth parent={}", scp);
 
   CXBQN_DEBUG("Scope::set:r->pos={},scp->vars={}", r->position_in_parent,
@@ -107,9 +107,9 @@ void Scope::set(bool should_var_be_set, O<Reference> r, O<Value> v) {
   scp->vars[r->position_in_parent] = v;
 }
 
-Scope *Scope::get_nth_parent(uz depth) {
+O<Scope> Scope::get_nth_parent(uz depth) {
   CXBQN_DEBUG("Scope::get_nth_parent:depth={}", depth);
-  auto *scp = this;
+  auto scp = shared_from_this();
   while (depth-- > 0) {
     CXBQN_DEBUG("Scope::get_nth_parent:traversing to parent. depth={}", depth);
     CXBQN_DEBUG_NC("before={}", scp);
@@ -118,7 +118,7 @@ Scope *Scope::get_nth_parent(uz depth) {
       throw std::runtime_error(
           "assign: got nullptr scope when walking the scope tree");
 #endif
-    scp = scp->parent;
+    scp = scp->parent.lock();
     CXBQN_DEBUG_NC("after={}", scp);
   }
   return scp;

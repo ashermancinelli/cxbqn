@@ -14,7 +14,7 @@ O<Value> BlockInst::call(u8 nargs, std::vector<O<Value>> args) {
 
   const auto blk = scp->_blks[blk_idx];
 
-  auto *child = new Scope(scp, blk_idx, scp->_blks);
+  auto child = make_shared<Scope>(scp, blk_idx, scp->_blks);
 
   auto [bc, nvars] = blk.body(child->bc(), nargs);
   std::copy(args.begin(), args.end(), child->vars.begin());

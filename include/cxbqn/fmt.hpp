@@ -44,7 +44,8 @@ template <> struct fmt::formatter<Scope> {
   template <typename FormatContext>
   auto format(const Scope &s, FormatContext &ctx) -> decltype(ctx.out()) {
     auto &&out = ctx.out();
-    format_to(out, "(scp p={},v={})", (s.parent ? "scp" : "null"), s.vars);
+    auto parent = s.parent.lock();
+    format_to(out, "(scp p={},v={})", (parent ? "scp" : "null"), s.vars);
     return out;
   }
 };
