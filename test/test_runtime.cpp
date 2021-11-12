@@ -20,14 +20,14 @@ TEST_CASE("Evaluate Runtime") {
 
   auto runtime_ret = dynamic_pointer_cast<Array>(ret.v);
   REQUIRE(nullptr != runtime_ret);
-  REQUIRE(runtime_ret->N() == 2);
+  CHECK(runtime_ret->N() == 3);
 
   auto rt = dynamic_pointer_cast<Array>(runtime_ret->values[0]);
   REQUIRE(nullptr != rt);
-  REQUIRE(rt->N() == 64);
+  CHECK(rt->N() == 64);
 
   auto runtime = rt->values;
-  REQUIRE(runtime.size() == 64);
+  CHECK(runtime.size() == 64);
 
   CompileParams p2{
 #include <cxbqn/__/compiled_compiler>

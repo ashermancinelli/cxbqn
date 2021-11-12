@@ -154,6 +154,11 @@ O<Value> vm(ByteCodeRef bc, std::vector<O<Value>> consts,
       instructions::tr3d(stk);
       INSTR("TR3D");
       break;
+    case op::TR3O:
+      INSTR("TR3D");
+      instructions::tr3o(stk);
+      INSTR("TR3D");
+      break;
     case op::SETM:
       INSTR("SETM");
       instructions::setm(stk, scope);

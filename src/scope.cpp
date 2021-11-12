@@ -25,7 +25,7 @@ O<Scope> Scope::child_scope(W<Scope> parent, uz blk_idx) {
 
 std::vector<O<Value>> Scope::consts() const {
 #ifdef CXBQN_DEEPCHECKS
-  if (nullopt == _consts and nullptr == parent)
+  if (nullopt == _consts and 0 == parent.use_count())
     throw std::runtime_error("scope: expected to either own consts or to have "
                              "parent, but neither is the case.");
 #endif
@@ -34,7 +34,7 @@ std::vector<O<Value>> Scope::consts() const {
 
 std::span<const Body> Scope::bodies() const {
 #ifdef CXBQN_DEEPCHECKS
-  if (nullopt == _bods and nullptr == parent)
+  if (nullopt == _bods and 0 == parent.use_count())
     throw std::runtime_error("scope: expected to either own blocks or to have "
                              "parent, but neither is the case.");
 #endif
@@ -43,7 +43,7 @@ std::span<const Body> Scope::bodies() const {
 
 std::span<const Block> Scope::blocks() const {
 #ifdef CXBQN_DEEPCHECKS
-  if (nullopt == _blks and nullptr == parent)
+  if (nullopt == _blks and 0 == parent.use_count())
     throw std::runtime_error("scope: expected to either own blocks or to have "
                              "parent, but neither is the case.");
 #endif
@@ -56,7 +56,7 @@ std::span<const Block> Scope::blocks() const {
 
 const ByteCodeRef Scope::bc() const {
 #ifdef CXBQN_DEEPCHECKS
-  if (nullptr == parent and !_bc.has_value())
+  if (0 == parent.use_count() and !_bc.has_value())
     throw std::runtime_error("scope: expected to either own bc or to have "
                              "parent, but neither is the case.");
 #endif
@@ -111,7 +111,7 @@ O<Scope> Scope::get_nth_parent(uz depth) {
     CXBQN_DEBUG("Scope::get_nth_parent:traversing to parent. depth={}", depth);
     CXBQN_DEBUG_NC("before={}", scp);
 #ifdef CXBQN_DEEPCHECKS
-    if (nullptr == scp->parent)
+    if (nullptr == scp->parent.lock())
       throw std::runtime_error(
           "assign: got nullptr scope when walking the scope tree");
 #endif
