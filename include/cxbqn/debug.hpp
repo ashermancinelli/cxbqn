@@ -8,15 +8,19 @@
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/spdlog.h>
 #include <sstream>
-#define CXBQN_DEBUG(...) spdlog::default_logger_raw()->debug(__VA_ARGS__);
-#define CXBQN_CRIT(...) spdlog::default_logger_raw()->critical(__VA_ARGS__);
-#define CXBQN_INFO(...) spdlog::default_logger_raw()->info(__VA_ARGS__);
+#define CXBQN_DEBUG(...) spdlog::debug(__VA_ARGS__);
+#define CXBQN_CRIT(...) spdlog::critical(__VA_ARGS__);
+#define CXBQN_INFO(...) spdlog::info(__VA_ARGS__);
 #define CXBQN_SETLOGSTR()                                                      \
   do {                                                                         \
     auto l = spdlog::create_async<spdlog::sinks::basic_file_sink_mt>(          \
-        "async_file_logger", "cxbqn.log");                                     \
+        "async_file_logger", "cxbqn-debug.log");                               \
     l->set_level(spdlog::CXBQN_LOGLEVEL);                                      \
     l->set_pattern("cxbqn[%^%5l%$]:%v");                                       \
+    auto vml = spdlog::create_async<spdlog::sinks::basic_file_sink_mt>(        \
+        "vm_async_file_logger", "cxbqn-debug.log");                            \
+    vml->set_level(spdlog::level::debug);                                      \
+    vml->set_pattern("%v");                                                    \
     spdlog::flush_every(std::chrono::seconds(5));                              \
     spdlog::set_default_logger(l);                                             \
   } while (0);

@@ -32,8 +32,8 @@ struct Provides : public Function {
   }
 };
 
-#define CXBQN_BUILTIN_DECL(T, ...)                                             \
-  struct T : public Provides {                                                 \
+#define CXBQN_BUILTIN_DECL(PARENT, T, ...)                                     \
+  struct T : public PARENT {                                                   \
     std::ostream &repr(std::ostream &os) const override {                      \
       return os << __VA_ARGS__;                                                \
     }                                                                          \
@@ -41,49 +41,54 @@ struct Provides : public Function {
   };                                                                           \
   O<Value> bi_##T();
 
+#define CXBQN_BUILTIN_FN_DECL(T, ...) \
+  CXBQN_BUILTIN_DECL(Function, T, __VA_ARGS__); 
+
 // Arithmatic
-CXBQN_BUILTIN_DECL(Plus, "+");
-CXBQN_BUILTIN_DECL(Minus, "-");
-CXBQN_BUILTIN_DECL(Mul, "×");
-CXBQN_BUILTIN_DECL(Div, "÷");
-CXBQN_BUILTIN_DECL(Power, "⋆");
-CXBQN_BUILTIN_DECL(Root, "√");
-CXBQN_BUILTIN_DECL(Floor, "⌊");
-CXBQN_BUILTIN_DECL(Ceil, "⌈");
-CXBQN_BUILTIN_DECL(Stile, "|");
+CXBQN_BUILTIN_FN_DECL(Plus, "+");
+CXBQN_BUILTIN_FN_DECL(Minus, "-");
+CXBQN_BUILTIN_FN_DECL(Mul, "×");
+CXBQN_BUILTIN_FN_DECL(Div, "÷");
+CXBQN_BUILTIN_FN_DECL(Power, "⋆");
+CXBQN_BUILTIN_FN_DECL(Root, "√");
+CXBQN_BUILTIN_FN_DECL(Floor, "⌊");
+CXBQN_BUILTIN_FN_DECL(Ceil, "⌈");
+CXBQN_BUILTIN_FN_DECL(Stile, "|");
 
 // Bool
-CXBQN_BUILTIN_DECL(Not, "¬");
-CXBQN_BUILTIN_DECL(And, "∧");
-CXBQN_BUILTIN_DECL(Or, "∨");
-CXBQN_BUILTIN_DECL(LT, "<");
-CXBQN_BUILTIN_DECL(GT, ">");
-CXBQN_BUILTIN_DECL(NE, "≠");
-CXBQN_BUILTIN_DECL(EQ, "=");
-CXBQN_BUILTIN_DECL(LE, "≤");
-CXBQN_BUILTIN_DECL(GE, "≥");
-CXBQN_BUILTIN_DECL(FEQ, "≡");
-CXBQN_BUILTIN_DECL(FNE, "≢");
+CXBQN_BUILTIN_FN_DECL(Not, "¬");
+CXBQN_BUILTIN_FN_DECL(And, "∧");
+CXBQN_BUILTIN_FN_DECL(Or, "∨");
+CXBQN_BUILTIN_FN_DECL(LT, "<");
+CXBQN_BUILTIN_FN_DECL(GT, ">");
+CXBQN_BUILTIN_FN_DECL(NE, "≠");
+CXBQN_BUILTIN_FN_DECL(EQ, "=");
+CXBQN_BUILTIN_FN_DECL(LE, "≤");
+CXBQN_BUILTIN_FN_DECL(GE, "≥");
+CXBQN_BUILTIN_FN_DECL(FEQ, "≡");
+CXBQN_BUILTIN_FN_DECL(FNE, "≢");
 
 // Only some of these are needed to bootstrap the runtime
-CXBQN_BUILTIN_DECL(Ltack, "⊣");
-CXBQN_BUILTIN_DECL(Rtack, "⊢");
-CXBQN_BUILTIN_DECL(ArrayDepth, "≡");
-CXBQN_BUILTIN_DECL(Type, "•Type");
-CXBQN_BUILTIN_DECL(Table, "⌜");
-CXBQN_BUILTIN_DECL(Fill, "Fill");
-CXBQN_BUILTIN_DECL(Log, "Log");
-CXBQN_BUILTIN_DECL(Assert, "!");
-CXBQN_BUILTIN_DECL(Range, "↕");
-CXBQN_BUILTIN_DECL(Pick, "⊑");
-CXBQN_BUILTIN_DECL(Shape, "≢");
-CXBQN_BUILTIN_DECL(Deshape, "⥊");
-CXBQN_BUILTIN_DECL(Scan, "`");
-CXBQN_BUILTIN_DECL(GroupLen, "GroupLen");
-CXBQN_BUILTIN_DECL(GroupOrd, "GroupOrd");
-CXBQN_BUILTIN_DECL(FillBy, "_fillBy_");
-CXBQN_BUILTIN_DECL(Valence, "⊘");
-CXBQN_BUILTIN_DECL(Catch, "⎊");
+CXBQN_BUILTIN_FN_DECL(Ltack, "⊣");
+CXBQN_BUILTIN_FN_DECL(Rtack, "⊢");
+CXBQN_BUILTIN_FN_DECL(ArrayDepth, "≡");
+CXBQN_BUILTIN_FN_DECL(Type, "•Type");
+CXBQN_BUILTIN_FN_DECL(Fill, "Fill");
+CXBQN_BUILTIN_FN_DECL(Log, "Log");
+CXBQN_BUILTIN_FN_DECL(Assert, "!");
+CXBQN_BUILTIN_FN_DECL(Range, "↕");
+CXBQN_BUILTIN_FN_DECL(Pick, "⊑");
+CXBQN_BUILTIN_FN_DECL(Shape, "≢");
+CXBQN_BUILTIN_FN_DECL(Deshape, "⥊");
+CXBQN_BUILTIN_FN_DECL(GroupLen, "GroupLen");
+CXBQN_BUILTIN_FN_DECL(GroupOrd, "GroupOrd");
+
+CXBQN_BUILTIN_DECL(Md1, Table, "⌜");
+CXBQN_BUILTIN_DECL(Md1, Scan, "`");
+
+CXBQN_BUILTIN_DECL(Md2, FillBy, "_fillBy_");
+CXBQN_BUILTIN_DECL(Md2, Valence, "⊘");
+CXBQN_BUILTIN_DECL(Md2, Catch, "⎊");
 
 #undef CXBQN_BUILTIN_DECL
 

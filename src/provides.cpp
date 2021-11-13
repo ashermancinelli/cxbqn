@@ -175,6 +175,10 @@ CXBQN_BI_CALL_DEF_NUMONLY(NE, "≠", {}, NNC(!feq_helper(x->v, w->v)));
 
 O<Value> EQ::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("=:nargs={},args={}", nargs, args);
+  //spdlog::get("async_file_logger")->flush();
+  //spdlog::get("vm_async_file_logger")->flush();
+  //for (int i=0; i < 10000; i++)
+  //  ;
   auto ox = args[1];
   auto ow = args[2];
 
@@ -185,11 +189,45 @@ O<Value> EQ::call(u8 nargs, std::vector<O<Value>> args) {
   if (1 == nargs)
     return args[1];
 
-  /* If the builtin types differ, that's an easy case to rule out */
+  /* 
+   * If the builtin types differ, that's an easy case to rule out. We can also
+   * assume from this point out that the bultin type of x and w will be the 
+   * same.
+   */
   if (type_builtin(ox) != type_builtin(ow))
     return NNC(false);
 
-  /* pointer comparison for functions and modifiers */
+  /* Use pointer comparison for blockinst's */
+  if (auto xf = std::dynamic_pointer_cast<BlockInst>(ox)) {
+    auto wf = std::dynamic_pointer_cast<BlockInst>(ow);
+    return NNC(xf == wf);
+  }
+
+  if (t_Md1 == type_builtin(ox)) {
+    if (ox->t()[t_Deferred] != ow->t()[t_Deferred])
+      return NNC(false);
+    if (ox->t()[t_Deferred]) { // both must be deferred
+      auto x = dynamic_pointer_cast<Md1Deferred>(ox);
+      auto w = dynamic_pointer_cast<Md1Deferred>(ow);
+      return NNC(x->f == w->f and x->m1 == w->m1);
+    }
+    // if not deferred, just pointer comparison
+    return NNC(ox == ow);
+  }
+
+  if (t_Md2 == type_builtin(ox)) {
+    if (ox->t()[t_Deferred] != ow->t()[t_Deferred])
+      return NNC(false);
+    if (ox->t()[t_Deferred]) { // both must be deferred
+      auto x = dynamic_pointer_cast<Md2Deferred>(ox);
+      auto w = dynamic_pointer_cast<Md2Deferred>(ow);
+      return NNC(x->f == w->f and x->m2 == w->m2 and x->g == w->g);
+    }
+    // if not deferred, just pointer comparison
+    return NNC(ox == ow);
+  }
+
+  /* Compare fields for derived types */
   if (auto xf = std::dynamic_pointer_cast<Fork>(ox)) {
     auto wf = std::dynamic_pointer_cast<Fork>(ow);
     return NNC(xf->f == wf->f && xf->g == wf->g && xf->h == wf->h);
@@ -198,18 +236,13 @@ O<Value> EQ::call(u8 nargs, std::vector<O<Value>> args) {
     auto wf = std::dynamic_pointer_cast<Atop>(ow);
     return NNC(xf->f == wf->f && xf->g == wf->g);
   }
-  if (auto xf = std::dynamic_pointer_cast<Md2Deferred>(ox)) {
-    auto wf = std::dynamic_pointer_cast<Md2Deferred>(ow);
-    return NNC(xf->f == wf->f && xf->m2 == wf->m2 && xf->g == wf->g);
-  }
-  if (auto xf = std::dynamic_pointer_cast<Md1Deferred>(ox)) {
-    auto wf = std::dynamic_pointer_cast<Md1Deferred>(ow);
-    return NNC(xf->f == wf->f && xf->m1 == wf->m1);
-  }
 
   // If it's none of the types we check for above, it's gotta be a number/char
-  return NNC(feq_helper(std::dynamic_pointer_cast<Number>(ox)->v,
-                        std::dynamic_pointer_cast<Number>(ow)->v));
+  if (t_Number == type_builtin(ox) or t_Character == type_builtin(ox))
+    return NNC(feq_helper(std::dynamic_pointer_cast<Number>(ox)->v,
+                          std::dynamic_pointer_cast<Number>(ow)->v));
+
+  throw std::runtime_error("=: invalid type combination passed");
 }
 
 CXBQN_BI_CALL_DEF_NUMONLY(LE, "≤", {},

@@ -277,26 +277,6 @@ struct Atop : public Function {
   std::ostream &repr(std::ostream &os) const override;
 };
 
-struct Md1 : public Function {
-  TypeType t() const override { return TypeType{t_Md1}; }
-};
-
-struct UserMd1 : public Md1 {
-  TypeType t() const override { return TypeType{t_Md1 | annot(t_UserDefined)}; }
-  Scope *sc;
-  Block *bl;
-};
-
-struct Md2 : public Function {
-  TypeType t() const override { return TypeType{t_Md2}; }
-};
-
-struct UserMd2 : public Md2 {
-  TypeType t() const override { return TypeType{t_Md2 | annot(t_UserDefined)}; }
-  Scope *sc;
-  Block *bl;
-};
-
 /*
  * When a modifier is popped off the stack and it not immediate, this type
  * is pushed back on the stack
@@ -309,6 +289,10 @@ struct Md1Deferred : public Function {
   std::ostream &repr(std::ostream &os) const override;
 };
 
+struct Md1 : public Function {
+  TypeType t() const override { return TypeType{t_Md1}; }
+};
+
 /*
  * Same as above, but two modifier
  */
@@ -318,6 +302,10 @@ struct Md2Deferred : public Function {
   Md2Deferred(O<Value> f, O<Value> m2, O<Value> g) : f{f}, m2{m2}, g{g} {}
   O<Value> call(u8 nargs = 0, std::vector<O<Value>> args = {}) override;
   std::ostream &repr(std::ostream &os) const override;
+};
+
+struct Md2 : public Function {
+  TypeType t() const override { return TypeType{t_Md2}; }
 };
 
 } // namespace types

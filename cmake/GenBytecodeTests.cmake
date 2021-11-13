@@ -32,6 +32,7 @@ if(HAS_BQN_EXE)
       "_l←{𝕩{𝕏𝕗} 𝔽}⋄{𝕏𝕤} {𝕩}_l 3 _l 5"
       "1{𝕨}{𝔽{𝕩𝔽𝕨}𝔾𝔽}{𝕩}0"
       "0‿(0‿{𝕩}){{a‿b←𝕩⋄t←𝕤⋄{𝕤⋄T↩{𝕤⋄{a‿b←𝕩⋄a}}}{B𝕗}0⋄(T b){a‿b←𝕩⋄𝔽b}}𝕗} 0‿(1‿(2‿(3‿(4‿{𝕩}))))"
+      "4({𝕨‿𝕩}{𝕩}{𝕨})5"
   )
   set(BC_ANS
       5
@@ -62,7 +63,8 @@ if(HAS_BQN_EXE)
       5
       3
       1
-      2)
+      2
+      4)
 
   set(BC_TEST_SOURCE "${PROJECT_BINARY_DIR}/test_bc.cpp")
   init_gen_file(${BC_TEST_SOURCE})

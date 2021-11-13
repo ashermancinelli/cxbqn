@@ -17,7 +17,7 @@ RunResult run(std::vector<i32> bc, std::vector<O<Value>> consts,
 
   CXBQN_DEBUG("vm::run");
   CXBQN_DEBUG("bc={}", ByteCodeRef(bc));
-  INSTR_INIT();
+  VMDEBUG_INIT();
 
 #ifdef CXBQN_DEEPCHECKS
   for (const auto &b : bodies)
@@ -45,6 +45,7 @@ RunResult run(std::vector<i32> bc, std::vector<O<Value>> consts,
 #endif
 
   INSTR_REPORT();
+  VMDEBUG_FINALIZE();
 
   return ret;
 }
