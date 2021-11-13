@@ -27,11 +27,18 @@ static O<Value> safe_set_refer(O<Value> opaque_refer, O<Value> value,
   // If the masked type matches t_Array, we know we're working with an array.
   if (opaque_refer->t()[t_RefArray]) {
     auto aref = dynamic_pointer_cast<RefArray>(opaque_refer);
-    auto aval = dynamic_pointer_cast<Array>(value);
 #ifdef CXBQN_DEEPCHECKS
     if (nullptr == aref)
       throw std::runtime_error(
           "setn: Could not cast reference to type RefArray");
+#endif
+    if (value->t()[t_DataValue]) {
+      for (int i = 0; i < aref->N(); i++)
+        scp->set(ShouldVarBeSet, aref->getref(i), value);
+      return value;
+    }
+    auto aval = dynamic_pointer_cast<Array>(value);
+#ifdef CXBQN_DEEPCHECKS
     if (nullptr == aval)
       throw std::runtime_error("setn: Could not cast value to type Array when "
                                "assigning to RefArray");
@@ -259,7 +266,7 @@ void fn2o(std::vector<O<Value>> &stk) {
       return;
     }
 
-    CXBQN_DEBUG("fn2o: got nothing for 𝕩 and 𝕨, just pushing nothing");
+    CXBQN_DEBUG("fn2o: got nothing for 𝕨, calling monadically");
     stk.push_back(S->call(1, {S, x, bi_Nothing()}));
     return;
   }
