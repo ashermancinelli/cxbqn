@@ -312,9 +312,10 @@ O<Value> Assert::call(u8 nargs, std::vector<O<Value>> args) {
   if (!feq_helper(1., std::dynamic_pointer_cast<Number>(args[1])->v))
     shoulddie = true;
   if (shoulddie) {
-    CXBQN_CRIT("{} ! {}", (2 == nargs ? CXBQN_STR_NC(args[2]) : ""),
+    const auto s = fmt::format("{} ! {}", (2 == nargs ? CXBQN_STR_NC(args[2]) : ""),
                CXBQN_STR_NC(args[1]));
-    throw std::runtime_error("!");
+    CXBQN_CRIT("{}", s);
+    throw std::runtime_error(s);
   }
   return args[1];
 }
