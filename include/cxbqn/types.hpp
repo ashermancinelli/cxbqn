@@ -123,6 +123,7 @@ using std::static_pointer_cast;
 
 struct Scope;
 struct Block;
+struct Array;
 
 struct Value : public std::enable_shared_from_this<Value> {
 

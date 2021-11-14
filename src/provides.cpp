@@ -175,9 +175,9 @@ CXBQN_BI_CALL_DEF_NUMONLY(NE, "≠", {}, NNC(!feq_helper(x->v, w->v)));
 
 O<Value> EQ::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("=:nargs={},args={}", nargs, args);
-  //spdlog::get("async_file_logger")->flush();
-  //spdlog::get("vm_async_file_logger")->flush();
-  //for (int i=0; i < 10000; i++)
+  // spdlog::get("async_file_logger")->flush();
+  // spdlog::get("vm_async_file_logger")->flush();
+  // for (int i=0; i < 10000; i++)
   //  ;
   auto ox = args[1];
   auto ow = args[2];
@@ -189,9 +189,9 @@ O<Value> EQ::call(u8 nargs, std::vector<O<Value>> args) {
   if (1 == nargs)
     return args[1];
 
-  /* 
+  /*
    * If the builtin types differ, that's an easy case to rule out. We can also
-   * assume from this point out that the bultin type of x and w will be the 
+   * assume from this point out that the bultin type of x and w will be the
    * same.
    */
   if (type_builtin(ox) != type_builtin(ow))
@@ -312,8 +312,9 @@ O<Value> Assert::call(u8 nargs, std::vector<O<Value>> args) {
   if (!feq_helper(1., std::dynamic_pointer_cast<Number>(args[1])->v))
     shoulddie = true;
   if (shoulddie) {
-    const auto s = fmt::format("{} ! {}", (2 == nargs ? CXBQN_STR_NC(args[2]) : ""),
-               CXBQN_STR_NC(args[1]));
+    const auto s =
+        fmt::format("{} ! {}", (2 == nargs ? CXBQN_STR_NC(args[2]) : ""),
+                    CXBQN_STR_NC(args[1]));
     CXBQN_CRIT("{}", s);
     throw std::runtime_error(s);
   }
@@ -527,8 +528,50 @@ O<Value> Valence::call(u8 nargs, std::vector<O<Value>> args) {
   auto m = args[3];
   auto f = args[4];
   auto g = args[5];
-  return 1 == nargs ? f->call(1, {f, x, bi_Nothing()})
-                    : g->call(2, {g, x, w});
+  return 1 == nargs ? f->call(1, {f, x, bi_Nothing()}) : g->call(2, {g, x, w});
+}
+
+O<Value> Decompose::call(u8 nargs, std::vector<O<Value>> args) {
+  if (2 == nargs)
+    throw std::runtime_error("Decompose: expected one argument, got two");
+
+  auto x = args[1];
+
+  // Check for data values
+  if (x->t()[t_DataValue])
+    return O<Value>(new Array({NNC(-1), x}));
+
+  // Check for primitives
+  auto it = std::find(runtime.begin(), runtime.end(), x);
+
+  if (it != runtime.end())
+    return O<Value>(new Array({NNC(0), x}));
+
+  if (auto xx = dynamic_pointer_cast<Atop>(x))
+    return O<Value>(new Array({NNC(2), xx->f, xx->g}));
+
+  if (auto xx = dynamic_pointer_cast<Fork>(x))
+    return O<Value>(new Array({NNC(3), xx->f, xx->g, xx->h}));
+
+  if (auto xx = dynamic_pointer_cast<Md1Deferred>(x))
+    return O<Value>(new Array({NNC(4), xx->f, xx->m1}));
+
+  if (auto xx = dynamic_pointer_cast<Md2Deferred>(x))
+    return O<Value>(new Array({NNC(5), xx->f, xx->m2, xx->g}));
+
+  return O<Value>(new Array({NNC(1), args[1]}));
+}
+
+O<Value> PrimInd::call(u8 nargs, std::vector<O<Value>> args) {
+  if (2 == nargs)
+    throw std::runtime_error("PrimInd: expected one argument, got two");
+
+  auto x = args[1];
+  auto it = std::find(runtime.begin(), runtime.end(), x);
+  if (it == runtime.end())
+    return NNC(runtime.size());
+
+  return NNC(std::distance(runtime.begin(), it));
 }
 
 } // namespace cxbqn::provides

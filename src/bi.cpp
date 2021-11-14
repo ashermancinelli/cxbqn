@@ -46,6 +46,31 @@ O<types::Array> get_runtime() {
   return std::dynamic_pointer_cast<Array>(runtime_ret->values[0]);
 }
 
+O<Array> get_runtime_setprims() {
+  CXBQN_DEBUG("provides::get_runtime_setprims");
+
+  // First we run the runtime to get the original output
+  const auto provide = provides::get_provides()->values;
+  static CompileParams p{
+#include <cxbqn/__/compiled_runtime>
+  };
+  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+
+  // Decompose the result to get the array with just the runtime
+  auto runtime_ret = std::dynamic_pointer_cast<Array>(ret.v);
+  auto runtime = std::dynamic_pointer_cast<Array>(runtime_ret->values[0]);
+
+  auto setprims = runtime_ret->values[1];
+
+  // Inform the two latter builtins of the runtime so they can refer to it
+  auto decompose = make_shared<Decompose>(runtime);
+  auto primind = make_shared<PrimInd>(runtime);
+
+  setprims->call(1, {setprims, O<Array>(new Array({decompose, primind}))});
+
+  return runtime;
+}
+
 O<Array> get_runtime_bionly() {
   CXBQN_DEBUG("provides::get_runtime_bionly");
   auto rt = make_shared<Array>(60);
@@ -82,7 +107,7 @@ O<Array> get_runtime_bionly() {
 }
 
 #define BI_DEF(T)                                                              \
-  O<Value> bi_##T() {                                                            \
+  O<Value> bi_##T() {                                                          \
     static T v;                                                                \
     return std::shared_ptr<T>(&v, [](T *) {});                                 \
   }
@@ -124,5 +149,7 @@ BI_DEF(GroupOrd);
 BI_DEF(FillBy);
 BI_DEF(Valence);
 BI_DEF(Catch);
+// BI_DEF(Decompose);
+// BI_DEF(PrimInd);
 
 } // namespace cxbqn::provides

@@ -2,12 +2,14 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 set(tests
     test_bc
-    test_prim
-    test_simple
     test_bi
-    test_provide
+    test_simple
+    test_prim
     test_preruntime
     test_runtime
+    test_runtime_setprims
+    test_compiler_manual
+    test_compiler_setprims
     test_debug
 )
 

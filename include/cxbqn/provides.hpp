@@ -8,6 +8,12 @@ using namespace cxbqn::types;
 /*
  * The runtime as needed by the the final compiler
  */
+O<Array> get_runtime_setprims();
+
+/*
+ * The runtime as theoretically needed by the final compiler, without
+ * `SetPrims Decompose‿PrimInd` having been called.
+ */
 O<Array> get_runtime();
 
 /*
@@ -15,7 +21,6 @@ O<Array> get_runtime();
  * needed by the `runtime` array. This is useful for testing the input to
  * provides on bytecode tests generated from the `simple.bqn` or `prim.bqn`
  * tests.
- *
  */
 O<Array> get_runtime_bionly();
 
@@ -89,6 +94,40 @@ CXBQN_BUILTIN_DECL(Md1, Scan, "`");
 CXBQN_BUILTIN_DECL(Md2, FillBy, "_fillBy_");
 CXBQN_BUILTIN_DECL(Md2, Valence, "⊘");
 CXBQN_BUILTIN_DECL(Md2, Catch, "⎊");
+
+struct Decompose : public Function {
+
+  Decompose(O<Value> _runtime)
+      : runtime{dynamic_pointer_cast<Array>(_runtime)->values} {}
+
+  std::ostream &repr(std::ostream &os) const override {
+    return os << "•Decompose";
+  }
+
+  // Decompose needs to check if a value is a primitive, so we store a span of
+  // the runtime to check.
+  std::span<O<Value>> runtime;
+
+  O<Value> call(u8 nargs = 0, std::vector<O<Value>> args = {}) override;
+};
+O<Value> bi_Decompose();
+
+struct PrimInd : public Function {
+
+  PrimInd(O<Value> _runtime)
+      : runtime{dynamic_pointer_cast<Array>(_runtime)->values} {}
+
+  std::ostream &repr(std::ostream &os) const override {
+    return os << "PrimInd";
+  }
+
+  // PrimInd returns the index of a value in the runtime if it exists, so we
+  // need to store the runtime in the object.
+  std::span<O<Value>> runtime;
+
+  O<Value> call(u8 nargs = 0, std::vector<O<Value>> args = {}) override;
+};
+O<Value> bi_PrimInd();
 
 #undef CXBQN_BUILTIN_DECL
 

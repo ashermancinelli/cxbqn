@@ -17,23 +17,21 @@ TEST_CASE("Evaluate Runtime") {
   auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
+}
 
-  auto runtime_ret = dynamic_pointer_cast<Array>(ret.v);
-  REQUIRE(nullptr != runtime_ret);
-  CHECK(runtime_ret->N() == 3);
-
-  auto rt = dynamic_pointer_cast<Array>(runtime_ret->values[0]);
-  REQUIRE(nullptr != rt);
-  CHECK(rt->N() == 64);
-
-  auto runtime = rt->values;
-  CHECK(runtime.size() == 64);
-
-  CompileParams p2{
-#include <cxbqn/__/compiled_compiler>
-  };
-
-  auto compiler_ret = vm::run(p2.bc, p2.consts.v, p2.blk_defs, p2.bodies);
-  REQUIRE(nullptr != compiler_ret.v);
-  REQUIRE(nullptr != compiler_ret.scp);
+TEST_CASE("Check valence after loading runtime") {
+  spdlog::critical("test '{𝕏0}{𝕨{𝕩}⊘{𝕨}𝕏}7', ans '7'");
+  const auto runtime = provides::get_runtime()->values;
+  CompileParams p{
+      {0, 2, 1,  1, 16, 1, 2,  16, 7, 34, 0, 1,  1, 3, 0, 0,  1, 4, 27, 34,
+       0, 2, 23, 7, 0,  1, 34, 0,  1, 16, 7, 34, 0, 2, 7, 34, 0, 1, 7},
+      {runtime[58], 0, 7},
+      {{0, 1, 0}, {0, 0, 1}, {0, 0, 2}, {0, 0, {{}, {3}}}, {0, 0, 4}},
+      {{0, 0}, {9, 3}, {24, 3}, {31, 3}, {35, 3}}};
+  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  REQUIRE(nullptr != ret.v);
+  REQUIRE(nullptr != ret.scp);
+  auto n = dynamic_pointer_cast<Number>(ret.v);
+  REQUIRE(nullptr != n);
+  REQUIRE(7 == doctest::Approx(n->v));
 }
