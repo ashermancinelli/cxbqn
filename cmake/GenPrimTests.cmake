@@ -54,8 +54,11 @@ if(HAS_BQN_EXE)
       "1≡!1"
       "1≡'e'!1"
   )
+
   set(P_TEST_SOURCE "${PROJECT_BINARY_DIR}/test_prim.cpp")
+  set(P_SETPRIMS_TEST_SOURCE "${PROJECT_BINARY_DIR}/test_prim_setprims.cpp")
   init_gen_file(${P_TEST_SOURCE})
+  init_gen_file(${P_SETPRIMS_TEST_SOURCE})
 
   foreach(test ${P_TESTS})
     execute_process(
@@ -66,6 +69,23 @@ if(HAS_BQN_EXE)
       OUTPUT_VARIABLE compiled_test
     )
     file(
+      APPEND ${P_SETPRIMS_TEST_SOURCE}
+      "
+TEST_CASE(\"${test}\") {
+  spdlog::critical(\"test='{}'\", \"${test}\");
+  const auto rt = provides::get_runtime_setprims();
+  const auto runtime = rt->values;
+  CompileParams p{ ${compiled_test} };
+  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  REQUIRE(nullptr != ret.v);
+  REQUIRE(nullptr != ret.scp);
+  auto n = dynamic_pointer_cast<Number>(ret.v);
+  REQUIRE(nullptr != n);
+  CHECK(1 == doctest::Approx(n->v));
+}
+"
+    )
+    file(
       APPEND ${P_TEST_SOURCE}
       "
 TEST_CASE(\"${test}\") {
@@ -73,12 +93,6 @@ TEST_CASE(\"${test}\") {
   const auto rt = provides::get_runtime();
   const auto runtime = rt->values;
   CompileParams p{ ${compiled_test} };
-"
-    )
-
-    file(
-      APPEND ${P_TEST_SOURCE}
-      "
   auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);

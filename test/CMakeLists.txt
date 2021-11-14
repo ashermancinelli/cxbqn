@@ -5,6 +5,7 @@ set(tests
     test_bi
     test_simple
     test_prim
+    test_prim_setprims
     test_preruntime
     test_runtime
     test_runtime_setprims
@@ -32,15 +33,18 @@ if(CXBQN_REGEN_TESTS)
   add_custom_target(format-gen-tests
     COMMAND ${CLANGFORMAT_EXE} -i ${PROJECT_BINARY_DIR}/test_bc.cpp
     COMMAND ${CLANGFORMAT_EXE} -i ${PROJECT_BINARY_DIR}/test_prim.cpp
+    COMMAND ${CLANGFORMAT_EXE} -i ${PROJECT_BINARY_DIR}/test_prim_setprims.cpp
     COMMAND ${CLANGFORMAT_EXE} -i ${PROJECT_BINARY_DIR}/test_simple.cpp
     COMMENT "Formatting generated sources..."
     )
   add_custom_target(gentest
     COMMAND ${CMAKE_COMMAND} -E rm ${CMAKE_CURRENT_SOURCE_DIR}/test_bc.cpp
     COMMAND ${CMAKE_COMMAND} -E rm ${CMAKE_CURRENT_SOURCE_DIR}/test_prim.cpp
+    COMMAND ${CMAKE_COMMAND} -E rm ${CMAKE_CURRENT_SOURCE_DIR}/test_prim_setprims.cpp
     COMMAND ${CMAKE_COMMAND} -E rm ${CMAKE_CURRENT_SOURCE_DIR}/test_simple.cpp
     COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_BINARY_DIR}/test_bc.cpp ${CMAKE_CURRENT_SOURCE_DIR}
     COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_BINARY_DIR}/test_prim.cpp ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_BINARY_DIR}/test_prim_setprims.cpp ${CMAKE_CURRENT_SOURCE_DIR}
     COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_BINARY_DIR}/test_simple.cpp ${CMAKE_CURRENT_SOURCE_DIR}
     COMMENT "Installing generated sources into the source tree..."
     )

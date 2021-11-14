@@ -35,15 +35,23 @@ O<types::Array> get_provides() {
   return prov;
 }
 
-O<types::Array> get_runtime() {
+O<Array> get_runtime() {
   CXBQN_DEBUG("provides::get_runtime");
+  static std::optional<std::vector<O<Value>>> runtime = nullopt;
+
+  if (runtime.has_value())
+    return O<Array>(new Array(runtime.value()));
+
   const auto provide = provides::get_provides()->values;
   static CompileParams p{
 #include <cxbqn/__/compiled_runtime>
   };
   auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
   auto runtime_ret = std::dynamic_pointer_cast<Array>(ret.v);
-  return std::dynamic_pointer_cast<Array>(runtime_ret->values[0]);
+
+  runtime = std::dynamic_pointer_cast<Array>(runtime_ret->values[0])->values;
+
+  return get_runtime();
 }
 
 O<Array> get_runtime_setprims() {
