@@ -6,45 +6,75 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 project(
   cxbqn
   LANGUAGES CXX
-  VERSION 0.2.1)
+  VERSION 0.2.1
+)
 
 enable_testing()
 
 set(CXBQN_INIT_STACK_SIZE
     10000
-    CACHE STRING "The size the VM stack is initialized with")
+    CACHE STRING "The size the VM stack is initialized with"
+)
 
 set(CMAKE_CXX_FLAGS
     "-Wall -Wextra ${CMAKE_CXX_FLAGS}"
-    CACHE STRING "")
+    CACHE STRING ""
+)
 
 set(CXBQN_REGEN_TESTS
     OFF
-    CACHE BOOL "Regenerate bytecode, simple, and primitive tests")
+    CACHE BOOL "Regenerate bytecode, simple, and primitive tests"
+)
 set(CXBQN_GEN_CODECOV
     OFF
-    CACHE BOOL "Generate code coverage data. Build type must be debug.")
+    CACHE BOOL "Generate code coverage data. Build type must be debug."
+)
 set(CXBQN_PROFILE_VM
-  OFF
-    CACHE BOOL "Output profiling information from the VM")
+    OFF
+    CACHE BOOL "Output profiling information from the VM"
+)
 set(CXBQN_DEBUG_VM
-  OFF
-    CACHE BOOL "Verbose output in the VM for debugging")
+    OFF
+    CACHE BOOL "Verbose output in the VM for debugging"
+)
+set(CXBQN_DEBUG_VM_FILE
+    ""
+    CACHE STRING "Redirect debugging output from VM to a file. If left empty,"
+          "output will be directed to stdout."
+)
 set(CXBQN_DEBUG_VMSTACK
-  OFF
-    CACHE BOOL "Display the entire stack in the VM for debugging")
+    OFF
+    CACHE BOOL "Display the entire stack in the VM for debugging"
+)
 set(CXBQN_DEEPCHECKS
     ON
-    CACHE BOOL "Deep null checking and debugging information")
+    CACHE BOOL "Deep null checking and debugging information"
+)
 set(CXBQN_COLOR
     ON
-    CACHE BOOL "Output VM information in color")
+    CACHE BOOL "Output VM information in color"
+)
 set(CXBQN_LOGLEVEL
     "level::info"
-    CACHE STRING "Log level spdlog will be set to")
+    CACHE STRING "Log level spdlog will be set to"
+)
 set(CHECK_SUBMODULES
     ON
-    CACHE BOOL "Check git submodules on every build")
+    CACHE BOOL "Check git submodules on every build"
+)
+
+if("CXBQN_DEBUG_VM_FILE" STREQUAL "")
+  set(CXBQN_DEBUG_VM_USE_FILE
+      ON
+      CACHE BOOL ""
+  )
+else()
+  set(CXBQN_DEBUG_VM_USE_FILE
+      OFF
+      CACHE BOOL ""
+  )
+endif()
+
 set(HAS_BQN_EXE OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CXBQN_EXT_DIR ${PROJECT_SOURCE_DIR}/ext/)
@@ -68,8 +98,9 @@ include_directories(${PROJECT_BINARY_DIR})
 
 add_subdirectory(ext)
 
-configure_file(include/cxbqn/config.hpp.in
-               ${PROJECT_BINARY_DIR}/include/cxbqn/config.hpp)
+configure_file(
+  include/cxbqn/config.hpp.in ${PROJECT_BINARY_DIR}/include/cxbqn/config.hpp
+)
 
 add_subdirectory(src)
 add_subdirectory(test)

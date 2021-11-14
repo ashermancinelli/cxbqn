@@ -17,19 +17,17 @@
         "async_file_logger", "cxbqn-debug.log");                               \
     l->set_level(spdlog::CXBQN_LOGLEVEL);                                      \
     l->set_pattern("cxbqn[%^%5l%$]:%v");                                       \
-    auto vml = spdlog::create_async<spdlog::sinks::basic_file_sink_mt>(        \
-        "vm_async_file_logger", "cxbqn-debug.log");                            \
-    vml->set_level(spdlog::level::debug);                                      \
-    vml->set_pattern("%v");                                                    \
     spdlog::flush_every(std::chrono::seconds(5));                              \
     spdlog::set_default_logger(l);                                             \
   } while (0);
+#define CXBQN_LOGFLUSH() spdlog::get("async_file_logger")->flush();
 #else
 #define CXBQN_DEBUG(...) (void)0
 #define CXBQN_CRIT(...) (void)0
 #define CXBQN_INFO(...) (void)0
 #define CXBQN_DEREF_OR_NULL(x) (void)0
 #define CXBQN_SETLOGSTR() (void)0
+#define CXBQN_LOGFLUSH() (void)0
 #endif
 
 #define CXBQN_STR_NC(x)                                                        \

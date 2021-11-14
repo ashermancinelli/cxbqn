@@ -335,7 +335,7 @@ void md2c(std::vector<O<Value>> &stk) {
   auto g = stk.back();
   stk.pop_back();
 
-  CXBQN_DEBUG("md1c:(F _r_ G)=({} {} {})", CXBQN_STR_NC(f),
+  CXBQN_DEBUG("md2c:(F _r_ G)=({} {} {})", CXBQN_STR_NC(f),
               CXBQN_STR_NC(opaque_r), CXBQN_STR_NC(g));
 
   auto r = dynamic_pointer_cast<BlockInst>(opaque_r);
@@ -387,12 +387,12 @@ void tr3o(std::vector<O<Value>> &stk) {
   auto h = stk.back();
   stk.pop_back();
 
-  CXBQN_DEBUG("tr3d:f={},g={},h={}", CXBQN_STR_NC(f), CXBQN_STR_NC(g),
+  CXBQN_DEBUG("tr3o:f={},g={},h={}", CXBQN_STR_NC(f), CXBQN_STR_NC(g),
               CXBQN_STR_NC(h));
 
-  if (h->t()[t_Nothing]) {
-    CXBQN_DEBUG("tr3o: pushing atop, h was nothing");
-    stk.push_back(make_shared<Atop>(f, g));
+  if (f->t()[t_Nothing]) {
+    CXBQN_DEBUG("tr3o: pushing atop, f was nothing");
+    stk.push_back(make_shared<Atop>(g, h));
   } else {
     CXBQN_DEBUG("tr3o: pushing fork, h was not nothing");
     stk.push_back(make_shared<Fork>(f, g, h));

@@ -41,8 +41,8 @@ struct Provides : public Function {
   };                                                                           \
   O<Value> bi_##T();
 
-#define CXBQN_BUILTIN_FN_DECL(T, ...) \
-  CXBQN_BUILTIN_DECL(Function, T, __VA_ARGS__); 
+#define CXBQN_BUILTIN_FN_DECL(T, ...)                                          \
+  CXBQN_BUILTIN_DECL(Function, T, __VA_ARGS__);
 
 // Arithmatic
 CXBQN_BUILTIN_FN_DECL(Plus, "+");

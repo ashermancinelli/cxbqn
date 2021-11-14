@@ -45,14 +45,19 @@ static std::map<std::string, uz> instr_counts;
 #define STK_CL
 #endif
 
-static const char *vm_out_filename = "cxbqn-vm.log";
+#ifdef CXBQN_DEBUG_VM_USE_FILE
+static const char *vm_out_filename = CXBQN_DEBUG_VM_FILE;
 static std::FILE *vm_out = nullptr;
+#define VM_OUT vm_out,
+#else
+#define VM_OUT
+#endif
 
 // Print the program counter
-#define INSTR_PC(pc) fmt::print(vm_out, PC_CL "@{:<4}", pc)
+#define INSTR_PC(pc) fmt::print(VM_OUT PC_CL "@{:<4}", pc)
 
 // Print the instruction
-#define INSTR_INSTR(x) fmt::print(vm_out, INSTR_CL "{}", x)
+#define INSTR_INSTR(x) fmt::print(VM_OUT INSTR_CL "{}", x)
 
 // Print the stack
 #define P_STK()                                                                \
@@ -63,19 +68,24 @@ static std::FILE *vm_out = nullptr;
       if (i + 1 < stk.size())                                                  \
         ss << "; ";                                                            \
     }                                                                          \
-    fmt::print(vm_out, STK_CL "  {}", ss.str());                               \
+    fmt::print(VM_OUT STK_CL "  {}", ss.str());                                \
   } while (0);
 
 // Indent according to the level of nesting in the given vm execution
 static cxbqn::u8 indent;
+#ifdef CXBQN_DEBUG_VM_USE_FILE
 #define VMDEBUG_INIT()                                                         \
   indent = -1;                                                                 \
   vm_out = fopen(vm_out_filename, "a");
 #define VMDEBUG_FINALIZE() fclose(vm_out);
+#else
+#define VMDEBUG_INIT() indent = -1;
+#define VMDEBUG_FINALIZE() (void)0
+#endif
 
 #define INDENT()                                                               \
   for (int i = 0; i < indent; i++)                                             \
-    fmt::print(vm_out, "    ");
+    fmt::print(VM_OUT "    ");
 
 #define INSTR(x)                                                               \
   do {                                                                         \
@@ -83,9 +93,9 @@ static cxbqn::u8 indent;
     INSTR_PC(pc);                                                              \
     INDENT();                                                                  \
     INSTR_INSTR(x);                                                            \
-    fmt::print(vm_out, "{:<6}", "");                                           \
+    fmt::print(VM_OUT "{:<6}", "");                                            \
     P_STK();                                                                   \
-    fmt::print(vm_out, "\n");                                                  \
+    fmt::print(VM_OUT "\n");                                                   \
   } while (0);
 #define INSTR1(x)                                                              \
   do {                                                                         \
@@ -94,9 +104,9 @@ static cxbqn::u8 indent;
     INDENT();                                                                  \
     INSTR_INSTR(x);                                                            \
     const auto s = fmt::format(" {}", bc[pc + 1]);                             \
-    fmt::print(vm_out, ARG_CL "{:<6}", s);                                     \
+    fmt::print(VM_OUT ARG_CL "{:<6}", s);                                      \
     P_STK();                                                                   \
-    fmt::print(vm_out, "\n");                                                  \
+    fmt::print(VM_OUT "\n");                                                   \
   } while (0);
 #define INSTR2(x)                                                              \
   do {                                                                         \
@@ -105,22 +115,22 @@ static cxbqn::u8 indent;
     INDENT();                                                                  \
     INSTR_INSTR(x);                                                            \
     const auto s = fmt::format(" {} {}", bc[pc + 1], bc[pc + 2]);              \
-    fmt::print(vm_out, ARG_CL "{:<6}", s);                                     \
+    fmt::print(VM_OUT ARG_CL "{:<6}", s);                                      \
     P_STK();                                                                   \
-    fmt::print(vm_out, "\n");                                                  \
+    fmt::print(VM_OUT "\n");                                                   \
   } while (0);
 
 #define CXBQN_NEWEVAL()                                                        \
   do {                                                                         \
     indent++;                                                                  \
     INDENT();                                                                  \
-    fmt::print(vm_out, EVAL_CL "     {}\n", "new eval");                       \
+    fmt::print(VM_OUT EVAL_CL "     {}\n", "new eval");                        \
   } while (0);
 
 #define CXBQN_ENDEVAL()                                                        \
   do {                                                                         \
     INDENT();                                                                  \
-    fmt::print(vm_out, EVAL_CL "     {}\n", "end eval");                       \
+    fmt::print(VM_OUT EVAL_CL "     {}\n", "end eval");                        \
     indent--;                                                                  \
   } while (0);
 

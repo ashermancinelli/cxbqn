@@ -18,3 +18,20 @@ TEST_CASE("Evaluate Runtime") {
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
 }
+
+TEST_CASE("Check valence after loading runtime") {
+  spdlog::critical("test '{𝕏0}{𝕨{𝕩}⊘{𝕨}𝕏}7', ans '7'");
+  const auto runtime = provides::get_runtime()->values;
+  CompileParams p{
+      {0, 2, 1,  1, 16, 1, 2,  16, 7, 34, 0, 1,  1, 3, 0, 0,  1, 4, 27, 34,
+       0, 2, 23, 7, 0,  1, 34, 0,  1, 16, 7, 34, 0, 2, 7, 34, 0, 1, 7},
+      {runtime[58], 0, 7},
+      {{0, 1, 0}, {0, 0, 1}, {0, 0, 2}, {0, 0, {{}, {3}}}, {0, 0, 4}},
+      {{0, 0}, {9, 3}, {24, 3}, {31, 3}, {35, 3}}};
+  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  REQUIRE(nullptr != ret.v);
+  REQUIRE(nullptr != ret.scp);
+  auto n = dynamic_pointer_cast<Number>(ret.v);
+  REQUIRE(nullptr != n);
+  REQUIRE(7 == doctest::Approx(n->v));
+}

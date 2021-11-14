@@ -520,8 +520,14 @@ O<Value> Catch::call(u8 nargs, std::vector<O<Value>> args) {
 
 O<Value> Valence::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("⊘: nargs={},args={}", nargs, args);
-  return 1 == nargs ? args[4]->call(1, {args[4], args[1], bi_Nothing()})
-                    : args[5]->call(2, {args[5], args[1], args[2]});
+  CXBQN_LOGFLUSH();
+  auto x = args[1];
+  auto w = args[2];
+  auto m = args[3];
+  auto f = args[4];
+  auto g = args[5];
+  return 1 == nargs ? f->call(1, {f, x, bi_Nothing()})
+                    : g->call(2, {g, x, w});
 }
 
 } // namespace cxbqn::provides

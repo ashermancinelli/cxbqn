@@ -45,8 +45,12 @@ std::ostream &Fork::repr(std::ostream &os) const {
 }
 
 O<Value> Md1Deferred::call(u8 nargs, std::vector<O<Value>> args) {
-  args.push_back(m1);
-  args.push_back(f);
+  args.resize(6);
+  args[3] = m1;
+  args[4] = f;
+  CXBQN_DEBUG("Md1Deferred::call(after adding 𝕣, 𝕗):nargs={},args={}", nargs,
+              args);
+  CXBQN_LOGFLUSH();
   return m1->call(nargs, args);
 }
 std::ostream &Md1Deferred::repr(std::ostream &os) const {
@@ -55,9 +59,13 @@ std::ostream &Md1Deferred::repr(std::ostream &os) const {
 }
 
 O<Value> Md2Deferred::call(u8 nargs, std::vector<O<Value>> args) {
-  args.push_back(m2);
-  args.push_back(f);
-  args.push_back(g);
+  args.resize(6);
+  args[3] = m2;
+  args[4] = f;
+  args[5] = g;
+  CXBQN_DEBUG("Md1Deferred::call(after adding 𝕣, 𝕗, 𝕘):nargs={},args={}", nargs,
+              args);
+  CXBQN_LOGFLUSH();
   return m2->call(nargs, args);
 }
 
