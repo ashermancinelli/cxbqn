@@ -256,18 +256,34 @@ O<Value> EQ::call(u8 nargs, std::vector<O<Value>> args) {
 O<Value> LE::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("≤:nargs={},args={}", nargs, args);
   CXBQN_LOGFLUSH();
-  auto x = dynamic_pointer_cast<Number>(args[1]);
-  auto w = dynamic_pointer_cast<Number>(args[2]);
 
-  return NNC(w->v <= x->v);
-  // return NNC(w->v < x->v or feq_helper(w->v, x->v));
+  auto ox = args[1];
+  auto ow = args[2];
+
+  auto tx = type_builtin(ox);
+  auto tw = type_builtin(ow);
+
+  if (t_Function == tx or t_Function == tw)
+    throw std::runtime_error("≤: cannot compare functions");
+
+  auto nx = dynamic_pointer_cast<Number>(ox);
+  auto nw = dynamic_pointer_cast<Number>(ow);
+
+  return NNC(tx != tw ? tw <= tx : nw->v <= nx->v);
 }
 
 CXBQN_BI_CALL_DEF_NUMONLY(GE, "≥", {},
                           NNC(w->v > x->v || feq_helper(x->v, w->v)));
 CXBQN_BI_CALL_DEF_NUMONLY(Ltack, "⊣", {}, args[2]);
 CXBQN_BI_CALL_DEF_NUMONLY(Rtack, "⊣", {}, args[1]);
-CXBQN_BI_CALL_DEF_NUMONLY(Type, "•Type", {}, NNC(type_builtin(args[1])));
+
+O<Value> Type::call(u8 nargs, std::vector<O<Value>> args) {
+  CXBQN_DEBUG("•Type:nargs={},args={}", nargs, args);
+  CXBQN_CRIT("•Type:nargs={},args={}", nargs, args);
+  auto r = NNC(type_builtin(args[1]));
+  CXBQN_CRIT("•Type:return={}", std::vector<O<Value>>{r});
+  return r;
+}
 
 O<Value> FEQ::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("≡:nargs={},args={}", nargs, args);

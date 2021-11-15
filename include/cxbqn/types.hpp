@@ -255,7 +255,7 @@ struct BlockInst : public Function {
   // Is the block at index blk_idx immediate?
   bool imm() const;
 
-  TypeType t() const override { return TypeType{annot(t_BlockInst)}; }
+  TypeType t() const override { return TypeType{t_Function | annot(t_BlockInst)}; }
   BlockInst(O<Scope> scp, uz blk_idx) : scp{scp}, blk_idx{blk_idx} {}
   O<Value> call(u8 nargs = 0, std::vector<O<Value>> args = {}) override;
   std::ostream &repr(std::ostream &os) const override {
