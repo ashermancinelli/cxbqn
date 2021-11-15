@@ -27,10 +27,24 @@ struct Consts {
 };
 
 struct CompileParams {
+  CompileParams(std::vector<i32> bc, Consts consts,
+                std::vector<BlockDef> blk_defs, std::vector<Body> bodies)
+      : bc{bc}, consts{consts}, blk_defs{blk_defs}, bodies{bodies},
+        source_indices{nullopt}, source_str{nullptr} {}
+
+  CompileParams(std::vector<i32> bc, Consts consts,
+                std::vector<BlockDef> blk_defs, std::vector<Body> bodies,
+                std::vector<std::vector<uz>> source_indices,
+                O<Array> source_str)
+      : bc{bc}, consts{consts}, blk_defs{blk_defs}, bodies{bodies},
+        source_indices{source_indices}, source_str{source_str} {}
+
   std::vector<i32> bc;
   Consts consts;
   std::vector<BlockDef> blk_defs;
   std::vector<Body> bodies;
+  std::optional<std::vector<std::vector<uz>>> source_indices;
+  O<Array> source_str;
 };
 
 #define CXBQN_LOG_TESTN(N) spdlog::critical("=== Test #" #N " ===");

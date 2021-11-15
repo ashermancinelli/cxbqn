@@ -15,6 +15,12 @@ O<Array> get_runtime_setprims();
 O<Array> get_runtime_setprims_cached();
 
 /*
+ * Same as above, but with source locations
+ */
+O<Array> get_runtime_setprims_annot();
+O<Array> get_runtime_setprims_cached_annot();
+
+/*
  * The runtime as theoretically needed by the final compiler, without
  * `SetPrims Decompose‿PrimInd` having been called.
  */

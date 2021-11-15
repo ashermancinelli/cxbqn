@@ -6,7 +6,8 @@
 namespace cxbqn::types {
 
 O<Scope> Scope::root_scope(std::vector<Block> blks, ByteCode bytecode,
-                           std::vector<O<Value>> consts, std::vector<Body> bods) {
+                           std::vector<O<Value>> consts,
+                           std::vector<Body> bods) {
   auto scp = make_shared<Scope>(0);
   scp->_bods = bods;
   scp->_bc = bytecode;
@@ -38,7 +39,7 @@ std::span<const Body> Scope::bodies() const {
     throw std::runtime_error("scope: expected to either own blocks or to have "
                              "parent, but neither is the case.");
 #endif
-  return _bods.has_value() ? _bods.value() : parent.lock()->bodies(); 
+  return _bods.has_value() ? _bods.value() : parent.lock()->bodies();
 }
 
 std::span<const Block> Scope::blocks() const {
@@ -47,11 +48,7 @@ std::span<const Block> Scope::blocks() const {
     throw std::runtime_error("scope: expected to either own blocks or to have "
                              "parent, but neither is the case.");
 #endif
-  // return _blks.has_value() ? _blks.value() : parent.lock()->blocks(); 
-  if (_blks.has_value()) 
-    return std::span(_blks.value().begin(), _blks.value().size());
-  return parent.lock()->blocks();
-    // ? _blks.value() : parent.lock()->blocks(); 
+  return _blks.has_value() ? _blks.value() : parent.lock()->blocks();
 }
 
 const ByteCodeRef Scope::bc() const {
@@ -93,9 +90,11 @@ void Scope::set(bool should_var_be_set, O<Reference> r, O<Value> v) {
   CXBQN_DEBUG("Scope::set:r->pos={},scp->vars={}", r->position_in_parent,
               scp->vars);
 
-  bool isset = nullptr != scp->vars[r->position_in_parent];
+  bool isset = nullptr != scp->vars[r->position_in_parent] and
+               !scp->vars[r->position_in_parent]->t()[t_Nothing];
   if (should_var_be_set != isset) {
-    CXBQN_CRIT("should_var_be_set={},isset={}", should_var_be_set, isset);
+    CXBQN_CRIT("should_var_be_set={},isset={},scp->vars={}", should_var_be_set,
+               isset, scp->vars);
     throw std::runtime_error(
         "Expected var to be set or unset, but this was not the case");
   }
@@ -119,6 +118,52 @@ O<Scope> Scope::get_nth_parent(uz depth) {
     CXBQN_DEBUG_NC("after={}", scp);
   }
   return scp;
+}
+
+const std::pair<std::vector<uz>, std::vector<uz>> &
+Scope::source_indices() const {
+#ifdef CXBQN_DEEPCHECKS
+  if (!_source_indices.has_value() and nullptr == parent.lock())
+    throw std::runtime_error("expected to have source indices or a parent");
+#endif
+  return _source_indices.has_value() ? _source_indices.value()
+                                     : parent.lock()->source_indices();
+}
+
+const std::string_view Scope::source_str() const {
+#ifdef CXBQN_DEEPCHECKS
+  if (!_source_indices.has_value() and nullptr == parent.lock())
+    throw std::runtime_error("expected to have source indices or a parent");
+#endif
+  return _source_str.has_value() ? _source_str.value()
+                                 : parent.lock()->source_str();
+}
+
+void Scope::set_source_info(std::vector<std::vector<uz>> si, O<Array> s) {
+  CXBQN_DEBUG("Scope::set_source_info");
+  if (si.size() != 2)
+    throw std::runtime_error("source indices can only have two values");
+
+  // Break the source info into a pair
+  _source_indices = std::pair(si[0], si[1]);
+
+  // create a standard string of the source text
+  std::string _s;
+  for (auto v : s->values)
+    utf8::append(dynamic_pointer_cast<Character>(v)->c(), _s);
+  _source_str = _s;
+}
+
+const std::string_view Scope::source_for_program_counter(uz pc) const {
+  const auto &si = source_indices();
+  const auto b = si.first[pc], e = si.second[pc];
+  const auto s = source_str();
+  auto it_start = s.begin();
+  utf8::advance(it_start, b, s.end());
+  auto it_end = it_start;
+  utf8::advance(it_end, 1 + (e - b), s.end());
+  const std::string_view sv(it_start, it_end);
+  return sv;
 }
 
 } // namespace cxbqn::types

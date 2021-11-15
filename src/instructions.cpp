@@ -284,7 +284,7 @@ void dfnd(const ByteCodeRef bc, uz &pc, std::vector<O<Value>> &stk, O<Scope> scp
 
   if (blk.def.type == BlockType::func && blk.def.immediate) {
     auto child = Scope::child_scope(scp, blk_idx);
-    auto [blk_bc, nvars] = blk.body(child->bc(), child->bodies());
+    auto [offset, blk_bc, nvars] = blk.body(child->bc(), child->bodies());
     std::vector<O<Value>> stk_;
 
     CXBQN_DEBUG("dfnd:recursing into vm");
@@ -318,7 +318,7 @@ void md1c(std::vector<O<Value>> &stk) {
 
   auto r = dynamic_pointer_cast<BlockInst>(opaque_r);
   if (nullptr != r and r->imm()) {
-    auto v = r->call(1, {opaque_r, f});
+    auto v = r->call(1, {opaque_r, f, bi_Nothing()});
     stk.push_back(v);
   } else {
     stk.push_back(make_shared<Md1Deferred>(f, opaque_r));

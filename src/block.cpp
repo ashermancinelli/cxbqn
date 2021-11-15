@@ -21,14 +21,14 @@ uz Block::max_nvars(std::span<const Body> bods) const {
   }
 }
 
-std::pair<ByteCodeRef, uz> Block::body(const ByteCodeRef bc,
+std::tuple<uz, ByteCodeRef, uz> Block::body(const ByteCodeRef bc,
                                        std::span<const Body> bods, u8 nargs) const {
   CXBQN_DEBUG("Block::body: nargs={}", nargs);
 
   if (def.immediate) {
     auto bod = bods[def.body_idx];
     const auto _bc = bc.subspan(bod.bc_offset);
-    return std::make_pair(_bc, bod.var_count);
+    return std::make_tuple(bod.bc_offset, _bc, bod.var_count);
   }
 
   if (1 == nargs) {
@@ -36,13 +36,13 @@ std::pair<ByteCodeRef, uz> Block::body(const ByteCodeRef bc,
     CXBQN_DEBUG("Block::body:monadic bodies:offset={},nvars={}", bod.bc_offset,
                 bod.var_count);
     const auto _bc = bc.subspan(bod.bc_offset);
-    return std::make_pair(_bc, bod.var_count);
+    return std::make_tuple(bod.bc_offset, _bc, bod.var_count);
   } else if (2 == nargs) {
     auto bod = bods[def.dya_body_idxs[0]];
     CXBQN_DEBUG("Block::body:dyadic bodies:offset={},nvars={}", bod.bc_offset,
                 bod.var_count);
     const auto _bc = bc.subspan(bod.bc_offset);
-    return std::make_pair(_bc, bod.var_count);
+    return std::make_tuple(bod.bc_offset, _bc, bod.var_count);
   }
 
   throw std::runtime_error("Block::body: unreachable");

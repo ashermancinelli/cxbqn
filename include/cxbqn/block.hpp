@@ -1,5 +1,6 @@
 #pragma once
 #include <cxbqn/types.hpp>
+#include <tuple>
 
 namespace cxbqn::types {
 
@@ -41,7 +42,7 @@ struct Block {
   BlockDef def;
 
   // Gives the bytecode and number of variables for a given call
-  std::pair<ByteCodeRef, uz>
+  std::tuple<uz, ByteCodeRef, uz>
   body(const ByteCodeRef bc, std::span<const Body> bods, u8 nargs = 0) const;
 
   uz max_nvars(std::span<const Body> bods) const;

@@ -65,7 +65,20 @@ struct Scope : public std::enable_shared_from_this<Scope> {
 
   const uz blk_idx;
 
+  // These are optional functions and values, only used when source locations
+  // are provided.
+  const std::pair<std::vector<uz>, std::vector<uz>>& source_indices() const;
+  const std::string_view source_for_program_counter(uz pc) const;
+  void set_source_info(std::vector<std::vector<uz>> si, O<Array> s);
+  bool has_source_info() const {
+    return _source_indices.has_value() and _source_str.has_value();
+  }
+  const std::string_view source_str() const;
+  std::optional<std::pair<std::vector<uz>, std::vector<uz>>> _source_indices =
+      nullopt;
+  std::optional<std::string> _source_str = nullopt;
+
   Scope(uz bi) : blk_idx{bi}, parent{O<Scope>{}} {}
 };
 
-}
+} // namespace cxbqn::types

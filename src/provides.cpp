@@ -302,10 +302,12 @@ O<Value> FNE::call(u8 nargs, std::vector<O<Value>> args) {
 
 O<Value> Table::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("⌜: nargs={},args={}", nargs, args);
-  spdlog::critical("⌜: nargs={},args={}", nargs, args);
   auto F = args[4];
   if (t_Array != type_builtin(args[1]) or t_Array != type_builtin(args[2]))
     throw std::runtime_error("⌜: 𝕩 and 𝕨 must be arrays");
+
+  if ((1 == nargs) != (args[2]->t()[t_Nothing]))
+    throw std::runtime_error("⌜: got · for 𝕨 with 2 args, or non-· with 1 arg");
 
   auto x = std::dynamic_pointer_cast<Array>(args[1]);
   const auto &xv = x->values;
@@ -321,10 +323,20 @@ O<Value> Table::call(u8 nargs, std::vector<O<Value>> args) {
   auto w = std::dynamic_pointer_cast<Array>(args[2]);
   const auto &wv = w->values;
   auto ret = make_shared<Array>(x->N() * w->N());
+#ifdef CXBQN_STACKTRACE_DEEP
+  try {
+#endif
   for (int iw = 0; iw < w->N(); iw++)
     for (int ix = 0; ix < x->N(); ix++) {
       ret->values[(iw * x->N()) + ix] = F->call(2, {F, xv[ix], wv[iw]});
     }
+#ifdef CXBQN_STACKTRACE_DEEP
+  } catch (std::runtime_error& e) {
+    std::stringstream ss;
+    ss << "⌜: got '" << e.what() << "' when applying 𝔽";
+    throw ss.str();
+  }
+#endif
   ret->shape.clear();
   for (const auto i : w->shape)
     ret->shape.push_back(i);
@@ -430,6 +442,9 @@ O<Value> Scan::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("`: nargs={},args={}", nargs, args);
   if (t_Array != type_builtin(args[1]))
     throw std::runtime_error("`: 𝕩 must have rank at least 1");
+
+  if ((1 == nargs) != (args[2]->t()[t_Nothing]))
+    throw std::runtime_error("`: got · for 𝕨 with 2 args, or non-· with 1 arg");
 
   auto x = std::dynamic_pointer_cast<Array>(args[1]);
   auto w = args[2];
@@ -551,7 +566,7 @@ O<Value> Catch::call(u8 nargs, std::vector<O<Value>> args) {
     auto F = args[4];
     auto ret = F->call(nargs, {F, args[1], args[2]});
     return ret;
-  } catch (std::exception &e) {
+  } catch (std::runtime_error &e) {
     auto G = args[5];
     auto ret = G->call(nargs, {G, args[1], args[2]});
     return ret;

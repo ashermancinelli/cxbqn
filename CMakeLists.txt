@@ -25,6 +25,14 @@ set(CXBQN_REGEN_TESTS
     OFF
     CACHE BOOL "Regenerate bytecode, simple, and primitive tests"
 )
+set(CXBQN_STACKTRACE
+    OFF
+    CACHE BOOL "Runs every VM invocation in a try-catch block to provide stack trace information"
+)
+set(CXBQN_STACKTRACE_DEEP
+    OFF
+    CACHE BOOL "Checks many additional calls for failure to provide more detailed stack trace information"
+)
 set(CXBQN_GEN_CODECOV
     OFF
     CACHE BOOL "Generate code coverage data. Build type must be debug."
@@ -53,6 +61,10 @@ set(CXBQN_COLOR
     ON
     CACHE BOOL "Output VM information in color"
 )
+set(CXBQN_LOG
+    ON
+    CACHE BOOL "Enable logging in CXBQN"
+    )
 set(CXBQN_LOGLEVEL
     "level::info"
     CACHE STRING "Log level spdlog will be set to"

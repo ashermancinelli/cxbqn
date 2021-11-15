@@ -3,7 +3,7 @@
 #include <cxbqn/fmt.hpp>
 #include <string>
 
-#ifdef CXBQN_DEEPCHECKS
+#ifdef CXBQN_LOG
 #include <spdlog/async.h>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/spdlog.h>

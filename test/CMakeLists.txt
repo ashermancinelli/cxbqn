@@ -28,11 +28,15 @@ endforeach()
 
 file(REMOVE ${PROJECT_BINARY_DIR}/bcgen.sh)
 file(
-  WRITE ${PROJECT_BINARY_DIR}/bcgen.sh
+  WRITE ${PROJECT_BINARY_DIR}/ccxx-wrapper.sh
   "
 cd ${PROJECT_SOURCE_DIR}/ext/cbqn && ${BQN_EXE} ${CMAKE_CURRENT_SOURCE_DIR}/ccxx.bqn ${PROJECT_SOURCE_DIR}/ext//bqn \"$@\"
 "
 )
+execute_process(
+  COMMAND ${BASH} -c "chmod +x ccxx-wrapper.sh"
+  WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
+  )
 
 if(CXBQN_REGEN_TESTS)
   include(GenHelpers)

@@ -28,6 +28,9 @@ static constexpr std::size_t init_stack_size() {
 #cmakedefine CXBQN_DEBUG_VMSTACK
 #cmakedefine CXBQN_DEEPCHECKS
 #cmakedefine CXBQN_COLOR
+#cmakedefine CXBQN_STACKTRACE
+#cmakedefine CXBQN_STACKTRACE_DEEP
+#cmakedefine CXBQN_LOG
 #cmakedefine CXBQN_LOGLEVEL @CXBQN_LOGLEVEL@
 
 }

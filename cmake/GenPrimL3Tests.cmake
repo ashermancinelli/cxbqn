@@ -60,7 +60,7 @@ if(HAS_BQN_EXE)
     execute_process(
       COMMAND
         ${BASH} -c
-        "${BQN_EXE} ${CMAKE_CURRENT_SOURCE_DIR}/ccxx.bqn ${CXBQN_EXT_DIR}/bqn \"${test}\""
+        "${BQN_EXE} ${CMAKE_CURRENT_SOURCE_DIR}/ccxx.bqn ${CXBQN_EXT_DIR}/bqn -i \"${test}\""
       WORKING_DIRECTORY "${CXBQN_EXT_DIR}/cbqn"
       OUTPUT_VARIABLE compiled_test
     )
@@ -68,11 +68,11 @@ if(HAS_BQN_EXE)
       APPEND ${P_SETPRIMS_TEST_SOURCE}
       "
   TEST_CASE(\"${test}\") {
-    spdlog::critical(\"test='{}'\", \"${test}\");
-  const auto rt = provides::get_runtime_setprims_cached();
+  const auto rt = provides::get_runtime_setprims_cached_annot();
   const auto runtime = rt->values;
-    CompileParams p{ ${compiled_test} };
-    auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  spdlog::critical(\"test='{}'\", \"${test}\");
+  CompileParams p( ${compiled_test} );
+  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies, p.source_indices.value(), p.source_str);
     REQUIRE(nullptr != ret.v);
     REQUIRE(nullptr != ret.scp);
     auto n = dynamic_pointer_cast<Number>(ret.v);
