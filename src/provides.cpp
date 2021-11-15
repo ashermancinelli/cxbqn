@@ -302,6 +302,7 @@ O<Value> FNE::call(u8 nargs, std::vector<O<Value>> args) {
 
 O<Value> Table::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("⌜: nargs={},args={}", nargs, args);
+  spdlog::critical("⌜: nargs={},args={}", nargs, args);
   auto F = args[4];
   if (t_Array != type_builtin(args[1]) or t_Array != type_builtin(args[2]))
     throw std::runtime_error("⌜: 𝕩 and 𝕨 must be arrays");
@@ -313,6 +314,7 @@ O<Value> Table::call(u8 nargs, std::vector<O<Value>> args) {
     auto ret = make_shared<Array>(x->N());
     for (int i = 0; i < x->N(); i++)
       ret->values[i] = F->call(1, {F, x->values[i], bi_Nothing()});
+    ret->shape = x->shape;
     return ret;
   }
 
@@ -323,8 +325,12 @@ O<Value> Table::call(u8 nargs, std::vector<O<Value>> args) {
     for (int ix = 0; ix < x->N(); ix++) {
       ret->values[(iw * x->N()) + ix] = F->call(2, {F, xv[ix], wv[iw]});
     }
-  ret->shape.assign(w->shape.begin(), w->shape.end());
-  ret->shape.insert(ret->shape.end(), x->shape.begin(), x->shape.end());
+  ret->shape.clear();
+  for (const auto i : w->shape)
+    ret->shape.push_back(i);
+  for (const auto i : x->shape)
+    ret->shape.push_back(i);
+
   return ret;
 }
 
