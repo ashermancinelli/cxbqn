@@ -8,7 +8,7 @@ using namespace cxbqn::types;
 using namespace cxbqn::provides;
 
 
-TEST_CASE("Evaluate Runtime") {
+TEST_CASE("Evaluate Runtime and call SetPrims") {
   const auto provide = provides::get_provides()->values;
 
   static CompileParams p{

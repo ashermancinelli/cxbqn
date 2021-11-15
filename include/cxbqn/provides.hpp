@@ -6,15 +6,20 @@ namespace cxbqn::provides {
 using namespace cxbqn::types;
 
 /*
- * The runtime as needed by the the final compiler
+ * The runtime as needed by the the final compiler.
+ *
+ * The *_cached alternatives will save the runtime when it's first called, and
+ * just return a copy on subsequent calls.
  */
 O<Array> get_runtime_setprims();
+O<Array> get_runtime_setprims_cached();
 
 /*
  * The runtime as theoretically needed by the final compiler, without
  * `SetPrims Decompose‿PrimInd` having been called.
  */
 O<Array> get_runtime();
+O<Array> get_runtime_cached();
 
 /*
  * The parts of the runtime given in the `provides` array, but in the positions

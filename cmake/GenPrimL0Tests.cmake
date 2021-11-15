@@ -1,7 +1,8 @@
 if(HAS_BQN_EXE)
   find_package(UnixCommands REQUIRED)
-  message(STATUS "Generating primitive tests")
+  message(STATUS "Generating primitive l0 tests")
   set(P_TESTS
+      # Layer 0
       "0≡¯2+2"
       "1e4≡5e3+5e3"
       "'c'≡'a'+2"
@@ -55,8 +56,8 @@ if(HAS_BQN_EXE)
       "1≡'e'!1"
   )
 
-  set(P_TEST_SOURCE "${PROJECT_BINARY_DIR}/test_prim.cpp")
-  set(P_SETPRIMS_TEST_SOURCE "${PROJECT_BINARY_DIR}/test_prim_setprims.cpp")
+  set(P_TEST_SOURCE "${PROJECT_BINARY_DIR}/test_prim_l0.cpp")
+  set(P_SETPRIMS_TEST_SOURCE "${PROJECT_BINARY_DIR}/test_prim_setprims_l0.cpp")
   init_gen_file(${P_TEST_SOURCE})
   init_gen_file(${P_SETPRIMS_TEST_SOURCE})
 
@@ -72,9 +73,9 @@ if(HAS_BQN_EXE)
       APPEND ${P_SETPRIMS_TEST_SOURCE}
       "
 TEST_CASE(\"${test}\") {
-  spdlog::critical(\"test='{}'\", \"${test}\");
-  const auto rt = provides::get_runtime_setprims();
+  const auto rt = provides::get_runtime_setprims_cached();
   const auto runtime = rt->values;
+  spdlog::critical(\"test='{}'\", \"${test}\");
   CompileParams p{ ${compiled_test} };
   auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
@@ -89,9 +90,9 @@ TEST_CASE(\"${test}\") {
       APPEND ${P_TEST_SOURCE}
       "
 TEST_CASE(\"${test}\") {
-  spdlog::critical(\"test='{}'\", \"${test}\");
-  const auto rt = provides::get_runtime();
+  const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
+  spdlog::critical(\"test='{}'\", \"${test}\");
   CompileParams p{ ${compiled_test} };
   auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);

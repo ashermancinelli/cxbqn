@@ -1,6 +1,7 @@
 #include <cmath>
 #include <cxbqn/cxbqn.hpp>
 #include <cxbqn/debug.hpp>
+#include <spdlog/fmt/fmt.h>
 
 namespace cxbqn::provides {
 
@@ -173,80 +174,95 @@ CXBQN_BI_CALL_DEF_NUMONLY(LT, "<", {}, NNC(w->v < x->v));
 CXBQN_BI_CALL_DEF_NUMONLY(GT, ">", {}, NNC(w->v > x->v));
 CXBQN_BI_CALL_DEF_NUMONLY(NE, "≠", {}, NNC(!feq_helper(x->v, w->v)));
 
-O<Value> EQ::call(u8 nargs, std::vector<O<Value>> args) {
-  CXBQN_DEBUG("=:nargs={},args={}", nargs, args);
-  // spdlog::get("async_file_logger")->flush();
-  // spdlog::get("vm_async_file_logger")->flush();
-  // for (int i=0; i < 10000; i++)
-  //  ;
-  auto ox = args[1];
-  auto ow = args[2];
+namespace {
 
-  if (1 == nargs and t_Array == type_builtin(ox))
-    return make_shared<Number>(
-        (static_cast<f64>(std::dynamic_pointer_cast<Array>(ox)->shape.size())));
-
-  if (1 == nargs)
-    return args[1];
-
+static bool eq_recursive(O<Value> ox, O<Value> ow) {
   /*
    * If the builtin types differ, that's an easy case to rule out. We can also
    * assume from this point out that the bultin type of x and w will be the
    * same.
    */
+  const auto tbx = type_builtin(ox), tbw = type_builtin(ow);
+  if ((t_Number == tbx or t_Character == tbx) and
+      (t_Number == tbw or t_Character == tbw))
+    return feq_helper(std::dynamic_pointer_cast<Number>(ox)->v,
+                      std::dynamic_pointer_cast<Number>(ow)->v);
+
   if (type_builtin(ox) != type_builtin(ow))
-    return NNC(false);
+    return false;
 
   /* Use pointer comparison for blockinst's */
   if (auto xf = std::dynamic_pointer_cast<BlockInst>(ox)) {
     auto wf = std::dynamic_pointer_cast<BlockInst>(ow);
-    return NNC(xf == wf);
+    return xf == wf;
   }
 
   if (t_Md1 == type_builtin(ox)) {
     if (ox->t()[t_Deferred] != ow->t()[t_Deferred])
-      return NNC(false);
+      return false;
     if (ox->t()[t_Deferred]) { // both must be deferred
       auto x = dynamic_pointer_cast<Md1Deferred>(ox);
       auto w = dynamic_pointer_cast<Md1Deferred>(ow);
-      return NNC(x->f == w->f and x->m1 == w->m1);
+      return eq_recursive(x->f, w->f) and eq_recursive(x->m1, w->m1);
     }
     // if not deferred, just pointer comparison
-    return NNC(ox == ow);
+    return ox == ow;
   }
 
   if (t_Md2 == type_builtin(ox)) {
     if (ox->t()[t_Deferred] != ow->t()[t_Deferred])
-      return NNC(false);
+      return false;
     if (ox->t()[t_Deferred]) { // both must be deferred
       auto x = dynamic_pointer_cast<Md2Deferred>(ox);
       auto w = dynamic_pointer_cast<Md2Deferred>(ow);
-      return NNC(x->f == w->f and x->m2 == w->m2 and x->g == w->g);
+      return eq_recursive(x->f, w->f) and eq_recursive(x->m2, w->m2) and
+             eq_recursive(x->g, w->g);
     }
     // if not deferred, just pointer comparison
-    return NNC(ox == ow);
+    return ox == ow;
   }
 
   /* Compare fields for derived types */
-  if (auto xf = std::dynamic_pointer_cast<Fork>(ox)) {
-    auto wf = std::dynamic_pointer_cast<Fork>(ow);
-    return NNC(xf->f == wf->f && xf->g == wf->g && xf->h == wf->h);
+  if (auto x = std::dynamic_pointer_cast<Fork>(ox)) {
+    auto w = std::dynamic_pointer_cast<Fork>(ow);
+    return eq_recursive(x->f, w->f) and eq_recursive(x->g, w->g) and
+           eq_recursive(x->h, w->h);
   }
-  if (auto xf = std::dynamic_pointer_cast<Atop>(ox)) {
-    auto wf = std::dynamic_pointer_cast<Atop>(ow);
-    return NNC(xf->f == wf->f && xf->g == wf->g);
+  if (auto x = std::dynamic_pointer_cast<Atop>(ox)) {
+    auto w = std::dynamic_pointer_cast<Atop>(ow);
+    return eq_recursive(x->f, w->f) and eq_recursive(x->g, w->g);
   }
 
-  // If it's none of the types we check for above, it's gotta be a number/char
-  if (t_Number == type_builtin(ox) or t_Character == type_builtin(ox))
-    return NNC(feq_helper(std::dynamic_pointer_cast<Number>(ox)->v,
-                          std::dynamic_pointer_cast<Number>(ow)->v));
-
-  throw std::runtime_error("=: invalid type combination passed");
+  return ox == ow;
 }
 
-CXBQN_BI_CALL_DEF_NUMONLY(LE, "≤", {},
-                          NNC(w->v < x->v || feq_helper(x->v, w->v)));
+} // namespace
+
+O<Value> EQ::call(u8 nargs, std::vector<O<Value>> args) {
+  CXBQN_DEBUG("=:nargs={},args={}", nargs, args);
+  CXBQN_LOGFLUSH();
+  auto ox = args[1];
+  auto ow = args[2];
+
+  if (1 == nargs)
+    if (auto x = dynamic_pointer_cast<Array>(ox))
+      return NNC(x->shape.size());
+    else
+      return NNC(0);
+
+  return NNC(eq_recursive(ox, ow));
+}
+
+O<Value> LE::call(u8 nargs, std::vector<O<Value>> args) {
+  CXBQN_DEBUG("≤:nargs={},args={}", nargs, args);
+  CXBQN_LOGFLUSH();
+  auto x = dynamic_pointer_cast<Number>(args[1]);
+  auto w = dynamic_pointer_cast<Number>(args[2]);
+
+  return NNC(w->v <= x->v);
+  // return NNC(w->v < x->v or feq_helper(w->v, x->v));
+}
+
 CXBQN_BI_CALL_DEF_NUMONLY(GE, "≥", {},
                           NNC(w->v > x->v || feq_helper(x->v, w->v)));
 CXBQN_BI_CALL_DEF_NUMONLY(Ltack, "⊣", {}, args[2]);

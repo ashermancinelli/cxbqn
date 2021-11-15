@@ -35,12 +35,16 @@ O<types::Array> get_provides() {
   return prov;
 }
 
+static O<Array> rt = nullptr;
+O<Array> get_runtime_cached() {
+  if (nullptr != rt)
+    return rt;
+  rt = get_runtime();
+  return get_runtime_cached();
+}
+
 O<Array> get_runtime() {
   CXBQN_DEBUG("provides::get_runtime");
-  static std::optional<std::vector<O<Value>>> runtime = nullopt;
-
-  if (runtime.has_value())
-    return O<Array>(new Array(runtime.value()));
 
   const auto provide = provides::get_provides()->values;
   static CompileParams p{
@@ -49,9 +53,15 @@ O<Array> get_runtime() {
   auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
   auto runtime_ret = std::dynamic_pointer_cast<Array>(ret.v);
 
-  runtime = std::dynamic_pointer_cast<Array>(runtime_ret->values[0])->values;
+  return std::dynamic_pointer_cast<Array>(runtime_ret->values[0]);
+}
 
-  return get_runtime();
+static O<Array> rtsp = nullptr;
+O<Array> get_runtime_setprims_cached() {
+  if (nullptr != rtsp)
+    return rtsp;
+  rtsp = get_runtime_setprims();
+  return get_runtime_setprims_cached();
 }
 
 O<Array> get_runtime_setprims() {
@@ -66,17 +76,17 @@ O<Array> get_runtime_setprims() {
 
   // Decompose the result to get the array with just the runtime
   auto runtime_ret = std::dynamic_pointer_cast<Array>(ret.v);
-  auto runtime = std::dynamic_pointer_cast<Array>(runtime_ret->values[0]);
+  auto runtime_raw = std::dynamic_pointer_cast<Array>(runtime_ret->values[0]);
 
   auto setprims = runtime_ret->values[1];
 
   // Inform the two latter builtins of the runtime so they can refer to it
-  auto decompose = make_shared<Decompose>(runtime);
-  auto primind = make_shared<PrimInd>(runtime);
+  auto decompose = make_shared<Decompose>(runtime_raw);
+  auto primind = make_shared<PrimInd>(runtime_raw);
 
   setprims->call(1, {setprims, O<Array>(new Array({decompose, primind}))});
 
-  return runtime;
+  return runtime_raw;
 }
 
 O<Array> get_runtime_bionly() {

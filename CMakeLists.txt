@@ -38,9 +38,8 @@ set(CXBQN_DEBUG_VM
     CACHE BOOL "Verbose output in the VM for debugging"
 )
 set(CXBQN_DEBUG_VM_FILE
-    ""
-    CACHE STRING "Redirect debugging output from VM to a file. If left empty,"
-          "output will be directed to stdout."
+    "stdout"
+    CACHE STRING "Redirect debugging output from VM to a file."
 )
 set(CXBQN_DEBUG_VMSTACK
     OFF
@@ -63,16 +62,10 @@ set(CHECK_SUBMODULES
     CACHE BOOL "Check git submodules on every build"
 )
 
-if("CXBQN_DEBUG_VM_FILE" STREQUAL "")
-  set(CXBQN_DEBUG_VM_USE_FILE
-      ON
-      CACHE BOOL ""
-  )
+if("${CXBQN_DEBUG_VM_FILE}" STREQUAL "stdout")
+  set(CXBQN_DEBUG_VM_USE_FILE ON CACHE BOOL "")
 else()
-  set(CXBQN_DEBUG_VM_USE_FILE
-      OFF
-      CACHE BOOL ""
-  )
+  set(CXBQN_DEBUG_VM_USE_FILE OFF CACHE BOOL "")
 endif()
 
 set(HAS_BQN_EXE OFF)
