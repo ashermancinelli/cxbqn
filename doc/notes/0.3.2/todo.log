@@ -1,0 +1,88 @@
+[doctest] doctest version is "2.4.6"
+[doctest] run with "--help" for options
+===============================================================================
+[doctest] test cases:  51 |  51 passed | 0 failed | 0 skipped
+[doctest] assertions: 204 | 204 passed | 0 failed |
+[doctest] Status: SUCCESS!
+[doctest] doctest version is "2.4.6"
+[doctest] run with "--help" for options
+===============================================================================
+/home/asher/workspace/cxbqn/test/test_prim_setprims_l1.cpp:1063:
+TEST CASE:  (↕6)≡⟜(≠¨)○(2‿3⊸⥊)⟨⟩‿"a"‿"ab"‿"abc"‿"abcd"‿"abcde"‿"abcdef"
+
+/home/asher/workspace/cxbqn/test/test_prim_setprims_l1.cpp:1086: ERROR: CHECK( 1 == doctest::Approx(n->v) ) is NOT correct!
+  values: CHECK( 1 == Approx( 0.0 ) )
+
+===============================================================================
+/home/asher/workspace/cxbqn/test/test_prim_setprims_l1.cpp:1089:
+TEST CASE:  ≡⟜(≠¨)4‿0‿2⥊↕0
+
+/home/asher/workspace/cxbqn/test/test_prim_setprims_l1.cpp:1104: ERROR: CHECK( 1 == doctest::Approx(n->v) ) is NOT correct!
+  values: CHECK( 1 == Approx( 0.0 ) )
+
+===============================================================================
+[doctest] test cases:  72 |  70 passed | 2 failed | 0 skipped
+[doctest] assertions: 288 | 286 passed | 2 failed |
+[doctest] Status: FAILURE!
+[doctest] doctest version is "2.4.6"
+[doctest] run with "--help" for options
+[2021-11-14 20:59:48.912] [critical] test='⟨⟩≡⟨⟩∾""'
+===============================================================================
+/home/asher/workspace/cxbqn/test/test_prim_setprims_l2.cpp:80:
+TEST CASE:  ((+⌜˜≠¨)≡(≠¨∾⌜˜))""‿⟨2,3⟩‿"abcde"
+
+/home/asher/workspace/cxbqn/test/test_prim_setprims_l2.cpp:98: ERROR: CHECK( 1 == doctest::Approx(n->v) ) is NOT correct!
+  values: CHECK( 1 == Approx( 0.0 ) )
+
+===============================================================================
+/home/asher/workspace/cxbqn/test/test_prim_setprims_l2.cpp:160:
+TEST CASE:  (<-2)≡-¨2
+
+/home/asher/workspace/cxbqn/test/test_prim_setprims_l2.cpp:174: ERROR: CHECK( 1 == doctest::Approx(n->v) ) is NOT correct!
+  values: CHECK( 1 == Approx( 0.0 ) )
+
+===============================================================================
+/home/asher/workspace/cxbqn/test/test_prim_setprims_l2.cpp:177:
+TEST CASE:  (<<2)≡<¨2
+
+/home/asher/workspace/cxbqn/test/test_prim_setprims_l2.cpp:191: ERROR: CHECK( 1 == doctest::Approx(n->v) ) is NOT correct!
+  values: CHECK( 1 == Approx( 0.0 ) )
+
+===============================================================================
+/home/asher/workspace/cxbqn/test/test_prim_setprims_l2.cpp:194:
+TEST CASE:  ⟨1,⟨3,2,2‿2⥊⟨1,0,2,0⟩⟩,⟨5,4⟩⟩≡-⟨-1,⟨-3,-2,-¨2‿2⥊⟨1,0,2,0⟩⟩,⟨-5,-4⟩⟩
+
+/home/asher/workspace/cxbqn/test/test_prim_setprims_l2.cpp:215: ERROR: CHECK( 1 == doctest::Approx(n->v) ) is NOT correct!
+  values: CHECK( 1 == Approx( 0.0 ) )
+
+===============================================================================
+/home/asher/workspace/cxbqn/test/test_prim_setprims_l2.cpp:275:
+TEST CASE:  (<-4)≡-<4
+
+/home/asher/workspace/cxbqn/test/test_prim_setprims_l2.cpp:289: ERROR: CHECK( 1 == doctest::Approx(n->v) ) is NOT correct!
+  values: CHECK( 1 == Approx( 0.0 ) )
+
+===============================================================================
+/home/asher/workspace/cxbqn/test/test_prim_setprims_l2.cpp:292:
+TEST CASE:  (<2)≡1+<1
+
+/home/asher/workspace/cxbqn/test/test_prim_setprims_l2.cpp:305: ERROR: CHECK( 1 == doctest::Approx(n->v) ) is NOT correct!
+  values: CHECK( 1 == Approx( 0.0 ) )
+
+===============================================================================
+[doctest] test cases: 18 | 12 passed | 6 failed | 0 skipped
+[doctest] assertions: 72 | 66 passed | 6 failed |
+[doctest] Status: FAILURE!
+[doctest] doctest version is "2.4.6"
+[doctest] run with "--help" for options
+[2021-11-14 21:00:57.363] [critical] test='2≡⊑2'
+===============================================================================
+/home/asher/workspace/cxbqn/test/test_prim_setprims_l3.cpp:149:
+TEST CASE:  7≡⟨7⟩⊑↕10
+
+/home/asher/workspace/cxbqn/test/test_prim_setprims_l3.cpp:149: FATAL ERROR: test case CRASHED: SIGSEGV - Segmentation violation signal
+
+===============================================================================
+[doctest] test cases:  9 |  8 passed | 1 failed | 38 skipped
+[doctest] assertions: 32 | 32 passed | 0 failed |
+[doctest] Status: FAILURE!
