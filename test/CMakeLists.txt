@@ -4,19 +4,19 @@ set(tests
     test_bc
     test_bi
     test_simple
-    test_prim_l0
+    # test_prim_l0
     test_prim_setprims_l0
-    test_prim_l1
+    # test_prim_l1
     test_prim_setprims_l1
-    test_prim_l2
+    # test_prim_l2
     test_prim_setprims_l2
-    test_prim_l3
+    # test_prim_l3
     test_prim_setprims_l3
-    test_preruntime
-    test_runtime
-    test_runtime_setprims
-    test_compiler_manual
-    test_compiler_setprims
+    # test_preruntime
+    # test_runtime
+    # test_runtime_setprims
+    # test_compiler_manual
+    # test_compiler_setprims
     test_debug
 )
 

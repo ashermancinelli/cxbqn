@@ -68,7 +68,7 @@ struct Scope : public std::enable_shared_from_this<Scope> {
   // These are optional functions and values, only used when source locations
   // are provided.
   const std::pair<std::vector<uz>, std::vector<uz>>& source_indices() const;
-  const std::string_view source_for_program_counter(uz pc) const;
+  const void source_for_program_counter(uz pc, std::stringstream& ss) const;
   void set_source_info(std::vector<std::vector<uz>> si, O<Array> s);
   bool has_source_info() const {
     return _source_indices.has_value() and _source_str.has_value();

@@ -211,8 +211,8 @@ O<Value> vm(ByteCodeRef bc, std::vector<O<Value>> consts,
     if (not scope->has_source_info())
       throw;
     std::stringstream ss;
-    ss << e.what() << "\n  trace: "
-       << scope->source_for_program_counter(pc) << "\n";
+    ss << e.what() << "\n";
+    scope->source_for_program_counter(pc, ss);
     throw ss.str();
   }
 #endif

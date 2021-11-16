@@ -154,7 +154,7 @@ void Scope::set_source_info(std::vector<std::vector<uz>> si, O<Array> s) {
   _source_str = _s;
 }
 
-const std::string_view Scope::source_for_program_counter(uz pc) const {
+const void Scope::source_for_program_counter(uz pc, std::stringstream& ss) const {
   const auto &si = source_indices();
   const auto b = si.first[pc], e = si.second[pc];
   const auto s = source_str();
@@ -162,8 +162,28 @@ const std::string_view Scope::source_for_program_counter(uz pc) const {
   utf8::advance(it_start, b, s.end());
   auto it_end = it_start;
   utf8::advance(it_end, 1 + (e - b), s.end());
-  const std::string_view sv(it_start, it_end);
-  return sv;
+
+  /*
+   * We will look this many chars ahead and behind to look for a line break.
+   * If found, we'll use that as our bounds for the source that we print in our
+   * stack trace.
+   */
+  static constexpr uz nlookahead = 25;
+
+  for (int i=0; i < nlookahead and it_end != s.end(); i++, utf8::next(it_end, s.end()))
+    if (*it_end == '\n')
+      break;
+
+  // Keep this variable around so we can point to the char in question
+  int dis;
+  for (dis=0; dis < nlookahead and it_start != s.begin(); dis++, utf8::prior(it_start, s.begin()))
+    if (*it_start == '\n')
+      break;
+
+  ss << std::string_view(it_start, it_end) << "\n";
+  for (int i=0; i < dis; i++)
+    ss << "~";
+  ss << "^\n";
 }
 
 } // namespace cxbqn::types
