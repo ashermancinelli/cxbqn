@@ -11,9 +11,6 @@ bool BlockInst::imm() const {
 
 O<Value> BlockInst::call(u8 nargs, std::vector<O<Value>> args) {
 
-  if ((1 == nargs) != (bi_Nothing() == args[2]))
-    throw std::runtime_error("BlockInst: invalid combination of 1==nargs, 𝕨==·");
-
   const auto blk = scp->blocks()[blk_idx];
 
   auto child = Scope::child_scope(scp, blk_idx);

@@ -94,7 +94,7 @@ O<Value> vm(ByteCodeRef bc, std::vector<O<Value>> consts,
         CXBQN_DEBUG("returning {}", CXBQN_STR_NC(stk.back()));
         ret = stk.back();
         INSTR("RETN");
-        throw 0;
+        goto done;
         break;
       case op::POPS:
         INSTR("POPS");
@@ -207,8 +207,6 @@ O<Value> vm(ByteCodeRef bc, std::vector<O<Value>> consts,
       pc++;
     }
 #ifdef CXBQN_STACKTRACE
-  } catch (const int) {
-    // this only comes from RETN, just continue
   } catch (const std::runtime_error &e) {
     if (not scope->has_source_info())
       throw;
@@ -218,6 +216,8 @@ O<Value> vm(ByteCodeRef bc, std::vector<O<Value>> consts,
     throw ss.str();
   }
 #endif
+
+done:
 
   CXBQN_ENDEVAL();
 

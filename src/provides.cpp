@@ -279,9 +279,7 @@ CXBQN_BI_CALL_DEF_NUMONLY(Rtack, "⊣", {}, args[1]);
 
 O<Value> Type::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("•Type:nargs={},args={}", nargs, args);
-  CXBQN_CRIT("•Type:nargs={},args={}", nargs, args);
   auto r = NNC(type_builtin(args[1]));
-  CXBQN_CRIT("•Type:return={}", std::vector<O<Value>>{r});
   return r;
 }
 
