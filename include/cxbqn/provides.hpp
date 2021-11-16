@@ -117,7 +117,7 @@ struct Decompose : public Function {
 
   // Decompose needs to check if a value is a primitive, so we store a span of
   // the runtime to check.
-  std::span<O<Value>> runtime;
+  std::vector<O<Value>> runtime;
 
   O<Value> call(u8 nargs = 0, std::vector<O<Value>> args = {}) override;
 };
@@ -134,7 +134,7 @@ struct PrimInd : public Function {
 
   // PrimInd returns the index of a value in the runtime if it exists, so we
   // need to store the runtime in the object.
-  std::span<O<Value>> runtime;
+  std::vector<O<Value>> runtime;
 
   O<Value> call(u8 nargs = 0, std::vector<O<Value>> args = {}) override;
 };

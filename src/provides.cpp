@@ -304,8 +304,7 @@ O<Value> Table::call(u8 nargs, std::vector<O<Value>> args) {
   if (t_Array != type_builtin(args[1]) or t_Array != type_builtin(args[2]))
     throw std::runtime_error("⌜: 𝕩 and 𝕨 must be arrays");
 
-  if ((1 == nargs) != (args[2]->t()[t_Nothing]))
-    throw std::runtime_error("⌜: got · for 𝕨 with 2 args, or non-· with 1 arg");
+  // if ((1 == nargs) != (args[2]->t()[t_Nothing])) throw std::runtime_error("⌜: got · for 𝕨 with 2 args, or non-· with 1 arg");
 
   auto x = std::dynamic_pointer_cast<Array>(args[1]);
   const auto &xv = x->values;
@@ -441,8 +440,7 @@ O<Value> Scan::call(u8 nargs, std::vector<O<Value>> args) {
   if (t_Array != type_builtin(args[1]))
     throw std::runtime_error("`: 𝕩 must have rank at least 1");
 
-  if ((1 == nargs) != (args[2]->t()[t_Nothing]))
-    throw std::runtime_error("`: got · for 𝕨 with 2 args, or non-· with 1 arg");
+  //if ((1 == nargs) != (args[2]->t()[t_Nothing])) throw std::runtime_error("`: got · for 𝕨 with 2 args, or non-· with 1 arg");
 
   auto x = std::dynamic_pointer_cast<Array>(args[1]);
   auto w = args[2];
@@ -583,6 +581,7 @@ O<Value> Valence::call(u8 nargs, std::vector<O<Value>> args) {
 }
 
 O<Value> Decompose::call(u8 nargs, std::vector<O<Value>> args) {
+  CXBQN_DEBUG("Decompose: nargs={},args={}", nargs, args);
   if (2 == nargs)
     throw std::runtime_error("Decompose: expected one argument, got two");
 
@@ -614,14 +613,21 @@ O<Value> Decompose::call(u8 nargs, std::vector<O<Value>> args) {
 }
 
 O<Value> PrimInd::call(u8 nargs, std::vector<O<Value>> args) {
+  CXBQN_DEBUG("PrimInd: nargs={},args={}", nargs, args);
+  fmt::print("PrimInd: rtsz={},nargs={},args={}\n", runtime.size(), nargs, args);
+
   if (2 == nargs)
     throw std::runtime_error("PrimInd: expected one argument, got two");
 
   auto x = args[1];
   auto it = std::find(runtime.begin(), runtime.end(), x);
   if (it == runtime.end())
+  {
+    fmt::print("could not find arg, returning runtime.size\n");
     return NNC(runtime.size());
+  }
 
+  fmt::print("found arg, returning distance(rt.begin, it)\n");
   return NNC(std::distance(runtime.begin(), it));
 }
 

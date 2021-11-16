@@ -16,7 +16,7 @@ set(tests
     # test_runtime
     # test_runtime_setprims
     # test_compiler_manual
-    # test_compiler_setprims
+    test_compiler_setprims
     test_debug
 )
 

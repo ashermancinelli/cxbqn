@@ -168,7 +168,7 @@ const void Scope::source_for_program_counter(uz pc, std::stringstream& ss) const
    * If found, we'll use that as our bounds for the source that we print in our
    * stack trace.
    */
-  static constexpr uz nlookahead = 25;
+  static constexpr uz nlookahead = 50;
 
   for (int i=0; i < nlookahead and it_end != s.end(); i++, utf8::next(it_end, s.end()))
     if (*it_end == '\n')
@@ -182,8 +182,8 @@ const void Scope::source_for_program_counter(uz pc, std::stringstream& ss) const
 
   ss << std::string_view(it_start, it_end) << "\n";
   for (int i=0; i < dis; i++)
-    ss << "~";
-  ss << "^\n";
+    ss << "·";
+  ss << "∧\n";
 }
 
 } // namespace cxbqn::types

@@ -8,13 +8,14 @@ using namespace cxbqn::types;
 using namespace cxbqn::provides;
 
 TEST_CASE("Evaluate Compiler After SetPrims") {
-  auto runtime = provides::get_runtime_setprims()->values;
+  auto runtime = provides::get_runtime_setprims_annot()->values;
 
-  CompileParams p2{
-#include <cxbqn/__/compiled_compiler>
-  };
+  CompileParams p(
+#include <cxbqn/__/compiled_compiler_annot>
+  );
 
-  auto compiler_ret = vm::run(p2.bc, p2.consts.v, p2.blk_defs, p2.bodies);
-  REQUIRE(nullptr != compiler_ret.v);
-  REQUIRE(nullptr != compiler_ret.scp);
+  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies,
+                     p.source_indices.value(), p.source_str);
+  REQUIRE(nullptr != ret.v);
+  REQUIRE(nullptr != ret.scp);
 }

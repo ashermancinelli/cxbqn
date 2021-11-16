@@ -77,12 +77,13 @@ O<Value> vm(ByteCodeRef bc, std::vector<O<Value>> consts,
   try {
 #endif
     while (1) {
+#ifdef CXBQN_DEBUG_VMSTACK
       /* Logging the entire stack can severly slow the execution if logging is
        * enabled, but sometimes it's useful, so it gets its own define.
        */
-#ifdef CXBQN_DEBUG_VMSTACK
       CXBQN_INFO("bc={},pc={},stack={},scope={}", bc[pc], pc, stk, *scope);
 #endif
+      CXBQN_LOGFLUSH();
       switch (bc[pc]) {
       case op::PUSH:
         INSTR1("PUSH");

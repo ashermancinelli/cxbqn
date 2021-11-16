@@ -51,14 +51,14 @@ O<Value> Md1Deferred::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("Md1Deferred::call(after adding 𝕣, 𝕗):nargs={},args={}", nargs,
               args);
 
-  if ((1 == nargs) != (args[2]->t()[t_Nothing]))
-    throw std::runtime_error("`: got · for 𝕨 with 2 args, or non-· with 1 arg");
+  // if ((1 == nargs) != (args[2]->t()[t_Nothing])) throw std::runtime_error("Md1Def: got · for 𝕨 with 2 args, or non-· with 1 arg");
 
-  CXBQN_LOGFLUSH();
+  // CXBQN_LOGFLUSH();
   return m1->call(nargs, args);
 }
 std::ostream &Md1Deferred::repr(std::ostream &os) const {
-  fmt::print(os, "{}{}", CXBQN_STR_NC(f), CXBQN_STR_NC(m1));
+  // fmt::print(os, "{}{}", CXBQN_STR_NC(f), CXBQN_STR_NC(m1));
+  fmt::print(os, "( md1 block )", CXBQN_STR_NC(f), CXBQN_STR_NC(m1));
   return os;
 }
 
@@ -69,16 +69,16 @@ O<Value> Md2Deferred::call(u8 nargs, std::vector<O<Value>> args) {
   args[5] = g;
   CXBQN_DEBUG("Md1Deferred::call(after adding 𝕣, 𝕗, 𝕘):nargs={},args={}", nargs,
               args);
-  CXBQN_LOGFLUSH();
+  // CXBQN_LOGFLUSH();
 
-  if ((1 == nargs) != (args[2]->t()[t_Nothing]))
-    throw std::runtime_error("`: got · for 𝕨 with 2 args, or non-· with 1 arg");
+  // if ((1 == nargs) != (args[2]->t()[t_Nothing])) throw std::runtime_error("Md2Def: got · for 𝕨 with 2 args, or non-· with 1 arg");
 
   return m2->call(nargs, args);
 }
 
 std::ostream &Md2Deferred::repr(std::ostream &os) const {
-  fmt::print(os, "{}{}{}", CXBQN_STR_NC(f), CXBQN_STR_NC(m2), CXBQN_STR_NC(g));
+  // fmt::print(os, "{{}{}{}}", CXBQN_STR_NC(f), CXBQN_STR_NC(m2), CXBQN_STR_NC(g));
+  fmt::print(os, "( md2 block )", CXBQN_STR_NC(f), CXBQN_STR_NC(m2), CXBQN_STR_NC(g));
   return os;
 }
 

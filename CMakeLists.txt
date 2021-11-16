@@ -27,11 +27,15 @@ set(CXBQN_REGEN_TESTS
 )
 set(CXBQN_STACKTRACE
     OFF
-    CACHE BOOL "Runs every VM invocation in a try-catch block to provide stack trace information"
+    CACHE
+      BOOL
+      "Runs every VM invocation in a try-catch block to provide stack trace information"
 )
 set(CXBQN_STACKTRACE_DEEP
     OFF
-    CACHE BOOL "Checks many additional calls for failure to provide more detailed stack trace information"
+    CACHE
+      BOOL
+      "Checks many additional calls for failure to provide more detailed stack trace information"
 )
 set(CXBQN_GEN_CODECOV
     OFF
@@ -58,13 +62,13 @@ set(CXBQN_DEEPCHECKS
     CACHE BOOL "Deep null checking and debugging information"
 )
 set(CXBQN_COLOR
-    ON
+    OFF
     CACHE BOOL "Output VM information in color"
 )
 set(CXBQN_LOG
-    ON
+    OFF
     CACHE BOOL "Enable logging in CXBQN"
-    )
+)
 set(CXBQN_LOGLEVEL
     "level::info"
     CACHE STRING "Log level spdlog will be set to"
@@ -75,9 +79,15 @@ set(CHECK_SUBMODULES
 )
 
 if("${CXBQN_DEBUG_VM_FILE}" STREQUAL "stdout")
-  set(CXBQN_DEBUG_VM_USE_FILE ON CACHE BOOL "")
+  set(CXBQN_DEBUG_VM_USE_FILE
+      ON
+      CACHE BOOL ""
+  )
 else()
-  set(CXBQN_DEBUG_VM_USE_FILE OFF CACHE BOOL "")
+  set(CXBQN_DEBUG_VM_USE_FILE
+      OFF
+      CACHE BOOL ""
+  )
 endif()
 
 set(HAS_BQN_EXE OFF)
