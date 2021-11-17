@@ -155,7 +155,7 @@ void setc(std::vector<O<Value>> &stk, O<Scope> scp) {
 
   // F is called with 𝕩 and dereferenced r
   auto refer = dynamic_pointer_cast<Reference>(r);
-  auto v = F->call(2, {F, scp->get(refer), bi_Nothing()});
+  auto v = F->call(1, {F, scp->get(refer), bi_Nothing()});
 
   // Set the new value of the reference, and push it back on the stack
   scp->set(true, refer, v);
@@ -259,13 +259,13 @@ void fn2o(std::vector<O<Value>> &stk) {
   auto x = stk.back();
   stk.pop_back();
 
-  if (w->t()[t_Nothing]) {
-    if (x->t()[t_Nothing]) {
-      CXBQN_DEBUG("fn2o: got nothing for 𝕩 and 𝕨, just pushing nothing");
-      stk.push_back(bi_Nothing());
-      return;
-    }
+  if (x->t()[t_Nothing]) {
+    CXBQN_DEBUG("fn2o: got nothing for 𝕩 and 𝕨, just pushing Nothing");
+    stk.push_back(bi_Nothing());
+    return;
+  }
 
+  if (w->t()[t_Nothing]) {
     CXBQN_DEBUG("fn2o: got nothing for 𝕨, calling monadically");
     stk.push_back(S->call(1, {S, x, bi_Nothing()}));
     return;

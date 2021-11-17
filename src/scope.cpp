@@ -14,6 +14,7 @@ O<Scope> Scope::root_scope(std::vector<Block> blks, ByteCode bytecode,
   scp->_consts = consts;
   scp->_blks = blks;
   scp->vars.resize(6 + blks[scp->blk_idx].max_nvars(bods));
+  std::fill(scp->vars.begin(), scp->vars.end(), nullptr);
   return scp;
 }
 
@@ -21,6 +22,7 @@ O<Scope> Scope::child_scope(W<Scope> parent, uz blk_idx) {
   auto scp = make_shared<Scope>(blk_idx);
   scp->parent = parent;
   scp->vars.resize(6 + scp->blocks()[scp->blk_idx].max_nvars(scp->bodies()));
+  std::fill(scp->vars.begin(), scp->vars.end(), nullptr);
   return scp;
 }
 
@@ -90,8 +92,7 @@ void Scope::set(bool should_var_be_set, O<Reference> r, O<Value> v) {
   CXBQN_DEBUG("Scope::set:r->pos={},scp->vars={}", r->position_in_parent,
               scp->vars);
 
-  bool isset = nullptr != scp->vars[r->position_in_parent] and
-               !scp->vars[r->position_in_parent]->t()[t_Nothing];
+  bool isset = nullptr != scp->vars[r->position_in_parent];
   if (should_var_be_set != isset) {
     CXBQN_CRIT("should_var_be_set={},isset={},scp->vars={}", should_var_be_set,
                isset, scp->vars);

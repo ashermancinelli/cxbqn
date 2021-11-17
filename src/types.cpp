@@ -12,8 +12,7 @@ O<Value> bi_Nothing() {
 
 O<Value> Atop::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("Atop::call:nargs={},args={}", nargs, args);
-  auto ret =
-      g->call(nargs, {g, args[1], (1 == nargs ? bi_Nothing() : args[2])});
+  auto ret = g->call(nargs, {g, args[1], args[2]});
   return f->call(1, {f, ret, bi_Nothing()});
 }
 
@@ -45,19 +44,17 @@ std::ostream &Fork::repr(std::ostream &os) const {
 }
 
 O<Value> Md1Deferred::call(u8 nargs, std::vector<O<Value>> args) {
-  args.resize(6);
-  args[3] = m1;
-  args[4] = f;
+  //args.resize(6);
+  //args[3] = m1;
+  // args[4] = f;
   CXBQN_DEBUG("Md1Deferred::call(after adding 𝕣, 𝕗):nargs={},args={}", nargs,
               args);
 
-#ifdef CXBQN_DEEPCHECKS
-  if ((1 == nargs) != (args[2]->t()[t_Nothing]))
-    throw std::runtime_error("Md1Def: got · for 𝕨 with 2 args, or non-· with 1 arg");
-#endif
+  // if ((1 == nargs) != (args[2]->t()[t_Nothing])) throw std::runtime_error("Md1Def: got · for 𝕨 with 2 args, or non-· with 1 arg");
 
   // CXBQN_LOGFLUSH();
-  return m1->call(nargs, args);
+  // return m1->call(nargs, args);
+  return m1->call(nargs, {args[0], args[1], args[2], m1, f});
 }
 std::ostream &Md1Deferred::repr(std::ostream &os) const {
   fmt::print(os, "( md1 deferred {} {} )", CXBQN_STR_NC(f), CXBQN_STR_NC(m1));
@@ -74,19 +71,15 @@ O<Value> Md2Deferred::call(u8 nargs, std::vector<O<Value>> args) {
               args);
   // CXBQN_LOGFLUSH();
 
-#ifdef CXBQN_DEEPCHECKS
-  if ((1 == nargs) != (args[2]->t()[t_Nothing]))
-    throw std::runtime_error("Md1Def: got · for 𝕨 with 2 args, or non-· with 1 arg");
-#endif
+  // if ((1 == nargs) != (args[2]->t()[t_Nothing])) throw std::runtime_error("Md2Def: got · for 𝕨 with 2 args, or non-· with 1 arg");
 
-  return m2->call(nargs, args);
+  // return m2->call(nargs, args);
+  return m2->call(nargs, {args[0], args[1], args[2], m2, f, g});
 }
 
 std::ostream &Md2Deferred::repr(std::ostream &os) const {
-  fmt::print(os, "( md2 deferred {} {} {})", CXBQN_STR_NC(f), CXBQN_STR_NC(m2),
-             CXBQN_STR_NC(g));
-  // fmt::print(os, "( md2 block )", CXBQN_STR_NC(f), CXBQN_STR_NC(m2),
-  // CXBQN_STR_NC(g));
+  fmt::print(os, "( md2 deferred {} {} {})", CXBQN_STR_NC(f), CXBQN_STR_NC(m2), CXBQN_STR_NC(g));
+  // fmt::print(os, "( md2 block )", CXBQN_STR_NC(f), CXBQN_STR_NC(m2), CXBQN_STR_NC(g));
   return os;
 }
 

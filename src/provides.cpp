@@ -86,12 +86,23 @@ template <typename T = f64> static bool fle_helper(T a, T b) {
 // "dynamic cast to a number"
 #define DCN(x) std::dynamic_pointer_cast<Number>(x)
 
+#ifdef CXBQN_DEEPCHECKS
+#define XNULLCHK(SYMBOL) \
+  do { \
+    if (args[1]->t()[t_Nothing]) \
+      throw std::runtime_error(SYMBOL ": got · for 𝕩"); \
+  } while (0);
+#else
+#define XNULLCHK(SYMBOL) (void)0
+#endif
+
 // Shorthand to define the call method of a given builtin type.
 // `ox` and `ow` are short for the opaque pointers to each argument, in case the
 // operator needs to do some checks on the values before casting them.
 #define CXBQN_BI_CALL_DEF_NUMONLY(TYPE, SYMBOL, PREAMBLE, RETURN)              \
   O<Value> TYPE::call(u8 nargs, std::vector<O<Value>> args) {                  \
     CXBQN_DEBUG(SYMBOL ":nargs={},args={}", nargs, args);                      \
+    XNULLCHK(SYMBOL); \
     auto ox = args[1];                                                         \
     auto ow = args[2];                                                         \
     auto x = std::dynamic_pointer_cast<Number>(args[1]);                       \
@@ -103,6 +114,7 @@ template <typename T = f64> static bool fle_helper(T a, T b) {
 
 O<Value> Plus::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("+:nargs={},args={}", nargs, args);
+  XNULLCHK("+");
   auto ox = args[1];
   auto ow = args[2];
   if (1 == nargs)
@@ -242,6 +254,7 @@ static bool eq_recursive(O<Value> ox, O<Value> ow) {
 
 O<Value> EQ::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("=:nargs={},args={}", nargs, args);
+  XNULLCHK("=");
   CXBQN_LOGFLUSH();
   auto ox = args[1];
   auto ow = args[2];
@@ -257,6 +270,7 @@ O<Value> EQ::call(u8 nargs, std::vector<O<Value>> args) {
 
 O<Value> LE::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("≤:nargs={},args={}", nargs, args);
+  XNULLCHK("≤");
   CXBQN_LOGFLUSH();
 
   auto ox = args[1];
@@ -281,6 +295,7 @@ CXBQN_BI_CALL_DEF_NUMONLY(Rtack, "⊣", {}, args[1]);
 
 O<Value> Type::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("•Type:nargs={},args={}", nargs, args);
+  XNULLCHK("•Type");
   auto r = NNC(type_builtin(args[1]));
   return r;
 }
@@ -291,6 +306,7 @@ O<Value> FEQ::call(u8 nargs, std::vector<O<Value>> args) {
 }
 O<Value> FNE::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("≢:nargs={},args={}", nargs, args);
+  XNULLCHK("≢");
   if (2 == nargs)
     throw std::runtime_error("≢: provided function expected only one arg");
   auto arr = std::dynamic_pointer_cast<Array>(args[1]);
@@ -302,6 +318,7 @@ O<Value> FNE::call(u8 nargs, std::vector<O<Value>> args) {
 
 O<Value> Table::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("⌜: nargs={},args={}", nargs, args);
+  XNULLCHK("⌜");
   auto F = args[4];
 
   if (t_Array != type_builtin(args[1]) or t_Array != type_builtin(args[2]))
@@ -351,6 +368,8 @@ O<Value> Table::call(u8 nargs, std::vector<O<Value>> args) {
 }
 
 O<Value> ArrayDepth::call(u8 nargs, std::vector<O<Value>> args) {
+  CXBQN_DEBUG("≢: nargs={},args={}", nargs, args);
+  XNULLCHK("≢");
   return make_shared<Number>(static_cast<f64>(array_depth_helper(0, args[1])));
 }
 
@@ -360,6 +379,8 @@ CXBQN_BI_CALL_DEF_NUMONLY(Log, "Log", {},
                                      : NN(std::log(x->v)));
 O<Value> Assert::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("!: nargs={},args={}", nargs, args);
+  // fmt::print("!: nargs={},args={}\n", nargs, args);
+  XNULLCHK("!");
   bool shoulddie = false;
   if (t_Number != type_builtin(args[1]))
     shoulddie = true;
@@ -377,6 +398,7 @@ O<Value> Assert::call(u8 nargs, std::vector<O<Value>> args) {
 
 O<Value> Range::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("↕: nargs={},args={}", nargs, args);
+  XNULLCHK("↕");
   auto n = static_cast<uz>(std::dynamic_pointer_cast<Number>(args[1])->v);
   auto arr = make_shared<Array>(n);
   for (int i = 0; i < arr->N(); i++)
@@ -386,12 +408,14 @@ O<Value> Range::call(u8 nargs, std::vector<O<Value>> args) {
 
 O<Value> Pick::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("⊑: nargs={},args={}", nargs, args);
+  XNULLCHK("⊑");
   auto n = static_cast<uz>(std::dynamic_pointer_cast<Number>(args[2])->v);
   return std::dynamic_pointer_cast<Array>(args[1])->values[n];
 }
 
 O<Value> Shape::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("≢: nargs={},args={}", nargs, args);
+  XNULLCHK("≢");
   auto ret = make_shared<Array>();
   auto sh = std::dynamic_pointer_cast<Array>(args[1])->shape;
   ret->values.resize(sh.size());
@@ -402,6 +426,7 @@ O<Value> Shape::call(u8 nargs, std::vector<O<Value>> args) {
 
 O<Value> Deshape::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("⥊: nargs={},args={}", nargs, args);
+  XNULLCHK("⥊");
 
   const bool iswarr = t_Array == type_builtin(args[2]);
   const bool isxarr = t_Array == type_builtin(args[1]);
@@ -450,6 +475,7 @@ O<Value> Deshape::call(u8 nargs, std::vector<O<Value>> args) {
 
 O<Value> Scan::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("`: nargs={},args={}", nargs, args);
+  XNULLCHK("`");
   if (t_Array != type_builtin(args[1]))
     throw std::runtime_error("`: 𝕩 must have rank at least 1");
 
@@ -509,6 +535,7 @@ O<Value> Scan::call(u8 nargs, std::vector<O<Value>> args) {
 #define SYMBOL "GroupLen"
 O<Value> GroupLen::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG(SYMBOL ": nargs={},args={}", nargs, args);
+  XNULLCHK(SYMBOL);
   auto x = std::dynamic_pointer_cast<Array>(args[1]);
   auto w =
       std::dynamic_pointer_cast<Number>(args[2]); // only use if nargs == 2!
@@ -533,6 +560,7 @@ O<Value> GroupLen::call(u8 nargs, std::vector<O<Value>> args) {
 #define SYMBOL "GroupOrd"
 O<Value> GroupOrd::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG(SYMBOL ": nargs={},args={}", nargs, args);
+  XNULLCHK(SYMBOL);
   auto w = std::dynamic_pointer_cast<Array>(args[2]);
   auto x = std::dynamic_pointer_cast<Array>(args[1]);
 
@@ -566,12 +594,14 @@ O<Value> GroupOrd::call(u8 nargs, std::vector<O<Value>> args) {
 
 O<Value> FillBy::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("_fillBy_: nargs={},args={}", nargs, args);
+  XNULLCHK("_fillBy_");
   auto F = args[4];
   return F->call(nargs, {F, args[1], args[2]});
 }
 
 O<Value> Catch::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("⎊: nargs={},args={}", nargs, args);
+  XNULLCHK("⎊");
   try {
     auto F = args[4];
     auto ret = F->call(nargs, {F, args[1], args[2]});
@@ -585,6 +615,7 @@ O<Value> Catch::call(u8 nargs, std::vector<O<Value>> args) {
 
 O<Value> Valence::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("⊘: nargs={},args={}", nargs, args);
+  XNULLCHK("⊘");
   CXBQN_LOGFLUSH();
   auto x = args[1];
   auto w = args[2];
@@ -596,6 +627,7 @@ O<Value> Valence::call(u8 nargs, std::vector<O<Value>> args) {
 
 O<Value> Decompose::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("Decompose: nargs={},args={}", nargs, args);
+  XNULLCHK("•Decompose");
   if (2 == nargs)
     throw std::runtime_error("Decompose: expected one argument, got two");
 
@@ -628,6 +660,7 @@ O<Value> Decompose::call(u8 nargs, std::vector<O<Value>> args) {
 
 O<Value> PrimInd::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("PrimInd: nargs={},args={}", nargs, args);
+  XNULLCHK("•PrimInd");
 
   if (2 == nargs)
     throw std::runtime_error("PrimInd: expected one argument, got two");

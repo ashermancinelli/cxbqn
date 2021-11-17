@@ -124,7 +124,7 @@ static cxbqn::u8 indent;
   do {                                                                         \
     indent++;                                                                  \
     INDENT();                                                                  \
-    fmt::print(VM_OUT EVAL_CL "     {}\n", "new eval");                        \
+    fmt::print(VM_OUT EVAL_CL "     new eval block={}\n", scope->blk_idx);     \
   } while (0);
 
 #define CXBQN_ENDEVAL()                                                        \
