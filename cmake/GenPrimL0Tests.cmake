@@ -1,12 +1,5 @@
-foreach(T BQN ROOT BUILDDIR)
-  if(NOT DEFINED ${T})
-    message(FATAL_ERROR "Required variable ${T} was not set")
-  endif()
-endforeach()
-
 include(${ROOT}/cmake/GenHelpers.cmake)
 
-find_package(UnixCommands REQUIRED)
 message(STATUS "Generating primitive l0 tests")
 set(P_TESTS
     # Layer 0

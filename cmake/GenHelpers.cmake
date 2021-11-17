@@ -1,3 +1,10 @@
+foreach(T BQN ROOT BUILDDIR)
+  if(NOT DEFINED ${T})
+    message(FATAL_ERROR "Required variable ${T} was not set")
+  endif()
+endforeach()
+
+find_package(UnixCommands REQUIRED)
 
 function(init_gen_file SOURCE)
   file(REMOVE ${SOURCE})
@@ -16,5 +23,6 @@ function(init_gen_file SOURCE)
 using namespace cxbqn;
 using namespace cxbqn::types;
 using namespace cxbqn::provides;
-")
+"
+  )
 endfunction()

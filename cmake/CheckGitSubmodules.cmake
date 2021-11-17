@@ -1,4 +1,3 @@
-
 find_package(Git QUIET)
 if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
   message(STATUS "Updating git submodules...")

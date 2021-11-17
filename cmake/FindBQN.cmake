@@ -6,4 +6,3 @@ else()
   message(STATUS "BQN executable: ${BQN_EXE}")
   set(HAS_BQN_EXE ON)
 endif()
-
