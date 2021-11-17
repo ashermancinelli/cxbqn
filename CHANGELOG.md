@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Unreleased
 
 * Pretty backtraces
-* passing l1, 2 prim tests
+* passing l1, 2, 3 prim tests
 * added support for source locations
 
 ## [0.3.2] 11-14-2021
