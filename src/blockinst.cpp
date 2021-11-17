@@ -37,6 +37,8 @@ O<Value> BlockInst::call(u8 nargs, std::vector<O<Value>> args) {
     return ret;
 #ifdef CXBQN_STACKTRACE_DEEP
   } catch (std::runtime_error &e) {
+    if (!child->has_source_info())
+      throw;
     std::stringstream ss;
     ss << e.what() << "\n";
     child->source_for_program_counter(offset, ss);

@@ -50,11 +50,11 @@ O<Value> Md1Deferred::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("Md1Deferred::call(after adding 𝕣, 𝕗):nargs={},args={}", nargs,
               args);
 
-  // if ((1 == nargs) != (args[2]->t()[t_Nothing])) throw std::runtime_error("Md1Def: got · for 𝕨 with 2 args, or non-· with 1 arg");
+  if ((1 == nargs) != (args[2]->t()[t_Nothing])) throw std::runtime_error("Md1Def: got · for 𝕨 with 2 args, or non-· with 1 arg");
 
   // CXBQN_LOGFLUSH();
   // return m1->call(nargs, args);
-  return m1->call(nargs, {args[0], args[1], args[2], m1, f});
+  return m1->call(nargs, {m1, args[1], args[2], shared_from_this(), f});
 }
 std::ostream &Md1Deferred::repr(std::ostream &os) const {
   fmt::print(os, "( md1 deferred {} {} )", CXBQN_STR_NC(f), CXBQN_STR_NC(m1));
@@ -63,18 +63,18 @@ std::ostream &Md1Deferred::repr(std::ostream &os) const {
 }
 
 O<Value> Md2Deferred::call(u8 nargs, std::vector<O<Value>> args) {
-  args.resize(6);
-  args[3] = m2;
-  args[4] = f;
-  args[5] = g;
+  //args.resize(6);
+  //args[3] = m2;
+  //args[4] = f;
+  //args[5] = g;
   CXBQN_DEBUG("Md1Deferred::call(after adding 𝕣, 𝕗, 𝕘):nargs={},args={}", nargs,
               args);
   // CXBQN_LOGFLUSH();
 
-  // if ((1 == nargs) != (args[2]->t()[t_Nothing])) throw std::runtime_error("Md2Def: got · for 𝕨 with 2 args, or non-· with 1 arg");
+  if ((1 == nargs) != (args[2]->t()[t_Nothing])) throw std::runtime_error("Md2Def: got · for 𝕨 with 2 args, or non-· with 1 arg");
 
   // return m2->call(nargs, args);
-  return m2->call(nargs, {args[0], args[1], args[2], m2, f, g});
+  return m2->call(nargs, {m2, args[1], args[2], shared_from_this(), f, g});
 }
 
 std::ostream &Md2Deferred::repr(std::ostream &os) const {

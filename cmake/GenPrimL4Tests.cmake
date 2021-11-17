@@ -55,17 +55,18 @@ foreach(test ${P_TESTS})
   execute_process(
     COMMAND
       ${BASH} -c
-      "${BQN} ${CMAKE_CURRENT_SOURCE_DIR}/ccxx.bqn ${ROOT}/ext//bqn -i \"${test}\""
+      "${BQN} ${ROOT}/test/ccxx.bqn ${ROOT}/ext//bqn -i \"${test}\""
     WORKING_DIRECTORY "${ROOT}/ext//cbqn"
     OUTPUT_VARIABLE compiled_test
   )
+  string(REPLACE "\\`" "`" noesc "${test}")
   file(
     APPEND ${P_SETPRIMS_TEST_SOURCE}
     "
-  TEST_CASE(\"${test}\") {
+  TEST_CASE(\"${noesc}\") {
   const auto rt = provides::get_runtime_setprims_cached_annot();
   const auto runtime = rt->values;
-  spdlog::critical(\"test='{}'\", \"${test}\");
+  spdlog::critical(\"test='{}'\", \"${noesc}\");
   CompileParams p( ${compiled_test} );
   auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies, p.source_indices.value(), p.source_str);
     REQUIRE(nullptr != ret.v);
@@ -79,8 +80,8 @@ foreach(test ${P_TESTS})
   file(
     APPEND ${P_TEST_SOURCE}
     "
-  TEST_CASE(\"${test}\") {
-    spdlog::critical(\"test='{}'\", \"${test}\");
+  TEST_CASE(\"${noesc}\") {
+    spdlog::critical(\"test='{}'\", \"${noesc}\");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
     CompileParams p{ ${compiled_test} };

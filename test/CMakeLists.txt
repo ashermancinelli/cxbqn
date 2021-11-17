@@ -5,7 +5,7 @@ set(tests
     # test_preruntime test_runtime test_runtime_setprims test_compiler_manual
     test_compiler_setprims test_debug
 )
-foreach(test ${generatedtests})
+foreach(test ${tests})
   add_executable(${test} ${test}.cpp)
   target_link_libraries(${test} PUBLIC cxbqn::cxbqn cxbqn::tpl doctest::doctest)
   add_test(NAME ${test} COMMAND $<TARGET_FILE:${test}>)
