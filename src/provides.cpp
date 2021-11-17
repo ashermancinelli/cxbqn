@@ -409,8 +409,9 @@ O<Value> Deshape::call(u8 nargs, std::vector<O<Value>> args) {
 
   if (1 == nargs) {
     if (isxarr) {
-      xarr->shape.assign({xarr->N()});
-      return xarr;
+      auto ret = make_shared<Array>(xarr->N());
+      ret->values = xarr->values;
+      return ret;
     } else {
       auto r = make_shared<Array>(1);
       r->values[0] = args[1];
