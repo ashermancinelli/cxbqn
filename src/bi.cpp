@@ -92,7 +92,7 @@ O<Array> get_runtime_setprims() {
   auto decompose = make_shared<Decompose>(runtime_raw);
   auto primind = make_shared<PrimInd>(runtime_raw);
 
-  setprims->call(1, {setprims, O<Array>(new Array({decompose, primind}))});
+  setprims->call(1, {setprims, O<Array>(new Array({decompose, primind})), bi_Nothing()});
 
   return runtime_raw;
 }
@@ -117,7 +117,7 @@ O<Array> get_runtime_setprims_annot() {
   auto decompose = make_shared<Decompose>(runtime_raw);
   auto primind = make_shared<PrimInd>(runtime_raw);
 
-  setprims->call(1, {setprims, O<Array>(new Array({decompose, primind}))});
+  setprims->call(1, {setprims, O<Array>(new Array({decompose, primind})), bi_Nothing()});
 
   return runtime_raw;
 }

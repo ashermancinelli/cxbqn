@@ -145,7 +145,9 @@ CXBQN_BI_CALL_DEF_NUMONLY(
       if (2 == nargs)
         return NN(w->v * x->v);
     },
-    NN(feq_helper(0.0, x->v) ? 0 : x->v > 0 ? 1 : 0));
+    NN(feq_helper(0.0, x->v) ? 0
+       : x->v > 0            ? 1
+                             : 0));
 CXBQN_BI_CALL_DEF_NUMONLY(Div, "÷", {},
                           NN(2 == nargs ? w->v / x->v : 1 / x->v));
 CXBQN_BI_CALL_DEF_NUMONLY(Power, "⋆", {},
@@ -301,12 +303,15 @@ O<Value> FNE::call(u8 nargs, std::vector<O<Value>> args) {
 O<Value> Table::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("⌜: nargs={},args={}", nargs, args);
   auto F = args[4];
+
   if (t_Array != type_builtin(args[1]) or t_Array != type_builtin(args[2]))
     throw std::runtime_error("⌜: 𝕩 and 𝕨 must be arrays");
 
   // if ((1 == nargs) != (args[2]->t()[t_Nothing])) throw std::runtime_error("⌜: got · for 𝕨 with 2 args, or non-· with 1 arg");
 
   auto x = std::dynamic_pointer_cast<Array>(args[1]);
+  if (nullptr == x)
+    throw std::runtime_error("⌜: 𝕩 must be an array");
   const auto &xv = x->values;
 
   if (1 == nargs) {
@@ -318,17 +323,19 @@ O<Value> Table::call(u8 nargs, std::vector<O<Value>> args) {
   }
 
   auto w = std::dynamic_pointer_cast<Array>(args[2]);
+  if (nullptr == w)
+    throw std::runtime_error("⌜: 𝕩 and 𝕨 must be arrays");
   const auto &wv = w->values;
   auto ret = make_shared<Array>(x->N() * w->N());
 #ifdef CXBQN_STACKTRACE_DEEP
   try {
 #endif
-  for (int iw = 0; iw < w->N(); iw++)
-    for (int ix = 0; ix < x->N(); ix++) {
-      ret->values[(iw * x->N()) + ix] = F->call(2, {F, xv[ix], wv[iw]});
-    }
+    for (int iw = 0; iw < w->N(); iw++)
+      for (int ix = 0; ix < x->N(); ix++) {
+        ret->values[(iw * x->N()) + ix] = F->call(2, {F, xv[ix], wv[iw]});
+      }
 #ifdef CXBQN_STACKTRACE_DEEP
-  } catch (std::runtime_error& e) {
+  } catch (std::runtime_error &e) {
     std::stringstream ss;
     ss << "⌜: got '" << e.what() << "' when applying 𝔽";
     throw ss.str();
@@ -405,7 +412,9 @@ O<Value> Deshape::call(u8 nargs, std::vector<O<Value>> args) {
       xarr->shape.assign({xarr->N()});
       return xarr;
     } else {
-      return std::shared_ptr<Array>(new Array({args[1]}));
+      auto r = make_shared<Array>(1);
+      r->values[0] = args[1];
+      return r;
     }
   }
 
@@ -422,6 +431,9 @@ O<Value> Deshape::call(u8 nargs, std::vector<O<Value>> args) {
 
   const auto cnt = std::accumulate(ret->shape.begin(), ret->shape.end(), 1,
                                    std::multiplies<uz>());
+  if (0 == cnt)
+    CXBQN_DEBUG("⥊: got count of  0, this is suspicious");
+
   ret->values.resize(cnt);
 
   if (!isxarr)
@@ -440,7 +452,8 @@ O<Value> Scan::call(u8 nargs, std::vector<O<Value>> args) {
   if (t_Array != type_builtin(args[1]))
     throw std::runtime_error("`: 𝕩 must have rank at least 1");
 
-  //if ((1 == nargs) != (args[2]->t()[t_Nothing])) throw std::runtime_error("`: got · for 𝕨 with 2 args, or non-· with 1 arg");
+  // if ((1 == nargs) != (args[2]->t()[t_Nothing])) throw std::runtime_error("`:
+  // got · for 𝕨 with 2 args, or non-· with 1 arg");
 
   auto x = std::dynamic_pointer_cast<Array>(args[1]);
   auto w = args[2];
@@ -614,20 +627,16 @@ O<Value> Decompose::call(u8 nargs, std::vector<O<Value>> args) {
 
 O<Value> PrimInd::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("PrimInd: nargs={},args={}", nargs, args);
-  fmt::print("PrimInd: rtsz={},nargs={},args={}\n", runtime.size(), nargs, args);
 
   if (2 == nargs)
     throw std::runtime_error("PrimInd: expected one argument, got two");
 
   auto x = args[1];
   auto it = std::find(runtime.begin(), runtime.end(), x);
-  if (it == runtime.end())
-  {
-    fmt::print("could not find arg, returning runtime.size\n");
+  if (it == runtime.end()) {
     return NNC(runtime.size());
   }
 
-  fmt::print("found arg, returning distance(rt.begin, it)\n");
   return NNC(std::distance(runtime.begin(), it));
 }
 

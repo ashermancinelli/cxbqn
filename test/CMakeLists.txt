@@ -10,8 +10,10 @@ set(tests
     test_prim_setprims_l1
     # test_prim_l2
     test_prim_setprims_l2
-    # test_prim_l3
+    test_prim_l3
     test_prim_setprims_l3
+    test_prim_l4
+    test_prim_setprims_l4
     # test_preruntime
     # test_runtime
     # test_runtime_setprims
@@ -45,6 +47,7 @@ if(CXBQN_REGEN_TESTS)
   include(GenPrimL1Tests)
   include(GenPrimL2Tests)
   include(GenPrimL3Tests)
+  include(GenPrimL4Tests)
   include(GenSimpleTests)
   add_custom_target(
     format-gen-tests
@@ -62,6 +65,10 @@ if(CXBQN_REGEN_TESTS)
     COMMAND ${CLANGFORMAT_EXE} -i
             ${PROJECT_BINARY_DIR}/test_prim_setprims_l3.cpp
     COMMAND ${CLANGFORMAT_EXE} -i ${PROJECT_BINARY_DIR}/test_simple.cpp
+    COMMAND ${CLANGFORMAT_EXE} -i
+            ${PROJECT_BINARY_DIR}/test_prim_l4.cpp
+    COMMAND ${CLANGFORMAT_EXE} -i
+            ${PROJECT_BINARY_DIR}/test_prim_setprims_l4.cpp
     COMMENT "Formatting generated sources..."
   )
   add_custom_target(
@@ -79,6 +86,10 @@ if(CXBQN_REGEN_TESTS)
     COMMAND ${CMAKE_COMMAND} -E rm ${CMAKE_CURRENT_SOURCE_DIR}/test_prim_l3.cpp
     COMMAND ${CMAKE_COMMAND} -E rm
             ${CMAKE_CURRENT_SOURCE_DIR}/test_prim_setprims_l3.cpp
+    COMMAND ${CMAKE_COMMAND} -E rm
+            ${CMAKE_CURRENT_SOURCE_DIR}/test_prim_l4.cpp
+    COMMAND ${CMAKE_COMMAND} -E rm
+            ${CMAKE_CURRENT_SOURCE_DIR}/test_prim_setprims_l4.cpp
     COMMAND ${CMAKE_COMMAND} -E rm ${CMAKE_CURRENT_SOURCE_DIR}/test_simple.cpp
     COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_BINARY_DIR}/test_bc.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}
@@ -101,6 +112,12 @@ if(CXBQN_REGEN_TESTS)
             ${CMAKE_CURRENT_SOURCE_DIR}
     COMMAND
       ${CMAKE_COMMAND} -E copy ${PROJECT_BINARY_DIR}/test_prim_setprims_l3.cpp
+      ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMAND
+      ${CMAKE_COMMAND} -E copy ${PROJECT_BINARY_DIR}/test_prim_setprims_l4.cpp
+      ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMAND
+      ${CMAKE_COMMAND} -E copy ${PROJECT_BINARY_DIR}/test_prim_l4.cpp
       ${CMAKE_CURRENT_SOURCE_DIR}
     COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_BINARY_DIR}/test_simple.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}

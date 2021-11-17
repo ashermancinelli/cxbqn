@@ -11,6 +11,11 @@ bool BlockInst::imm() const {
 
 O<Value> BlockInst::call(u8 nargs, std::vector<O<Value>> args) {
 
+#ifdef CXBQN_DEEPCHECKS
+  if ((1 == nargs) != (args[2]->t()[t_Nothing]))
+    throw std::runtime_error("BlockInst: got · for 𝕨 with 2 args, or non-· with 1 arg");
+#endif
+
   const auto blk = scp->blocks()[blk_idx];
 
   auto child = Scope::child_scope(scp, blk_idx);
