@@ -14,23 +14,24 @@ endforeach()
 set(generatedtests
     test_bc
     test_simple
-    test_prim_l0
+    # test_prim_l0
     test_prim_setprims_l0
-    test_prim_l1
+    # test_prim_l1
     test_prim_setprims_l1
-    test_prim_l2
+    # test_prim_l2
     test_prim_setprims_l2
-    test_prim_l3
+    # test_prim_l3
     test_prim_setprims_l3
-    test_prim_l4
+    # test_prim_l4
     test_prim_setprims_l4
-    test_prim_l5
+    # test_prim_l5
     test_prim_setprims_l5
-    test_prim_l6
+    # test_prim_l6
     test_prim_setprims_l6
-    test_prim_throws
-    test_prim_setprims_throws
+    # test_prim_throws
+    # test_prim_setprims_throws
 )
+
 set(FMT_TGT_STR
     "add_custom_target(format-gen-tests COMMENT \"Formatting tests...\""
 )
