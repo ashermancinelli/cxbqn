@@ -283,7 +283,7 @@ struct Atop : public Function {
  * is pushed back on the stack
  */
 struct Md1Deferred : public Function {
-  TypeType t() const override { return TypeType{t_Md1 | annot(t_Deferred)}; }
+  TypeType t() const override { return TypeType{t_Function | annot(t_Deferred)}; }
   O<Value> f, m1;
   Md1Deferred(O<Value> f, O<Value> m1) : f{f}, m1{m1} {}
   O<Value> call(u8 nargs = 0, std::vector<O<Value>> args = {}) override;
@@ -298,7 +298,7 @@ struct Md1 : public Function {
  * Same as above, but two modifier
  */
 struct Md2Deferred : public Function {
-  TypeType t() const override { return TypeType{t_Md2 | annot(t_Deferred)}; }
+  TypeType t() const override { return TypeType{t_Function | annot(t_Deferred)}; }
   O<Value> f, m2, g;
   Md2Deferred(O<Value> f, O<Value> m2, O<Value> g) : f{f}, m2{m2}, g{g} {}
   O<Value> call(u8 nargs = 0, std::vector<O<Value>> args = {}) override;

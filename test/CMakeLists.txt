@@ -24,6 +24,8 @@ set(generatedtests
     test_prim_setprims_l3
     test_prim_l4
     test_prim_setprims_l4
+    test_prim_throws
+    test_prim_setprims_throws
 )
 set(FMT_TGT_STR
     "add_custom_target(format-gen-tests COMMENT \"Formatting tests...\""
