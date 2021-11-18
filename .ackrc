@@ -1,5 +1,7 @@
 --ignore-dir=ext
 --ignore-dir=build
 --ignore-dir=build-nolog
+--ignore-dir=build-dbg
+--ignore-dir=build-dbg-stdeep
 --ignore-dir=include/cxbqn/__
 --ignore-dir=doc

@@ -210,15 +210,19 @@ static bool eq_recursive(O<Value> ox, O<Value> ow) {
     auto wf = std::dynamic_pointer_cast<BlockInst>(ow);
     return xf == wf;
   }
+  if (auto x = dynamic_pointer_cast<Md1Deferred>(ox)) { // both must be deferred
+    auto w = dynamic_pointer_cast<Md1Deferred>(ow);
+    return eq_recursive(x->f, w->f) and eq_recursive(x->m1, w->m1);
+  }
+  if (auto x = dynamic_pointer_cast<Md2Deferred>(ox)) { // both must be deferred
+    auto w = dynamic_pointer_cast<Md2Deferred>(ow);
+    return eq_recursive(x->f, w->f) and eq_recursive(x->m2, w->m2) and
+      eq_recursive(x->g, w->g);
+  }
 
   if (t_Md1 == type_builtin(ox)) {
     if (ox->t()[t_Deferred] != ow->t()[t_Deferred])
       return false;
-    if (ox->t()[t_Deferred]) { // both must be deferred
-      auto x = dynamic_pointer_cast<Md1Deferred>(ox);
-      auto w = dynamic_pointer_cast<Md1Deferred>(ow);
-      return eq_recursive(x->f, w->f) and eq_recursive(x->m1, w->m1);
-    }
     // if not deferred, just pointer comparison
     return ox == ow;
   }
@@ -226,12 +230,6 @@ static bool eq_recursive(O<Value> ox, O<Value> ow) {
   if (t_Md2 == type_builtin(ox)) {
     if (ox->t()[t_Deferred] != ow->t()[t_Deferred])
       return false;
-    if (ox->t()[t_Deferred]) { // both must be deferred
-      auto x = dynamic_pointer_cast<Md2Deferred>(ox);
-      auto w = dynamic_pointer_cast<Md2Deferred>(ow);
-      return eq_recursive(x->f, w->f) and eq_recursive(x->m2, w->m2) and
-             eq_recursive(x->g, w->g);
-    }
     // if not deferred, just pointer comparison
     return ox == ow;
   }
@@ -483,6 +481,10 @@ O<Value> Scan::call(u8 nargs, std::vector<O<Value>> args) {
   // got · for 𝕨 with 2 args, or non-· with 1 arg");
 
   auto x = std::dynamic_pointer_cast<Array>(args[1]);
+
+  if (x->N() == 0)
+    return make_shared<Array>(0);
+
   auto w = args[2];
   auto F = args[4];
 
