@@ -10,11 +10,13 @@ add_library(
   scope.cpp
   op.cpp
   instructions.cpp
-
+  builtin/stile.cpp
+  builtin/root.cpp
   builtin/assert.cpp
   builtin/le.cpp
   builtin/type.cpp
   builtin/fne.cpp
+  builtin/floor.cpp
   builtin/table.cpp
   builtin/arraydepth.cpp
   builtin/range.cpp
@@ -23,6 +25,7 @@ add_library(
   builtin/grouplen.cpp
   builtin/groupord.cpp
   builtin/primind.cpp
+  builtin/power.cpp
   builtin/provides_helpers.cpp
   builtin/mul.cpp
   builtin/minus.cpp
@@ -41,6 +44,13 @@ add_library(
 target_link_libraries(cxbqn PUBLIC tpl)
 add_library(cxbqn::cxbqn ALIAS cxbqn)
 
-# add_executable(cxbqn_driver driver.cpp) target_link_libraries(cxbqn_driver
-# PUBLIC cxbqn::cxbqn) set_target_properties( cxbqn_driver PROPERTIES
-# OUTPUT_NAME "cxbqn" )
+add_executable(driver driver.cpp)
+target_link_libraries(driver PUBLIC cxbqn::cxbqn)
+set_target_properties(driver PROPERTIES OUTPUT_NAME "cxbqn")
+
+add_custom_command(
+  TARGET driver
+  POST_BUILD
+  COMMAND "${CMAKE_COMMAND}" -E copy "$<TARGET_FILE:driver>"
+          "${PROJECT_BINARY_DIR}/BQN"
+)

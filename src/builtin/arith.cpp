@@ -17,22 +17,9 @@ namespace cxbqn::provides {
     return ret;                                                                \
   }
 
-CXBQN_BI_CALL_DEF_NUMONLY(Power, "⋆",
-                          NN(2 == nargs ? std::pow(w->v, x->v)
-                                        : std::exp(x->v)));
-CXBQN_BI_CALL_DEF_NUMONLY(Root, "√",
-                          NN(2 == nargs ? std::pow(x->v, 1 / w->v)
-                                        : std::sqrt(x->v)));
-
-CXBQN_BI_CALL_DEF_NUMONLY(Floor, "⌊",
-                          NN(2 == nargs ? std::min(w->v, x->v)
-                                        : std::floor(x->v)));
 CXBQN_BI_CALL_DEF_NUMONLY(Ceil, "⌈",
                           NN(2 == nargs ? std::max(w->v, x->v)
                                         : std::ceil(x->v)));
-CXBQN_BI_CALL_DEF_NUMONLY(Stile, "|",
-                          NN(2 == nargs ? std::fmod(w->v, x->v)
-                                        : std::abs(x->v)));
 CXBQN_BI_CALL_DEF_NUMONLY(Not, "¬",
                           NN(2 == nargs ? 1 + (w->v - x->v) : 1 - x->v));
 CXBQN_BI_CALL_DEF_NUMONLY(And, "∧", NN(w->v * x->v));

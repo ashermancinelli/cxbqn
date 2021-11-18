@@ -162,7 +162,7 @@ O<Value> bi_Nothing();
 struct Number : public Value {
   f64 v;
   Number(f64 v) : v{v} {}
-  TypeType t() const override {
+  virtual TypeType t() const override {
     return TypeType{t_Number | annot(t_DataValue)};
   }
   std::ostream &repr(std::ostream &os) const override {
@@ -175,7 +175,7 @@ struct Number : public Value {
 
 struct Character : public Number {
   Character(c32 c) : Number{static_cast<f64>(c)} {}
-  TypeType t() const override {
+  virtual TypeType t() const override {
     return TypeType{t_Character | annot(t_DataValue)};
   }
   inline c32 c() const { return static_cast<c32>(v); }

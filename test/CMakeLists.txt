@@ -29,7 +29,7 @@ set(generatedtests
     # test_prim_l6
     test_prim_setprims_l6
     # test_prim_throws
-    # test_prim_setprims_throws
+    test_prim_setprims_throws
 )
 
 set(FMT_TGT_STR

@@ -1,3 +1,4 @@
+#include <cxbqn/comp_utils.hpp>
 #include <cxbqn/cxbqn.hpp>
 #include <spdlog/spdlog.h>
 
@@ -6,31 +7,27 @@ using namespace cxbqn::types;
 using namespace cxbqn::provides;
 using namespace cxbqn::vm;
 
-#if 0
 int main(int argc, char **argv) {
-  spdlog::set_pattern("cxbqn:driver[%^%l%$] %v");
-  spdlog::set_level(spdlog::level::debug);
-  spdlog::debug("create bc, consts, blks, bodies");
+  auto rt = provides::get_runtime_setprims_annot();
 
-  // m_cai32(8,(i32[]){0,1,0,0,0,1,17,7})
-  std::vector<i32> bc{0, 1, 0, 0, 0, 1, 17, 7};
+  auto runtime = rt->values;
+  CompileParams p(
+#include <cxbqn/__/compiled_compiler>
+  );
 
-  // B_2(inc(runtime[0]),m_f64(5))
-  std::vector<Value *> consts{
-      new Type(),
-      new Number(5),
-  };
+  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
 
-  // B_1(new B_3(m_f64(0),m_f64(1),m_f64(0)))
-  std::vector<Block> blks{Block(0, 1, 0)};
+  auto compiler = ret.v;
 
-  // B_1(new i32_2(0,0))
-  std::vector<Body> bodies{Body{0, 0}};
+  auto source = O<Array>(new Array(U"5+5"));
+  std::vector<O<Value>>
+      cargs; //{compiler, make_shared<Array>(U"5+5"), runtime};
+  cargs.push_back(compiler);
+  cargs.push_back(source);
+  cargs.push_back(rt);
+  // auto bc = compiler->call(2, {compiler, O<Value>(new Array(U"5+5")), rt});
+  auto bc = compiler->call(2, cargs);
 
-  spdlog::debug("run vm");
-  auto* ret = vm::run(bc, consts, blks, bodies);
-
-  spdlog::debug("cleanup");
+  fmt::print("done\n");
   return 0;
 }
-#endif

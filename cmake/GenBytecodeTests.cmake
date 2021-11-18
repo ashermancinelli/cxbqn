@@ -1,4 +1,5 @@
 include(${ROOT}/cmake/GenHelpers.cmake)
+message(STATUS "Generating bytecode tests...")
 set(BC_TESTS
     "5                     #  0 PUSH,  7 RETN"
     "4⋄3                   #  6 POPS"
