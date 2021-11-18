@@ -2,16 +2,11 @@
 #include <cxbqn/cxbqn.hpp>
 #include <cxbqn/debug.hpp>
 #include <spdlog/fmt/fmt.h>
+#include "provides_helpers.hpp"
 
 namespace cxbqn::provides {
 
 namespace {
-
-// The t() method on all values in cxbqn uses higher bits to indicate internal
-// type annotations. We only want the lowest 3 bits for the builtin •Type.
-static inline auto type_builtin(const O<Value> v) {
-  return (v->t() & TypeType{0b111}).to_ulong();
-}
 
 #define CHR_MAX 1114111
 static inline O<Value> check_char(O<Value> v) {
@@ -86,23 +81,13 @@ template <typename T = f64> static bool fle_helper(T a, T b) {
 // "dynamic cast to a number"
 #define DCN(x) std::dynamic_pointer_cast<Number>(x)
 
-#ifdef CXBQN_DEEPCHECKS
-#define XNULLCHK(SYMBOL) \
-  do { \
-    if (args[1]->t()[t_Nothing]) \
-      throw std::runtime_error(SYMBOL ": got · for 𝕩"); \
-  } while (0);
-#else
-#define XNULLCHK(SYMBOL) (void)0
-#endif
-
 // Shorthand to define the call method of a given builtin type.
 // `ox` and `ow` are short for the opaque pointers to each argument, in case the
 // operator needs to do some checks on the values before casting them.
 #define CXBQN_BI_CALL_DEF_NUMONLY(TYPE, SYMBOL, PREAMBLE, RETURN)              \
   O<Value> TYPE::call(u8 nargs, std::vector<O<Value>> args) {                  \
     CXBQN_DEBUG(SYMBOL ":nargs={},args={}", nargs, args);                      \
-    XNULLCHK(SYMBOL); \
+    XNULLCHK(SYMBOL);                                                          \
     auto ox = args[1];                                                         \
     auto ow = args[2];                                                         \
     auto x = std::dynamic_pointer_cast<Number>(args[1]);                       \
@@ -160,8 +145,6 @@ CXBQN_BI_CALL_DEF_NUMONLY(
     NN(feq_helper(0.0, x->v) ? 0
        : x->v > 0            ? 1
                              : 0));
-CXBQN_BI_CALL_DEF_NUMONLY(Div, "÷", {},
-                          NN(2 == nargs ? w->v / x->v : 1 / x->v));
 CXBQN_BI_CALL_DEF_NUMONLY(Power, "⋆", {},
                           NN(2 == nargs ? std::pow(w->v, x->v)
                                         : std::exp(x->v)));
@@ -217,7 +200,7 @@ static bool eq_recursive(O<Value> ox, O<Value> ow) {
   if (auto x = dynamic_pointer_cast<Md2Deferred>(ox)) { // both must be deferred
     auto w = dynamic_pointer_cast<Md2Deferred>(ow);
     return eq_recursive(x->f, w->f) and eq_recursive(x->m2, w->m2) and
-      eq_recursive(x->g, w->g);
+           eq_recursive(x->g, w->g);
   }
 
   if (t_Md1 == type_builtin(ox)) {
@@ -322,7 +305,8 @@ O<Value> Table::call(u8 nargs, std::vector<O<Value>> args) {
   if (t_Array != type_builtin(args[1]) or t_Array != type_builtin(args[2]))
     throw std::runtime_error("⌜: 𝕩 and 𝕨 must be arrays");
 
-  // if ((1 == nargs) != (args[2]->t()[t_Nothing])) throw std::runtime_error("⌜: got · for 𝕨 with 2 args, or non-· with 1 arg");
+  // if ((1 == nargs) != (args[2]->t()[t_Nothing])) throw std::runtime_error("⌜:
+  // got · for 𝕨 with 2 args, or non-· with 1 arg");
 
   auto x = std::dynamic_pointer_cast<Array>(args[1]);
   if (nullptr == x)
@@ -373,26 +357,8 @@ O<Value> ArrayDepth::call(u8 nargs, std::vector<O<Value>> args) {
 
 CXBQN_BI_CALL_DEF_NUMONLY(Fill, "Fill", {}, 2 == nargs ? args[1] : NN(0));
 CXBQN_BI_CALL_DEF_NUMONLY(Log, "Log", {},
-                          2 == nargs ? NN(std::log(w->v) / std::log(x->v))
+                          2 == nargs ? NN(std::log(x->v) / std::log(w->v))
                                      : NN(std::log(x->v)));
-O<Value> Assert::call(u8 nargs, std::vector<O<Value>> args) {
-  CXBQN_DEBUG("!: nargs={},args={}", nargs, args);
-  // fmt::print("!: nargs={},args={}\n", nargs, args);
-  XNULLCHK("!");
-  bool shoulddie = false;
-  if (t_Number != type_builtin(args[1]))
-    shoulddie = true;
-  if (!feq_helper(1., std::dynamic_pointer_cast<Number>(args[1])->v))
-    shoulddie = true;
-  if (shoulddie) {
-    const auto s =
-        fmt::format("{} ! {}", (2 == nargs ? CXBQN_STR_NC(args[2]) : ""),
-                    CXBQN_STR_NC(args[1]));
-    CXBQN_CRIT("{}", s);
-    throw std::runtime_error(s);
-  }
-  return args[1];
-}
 
 O<Value> Range::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("↕: nargs={},args={}", nargs, args);
@@ -570,6 +536,9 @@ O<Value> GroupOrd::call(u8 nargs, std::vector<O<Value>> args) {
   XNULLCHK(SYMBOL);
   auto w = std::dynamic_pointer_cast<Array>(args[2]);
   auto x = std::dynamic_pointer_cast<Array>(args[1]);
+
+  if (0 == w->N())
+    return make_shared<Array>(0);
 
   std::vector<uz> tmp(w->N(), 0);
   CXBQN_DEBUG("wn={},xn={},tmpn={}", w->N(), x->N(), tmp.size());

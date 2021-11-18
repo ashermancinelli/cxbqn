@@ -8,17 +8,18 @@ using namespace cxbqn;
 using namespace cxbqn::types;
 using namespace cxbqn::provides;
 
-//TEST_CASE("4≡2+⍟¯1 6") {
+
+//TEST_CASE("grade") {
 //  const auto rt = provides::get_runtime_setprims_cached_annot();
 //  const auto runtime = rt->values;
-//  spdlog::critical("test='{}'", "4≡2+⍟¯1 6");
+//  spdlog::critical("test='{}'", "grade");
 //  CompileParams p(
-//      {0,9,0,1,0,7,0,6,0,8,11,3,17,0,3,0,6,0,4,0,2,27,26,0,5,0,0,27,16,7},
-//{runtime[18],runtime[22],runtime[43],runtime[52],runtime[53],runtime[56],0,3,2,std::make_shared<Array>(U"")},
+//      {0,8,0,12,0,11,11,3,0,4,16,0,3,0,11,0,7,0,0,27,0,9,0,10,0,10,11,3,21,0,6,0,5,27,16,0,2,0,8,0,4,16,0,0,0,9,17,0,1,0,8,17,17,7},
+//{runtime[0],runtime[6],runtime[18],runtime[21],runtime[28],runtime[38],runtime[56],runtime[61],5,3,0,1,2},
 //{{0,1,0}},
 //{{0,0}},
-//{{14,14,13,13,8,8,10,10,12,12,12,12,13,6,6,5,5,4,4,3,3,4,6,1,1,0,0,1,0,0},{15,15,13,13,8,8,10,10,12,12,12,12,13,6,6,5,5,4,4,3,3,4,6,1,1,0,0,1,7,0}},
-//std::make_shared<Array>(U"≡⟜(!∘0`)3‿0‿2⥊\"\"")
+//{{23,23,25,25,27,27,27,27,22,22,22,20,20,19,19,18,18,17,17,18,12,12,14,14,16,16,16,16,17,10,10,9,9,10,9,8,8,6,6,5,5,5,4,4,3,3,4,2,2,1,1,2,8,0},{23,23,25,25,27,27,27,27,22,22,22,20,20,19,19,18,18,17,17,18,12,12,14,14,16,16,16,16,19,10,10,9,9,10,21,8,8,6,6,5,5,5,4,4,3,3,4,2,2,1,1,2,8,7}},
+//std::make_shared<Array>(U"(5⌊3+↕5)≡⊐⟜(3‿0‿0+⚇1⊢)↕5‿2‿1")
 //      );
 //  fmt::print("startingtest\n");
 //  spdlog::critical("startingtest");
@@ -30,18 +31,17 @@ using namespace cxbqn::provides;
 //  REQUIRE(nullptr != n);
 //  CHECK(1 == doctest::Approx(n->v));
 //}
-
-TEST_CASE("empty ar") {
+TEST_CASE("grade") {
   const auto rt = provides::get_runtime_setprims_cached_annot();
   const auto runtime = rt->values;
-  spdlog::critical("test='{}'", "empty ar");
+  spdlog::critical("test='{}'", "0‿0‿1‿0‿2≡⊐\"ccacb\"");
   CompileParams p(
-      {11,0,0,2,0,0,26,16,0,1,11,0,17,7},
-{runtime[2],runtime[18],runtime[52]},
+      {0,5,0,1,16,0,0,0,2,0,2,0,3,0,2,0,4,11,5,17,7},
+{runtime[18],runtime[38],0,1,2,std::make_shared<Array>(U"ccacb")},
 {{0,1,0}},
 {{0,0}},
-{{5,5,4,4,3,3,4,3,2,2,0,0,2,0},{6,6,4,4,3,3,4,4,2,2,1,1,2,1}},
-std::make_shared<Array>(U"⟨⟩≡×`⟨⟩")
+{{11,11,10,10,10,9,9,0,0,2,2,4,4,6,6,8,8,8,8,9,8},{17,17,10,10,10,9,9,0,0,2,2,4,4,6,6,8,8,8,8,9,8}},
+std::make_shared<Array>(U"0‿0‿1‿0‿2≡⊐\"ccacb\"")
       );
   fmt::print("startingtest\n");
   spdlog::critical("startingtest");
