@@ -482,8 +482,13 @@ O<Value> Scan::call(u8 nargs, std::vector<O<Value>> args) {
 
   auto x = std::dynamic_pointer_cast<Array>(args[1]);
 
-  if (x->N() == 0)
-    return make_shared<Array>(0);
+  if (x->N() == 0) {
+    if (1 == x->shape.size() and 0 == x->shape.back())
+      return make_shared<Array>(0);
+    auto ret = make_shared<Array>(0);
+    ret->values.clear();
+    ret->shape = x->shape;
+  }
 
   auto w = args[2];
   auto F = args[4];

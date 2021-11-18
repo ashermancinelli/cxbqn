@@ -24,6 +24,8 @@ set(generatedtests
     test_prim_setprims_l3
     test_prim_l4
     test_prim_setprims_l4
+    test_prim_l5
+    test_prim_setprims_l5
     test_prim_throws
     test_prim_setprims_throws
 )
@@ -37,6 +39,7 @@ foreach(test ${generatedtests})
   add_executable(${test} ${test}.cpp)
   target_link_libraries(${test} PUBLIC cxbqn::cxbqn cxbqn::tpl doctest::doctest)
   add_test(NAME ${test} COMMAND $<TARGET_FILE:${test}>)
+  execute_process(COMMAND ${BASH} -c '[ -f ${PROJECT_SOURCE_DIR}/test/${test}.cpp ] || touch ${PROJECT_SOURCE_DIR}/test/${test}.cpp')
   set(FMT_TGT_STR
       "${FMT_TGT_STR}
     COMMAND ${CLANGFORMAT_EXE} -i ${PROJECT_SOURCE_DIR}/test/${test}.cpp
@@ -82,8 +85,10 @@ if(CXBQN_REGEN_TESTS)
       GenPrimL2Tests
       GenPrimL3Tests
       GenPrimL4Tests
+      GenPrimL5Tests
       GenPrimThrowsTests
       GenBytecodeTests
+      GenSimpleTests
   )
   foreach(suite ${test_generators})
     set(GEN_TGT_STR
