@@ -283,8 +283,8 @@ void dfnd(const ByteCodeRef bc, uz &pc, std::vector<O<Value>> &stk, O<Scope> scp
   CXBQN_DEBUG("dfnd:pc={},block={}", pc, blk);
 
   if (blk.def.type == BlockType::func && blk.def.immediate) {
-    auto child = Scope::child_scope(scp, blk_idx);
-    auto [offset, blk_bc, nvars] = blk.body(child->bc(), child->bodies());
+    auto [offset, blk_bc, nvars] = blk.body(scp->bc(), scp->bodies());
+    auto child = Scope::child_scope(scp, blk_idx, nvars);
     std::vector<O<Value>> stk_;
 
     CXBQN_DEBUG("dfnd:recursing into vm");

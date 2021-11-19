@@ -13,15 +13,15 @@ O<Scope> Scope::root_scope(std::vector<Block> blks, ByteCode bytecode,
   scp->_bc = bytecode;
   scp->_consts = consts;
   scp->_blks = blks;
-  scp->vars.resize(6 + blks[scp->blk_idx].max_nvars(bods));
+  scp->vars.resize(8 + blks[scp->blk_idx].max_nvars(bods));
   std::fill(scp->vars.begin(), scp->vars.end(), nullptr);
   return scp;
 }
 
-O<Scope> Scope::child_scope(W<Scope> parent, uz blk_idx) {
+O<Scope> Scope::child_scope(W<Scope> parent, uz blk_idx, uz nvars) {
   auto scp = make_shared<Scope>(blk_idx);
   scp->parent = parent;
-  scp->vars.resize(6 + scp->blocks()[scp->blk_idx].max_nvars(scp->bodies()));
+  scp->vars.resize(nvars);
   std::fill(scp->vars.begin(), scp->vars.end(), nullptr);
   return scp;
 }
@@ -92,8 +92,11 @@ void Scope::set(bool should_var_be_set, O<Reference> r, O<Value> v) {
   CXBQN_DEBUG("Scope::set:r->pos={},scp->vars={}", r->position_in_parent,
               scp->vars);
 
-  bool isset = nullptr != scp->vars[r->position_in_parent] and
-               !scp->vars[r->position_in_parent]->t()[t_Nothing];
+  if (r->position_in_parent > scp->vars.size())
+    scp->vars.resize(1 + r->position_in_parent);
+
+  bool isset = !(nullptr == scp->vars[r->position_in_parent] or
+                 scp->vars[r->position_in_parent]->t()[t_Nothing]);
   if (should_var_be_set != isset) {
     CXBQN_CRIT("should_var_be_set={},isset={},scp->vars={}", should_var_be_set,
                isset, scp->vars);
@@ -101,7 +104,8 @@ void Scope::set(bool should_var_be_set, O<Reference> r, O<Value> v) {
         "Expected var to be set or unset, but this was not the case");
   }
 
-  // assign to the underlying value
+  // fmt::print("{} = {}\n", CXBQN_STR_NC(scp->vars[r->position_in_parent]),
+  // CXBQN_STR_NC(v)); assign to the underlying value
   scp->vars[r->position_in_parent] = v;
 }
 

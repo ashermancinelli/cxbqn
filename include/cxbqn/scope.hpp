@@ -11,7 +11,7 @@ struct Scope : public std::enable_shared_from_this<Scope> {
                              std::vector<Body> bods);
 
   /* Create a new child scope */
-  static O<Scope> child_scope(W<Scope> parent, uz blk_idx);
+  static O<Scope> child_scope(W<Scope> parent, uz blk_idx, uz nvars);
 
   /*
    * Get a span of the bytecode owned by a scope somewhere up the scope lineage,

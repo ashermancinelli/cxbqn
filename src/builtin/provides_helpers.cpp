@@ -20,14 +20,17 @@ bool eq_recursive(O<Value> ox, O<Value> ow) {
   /* Use pointer comparison for blockinst's */
   if (auto xf = std::dynamic_pointer_cast<BlockInst>(ox)) {
     auto wf = std::dynamic_pointer_cast<BlockInst>(ow);
+    if (!wf) return false;
     return xf == wf;
   }
   if (auto x = dynamic_pointer_cast<Md1Deferred>(ox)) { // both must be deferred
     auto w = dynamic_pointer_cast<Md1Deferred>(ow);
+    if (!w) return false;
     return eq_recursive(x->f, w->f) and eq_recursive(x->m1, w->m1);
   }
   if (auto x = dynamic_pointer_cast<Md2Deferred>(ox)) { // both must be deferred
     auto w = dynamic_pointer_cast<Md2Deferred>(ow);
+    if (!w) return false;
     return eq_recursive(x->f, w->f) and eq_recursive(x->m2, w->m2) and
            eq_recursive(x->g, w->g);
   }
@@ -49,11 +52,13 @@ bool eq_recursive(O<Value> ox, O<Value> ow) {
   /* Compare fields for derived types */
   if (auto x = std::dynamic_pointer_cast<Fork>(ox)) {
     auto w = std::dynamic_pointer_cast<Fork>(ow);
+    if (!w) return false;
     return eq_recursive(x->f, w->f) and eq_recursive(x->g, w->g) and
            eq_recursive(x->h, w->h);
   }
   if (auto x = std::dynamic_pointer_cast<Atop>(ox)) {
     auto w = std::dynamic_pointer_cast<Atop>(ow);
+    if (!w) return false;
     return eq_recursive(x->f, w->f) and eq_recursive(x->g, w->g);
   }
 

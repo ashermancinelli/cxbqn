@@ -115,7 +115,7 @@ struct Decompose : public Function {
     return os << "•Decompose";
   }
 
-  // Decompose needs to check if a value is a primitive, so we store a span of
+  // Decompose needs to check if a value is a primitive, so we store a view of
   // the runtime to check.
   std::vector<O<Value>> runtime;
 

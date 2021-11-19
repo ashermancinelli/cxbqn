@@ -8,4 +8,5 @@ O<Value> Type::call(u8 nargs, std::vector<O<Value>> args) {
   auto r = NNC(type_builtin(args[1]));
   return r;
 }
+
 }

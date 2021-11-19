@@ -71,7 +71,8 @@ template <> struct fmt::formatter<Array> {
     auto &&out = ctx.out();
     if (v.t()[t_String]) {
       for (const auto e : v.values)
-        format_to(out, L"{}", std::string(dynamic_pointer_cast<Character>(e)->c()));
+        format_to(out, L"{}",
+                  std::string(dynamic_pointer_cast<Character>(e)->c()));
       return out;
     }
     format_to(out, "{}", v);
@@ -111,38 +112,31 @@ template <> struct fmt::formatter<Value> {
       std::vector<ValueType *> vvs(vs.begin(), vs.end());                      \
       format_to(out, "{}", "⟨");                                               \
       for (int i = 0; i < vvs.size(); i++) {                                   \
-        if (nullptr == vvs[i])                                                 \
-          format_to(out, "{}", "null");                                        \
-        else                                                                   \
-          format_to(out, "{}", *vvs[i]);                                       \
+        FORMAT_TO_OR_NULL(out, "{}", vvs[i]);                                  \
         if (i + 1 < vvs.size())                                                \
           format_to(out, "{}", ",");                                           \
       }                                                                        \
       return format_to(out, "{}", "⟩");                                        \
     }                                                                          \
-  }; \
-  template <> struct fmt::formatter<Container<O<ValueType>>> {                  \
+  };                                                                           \
+  template <> struct fmt::formatter<Container<O<ValueType>>> {                 \
     constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin()) { \
       return ctx.end();                                                        \
     }                                                                          \
     template <typename FormatContext>                                          \
-    auto format(const Container<O<ValueType>> &vs, FormatContext &ctx)          \
+    auto format(const Container<O<ValueType>> &vs, FormatContext &ctx)         \
         -> decltype(ctx.out()) {                                               \
       auto &&out = ctx.out();                                                  \
-      std::vector<O<ValueType>> vvs(vs.begin(), vs.end());                      \
+      std::vector<O<ValueType>> vvs(vs.begin(), vs.end());                     \
       format_to(out, "{}", "⟨");                                               \
       for (int i = 0; i < vvs.size(); i++) {                                   \
-        if (nullptr == vvs[i])                                                 \
-          format_to(out, "{}", "null");                                        \
-        else                                                                   \
-          format_to(out, "{}", *vvs[i]);                                       \
+        FORMAT_TO_OR_NULL(out, "{}", vvs[i]);                                  \
         if (i + 1 < vvs.size())                                                \
           format_to(out, "{}", ",");                                           \
       }                                                                        \
       return format_to(out, "{}", "⟩");                                        \
     }                                                                          \
   };
-
 
 FMT_PTR_CONTAINER(std::vector, Value);
 FMT_PTR_CONTAINER(std::span, Value);

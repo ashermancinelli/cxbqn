@@ -5,6 +5,13 @@
 
 namespace cxbqn::types {
 
+BlockInst::BlockInst(O<Scope> scp, uz blk_idx) : scp{scp}, blk_idx{blk_idx} {
+  // In the specification, the return of •Type for a function, 1mod, and 2mod
+  // are 3, 4, and 5, but the block types as returned from the compiler are
+  // either 0, 1, or 2. That's why we have this offset.
+  type = static_cast<u32>(scp->blocks()[this->blk_idx].def.type) + 3;
+}
+
 bool BlockInst::imm() const {
   return this->scp->blocks()[this->blk_idx].def.immediate;
 }
@@ -18,9 +25,9 @@ O<Value> BlockInst::call(u8 nargs, std::vector<O<Value>> args) {
 
   const auto blk = scp->blocks()[blk_idx];
 
-  auto child = Scope::child_scope(scp, blk_idx);
+  auto [offset, bc, nvars] = blk.body(scp->bc(), scp->bodies(), nargs);
 
-  auto [offset, bc, nvars] = blk.body(child->bc(), child->bodies(), nargs);
+  auto child = Scope::child_scope(scp, blk_idx, std::max(nvars, args.size()));
   std::copy(args.begin(), args.end(), child->vars.begin());
 
   CXBQN_DEBUG("BlockInst::call:nargs={},childscope={},blk={}", args.size(),
