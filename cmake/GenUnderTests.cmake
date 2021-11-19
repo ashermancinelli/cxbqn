@@ -1,6 +1,6 @@
 include(${ROOT}/cmake/GenHelpers.cmake)
 
-message(STATUS "Generating primitive underundo tests")
+message(STATUS "Generating under tests")
 set(P_TESTS
     "(⊑≡⊑⌾⊢) ⟨↕3,2,<\\\"abc\\\"⟩"
     "3 (+≡+⌾⊣) 4"
@@ -39,7 +39,7 @@ set(P_TESTS
     "∘‿+ ≡ ⊢⌾∘‿+ 1"
 )
 
-set(P_TEST_SOURCE "${BUILDDIR}/test_underundo.cpp")
+set(P_TEST_SOURCE "${BUILDDIR}/test_under.cpp")
 init_gen_file(${P_TEST_SOURCE})
 
 foreach(test ${P_TESTS})

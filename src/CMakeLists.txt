@@ -1,5 +1,7 @@
 add_library(
   cxbqn
+
+  # Top level definitions for basic types, mostly defined in types.hpp
   bi.cpp
   vm.cpp
   types.cpp
@@ -10,6 +12,11 @@ add_library(
   scope.cpp
   op.cpp
   instructions.cpp
+
+  # System functions, eg •Open
+  sys/open.cpp
+
+  # Builtin functions/modifiers
   builtin/stile.cpp
   builtin/root.cpp
   builtin/assert.cpp
@@ -55,4 +62,6 @@ add_custom_command(
   POST_BUILD
   COMMAND "${CMAKE_COMMAND}" -E copy "$<TARGET_FILE:driver>"
           "${PROJECT_BINARY_DIR}/BQN"
+  COMMAND "${CMAKE_COMMAND}" -E copy "$<TARGET_FILE:driver>"
+          "${PROJECT_BINARY_DIR}/BQN-cxbqn"
 )
