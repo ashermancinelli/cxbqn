@@ -6,10 +6,13 @@ O<Value> FmtNum::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("•FmtNum:nargs={},args={}", nargs, args);
   XNULLCHK("•FmtNum");
   auto x = std::dynamic_pointer_cast<Number>(args[1]);
-  auto s = fmt::format("{}", x->v);
-  auto ret = make_shared<Array>(s.size());
-  for (auto c : s)
-    ret->values.push_back(make_shared<Character>(c));
+  std::stringstream ss;
+  ss << x->v;
+  auto s = ss.str();
+  auto ret = make_shared<Array>(0);
+  for (auto it = s.begin(); it!=s.end(); )
+    ret->values.push_back(make_shared<Character>(utf8::next(it, s.end())));
+  ret->shape[0] = ret->values.size();
   return ret;
 }
 

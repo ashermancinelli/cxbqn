@@ -217,6 +217,10 @@ struct Array : public Value {
       values.push_back(O<Value>(new Character(c)));
     extra_annot |= annot(t_String);
   }
+
+  // Only works on strings, or arrays of chars.
+  std::string to_string() const;
+
   Array() {}
   ~Array() {}
   TypeType extra_annot{0};

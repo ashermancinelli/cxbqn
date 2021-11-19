@@ -4,6 +4,7 @@
 #include <spdlog/fmt/bundled/format.h>
 #include <spdlog/spdlog.h>
 #include <sstream>
+#include <utf8.h>
 
 using namespace cxbqn::types;
 
@@ -57,7 +58,9 @@ template <> struct fmt::formatter<Character> {
   template <typename FormatContext>
   auto format(Character const &v, FormatContext &ctx) -> decltype(ctx.out()) {
     auto &&out = ctx.out();
-    format_to(out, L"{}", (char32_t)v.c());
+    std::string s="";
+    utf8::append(v.c(), s);
+    format_to(out, "{}", s);
     return out;
   }
 };
@@ -69,13 +72,9 @@ template <> struct fmt::formatter<Array> {
   template <typename FormatContext>
   auto format(Array const &v, FormatContext &ctx) -> decltype(ctx.out()) {
     auto &&out = ctx.out();
-    if (v.t()[t_String]) {
-      for (const auto e : v.values)
-        format_to(out, L"{}",
-                  std::string(dynamic_pointer_cast<Character>(e)->c()));
-      return out;
-    }
-    format_to(out, "{}", v);
+    std::stringstream ss;
+    v.repr(ss);
+    format_to(out, "{}", ss.str());
     return out;
   }
 };

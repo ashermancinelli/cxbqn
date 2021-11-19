@@ -8,6 +8,7 @@ namespace fs = std::filesystem;
 
 using namespace cxbqn;
 using namespace cxbqn::types;
+using namespace cxbqn::sys;
 using namespace cxbqn::provides;
 using namespace cxbqn::vm;
 
@@ -93,18 +94,18 @@ int main(int argc, char **argv) {
     auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
     auto runtime_ret = std::dynamic_pointer_cast<Array>(ret.v);
 
-    auto rt = std::dynamic_pointer_cast<Array>(runtime_ret->values[0]);
+    auto bqnruntime = std::dynamic_pointer_cast<Array>(runtime_ret->values[0]);
 
     auto setprims = runtime_ret->values[1];
 
     // Inform the two latter builtins of the runtime so they can refer to it
-    auto decompose = make_shared<Decompose>(rt);
-    auto primind = make_shared<PrimInd>(rt);
+    auto decompose = make_shared<Decompose>(bqnruntime);
+    auto primind = make_shared<PrimInd>(bqnruntime);
 
     setprims->call(
         1, {setprims, O<Array>(new Array({decompose, primind})), bi_Nothing()});
 
-    auto runtime = rt->values;
+    auto runtime = bqnruntime->values;
     CompileParams p2(
 #include <cxbqn/__/compiled_compiler>
     );
@@ -113,24 +114,35 @@ int main(int argc, char **argv) {
 
     auto compiler = cret.v;
 
+    // Evaluating the formatter bytecode returns [fmt1, repr]. We then use fmt1
+    // to create the actual formatter by passing it four arguments, •Type,
+    // •Decompose, •Glyph, and •FmtNum.
     CompileParams pfmt(
 #include <cxbqn/__/compiled_formatter>
     );
     auto fmtret = vm::run(pfmt.bc, pfmt.consts.v, pfmt.blk_defs, pfmt.bodies);
     auto fmt1 = fmtret.v;
+    // fmt::print("{}\n", CXBQN_STR_NC(fmtret.v));
+//    auto fmtarr = dynamic_pointer_cast<Array>(fmtret.v);
+//    auto fmt1 = fmtarr->values[0];
+//    auto repr = fmtarr->values[1];
 
-    auto glyph = make_shared<Glyph>(rt);
+    auto glyph = make_shared<Glyph>(bqnruntime);
     auto fmtnum = make_shared<FmtNum>();
-    auto fmt = fmt1->call(
+    auto _fmtarr = fmt1->call(
         1, {fmt1, O<Value>(new Array({bi_Type(), decompose, glyph, fmtnum})),
             bi_Nothing()});
 
-    auto compiled = compiler->call(2, {compiler, src, rt});
+    auto fmtarr = dynamic_pointer_cast<Array>(_fmtarr);
+    auto fmt = fmtarr->values[0];
+
+    auto compiled = compiler->call(2, {compiler, src, bqnruntime});
 
     auto runret = vm::run(compiled);
-    // fmt::print("{}\n", *runret.v);
     auto formatted = fmt->call(1, {fmt, runret.v, bi_Nothing()});
-    fmt::print("formatted: {}\n", *formatted);
+
+    fmt::print("{}\n", dynamic_pointer_cast<Array>(formatted)->to_string());
+
   } catch (std::runtime_error &e) {
     fmt::print("{}\n", e.what());
     return 1;

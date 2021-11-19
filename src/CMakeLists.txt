@@ -15,6 +15,10 @@ add_library(
 
   # System functions, eg •Open
   sys/open.cpp
+  sys/rename.cpp
+  sys/repr.cpp
+  sys/sys_helper.cpp
+  sys/sys_function_resolver.cpp
 
   # Builtin functions/modifiers
   builtin/stile.cpp

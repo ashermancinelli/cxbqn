@@ -50,7 +50,7 @@ O<Value> Md1Deferred::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("Md1Deferred::call(after adding 𝕣, 𝕗):nargs={},args={}", nargs,
               args);
 
-  if ((1 == nargs) != (args[2]->t()[t_Nothing])) throw std::runtime_error("Md1Def: got · for 𝕨 with 2 args, or non-· with 1 arg");
+  // if ((1 == nargs) != (args[2]->t()[t_Nothing])) throw std::runtime_error("Md1Def: got · for 𝕨 with 2 args, or non-· with 1 arg");
 
   if (!f)
     fmt::print("calling md1D with null f\n");
@@ -72,7 +72,7 @@ O<Value> Md2Deferred::call(u8 nargs, std::vector<O<Value>> args) {
               args);
   // CXBQN_LOGFLUSH();
 
-  if ((1 == nargs) != (args[2]->t()[t_Nothing])) throw std::runtime_error("Md2Def: got · for 𝕨 with 2 args, or non-· with 1 arg");
+  // if ((1 == nargs) != (args[2]->t()[t_Nothing])) throw std::runtime_error("Md2Def: got · for 𝕨 with 2 args, or non-· with 1 arg");
   if (!f or !g)
     fmt::print("calling md2D with null f or g\n");
 

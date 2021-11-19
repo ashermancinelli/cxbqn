@@ -22,10 +22,7 @@ Array::Array(const std::string& s) {
 
 std::ostream &Array::repr(std::ostream &os) const {
   if (t()[t_String]) {
-    std::string s;
-    for (const auto e : values)
-      utf8::append(std::dynamic_pointer_cast<const Character>(e)->c(), s);
-    return os << "\"" << s << "\"";
+    return os << "\"" << to_string() << "\"";
   }
   os << "⟨sh=⟨";
   for (int i = 0; i < shape.size(); i++) {
@@ -82,6 +79,18 @@ O<Reference> RefArray::getref(uz idx) {
         "RefArray::getref: values[idx] cast to Reference* is nullptr");
 #endif
   return r;
+}
+
+std::string Array::to_string() const {
+  std::string s="";
+  for (auto v : values) {
+    // This hack is required to workaround the fake •_fillBy_ function
+    if (nullptr == v or t_Character != type_builtin(v))
+      s += " ";
+    else
+      utf8::append(dynamic_pointer_cast<Character>(v)->c(), s);
+  }
+  return s;
 }
 
 }

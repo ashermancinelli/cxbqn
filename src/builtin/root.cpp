@@ -5,7 +5,6 @@ namespace cxbqn::provides {
 O<Value> Root::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("√:nargs={},args={}", nargs, args);
   XNULLCHK("√");
-  fmt::print("in here\n");
   auto ox = args[1];
   auto ow = args[2];
   if (auto foo = dynamic_pointer_cast<Character>(ox))

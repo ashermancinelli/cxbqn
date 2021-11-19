@@ -151,6 +151,16 @@ struct PrimInd : public Function {
 };
 O<Value> bi_PrimInd();
 
-#undef CXBQN_BUILTIN_DECL
-
 } // namespace cxbqn::provides
+
+namespace cxbqn::sys {
+
+using namespace cxbqn::types;
+
+// System functions
+CXBQN_BUILTIN_FN_DECL(SystemFunctionResolver, "•SystemFunctionResolver");
+CXBQN_BUILTIN_FN_DECL(Open, "•Open");
+
+}
+
+#undef CXBQN_BUILTIN_DECL
