@@ -6,6 +6,80 @@ namespace cxbqn::vm {
 
 using namespace types;
 
+/*
+Example compiled output of "5+5":
+
+⟨sh=⟨6⟩
+
+  0. bytecode
+  ⟨sh=⟨8⟩0,1,0,0,0,1,17,7⟩,
+
+  1. consts
+  ⟨sh=⟨2⟩
+    ( md2D ( md2D + Block{i=7} (fork f=0,g==,h=•Type)) Block{i=10} ⟨sh=⟨3⟩+,(
+md2D ( md2D Block{i=167} ⊘ ( md2D ( md2D (fork f=1,g=-,h=≤) Block{i=7} (fork
+f=0,g==,h=•Type)) Block{i=10} ⟨sh=⟨2⟩Block{i=165},Block{i=166}⟩)) _fillBy_
+Block{i=164}),( md2D Block{i=169} _fillBy_ Block{i=168})⟩), 5⟩,
+
+  2. blocks
+  ⟨sh=⟨1⟩⟨sh=⟨3⟩0,1,0⟩⟩,
+
+  3. bodies
+  ⟨sh=⟨1⟩⟨sh=⟨4⟩0,0,⟨sh=⟨0⟩⟩,⟨sh=⟨0⟩⟩⟩⟩,
+
+  4. error reporting stuff
+  ⟨sh=⟨2⟩
+    ⟨sh=⟨8⟩2,2,1,1,0,0,1,0⟩,⟨sh=⟨8⟩2,2,1,1,0,0,1,0⟩⟩,
+    ⟨sh=⟨5⟩⟨sh=⟨3⟩92,0,92⟩,⟨sh=⟨3⟩0,1,0⟩,⟨sh=⟨5⟩⟨sh=⟨0⟩⟩,⟨sh=⟨0⟩⟩,⟨sh=⟨1⟩5⟩,⟨sh=⟨0⟩⟩,⟨sh=⟨0⟩⟩⟩,⟨sh=⟨3⟩0,1,2⟩,⟨sh=⟨3⟩0,1,2⟩⟩⟩
+      */
+
+RunResult run(O<Value> compiled) {
+  auto comparr = dynamic_pointer_cast<Array>(compiled);
+
+  std::vector<i32> bc;
+  auto bqnbc = dynamic_pointer_cast<Array>(comparr->values[0])->values;
+  for (auto v : bqnbc)
+    bc.push_back(dynamic_pointer_cast<Number>(v)->v);
+
+  auto consts = dynamic_pointer_cast<Array>(comparr->values[1])->values;
+
+  std::vector<BlockDef> blk_defs;
+  auto bqnblks = dynamic_pointer_cast<Array>(comparr->values[2]);
+  for (auto v : bqnblks->values) {
+    auto vv = dynamic_pointer_cast<Array>(v);
+    auto type = static_cast<uz>(dynamic_pointer_cast<Number>(vv->values[0])->v);
+    auto imm = static_cast<uz>(dynamic_pointer_cast<Number>(vv->values[1])->v);
+
+    if (auto ambiv_idx = dynamic_pointer_cast<Number>(vv->values[2])) {
+      blk_defs.emplace_back(type, imm, static_cast<uz>(ambiv_idx->v));
+    } else {
+      auto body_idxs = dynamic_pointer_cast<Array>(vv->values[2]);
+      auto mon = dynamic_pointer_cast<Array>(body_idxs->values[0]);
+      auto dya = dynamic_pointer_cast<Array>(body_idxs->values[1]);
+      std::vector<uz> moni, dyai;
+
+      for (auto i : mon->values)
+        moni.push_back(static_cast<uz>(dynamic_pointer_cast<Number>(i)->v));
+      for (auto i : dya->values)
+        dyai.push_back(static_cast<uz>(dynamic_pointer_cast<Number>(i)->v));
+
+      blk_defs.emplace_back(type, imm, std::vector{moni, dyai});
+    }
+  }
+
+  std::vector<Body> bodies;
+  auto bqnbodies = dynamic_pointer_cast<Array>(comparr->values[3]);
+  for (auto v : bqnbodies->values) {
+    auto bod = dynamic_pointer_cast<Array>(v);
+    const auto offset = static_cast<uz>(dynamic_pointer_cast<Number>(bod->values[0])->v);
+    const auto varcnt = static_cast<uz>(dynamic_pointer_cast<Number>(bod->values[1])->v);
+    bodies.emplace_back(offset, varcnt);
+  }
+
+  return vm::run(bc, consts, blk_defs, bodies);
+}
+// auto cret = vm::run(p2.bc, p2.consts.v, p2.blk_defs, p2.bodies);
+
 static bool loginit = false;
 RunResult run(std::vector<i32> bc, std::vector<O<Value>> consts,
               std::vector<BlockDef> blk_defs, std::vector<Body> &bodies,

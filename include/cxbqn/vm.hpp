@@ -22,6 +22,8 @@ RunResult run(ByteCode bc, std::vector<O<Value>> consts,
               std::optional<std::vector<std::vector<uz>>> source_indices=nullopt,
               O<Array> source=nullptr);
 
+RunResult run(O<Value> compiled);
+
 O<Value> vm(ByteCodeRef bc, std::vector<O<Value>> consts,
             std::vector<O<Value>> stk, O<Scope> scope);
 
