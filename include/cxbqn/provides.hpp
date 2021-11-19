@@ -89,22 +89,33 @@ CXBQN_BUILTIN_FN_DECL(Ltack, "⊣");
 CXBQN_BUILTIN_FN_DECL(Rtack, "⊢");
 CXBQN_BUILTIN_FN_DECL(ArrayDepth, "≡");
 CXBQN_BUILTIN_FN_DECL(Type, "•Type");
-CXBQN_BUILTIN_FN_DECL(Fill, "Fill");
+CXBQN_BUILTIN_FN_DECL(Fill, "•Fill");
 CXBQN_BUILTIN_FN_DECL(Log, "Log");
 CXBQN_BUILTIN_FN_DECL(Assert, "!");
 CXBQN_BUILTIN_FN_DECL(Range, "↕");
 CXBQN_BUILTIN_FN_DECL(Pick, "⊑");
 CXBQN_BUILTIN_FN_DECL(Shape, "≢");
 CXBQN_BUILTIN_FN_DECL(Deshape, "⥊");
-CXBQN_BUILTIN_FN_DECL(GroupLen, "GroupLen");
-CXBQN_BUILTIN_FN_DECL(GroupOrd, "GroupOrd");
+CXBQN_BUILTIN_FN_DECL(GroupLen, "•GroupLen");
+CXBQN_BUILTIN_FN_DECL(GroupOrd, "•GroupOrd");
+CXBQN_BUILTIN_FN_DECL(FmtNum, "•FmtNum");
 
 CXBQN_BUILTIN_DECL(Md1, Table, "⌜");
 CXBQN_BUILTIN_DECL(Md1, Scan, "`");
 
-CXBQN_BUILTIN_DECL(Md2, FillBy, "_fillBy_");
+CXBQN_BUILTIN_DECL(Md2, FillBy, "•_fillBy_");
 CXBQN_BUILTIN_DECL(Md2, Valence, "⊘");
 CXBQN_BUILTIN_DECL(Md2, Catch, "⎊");
+
+struct Glyph : public Function {
+  std::vector<O<Value>> runtime;
+  Glyph(O<Value> _runtime)
+      : runtime{dynamic_pointer_cast<Array>(_runtime)->values} {}
+  O<Value> call(u8 nargs = 0, std::vector<O<Value>> args = {}) override;
+  std::ostream &repr(std::ostream &os) const override {
+    return os << "•Glyph";
+  }
+};
 
 struct Decompose : public Function {
 

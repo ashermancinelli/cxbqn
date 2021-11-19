@@ -11,6 +11,15 @@ Array::Array(const uz N, std::vector<O<Value>> &stk) {
   stk.resize(stk.size() - N);
 }
 
+Array::Array(const std::string& s) {
+  auto it = s.begin();
+  while (it != s.end()) {
+    values.push_back(O<Value>(new Character((c32)utf8::next(it, s.end()))));
+  }
+  shape.push_back(values.size());
+  extra_annot |= annot(t_String);
+}
+
 std::ostream &Array::repr(std::ostream &os) const {
   if (t()[t_String]) {
     std::string s;

@@ -209,6 +209,7 @@ struct Array : public Value {
     shape.push_back(N);
     values.resize(N);
   }
+  Array(const std::string& s);
   Array(const std::u32string &s) {
     shape.push_back(s.size());
     values.reserve(s.size());

@@ -14,7 +14,6 @@ O<Value> Stile::call(u8 nargs, std::vector<O<Value>> args) {
   auto x = std::dynamic_pointer_cast<Number>(ox);
   auto w = std::dynamic_pointer_cast<Number>(ow);
   return make_shared<Number>(2 == nargs ? w->v / x->v : 1 / x->v);
-  return NN(2 == nargs ? std::fmod(w->v, x->v) : std::abs(x->v));
 }
 
 } // namespace cxbqn::provides

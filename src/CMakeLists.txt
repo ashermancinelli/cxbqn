@@ -22,6 +22,8 @@ add_library(
   builtin/range.cpp
   builtin/shape.cpp
   builtin/scan.cpp
+  builtin/fmtnum.cpp
+  builtin/glyph.cpp
   builtin/grouplen.cpp
   builtin/groupord.cpp
   builtin/primind.cpp
