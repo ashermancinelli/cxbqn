@@ -313,5 +313,11 @@ struct Md2 : public Function {
   TypeType t() const override { return TypeType{t_Md2}; }
 };
 
+// The t() method on all values in cxbqn uses higher bits to indicate internal
+// type annotations. We only want the lowest 3 bits for the builtin •Type.
+inline auto type_builtin(const O<Value> v) {
+  return (v->t() & TypeType{0b111}).to_ulong();
+}
+
 } // namespace types
 } // namespace cxbqn

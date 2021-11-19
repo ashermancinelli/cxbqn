@@ -25,12 +25,6 @@ namespace cxbqn::provides {
 
 bool eq_recursive(O<Value> ox, O<Value> ow);
 
-// The t() method on all values in cxbqn uses higher bits to indicate internal
-// type annotations. We only want the lowest 3 bits for the builtin •Type.
-inline auto type_builtin(const O<Value> v) {
-  return (v->t() & TypeType{0b111}).to_ulong();
-}
-
 #define CHR_MAX 1114111
 O<Value> check_char(O<Value> v);
 

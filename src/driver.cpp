@@ -61,10 +61,7 @@ int parse_args(std::vector<std::string> args) {
       if (std::FILE *fp = std::fopen(f.c_str(), "r")) {
         int ch;
         while ((ch = fgetc(fp)) != EOF) {
-          if (ch == '\n')
-            utf8::append(U'⋄', _src);
-          else
-            _src += ch;
+          _src += ch;
         }
         std::fclose(fp);
         fmt::print("{}\n", _src);
@@ -131,9 +128,9 @@ int main(int argc, char **argv) {
     auto compiled = compiler->call(2, {compiler, src, rt});
 
     auto runret = vm::run(compiled);
-    // auto formatted = fmt->call(1, {fmt, runret.v, bi_Nothing()});
-    fmt::print("{}\n", *runret.v);
-    // fmt::print("formatted: {}\n", *formatted);
+    // fmt::print("{}\n", *runret.v);
+    auto formatted = fmt->call(1, {fmt, runret.v, bi_Nothing()});
+    fmt::print("formatted: {}\n", *formatted);
   } catch (std::runtime_error &e) {
     fmt::print("{}\n", e.what());
     return 1;

@@ -37,7 +37,12 @@ std::ostream &Array::repr(std::ostream &os) const {
   for (int i = 0; i < values.size(); i++) {
     auto e = values[i];
     if (e)
-      e->repr(os);
+      if (t_Character == type_builtin(e)) {
+        std::string s="";
+        utf8::append(dynamic_pointer_cast<Character>(e)->c(), s);
+        os << s;
+      } else
+        e->repr(os);
     else
       os << "null";
     if (i + 1 < values.size())
