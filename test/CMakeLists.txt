@@ -32,6 +32,7 @@ set(generatedtests
     test_prim_setprims_throws
     test_under
     test_undo
+    test_identity
 )
 
 set(FMT_TGT_STR
@@ -99,6 +100,7 @@ if(CXBQN_REGEN_TESTS)
       GenSimpleTests
       GenUnderTests
       GenUndoTests
+      GenIdentityTests
   )
   foreach(suite ${test_generators})
     set(GEN_TGT_STR
