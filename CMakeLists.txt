@@ -70,12 +70,16 @@ set(CXBQN_LOG
     CACHE BOOL "Enable logging in CXBQN"
 )
 set(CXBQN_LOGLEVEL
-    "level::info"
+    "level::off"
     CACHE STRING "Log level spdlog will be set to"
 )
 set(CHECK_SUBMODULES
     ON
     CACHE BOOL "Check git submodules on every build"
+)
+set(CXBQN_CUDA
+    OFF
+    CACHE BOOL "Enable CUDA acceleration and non-standard builtins"
 )
 
 if("${CXBQN_DEBUG_VM_FILE}" STREQUAL "stdout")

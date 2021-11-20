@@ -16,21 +16,29 @@ struct SysError : public Function {
 };
 
 O<Value> SystemFunctionResolver::call(u8 nargs, std::vector<O<Value>> args) {
+  CXBQN_DEBUG("SystemFunctionResolver: nargs={},args={}", nargs, args);
   auto x = dynamic_pointer_cast<Array>(args[1]);
-  auto ret = make_shared<Array>(x->values.size());
+  std::vector<O<Value>> ret;
 
-  for (auto _s : x->values) {
-    auto s = dynamic_pointer_cast<Array>(_s)->to_string();
+  for (int i=0; i < x->N(); i++) {
+    auto foo = dynamic_pointer_cast<Array>(x->values[i]);
+    auto s = foo->to_string();
     if (false) {
 
-    } else if ("open" == s) {
-
+    // } else if ("open" == s) {
+    } else if ("show" == s) {
+      ret.push_back(make_shared<Show>());
     } else {
-      ret->values.push_back(make_shared<SysError>(s));
+      ret.push_back(make_shared<SysError>(s));
     }
   }
-
-  return ret;
+  auto vret = make_shared<Array>(ret.size());
+  vret->values = ret;
+  return vret;
+}
+O<Value> bi_SystemFunctionResolver() {
+  static SystemFunctionResolver s;
+  return O<Value>(&s, [](auto*){});
 }
 
 } // namespace cxbqn::sys

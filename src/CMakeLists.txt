@@ -15,6 +15,7 @@ add_library(
 
   # System functions, eg •Open
   sys/open.cpp
+  sys/show.cpp
   sys/rename.cpp
   sys/repr.cpp
   sys/sys_helper.cpp

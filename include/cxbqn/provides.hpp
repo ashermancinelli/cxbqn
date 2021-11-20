@@ -160,6 +160,7 @@ using namespace cxbqn::types;
 // System functions
 CXBQN_BUILTIN_FN_DECL(SystemFunctionResolver, "•SystemFunctionResolver");
 CXBQN_BUILTIN_FN_DECL(Open, "•Open");
+CXBQN_BUILTIN_FN_DECL(Show, "•Show");
 
 }
 

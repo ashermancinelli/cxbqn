@@ -122,10 +122,6 @@ int main(int argc, char **argv) {
     );
     auto fmtret = vm::run(pfmt.bc, pfmt.consts.v, pfmt.blk_defs, pfmt.bodies);
     auto fmt1 = fmtret.v;
-    // fmt::print("{}\n", CXBQN_STR_NC(fmtret.v));
-//    auto fmtarr = dynamic_pointer_cast<Array>(fmtret.v);
-//    auto fmt1 = fmtarr->values[0];
-//    auto repr = fmtarr->values[1];
 
     auto glyph = make_shared<Glyph>(bqnruntime);
     auto fmtnum = make_shared<FmtNum>();
@@ -136,7 +132,13 @@ int main(int argc, char **argv) {
     auto fmtarr = dynamic_pointer_cast<Array>(_fmtarr);
     auto fmt = fmtarr->values[0];
 
-    auto compiled = compiler->call(2, {compiler, src, bqnruntime});
+    // Here, we could just call the compiler with the runtime as 𝕨. To add the
+    // system functions, we will pass another value in an array along with the
+    // runtime. This funcionality is not documented at the time of writing.
+    auto compw = make_shared<Array>(2);
+    compw->values[0] = bqnruntime;
+    compw->values[1] = bi_SystemFunctionResolver();
+    auto compiled = compiler->call(2, {compiler, src, compw});
 
     auto runret = vm::run(compiled);
     auto formatted = fmt->call(1, {fmt, runret.v, bi_Nothing()});

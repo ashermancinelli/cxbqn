@@ -32,6 +32,7 @@ static constexpr std::size_t init_stack_size() {
 #cmakedefine CXBQN_STACKTRACE_DEEP
 #cmakedefine CXBQN_LOG
 #cmakedefine CXBQN_LOGLEVEL @CXBQN_LOGLEVEL@
+#cmakedefine CXBQN_CUDA
 
 }
 
