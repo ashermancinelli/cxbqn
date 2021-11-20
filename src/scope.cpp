@@ -8,7 +8,7 @@ namespace cxbqn::types {
 O<Scope> Scope::root_scope(std::vector<Block> blks, ByteCode bytecode,
                            std::vector<O<Value>> consts,
                            std::vector<Body> bods) {
-  auto scp = make_shared<Scope>(0);
+  auto scp = make_shared<Scope>(0, true);
   scp->_bods = bods;
   scp->_bc = bytecode;
   scp->_consts = consts;
@@ -19,7 +19,7 @@ O<Scope> Scope::root_scope(std::vector<Block> blks, ByteCode bytecode,
 }
 
 O<Scope> Scope::child_scope(W<Scope> parent, uz blk_idx, uz nvars) {
-  auto scp = make_shared<Scope>(blk_idx);
+  auto scp = make_shared<Scope>(blk_idx, false);
   scp->parent = parent;
   scp->_consts = parent.lock()->_consts;
   scp->vars.resize(nvars);
@@ -34,6 +34,7 @@ std::vector<O<Value>> Scope::consts() const {
                              "parent, but neither is the case.");
 #endif
   return _consts;
+  // return nullptr == _child_consts ? _consts : *_child_consts;
   // return _consts.has_value() ? _consts.value() : parent.lock()->consts();
 }
 
