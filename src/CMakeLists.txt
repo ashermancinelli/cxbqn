@@ -60,7 +60,7 @@ add_library(cxbqn::cxbqn ALIAS cxbqn)
 
 add_executable(driver driver.cpp)
 target_link_libraries(driver PUBLIC cxbqn::cxbqn)
-set_target_properties(driver PROPERTIES OUTPUT_NAME "cxbqn")
+set_target_properties(driver PROPERTIES OUTPUT_NAME "CXBQN")
 
 add_custom_command(
   TARGET driver
@@ -68,5 +68,5 @@ add_custom_command(
   COMMAND "${CMAKE_COMMAND}" -E copy "$<TARGET_FILE:driver>"
           "${PROJECT_BINARY_DIR}/BQN"
   COMMAND "${CMAKE_COMMAND}" -E copy "$<TARGET_FILE:driver>"
-          "${PROJECT_BINARY_DIR}/BQN-cxbqn"
+          ${PROJECT_BINARY_DIR}
 )

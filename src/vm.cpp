@@ -51,7 +51,7 @@ RunResult run(O<Value> compiled) {
     auto imm = static_cast<uz>(dynamic_pointer_cast<Number>(vv->values[1])->v);
 
     if (auto ambiv_idx = dynamic_pointer_cast<Number>(vv->values[2])) {
-      blk_defs.emplace_back(type, imm, static_cast<uz>(ambiv_idx->v));
+      blk_defs.push_back(BlockDef{type, imm, static_cast<uz>(ambiv_idx->v)});
     } else {
       auto body_idxs = dynamic_pointer_cast<Array>(vv->values[2]);
       auto mon = dynamic_pointer_cast<Array>(body_idxs->values[0]);
@@ -63,7 +63,8 @@ RunResult run(O<Value> compiled) {
       for (auto i : dya->values)
         dyai.push_back(static_cast<uz>(dynamic_pointer_cast<Number>(i)->v));
 
-      blk_defs.emplace_back(type, imm, std::vector{moni, dyai});
+      const auto bods = std::vector<std::vector<uz>>{moni, dyai};
+      blk_defs.push_back(BlockDef{type, imm, bods});
     }
   }
 
@@ -73,7 +74,7 @@ RunResult run(O<Value> compiled) {
     auto bod = dynamic_pointer_cast<Array>(v);
     const auto offset = static_cast<uz>(dynamic_pointer_cast<Number>(bod->values[0])->v);
     const auto varcnt = static_cast<uz>(dynamic_pointer_cast<Number>(bod->values[1])->v);
-    bodies.emplace_back(offset, varcnt);
+    bodies.push_back(Body{offset, varcnt});
   }
 
   return vm::run(bc, consts, blk_defs, bodies);

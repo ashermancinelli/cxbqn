@@ -9,8 +9,6 @@ project(
   VERSION 0.4.1
 )
 
-enable_testing()
-
 set(CXBQN_INIT_STACK_SIZE
     10000
     CACHE STRING "The size the VM stack is initialized with"
@@ -21,6 +19,10 @@ set(CMAKE_CXX_FLAGS
     CACHE STRING ""
 )
 
+set(CXBQN_BUILD_TESTS
+    OFF
+    CACHE BOOL "Build tests, add CTest support"
+)
 set(CXBQN_REGEN_TESTS
     OFF
     CACHE BOOL "Regenerate bytecode, simple, and primitive tests"
@@ -50,7 +52,7 @@ set(CXBQN_DEBUG_VM
     CACHE BOOL "Verbose output in the VM for debugging"
 )
 set(CXBQN_DEBUG_VM_FILE
-    "stdout"
+    ""
     CACHE STRING "Redirect debugging output from VM to a file."
 )
 set(CXBQN_DEBUG_VMSTACK
@@ -108,8 +110,17 @@ find_package(UnixCommands REQUIRED)
 include(cmake/Linters.cmake)
 include(cmake/CheckGitSubmodules.cmake)
 include(cmake/FindBQN.cmake)
-
 include(cmake/CodeCoverage.cmake)
+
+if(CXBQN_CUDA)
+  if("${CMAKE_CUDA_ARCHITECTURES}" STREQUAL "")
+    set(CMAKE_CUDA_ARCHITECTURES 60)
+  endif()
+
+  include(CheckLanguage)
+  check_language(CUDA)
+  enable_language(CUDA)
+endif()
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${PROJECT_BINARY_DIR}/include)
@@ -122,4 +133,8 @@ configure_file(
 )
 
 add_subdirectory(src)
-add_subdirectory(test)
+
+if(CXBQN_BUILD_TESTS)
+  enable_testing()
+  add_subdirectory(test)
+endif()

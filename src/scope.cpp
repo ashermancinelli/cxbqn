@@ -189,7 +189,8 @@ const void Scope::source_for_program_counter(uz pc,
     if (*it_start == '\n')
       break;
 
-  ss << std::string_view(it_start, it_end) << "\n";
+  std::string sfinal(it_start, it_end);
+  ss << sfinal << "\n";
   for (int i = 0; i < dis; i++)
     ss << "·";
   ss << "∧\n";
