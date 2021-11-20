@@ -4,8 +4,10 @@
 #include <filesystem>
 #include <spdlog/spdlog.h>
 #include <utf8.h>
+#include <chrono>
 namespace fs = std::filesystem;
 
+using namespace std::chrono;
 using namespace cxbqn;
 using namespace cxbqn::types;
 using namespace cxbqn::sys;
@@ -87,12 +89,17 @@ int main(int argc, char **argv) {
 
   try {
 
+    auto t_start = std::chrono::high_resolution_clock::now();
     const auto provide = provides::get_provides()->values;
     CompileParams p(
 #include <cxbqn/__/compiled_runtime>
     );
     auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
     auto runtime_ret = std::dynamic_pointer_cast<Array>(ret.v);
+
+#ifdef CXBQN_PROFILE_STARTUP
+    auto t_rt = std::chrono::high_resolution_clock::now();
+#endif
 
     auto bqnruntime = std::dynamic_pointer_cast<Array>(runtime_ret->values[0]);
 
@@ -111,6 +118,9 @@ int main(int argc, char **argv) {
     );
 
     auto cret = vm::run(p2.bc, p2.consts.v, p2.blk_defs, p2.bodies);
+#ifdef CXBQN_PROFILE_STARTUP
+    auto t_comp = std::chrono::high_resolution_clock::now();
+#endif
 
     auto compiler = cret.v;
 
@@ -121,6 +131,9 @@ int main(int argc, char **argv) {
 #include <cxbqn/__/compiled_formatter>
     );
     auto fmtret = vm::run(pfmt.bc, pfmt.consts.v, pfmt.blk_defs, pfmt.bodies);
+#ifdef CXBQN_PROFILE_STARTUP
+    auto t_fmt = std::chrono::high_resolution_clock::now();
+#endif
     auto fmt1 = fmtret.v;
 
     auto glyph = make_shared<Glyph>(bqnruntime);
@@ -144,6 +157,14 @@ int main(int argc, char **argv) {
     auto formatted = fmt->call(1, {fmt, runret.v, bi_Nothing()});
 
     fmt::print("{}\n", dynamic_pointer_cast<Array>(formatted)->to_string());
+
+#ifdef CXBQN_PROFILE_STARTUP
+    auto t_final = std::chrono::high_resolution_clock::now();
+    fmt::print("runtime: {}ms\ncompiler: {}ms\nexecute: {}ms\n",
+        duration_cast<milliseconds>(t_rt - t_start).count(),
+        duration_cast<milliseconds>(t_comp - t_start).count(),
+        duration_cast<milliseconds>(t_final - t_start).count());
+#endif
 
   } catch (std::runtime_error &e) {
     fmt::print("{}\n", e.what());

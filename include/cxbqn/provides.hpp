@@ -159,8 +159,10 @@ using namespace cxbqn::types;
 
 // System functions
 CXBQN_BUILTIN_FN_DECL(SystemFunctionResolver, "•SystemFunctionResolver");
-CXBQN_BUILTIN_FN_DECL(Open, "•Open");
+CXBQN_BUILTIN_FN_DECL(CXBQN, "•CXBQN");
 CXBQN_BUILTIN_FN_DECL(Show, "•Show");
+CXBQN_BUILTIN_FN_DECL(Timed, "•_timed");
+CXBQN_BUILTIN_FN_DECL(UnixTime, "•UnixTime");
 
 }
 

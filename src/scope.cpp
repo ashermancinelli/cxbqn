@@ -21,6 +21,7 @@ O<Scope> Scope::root_scope(std::vector<Block> blks, ByteCode bytecode,
 O<Scope> Scope::child_scope(W<Scope> parent, uz blk_idx, uz nvars) {
   auto scp = make_shared<Scope>(blk_idx);
   scp->parent = parent;
+  scp->_consts = parent.lock()->_consts;
   scp->vars.resize(nvars);
   std::fill(scp->vars.begin(), scp->vars.end(), nullptr);
   return scp;
@@ -32,7 +33,8 @@ std::vector<O<Value>> Scope::consts() const {
     throw std::runtime_error("scope: expected to either own consts or to have "
                              "parent, but neither is the case.");
 #endif
-  return _consts.has_value() ? _consts.value() : parent.lock()->consts();
+  return _consts;
+  // return _consts.has_value() ? _consts.value() : parent.lock()->consts();
 }
 
 std::span<const Body> Scope::bodies() const {

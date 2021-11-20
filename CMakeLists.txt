@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 project(
   cxbqn
   LANGUAGES CXX
-  VERSION 0.4.1
+  VERSION 0.5.0
 )
 
 set(CXBQN_INIT_STACK_SIZE
@@ -42,6 +42,10 @@ set(CXBQN_STACKTRACE_DEEP
 set(CXBQN_GEN_CODECOV
     OFF
     CACHE BOOL "Generate code coverage data. Build type must be debug."
+)
+set(CXBQN_PROFILE_STARTUP
+    OFF
+    CACHE BOOL "Output profiling information from the driver"
 )
 set(CXBQN_PROFILE_VM
     OFF

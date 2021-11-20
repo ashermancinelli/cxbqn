@@ -23,11 +23,14 @@ O<Value> SystemFunctionResolver::call(u8 nargs, std::vector<O<Value>> args) {
   for (int i=0; i < x->N(); i++) {
     auto foo = dynamic_pointer_cast<Array>(x->values[i]);
     auto s = foo->to_string();
-    if (false) {
-
-    // } else if ("open" == s) {
+    if ("cxbqn" == s) {
+      ret.push_back(make_shared<CXBQN>());
     } else if ("show" == s) {
       ret.push_back(make_shared<Show>());
+    } else if ("timed" == s) {
+      ret.push_back(make_shared<Timed>());
+    } else if ("unixtime" == s) {
+      ret.push_back(make_shared<UnixTime>());
     } else {
       ret.push_back(make_shared<SysError>(s));
     }
