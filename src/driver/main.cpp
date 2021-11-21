@@ -1,99 +1,17 @@
-#include <cxbqn/comp_utils.hpp>
-#include <cxbqn/cxbqn.hpp>
-#include <cxbqn/debug.hpp>
-#include <filesystem>
-#include <spdlog/spdlog.h>
-#include <utf8.h>
-#include <chrono>
-namespace fs = std::filesystem;
-
-using namespace std::chrono;
+#include "driver.hpp"
 using namespace cxbqn;
 using namespace cxbqn::types;
-using namespace cxbqn::sys;
 using namespace cxbqn::provides;
-using namespace cxbqn::vm;
-
-std::size_t replace_all(std::string &inout, std::string_view what,
-                        std::string_view with) {
-  std::size_t count{};
-  for (std::string::size_type pos{};
-       inout.npos != (pos = inout.find(what.data(), pos, what.length()));
-       pos += with.length(), ++count) {
-    inout.replace(pos, what.length(), with.data(), with.length());
-  }
-  return count;
-}
-
-int version() {
-  fmt::print("CXBQN {}: compiled on " __DATE__ "\n", cxbqn::config::version());
-  return 0;
-}
-
-int usage() {
-  version();
-  fmt::print("usage: BQN [options] [file.bqn [arguments]]\n");
-  fmt::print("\t-e <string>: execute BQN expression\n");
-  fmt::print("\t-f <file>: execute <file>\n");
-  return 1;
-}
-
-static O<Value> src;
-static O<Array> sysargs;
-
-int parse_args(std::vector<std::string> args) {
-  auto it = args.begin();
-  it++; // skip exe name
-
-  sysargs.reset(new Array(0));
-
-  while (it != args.end()) {
-    if ("-e" == *it) {
-      it++;
-      auto _src = *it;
-      src.reset(new Array(_src));
-      return 0;
-    }
-    if ("-v" == *it or "--version" == *it) {
-      return version();
-    }
-    if ("-h" == *it or "--help" == *it) {
-      return usage();
-    }
-    if ("-f" == *it) {
-      it++;
-      auto f = fs::path(*it);
-      if (!fs::exists(f)) {
-        fmt::print("path {} does not exist\n", f);
-        return 1;
-      }
-      std::string _src = "";
-      if (std::FILE *fp = std::fopen(f.c_str(), "r")) {
-        int ch;
-        while ((ch = fgetc(fp)) != EOF) {
-          _src += ch;
-        }
-        std::fclose(fp);
-        fmt::print("{}\n", _src);
-        src.reset(new Array(_src));
-        return 0;
-      } else {
-        fmt::print("could not open path {}\n", f);
-        return 1;
-      }
-      return usage();
-    }
-    sysargs->values.push_back(O<Value>(new Array(*it)));
-    sysargs->shape[0]++;
-  }
-
-  return 0;
-}
+using namespace cxbqn::sys;
 
 int main(int argc, char **argv) {
 
+  static O<Value> src;
+  static O<Array> sysargs;
+
   std::vector<std::string> args(argv, argv + argc);
-  if (auto ec = parse_args(args))
+
+  if (auto ec = driver::parse_args(args, src, sysargs))
     return ec;
 
   try {
@@ -166,7 +84,7 @@ int main(int argc, char **argv) {
     auto runret = vm::run(compiled);
     auto formatted = fmt->call(1, {fmt, runret.v, bi_Nothing()});
 
-    fmt::print("{}\n", dynamic_pointer_cast<Array>(formatted)->to_string());
+    // fmt::print("{}\n", dynamic_pointer_cast<Array>(formatted)->to_string());
 
 #ifdef CXBQN_PROFILE_STARTUP
     auto t_final = std::chrono::high_resolution_clock::now();

@@ -2,16 +2,32 @@ add_library(
   cxbqn
 
   # Top level definitions for basic types, mostly defined in types.hpp
-  bi.cpp
-  vm.cpp
-  types.cpp
-  array.cpp
-  block.cpp
-  blockdef.cpp
-  blockinst.cpp
-  scope.cpp
-  op.cpp
-  instructions.cpp
+  types/bi.cpp
+  types/vm.cpp
+  types/types.cpp
+  types/array.cpp
+  types/block.cpp
+  types/blockdef.cpp
+  types/blockinst.cpp
+  types/scope.cpp
+  types/op.cpp
+
+  # Implementation of instructions
+  instructions/set_.cpp
+  instructions/varm.cpp
+  instructions/varo.cpp
+  instructions/fn1c.cpp
+  instructions/fn1o.cpp
+  instructions/fn2c.cpp
+  instructions/fn2o.cpp
+  instructions/dfnd.cpp
+  instructions/arro.cpp
+  instructions/arrm.cpp
+  instructions/md1c.cpp
+  instructions/md2c.cpp
+  instructions/tr2d.cpp
+  instructions/tr3d.cpp
+  instructions/tr3o.cpp
 
   # System functions, eg •Open
   sys/open.cpp
@@ -62,15 +78,13 @@ add_library(
 target_link_libraries(cxbqn PUBLIC tpl)
 add_library(cxbqn::cxbqn ALIAS cxbqn)
 
-add_executable(driver driver.cpp)
-target_link_libraries(driver PUBLIC cxbqn::cxbqn)
-set_target_properties(driver PROPERTIES OUTPUT_NAME "CXBQN")
+add_executable(BQN driver/driver.cpp driver/main.cpp)
+target_link_libraries(BQN PUBLIC cxbqn::cxbqn)
+install(TARGETS BQN DESTINATION bin)
 
 add_custom_command(
-  TARGET driver
+  TARGET BQN
   POST_BUILD
-  COMMAND "${CMAKE_COMMAND}" -E copy "$<TARGET_FILE:driver>"
-          "${PROJECT_BINARY_DIR}/BQN"
-  COMMAND "${CMAKE_COMMAND}" -E copy "$<TARGET_FILE:driver>"
+  COMMAND "${CMAKE_COMMAND}" -E copy "$<TARGET_FILE:BQN>"
           ${PROJECT_BINARY_DIR}
-)
+          )
