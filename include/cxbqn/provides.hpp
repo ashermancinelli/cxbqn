@@ -169,6 +169,7 @@ CXBQN_BUILTIN_FN_DECL(CXBQN, "•CXBQN");
 CXBQN_BUILTIN_FN_DECL(Show, "•Show");
 CXBQN_BUILTIN_FN_DECL(Timed, "•_timed");
 CXBQN_BUILTIN_FN_DECL(UnixTime, "•UnixTime");
+CXBQN_BUILTIN_FN_DECL(FLines, "•FLines");
 
 } // namespace cxbqn::sys
 

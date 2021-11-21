@@ -15,6 +15,7 @@ add_library(
 
   # System functions, eg •Open
   sys/open.cpp
+  sys/flines.cpp
   sys/unixtime.cpp
   sys/timed.cpp
   sys/cxbqn.cpp
