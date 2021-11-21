@@ -10,7 +10,7 @@ using namespace cxbqn::provides;
 
 
 TEST_CASE("grade") {
-  const auto rt = provides::get_runtime_setprims_cached_annot();
+  const auto rt = provides::get_runtime_setprims_cached();
   const auto runtime = rt->values;
   spdlog::critical("test='{}'", "+˜⁼7");
   CompileParams p(

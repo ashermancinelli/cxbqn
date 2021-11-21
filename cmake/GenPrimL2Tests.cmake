@@ -37,7 +37,7 @@ foreach(test ${P_TESTS})
     APPEND ${P_SETPRIMS_TEST_SOURCE}
     "
       TEST_CASE(\"${test}\") {
-  const auto rt = provides::get_runtime_setprims_cached_annot();
+  const auto rt = provides::get_runtime_setprims_cached();
   const auto runtime = rt->values;
   spdlog::critical(\"test='{}'\", \"${test}\");
   CompileParams p( ${compiled_test} );

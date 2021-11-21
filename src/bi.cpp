@@ -64,14 +64,6 @@ O<Array> get_runtime_setprims_cached() {
   return get_runtime_setprims_cached();
 }
 
-static O<Array> rtspa = nullptr;
-O<Array> get_runtime_setprims_cached_annot() {
-  if (nullptr != rtspa)
-    return rtspa;
-  rtspa = get_runtime_setprims_annot();
-  return get_runtime_setprims_cached_annot();
-}
-
 O<Array> get_runtime_setprims() {
   CXBQN_DEBUG("provides::get_runtime_setprims");
 
@@ -81,31 +73,6 @@ O<Array> get_runtime_setprims() {
 #include <cxbqn/__/compiled_runtime>
   );
   auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
-
-  // Decompose the result to get the array with just the runtime
-  auto runtime_ret = std::dynamic_pointer_cast<Array>(ret.v);
-  auto runtime_raw = std::dynamic_pointer_cast<Array>(runtime_ret->values[0]);
-
-  auto setprims = runtime_ret->values[1];
-
-  // Inform the two latter builtins of the runtime so they can refer to it
-  auto decompose = make_shared<Decompose>(runtime_raw);
-  auto primind = make_shared<PrimInd>(runtime_raw);
-
-  setprims->call(1, {setprims, O<Array>(new Array({decompose, primind})), bi_Nothing()});
-
-  return runtime_raw;
-}
-
-O<Array> get_runtime_setprims_annot() {
-  CXBQN_DEBUG("provides::get_runtime_setprims_annot");
-
-  // First we run the runtime to get the original output
-  const auto provide = provides::get_provides()->values;
-  static CompileParams p(
-#include <cxbqn/__/compiled_runtime_annot>
-  );
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies, p.source_indices.value(), p.source_str);
 
   // Decompose the result to get the array with just the runtime
   auto runtime_ret = std::dynamic_pointer_cast<Array>(ret.v);
