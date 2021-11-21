@@ -19,7 +19,7 @@ TEST_CASE("Test Simplified _isGlyph") {
                   {{0, 1, 0}, {0, 0, 1}},
                   {{0, 0}, {25, 3}}};
 
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto ar = dynamic_pointer_cast<Array>(ret.v);
@@ -44,7 +44,7 @@ TEST_CASE("Check Fold Impl") {
       {runtime[0], runtime[1], runtime[27], runtime[36], runtime[47], 5, 1, 0},
       {{0, 1, 0}, {0, 0, 1}, {1, 0, 2}},
       {{0, 0}, {18, 5}, {60, 5}}};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto n = dynamic_pointer_cast<Number>(ret.v);

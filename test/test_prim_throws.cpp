@@ -22,7 +22,7 @@ TEST_CASE("'a'+'c'") {
                   {{0, 0}},
                   {{4, 4, 3, 3, 0, 0, 3, 0}, {6, 6, 3, 3, 2, 2, 3, 2}},
                   std::make_shared<Array>(U"\'a\'+\'c\'")};
-  REQUIRE_THROWS(vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies));
+  REQUIRE_THROWS(vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies));
 }
 
 TEST_CASE("F←-⋄f+2") {
@@ -36,7 +36,7 @@ TEST_CASE("F←-⋄f+2") {
                   {{2, 2, 0, 0, 0, 0, 1, 6, 6, 5, 5, 4, 4, 4, 5, 4},
                    {2, 2, 0, 0, 0, 0, 1, 6, 6, 5, 5, 4, 4, 4, 5, 4}},
                   std::make_shared<Array>(U"F←-⋄f+2")};
-  REQUIRE_THROWS(vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies));
+  REQUIRE_THROWS(vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies));
 }
 
 TEST_CASE("97-'a'") {
@@ -49,7 +49,7 @@ TEST_CASE("97-'a'") {
                   {{0, 0}},
                   {{3, 3, 2, 2, 0, 0, 2, 0}, {5, 5, 2, 2, 1, 1, 2, 1}},
                   std::make_shared<Array>(U"97-\'a\'")};
-  REQUIRE_THROWS(vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies));
+  REQUIRE_THROWS(vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies));
 }
 
 TEST_CASE("@-1") {
@@ -62,7 +62,7 @@ TEST_CASE("@-1") {
                   {{0, 0}},
                   {{2, 2, 1, 1, 0, 0, 1, 0}, {2, 2, 1, 1, 0, 0, 1, 0}},
                   std::make_shared<Array>(U"@-1")};
-  REQUIRE_THROWS(vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies));
+  REQUIRE_THROWS(vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies));
 }
 
 TEST_CASE("-'a'") {
@@ -75,7 +75,7 @@ TEST_CASE("-'a'") {
                   {{0, 0}},
                   {{1, 1, 0, 0, 0, 0}, {3, 3, 0, 0, 0, 0}},
                   std::make_shared<Array>(U"-\'a\'")};
-  REQUIRE_THROWS(vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies));
+  REQUIRE_THROWS(vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies));
 }
 
 TEST_CASE("F←÷⋄-f") {
@@ -89,7 +89,7 @@ TEST_CASE("F←÷⋄-f") {
                   {{2, 2, 0, 0, 0, 0, 1, 5, 5, 5, 4, 4, 4, 4},
                    {2, 2, 0, 0, 0, 0, 1, 5, 5, 5, 4, 4, 4, 4}},
                   std::make_shared<Array>(U"F←÷⋄-f")};
-  REQUIRE_THROWS(vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies));
+  REQUIRE_THROWS(vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies));
 }
 
 TEST_CASE("2×'a'") {
@@ -102,7 +102,7 @@ TEST_CASE("2×'a'") {
                   {{0, 0}},
                   {{2, 2, 1, 1, 0, 0, 1, 0}, {4, 4, 1, 1, 0, 0, 1, 0}},
                   std::make_shared<Array>(U"2×\'a\'")};
-  REQUIRE_THROWS(vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies));
+  REQUIRE_THROWS(vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies));
 }
 
 TEST_CASE("÷'b'") {
@@ -115,7 +115,7 @@ TEST_CASE("÷'b'") {
                   {{0, 0}},
                   {{1, 1, 0, 0, 0, 0}, {3, 3, 0, 0, 0, 0}},
                   std::make_shared<Array>(U"÷\'b\'")};
-  REQUIRE_THROWS(vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies));
+  REQUIRE_THROWS(vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies));
 }
 
 TEST_CASE("F←√-⋄÷f") {
@@ -129,7 +129,7 @@ TEST_CASE("F←√-⋄÷f") {
                   {{3, 3, 2, 2, 2, 0, 0, 0, 0, 1, 6, 6, 6, 5, 5, 5, 5},
                    {3, 3, 2, 2, 2, 0, 0, 0, 0, 1, 6, 6, 6, 5, 5, 5, 5}},
                   std::make_shared<Array>(U"F←√-⋄÷f")};
-  REQUIRE_THROWS(vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies));
+  REQUIRE_THROWS(vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies));
 }
 
 TEST_CASE("⋆'π'") {
@@ -142,7 +142,7 @@ TEST_CASE("⋆'π'") {
                   {{0, 0}},
                   {{1, 1, 0, 0, 0, 0}, {3, 3, 0, 0, 0, 0}},
                   std::make_shared<Array>(U"⋆\'π\'")};
-  REQUIRE_THROWS(vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies));
+  REQUIRE_THROWS(vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies));
 }
 
 TEST_CASE("'e'⋆'π'") {
@@ -156,7 +156,7 @@ TEST_CASE("'e'⋆'π'") {
                   {{0, 0}},
                   {{4, 4, 3, 3, 0, 0, 3, 0}, {6, 6, 3, 3, 2, 2, 3, 2}},
                   std::make_shared<Array>(U"\'e\'⋆\'π\'")};
-  REQUIRE_THROWS(vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies));
+  REQUIRE_THROWS(vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies));
 }
 
 TEST_CASE("F←⌈⋄⌊f") {
@@ -170,7 +170,7 @@ TEST_CASE("F←⌈⋄⌊f") {
                   {{2, 2, 0, 0, 0, 0, 1, 5, 5, 5, 4, 4, 4, 4},
                    {2, 2, 0, 0, 0, 0, 1, 5, 5, 5, 4, 4, 4, 4}},
                   std::make_shared<Array>(U"F←⌈⋄⌊f")};
-  REQUIRE_THROWS(vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies));
+  REQUIRE_THROWS(vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies));
 }
 
 TEST_CASE("F←+⋄G←-⋄f≤g") {
@@ -187,7 +187,7 @@ TEST_CASE("F←+⋄G←-⋄f≤g") {
                    {2, 2, 0,  0,  0,  0, 1, 6, 6, 4, 4, 4,
                     4, 5, 10, 10, 10, 9, 9, 8, 8, 8, 9, 8}},
                   std::make_shared<Array>(U"F←+⋄G←-⋄f≤g")};
-  REQUIRE_THROWS(vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies));
+  REQUIRE_THROWS(vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies));
 }
 
 TEST_CASE("!0") {
@@ -200,7 +200,7 @@ TEST_CASE("!0") {
                   {{0, 0}},
                   {{1, 1, 0, 0, 0, 0}, {1, 1, 0, 0, 0, 0}},
                   std::make_shared<Array>(U"!0")};
-  REQUIRE_THROWS(vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies));
+  REQUIRE_THROWS(vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies));
 }
 
 TEST_CASE("\"error\"!\"abc\"") {
@@ -214,7 +214,7 @@ TEST_CASE("\"error\"!\"abc\"") {
                   {{0, 0}},
                   {{8, 8, 7, 7, 0, 0, 7, 0}, {12, 12, 7, 7, 6, 6, 7, 6}},
                   std::make_shared<Array>(U"\"error\"!\"abc\"")};
-  REQUIRE_THROWS(vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies));
+  REQUIRE_THROWS(vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies));
 }
 
 TEST_CASE("√'x'") {
@@ -227,7 +227,7 @@ TEST_CASE("√'x'") {
                   {{0, 0}},
                   {{1, 1, 0, 0, 0, 0}, {3, 3, 0, 0, 0, 0}},
                   std::make_shared<Array>(U"√\'x\'")};
-  REQUIRE_THROWS(vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies));
+  REQUIRE_THROWS(vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies));
 }
 
 TEST_CASE("'a'∧¯1") {
@@ -240,7 +240,7 @@ TEST_CASE("'a'∧¯1") {
                   {{0, 0}},
                   {{4, 4, 3, 3, 0, 0, 3, 0}, {5, 5, 3, 3, 2, 2, 3, 2}},
                   std::make_shared<Array>(U"\'a\'∧¯1")};
-  REQUIRE_THROWS(vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies));
+  REQUIRE_THROWS(vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies));
 }
 
 TEST_CASE("F←-⋄2∨f") {
@@ -254,7 +254,7 @@ TEST_CASE("F←-⋄2∨f") {
                   {{2, 2, 0, 0, 0, 0, 1, 6, 6, 6, 5, 5, 4, 4, 5, 4},
                    {2, 2, 0, 0, 0, 0, 1, 6, 6, 6, 5, 5, 4, 4, 5, 4}},
                   std::make_shared<Array>(U"F←-⋄2∨f")};
-  REQUIRE_THROWS(vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies));
+  REQUIRE_THROWS(vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies));
 }
 
 TEST_CASE("¬'a'") {
@@ -267,7 +267,7 @@ TEST_CASE("¬'a'") {
                   {{0, 0}},
                   {{1, 1, 0, 0, 0, 0}, {3, 3, 0, 0, 0, 0}},
                   std::make_shared<Array>(U"¬\'a\'")};
-  REQUIRE_THROWS(vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies));
+  REQUIRE_THROWS(vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies));
 }
 
 TEST_CASE("2¬'c'") {
@@ -280,7 +280,7 @@ TEST_CASE("2¬'c'") {
                   {{0, 0}},
                   {{2, 2, 1, 1, 0, 0, 1, 0}, {4, 4, 1, 1, 0, 0, 1, 0}},
                   std::make_shared<Array>(U"2¬\'c\'")};
-  REQUIRE_THROWS(vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies));
+  REQUIRE_THROWS(vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies));
 }
 
 TEST_CASE("F←{𝕩}⋄0¬f") {
@@ -295,7 +295,7 @@ TEST_CASE("F←{𝕩}⋄0¬f") {
       {{2, 2, 0, 0, 0, 0, 1, 8, 8, 8, 7, 7, 6, 6, 7, 2, 3, 3, 3, 3},
        {4, 4, 0, 0, 0, 0, 1, 8, 8, 8, 7, 7, 6, 6, 7, 4, 3, 3, 3, 3}},
       std::make_shared<Array>(U"F←{𝕩}⋄0¬f")};
-  REQUIRE_THROWS(vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies));
+  REQUIRE_THROWS(vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies));
 }
 
 TEST_CASE("F←+-⋄|f") {
@@ -309,7 +309,7 @@ TEST_CASE("F←+-⋄|f") {
                   {{3, 3, 2, 2, 2, 0, 0, 0, 0, 1, 6, 6, 6, 5, 5, 5, 5},
                    {3, 3, 2, 2, 2, 0, 0, 0, 0, 1, 6, 6, 6, 5, 5, 5, 5}},
                   std::make_shared<Array>(U"F←+-⋄|f")};
-  REQUIRE_THROWS(vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies));
+  REQUIRE_THROWS(vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies));
 }
 
 TEST_CASE("26|'A'") {
@@ -322,7 +322,7 @@ TEST_CASE("26|'A'") {
                   {{0, 0}},
                   {{3, 3, 2, 2, 0, 0, 2, 0}, {5, 5, 2, 2, 1, 1, 2, 1}},
                   std::make_shared<Array>(U"26|\'A\'")};
-  REQUIRE_THROWS(vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies));
+  REQUIRE_THROWS(vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies));
 }
 
 TEST_CASE("⊑\"\"") {
@@ -335,7 +335,7 @@ TEST_CASE("⊑\"\"") {
                   {{0, 0}},
                   {{1, 1, 0, 0, 0, 0}, {2, 2, 0, 0, 0, 0}},
                   std::make_shared<Array>(U"⊑\"\"")};
-  REQUIRE_THROWS(vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies));
+  REQUIRE_THROWS(vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies));
 }
 
 TEST_CASE("⊑2‿0⥊⟨⟩") {
@@ -349,7 +349,7 @@ TEST_CASE("⊑2‿0⥊⟨⟩") {
                   {{5, 5, 4, 4, 1, 1, 3, 3, 3, 3, 4, 0, 0, 0, 0},
                    {6, 6, 4, 4, 1, 1, 3, 3, 3, 3, 4, 0, 0, 0, 0}},
                   std::make_shared<Array>(U"⊑2‿0⥊⟨⟩")};
-  REQUIRE_THROWS(vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies));
+  REQUIRE_THROWS(vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies));
 }
 
 TEST_CASE("+´11") {
@@ -362,7 +362,7 @@ TEST_CASE("+´11") {
                   {{0, 0}},
                   {{2, 2, 1, 1, 0, 0, 1, 0, 0}, {3, 3, 1, 1, 0, 0, 1, 1, 0}},
                   std::make_shared<Array>(U"+´11")};
-  REQUIRE_THROWS(vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies));
+  REQUIRE_THROWS(vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies));
 }
 
 TEST_CASE("-´<'a'") {
@@ -377,7 +377,7 @@ TEST_CASE("-´<'a'") {
       {{3, 3, 2, 2, 2, 1, 1, 0, 0, 1, 0, 0},
        {5, 5, 2, 2, 2, 1, 1, 0, 0, 1, 1, 0}},
       std::make_shared<Array>(U"-´<\'a\'")};
-  REQUIRE_THROWS(vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies));
+  REQUIRE_THROWS(vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies));
 }
 
 TEST_CASE("×´3‿1⥊\"abc\"") {
@@ -392,7 +392,7 @@ TEST_CASE("×´3‿1⥊\"abc\"") {
                   {{6, 6, 5, 5, 2, 2, 4, 4, 4, 4, 5, 1, 1, 0, 0, 1, 0, 0},
                    {10, 10, 5, 5, 2, 2, 4, 4, 4, 4, 5, 1, 1, 0, 0, 1, 1, 0}},
                   std::make_shared<Array>(U"×´3‿1⥊\"abc\"")};
-  REQUIRE_THROWS(vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies));
+  REQUIRE_THROWS(vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies));
 }
 
 TEST_CASE("2‿3⊢¨4‿5‿6") {
@@ -407,7 +407,7 @@ TEST_CASE("2‿3⊢¨4‿5‿6") {
       {{5, 5, 7, 7, 9, 9, 9, 9, 4, 4, 3, 3, 4, 0, 0, 2, 2, 2, 2, 3, 2},
        {5, 5, 7, 7, 9, 9, 9, 9, 4, 4, 3, 3, 4, 0, 0, 2, 2, 2, 2, 4, 2}},
       std::make_shared<Array>(U"2‿3⊢¨4‿5‿6")};
-  REQUIRE_THROWS(vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies));
+  REQUIRE_THROWS(vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies));
 }
 
 TEST_CASE("\"abcd\"-\"a\"") {
@@ -421,7 +421,7 @@ TEST_CASE("\"abcd\"-\"a\"") {
                   {{0, 0}},
                   {{7, 7, 6, 6, 0, 0, 6, 0}, {9, 9, 6, 6, 5, 5, 6, 5}},
                   std::make_shared<Array>(U"\"abcd\"-\"a\"")};
-  REQUIRE_THROWS(vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies));
+  REQUIRE_THROWS(vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies));
 }
 
 TEST_CASE("(↕4)×(↕3)⊢⌜↕2") {
@@ -438,7 +438,7 @@ TEST_CASE("(↕4)×(↕3)⊢⌜↕2") {
                    {12, 12, 11, 11, 11, 10, 10, 9, 9, 10, 7, 7, 6,
                     6,  6,  10, 4,  4,  2,  2,  1, 1, 1,  4, 3}},
                   std::make_shared<Array>(U"(↕4)×(↕3)⊢⌜↕2")};
-  REQUIRE_THROWS(vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies));
+  REQUIRE_THROWS(vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies));
 }
 
 TEST_CASE("10⊑↕10") {
@@ -452,7 +452,7 @@ TEST_CASE("10⊑↕10") {
       {{0, 0}},
       {{4, 4, 3, 3, 3, 2, 2, 0, 0, 2, 0}, {5, 5, 3, 3, 3, 2, 2, 1, 1, 2, 1}},
       std::make_shared<Array>(U"10⊑↕10")};
-  REQUIRE_THROWS(vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies));
+  REQUIRE_THROWS(vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies));
 }
 
 TEST_CASE("¯11⊑↕10") {
@@ -466,7 +466,7 @@ TEST_CASE("¯11⊑↕10") {
       {{0, 0}},
       {{5, 5, 4, 4, 4, 3, 3, 0, 0, 3, 0}, {6, 6, 4, 4, 4, 3, 3, 2, 2, 3, 2}},
       std::make_shared<Array>(U"¯11⊑↕10")};
-  REQUIRE_THROWS(vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies));
+  REQUIRE_THROWS(vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies));
 }
 
 TEST_CASE("0.5⊑↕10") {
@@ -480,7 +480,7 @@ TEST_CASE("0.5⊑↕10") {
       {{0, 0}},
       {{5, 5, 4, 4, 4, 3, 3, 0, 0, 3, 0}, {6, 6, 4, 4, 4, 3, 3, 2, 2, 3, 2}},
       std::make_shared<Array>(U"0.5⊑↕10")};
-  REQUIRE_THROWS(vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies));
+  REQUIRE_THROWS(vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies));
 }
 
 TEST_CASE("'x'⊑↕10") {
@@ -494,5 +494,5 @@ TEST_CASE("'x'⊑↕10") {
       {{0, 0}},
       {{5, 5, 4, 4, 4, 3, 3, 0, 0, 3, 0}, {6, 6, 4, 4, 4, 3, 3, 2, 2, 3, 2}},
       std::make_shared<Array>(U"\'x\'⊑↕10")};
-  REQUIRE_THROWS(vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies));
+  REQUIRE_THROWS(vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies));
 }

@@ -14,7 +14,7 @@ TEST_CASE("Evaluate Compiler After SetPrims") {
 #include <cxbqn/__/compiled_compiler>
   );
 
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
 }

@@ -14,7 +14,7 @@ TEST_CASE("Evaluate Compiler") {
 #include <cxbqn/__/compiled_runtime>
   };
 
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
 
@@ -33,7 +33,7 @@ TEST_CASE("Evaluate Compiler") {
 #include <cxbqn/__/compiled_compiler>
   };
 
-  auto compiler_ret = vm::run(p2.bc, p2.consts.v, p2.blk_defs, p2.bodies);
+  auto compiler_ret = vm::run(p2.bc, p2.consts.to_arr(), p2.blk_defs, p2.bodies);
   REQUIRE(nullptr != compiler_ret.v);
   REQUIRE(nullptr != compiler_ret.scp);
 }

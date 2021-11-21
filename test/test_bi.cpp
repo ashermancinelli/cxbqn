@@ -15,7 +15,7 @@ TEST_CASE("0 +` ↕5") {
                   {runtime[0], runtime[27], runtime[51], 0, 5},
                   {{0, 1, 0}},
                   {{0, 0}}};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto a = dynamic_pointer_cast<Array>(ret.v);
@@ -37,7 +37,7 @@ TEST_CASE("(↕4) ×⌜ ↕3") {
                   {runtime[2], runtime[27], runtime[47], 4, 3},
                   {{0, 1, 0}},
                   {{0, 0}}};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto a = dynamic_pointer_cast<Array>(ret.v);
@@ -65,7 +65,7 @@ TEST_CASE("1 +` 1") {
                   {runtime[0], runtime[15], runtime[51], 1},
                   {{0, 1, 0}},
                   {{0, 0}}};
-  REQUIRE_THROWS(vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies));
+  REQUIRE_THROWS(vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies));
 }
 
 TEST_CASE("0‿0 +` 3‿2") {
@@ -76,7 +76,7 @@ TEST_CASE("0‿0 +` 3‿2") {
                   {runtime[0], runtime[15], runtime[51], 1},
                   {{0, 1, 0}},
                   {{0, 0}}};
-  REQUIRE_THROWS(vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies));
+  REQUIRE_THROWS(vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies));
 }
 
 #define T "(3‿2⥊1) +` (4‿3‿2⥊1)"
@@ -89,7 +89,7 @@ TEST_CASE(T) {
                   {runtime[0], runtime[22], runtime[51], 3, 2, 1, 4},
                   {{0, 1, 0}},
                   {{0, 0}}};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto a = dynamic_pointer_cast<Array>(ret.v);
@@ -121,7 +121,7 @@ TEST_CASE(T) {
       {bi_GroupLen(), 0, -1, 4, 3},
       {{0, 1, 0}},
       {{0, 0}}};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto a = dynamic_pointer_cast<Array>(ret.v);
@@ -146,7 +146,7 @@ TEST_CASE(T) {
                   {bi_GroupLen(), 2, 3, 1, 4, 5, 9, -1},
                   {{0, 1, 0}},
                   {{0, 0}}};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto a = dynamic_pointer_cast<Array>(ret.v);
@@ -172,7 +172,7 @@ TEST_CASE(T) {
                   {bi_GroupLen(), 20, 3, 1, 4, 5, 9, -1},
                   {{0, 1, 0}},
                   {{0, 0}}};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto a = dynamic_pointer_cast<Array>(ret.v);
@@ -199,7 +199,7 @@ TEST_CASE(T) {
                   {bi_GroupOrd(), 2, 0, 1, -1},
                   {{0, 1, 0}},
                   {{0, 0}}};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto a = dynamic_pointer_cast<Array>(ret.v);

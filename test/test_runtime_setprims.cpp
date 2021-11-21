@@ -15,7 +15,7 @@ TEST_CASE("Evaluate Runtime and call SetPrims") {
 #include <cxbqn/__/compiled_runtime>
   };
 
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
 
   auto runtime_ret = std::dynamic_pointer_cast<Array>(ret.v);
   auto runtime = std::dynamic_pointer_cast<Array>(runtime_ret->values[0]);

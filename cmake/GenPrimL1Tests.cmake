@@ -95,7 +95,7 @@ foreach(test ${P_TESTS})
   const auto runtime = rt->values;
   spdlog::critical(\"test='{}'\", \"${test}\");
   CompileParams p( ${compiled_test} );
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies, p.source_indices.value(), p.source_str);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies, p.source_indices.value(), p.source_str);
     REQUIRE(nullptr != ret.v);
     REQUIRE(nullptr != ret.scp);
     auto n = dynamic_pointer_cast<Number>(ret.v);
@@ -112,7 +112,7 @@ foreach(test ${P_TESTS})
   const auto runtime = rt->values;
     spdlog::critical(\"test='{}'\", \"${test}\");
     CompileParams p{ ${compiled_test} };
-    auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+    auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
     REQUIRE(nullptr != ret.v);
     REQUIRE(nullptr != ret.scp);
     auto n = dynamic_pointer_cast<Number>(ret.v);

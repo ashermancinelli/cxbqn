@@ -22,7 +22,7 @@ TEST_CASE("0≡¯2+2") {
                   {{5, 5, 4, 4, 2, 2, 4, 1, 1, 0, 0, 1, 0},
                    {5, 5, 4, 4, 3, 3, 4, 1, 1, 0, 0, 1, 0}},
                   std::make_shared<Array>(U"0≡¯2+2")};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto n = dynamic_pointer_cast<Number>(ret.v);
@@ -41,7 +41,7 @@ TEST_CASE("1e4≡5e3+5e3") {
                   {{8, 8, 7, 7, 4, 4, 7, 3, 3, 0, 0, 3, 0},
                    {10, 10, 7, 7, 6, 6, 7, 3, 3, 2, 2, 3, 2}},
                   std::make_shared<Array>(U"1e4≡5e3+5e3")};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto n = dynamic_pointer_cast<Number>(ret.v);
@@ -62,7 +62,7 @@ TEST_CASE("'c'≡'a'+2") {
                   {{8, 8, 7, 7, 4, 4, 7, 3, 3, 0, 0, 3, 0},
                    {8, 8, 7, 7, 6, 6, 7, 3, 3, 2, 2, 3, 2}},
                   std::make_shared<Array>(U"\'c\'≡\'a\'+2")};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto n = dynamic_pointer_cast<Number>(ret.v);
@@ -83,7 +83,7 @@ TEST_CASE("'a'≡¯2+'c'") {
                   {{7, 7, 6, 6, 4, 4, 6, 3, 3, 0, 0, 3, 0},
                    {9, 9, 6, 6, 5, 5, 6, 3, 3, 2, 2, 3, 2}},
                   std::make_shared<Array>(U"\'a\'≡¯2+\'c\'")};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto n = dynamic_pointer_cast<Number>(ret.v);
@@ -104,7 +104,7 @@ TEST_CASE("¯∞≡1e6-∞") {
                   {{7, 7, 6, 6, 3, 3, 6, 2, 2, 0, 0, 2, 0},
                    {7, 7, 6, 6, 5, 5, 6, 2, 2, 1, 1, 2, 1}},
                   std::make_shared<Array>(U"¯∞≡1e6-∞")};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto n = dynamic_pointer_cast<Number>(ret.v);
@@ -123,7 +123,7 @@ TEST_CASE("4≡-¯4") {
       {{0, 0}},
       {{3, 3, 2, 2, 2, 1, 1, 0, 0, 1, 0}, {4, 4, 2, 2, 2, 1, 1, 0, 0, 1, 0}},
       std::make_shared<Array>(U"4≡-¯4")};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto n = dynamic_pointer_cast<Number>(ret.v);
@@ -143,7 +143,7 @@ TEST_CASE("¯∞≡-∞") {
       {{0, 0}},
       {{4, 4, 3, 3, 3, 2, 2, 0, 0, 2, 0}, {4, 4, 3, 3, 3, 2, 2, 1, 1, 2, 1}},
       std::make_shared<Array>(U"¯∞≡-∞")};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto n = dynamic_pointer_cast<Number>(ret.v);
@@ -163,7 +163,7 @@ TEST_CASE("∞≡-¯∞") {
       {{0, 0}},
       {{3, 3, 2, 2, 2, 1, 1, 0, 0, 1, 0}, {4, 4, 2, 2, 2, 1, 1, 0, 0, 1, 0}},
       std::make_shared<Array>(U"∞≡-¯∞")};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto n = dynamic_pointer_cast<Number>(ret.v);
@@ -182,7 +182,7 @@ TEST_CASE("4≡9-5") {
                   {{4, 4, 3, 3, 2, 2, 3, 1, 1, 0, 0, 1, 0},
                    {4, 4, 3, 3, 2, 2, 3, 1, 1, 0, 0, 1, 0}},
                   std::make_shared<Array>(U"4≡9-5")};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto n = dynamic_pointer_cast<Number>(ret.v);
@@ -203,7 +203,7 @@ TEST_CASE("@≡'a'-97") {
                   {{6, 6, 5, 5, 2, 2, 5, 1, 1, 0, 0, 1, 0},
                    {7, 7, 5, 5, 4, 4, 5, 1, 1, 0, 0, 1, 0}},
                   std::make_shared<Array>(U"@≡\'a\'-97")};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto n = dynamic_pointer_cast<Number>(ret.v);
@@ -224,7 +224,7 @@ TEST_CASE("3≡'d'-'a'") {
                   {{6, 6, 5, 5, 2, 2, 5, 1, 1, 0, 0, 1, 0},
                    {8, 8, 5, 5, 4, 4, 5, 1, 1, 0, 0, 1, 0}},
                   std::make_shared<Array>(U"3≡\'d\'-\'a\'")};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto n = dynamic_pointer_cast<Number>(ret.v);
@@ -246,7 +246,7 @@ TEST_CASE("'Q'≡'q'+'A'-'a'") {
       {{12, 12, 11, 11, 8, 8, 11, 7, 7, 4, 4, 7, 3, 3, 0, 0, 3, 0},
        {14, 14, 11, 11, 10, 10, 11, 7, 7, 6, 6, 7, 3, 3, 2, 2, 3, 2}},
       std::make_shared<Array>(U"\'Q\'≡\'q\'+\'A\'-\'a\'")};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto n = dynamic_pointer_cast<Number>(ret.v);
@@ -265,7 +265,7 @@ TEST_CASE("4≡÷0.25") {
       {{0, 0}},
       {{3, 3, 2, 2, 2, 1, 1, 0, 0, 1, 0}, {6, 6, 2, 2, 2, 1, 1, 0, 0, 1, 0}},
       std::make_shared<Array>(U"4≡÷0.25")};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto n = dynamic_pointer_cast<Number>(ret.v);
@@ -284,7 +284,7 @@ TEST_CASE("∞≡÷0") {
       {{0, 0}},
       {{3, 3, 2, 2, 2, 1, 1, 0, 0, 1, 0}, {3, 3, 2, 2, 2, 1, 1, 0, 0, 1, 0}},
       std::make_shared<Array>(U"∞≡÷0")};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto n = dynamic_pointer_cast<Number>(ret.v);
@@ -303,7 +303,7 @@ TEST_CASE("0≡÷∞") {
       {{0, 0}},
       {{3, 3, 2, 2, 2, 1, 1, 0, 0, 1, 0}, {3, 3, 2, 2, 2, 1, 1, 0, 0, 1, 0}},
       std::make_shared<Array>(U"0≡÷∞")};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto n = dynamic_pointer_cast<Number>(ret.v);
@@ -322,7 +322,7 @@ TEST_CASE("1≡⋆0") {
       {{0, 0}},
       {{3, 3, 2, 2, 2, 1, 1, 0, 0, 1, 0}, {3, 3, 2, 2, 2, 1, 1, 0, 0, 1, 0}},
       std::make_shared<Array>(U"1≡⋆0")};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto n = dynamic_pointer_cast<Number>(ret.v);
@@ -341,7 +341,7 @@ TEST_CASE("¯1≡¯1⋆5") {
                   {{6, 6, 5, 5, 3, 3, 5, 2, 2, 0, 0, 2, 0},
                    {6, 6, 5, 5, 4, 4, 5, 2, 2, 1, 1, 2, 1}},
                   std::make_shared<Array>(U"¯1≡¯1⋆5")};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto n = dynamic_pointer_cast<Number>(ret.v);
@@ -360,7 +360,7 @@ TEST_CASE("1≡¯1⋆¯6") {
                   {{5, 5, 4, 4, 2, 2, 4, 1, 1, 0, 0, 1, 0},
                    {6, 6, 4, 4, 3, 3, 4, 1, 1, 0, 0, 1, 0}},
                   std::make_shared<Array>(U"1≡¯1⋆¯6")};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto n = dynamic_pointer_cast<Number>(ret.v);
@@ -379,7 +379,7 @@ TEST_CASE("3≡⌊3.9") {
       {{0, 0}},
       {{3, 3, 2, 2, 2, 1, 1, 0, 0, 1, 0}, {5, 5, 2, 2, 2, 1, 1, 0, 0, 1, 0}},
       std::make_shared<Array>(U"3≡⌊3.9")};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto n = dynamic_pointer_cast<Number>(ret.v);
@@ -398,7 +398,7 @@ TEST_CASE("¯4≡⌊¯3.9") {
       {{0, 0}},
       {{4, 4, 3, 3, 3, 2, 2, 0, 0, 2, 0}, {7, 7, 3, 3, 3, 2, 2, 1, 1, 2, 1}},
       std::make_shared<Array>(U"¯4≡⌊¯3.9")};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto n = dynamic_pointer_cast<Number>(ret.v);
@@ -417,7 +417,7 @@ TEST_CASE("∞≡⌊∞") {
       {{0, 0}},
       {{3, 3, 2, 2, 2, 1, 1, 0, 0, 1, 0}, {3, 3, 2, 2, 2, 1, 1, 0, 0, 1, 0}},
       std::make_shared<Array>(U"∞≡⌊∞")};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto n = dynamic_pointer_cast<Number>(ret.v);
@@ -436,7 +436,7 @@ TEST_CASE("¯∞≡⌊¯∞") {
       {{0, 0}},
       {{4, 4, 3, 3, 3, 2, 2, 0, 0, 2, 0}, {5, 5, 3, 3, 3, 2, 2, 1, 1, 2, 1}},
       std::make_shared<Array>(U"¯∞≡⌊¯∞")};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto n = dynamic_pointer_cast<Number>(ret.v);
@@ -455,7 +455,7 @@ TEST_CASE("¯1e30≡⌊¯1e30") {
       {{0, 0}},
       {{7, 7, 6, 6, 6, 5, 5, 0, 0, 5, 0}, {11, 11, 6, 6, 6, 5, 5, 4, 4, 5, 4}},
       std::make_shared<Array>(U"¯1e30≡⌊¯1e30")};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto n = dynamic_pointer_cast<Number>(ret.v);
@@ -474,7 +474,7 @@ TEST_CASE("1≡1=1") {
                   {{4, 4, 3, 3, 2, 2, 3, 1, 1, 0, 0, 1, 0},
                    {4, 4, 3, 3, 2, 2, 3, 1, 1, 0, 0, 1, 0}},
                   std::make_shared<Array>(U"1≡1=1")};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto n = dynamic_pointer_cast<Number>(ret.v);
@@ -494,7 +494,7 @@ TEST_CASE("0≡¯1=∞") {
       {{5, 5, 4, 4, 2, 2, 4, 1, 1, 0, 0, 1, 0},
        {5, 5, 4, 4, 3, 3, 4, 1, 1, 0, 0, 1, 0}},
       std::make_shared<Array>(U"0≡¯1=∞")};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto n = dynamic_pointer_cast<Number>(ret.v);
@@ -514,7 +514,7 @@ TEST_CASE("1≡'a'='a'") {
       {{6, 6, 5, 5, 2, 2, 5, 1, 1, 0, 0, 1, 0},
        {8, 8, 5, 5, 4, 4, 5, 1, 1, 0, 0, 1, 0}},
       std::make_shared<Array>(U"1≡\'a\'=\'a\'")};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto n = dynamic_pointer_cast<Number>(ret.v);
@@ -535,7 +535,7 @@ TEST_CASE("0≡'a'='A'") {
                   {{6, 6, 5, 5, 2, 2, 5, 1, 1, 0, 0, 1, 0},
                    {8, 8, 5, 5, 4, 4, 5, 1, 1, 0, 0, 1, 0}},
                   std::make_shared<Array>(U"0≡\'a\'=\'A\'")};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto n = dynamic_pointer_cast<Number>(ret.v);
@@ -557,7 +557,7 @@ TEST_CASE("1≡{F←+⋄f=f}") {
                    {10, 10, 1, 1, 0, 0, 1, 10, 5, 5, 3, 3, 3,
                     3,  4,  9, 9, 9, 8, 8, 7,  7, 7, 8, 7}},
                   std::make_shared<Array>(U"1≡{F←+⋄f=f}")};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto n = dynamic_pointer_cast<Number>(ret.v);
@@ -581,7 +581,7 @@ TEST_CASE("1≡{a‿b←⟨+´,+´⟩⋄a=b}") {
         12, 11, 11, 12, 13, 13, 3,  3,  3,  5,  5,  5, 5, 5,
         5,  6,  17, 17, 17, 16, 16, 15, 15, 15, 16, 15}},
       std::make_shared<Array>(U"1≡{a‿b←⟨+´,+´⟩⋄a=b}")};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto n = dynamic_pointer_cast<Number>(ret.v);
@@ -604,7 +604,7 @@ TEST_CASE("0≡{_op←{𝕗}⋄op='o'}") {
        {17, 17, 1,  1,  0,  0,  1,  17, 9,  9, 5, 5, 5, 5,
         6,  16, 16, 13, 13, 12, 12, 12, 13, 9, 8, 8, 8, 8}},
       std::make_shared<Array>(U"0≡{_op←{𝕗}⋄op=\'o\'}")};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto n = dynamic_pointer_cast<Number>(ret.v);
@@ -629,7 +629,7 @@ TEST_CASE("0≡{F←{𝕩}⋄G←{𝕩}⋄f=g}") {
                     4,  13, 13, 9, 9, 9, 9, 10, 17, 17, 17, 16, 16, 15,
                     15, 15, 16, 7, 6, 6, 6, 13, 12, 12, 12, 12}},
                   std::make_shared<Array>(U"0≡{F←{𝕩}⋄G←{𝕩}⋄f=g}")};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto n = dynamic_pointer_cast<Number>(ret.v);
@@ -651,7 +651,7 @@ TEST_CASE("1≡{F←{𝕩}⋄f=f}") {
                    {12, 12, 1,  1,  0,  0, 1, 12, 7,  7, 3, 3, 3, 3, 4,
                     11, 11, 11, 10, 10, 9, 9, 9,  10, 7, 6, 6, 6, 6}},
                   std::make_shared<Array>(U"1≡{F←{𝕩}⋄f=f}")};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto n = dynamic_pointer_cast<Number>(ret.v);
@@ -670,7 +670,7 @@ TEST_CASE("1≡1≤1") {
                   {{4, 4, 3, 3, 2, 2, 3, 1, 1, 0, 0, 1, 0},
                    {4, 4, 3, 3, 2, 2, 3, 1, 1, 0, 0, 1, 0}},
                   std::make_shared<Array>(U"1≡1≤1")};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto n = dynamic_pointer_cast<Number>(ret.v);
@@ -690,7 +690,7 @@ TEST_CASE("1≡¯∞≤¯1e3") {
                   {{5, 5, 4, 4, 2, 2, 4, 1, 1, 0, 0, 1, 0},
                    {8, 8, 4, 4, 3, 3, 4, 1, 1, 0, 0, 1, 0}},
                   std::make_shared<Array>(U"1≡¯∞≤¯1e3")};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto n = dynamic_pointer_cast<Number>(ret.v);
@@ -711,7 +711,7 @@ TEST_CASE("0≡∞≤¯∞") {
                   {{4, 4, 3, 3, 2, 2, 3, 1, 1, 0, 0, 1, 0},
                    {5, 5, 3, 3, 2, 2, 3, 1, 1, 0, 0, 1, 0}},
                   std::make_shared<Array>(U"0≡∞≤¯∞")};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto n = dynamic_pointer_cast<Number>(ret.v);
@@ -732,7 +732,7 @@ TEST_CASE("1≡∞≤@") {
                   {{4, 4, 3, 3, 2, 2, 3, 1, 1, 0, 0, 1, 0},
                    {4, 4, 3, 3, 2, 2, 3, 1, 1, 0, 0, 1, 0}},
                   std::make_shared<Array>(U"1≡∞≤@")};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto n = dynamic_pointer_cast<Number>(ret.v);
@@ -752,7 +752,7 @@ TEST_CASE("0≡'z'≤¯0.5") {
       {{6, 6, 5, 5, 2, 2, 5, 1, 1, 0, 0, 1, 0},
        {9, 9, 5, 5, 4, 4, 5, 1, 1, 0, 0, 1, 0}},
       std::make_shared<Array>(U"0≡\'z\'≤¯0.5")};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto n = dynamic_pointer_cast<Number>(ret.v);
@@ -772,7 +772,7 @@ TEST_CASE("1≡'a'≤'a'") {
       {{6, 6, 5, 5, 2, 2, 5, 1, 1, 0, 0, 1, 0},
        {8, 8, 5, 5, 4, 4, 5, 1, 1, 0, 0, 1, 0}},
       std::make_shared<Array>(U"1≡\'a\'≤\'a\'")};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto n = dynamic_pointer_cast<Number>(ret.v);
@@ -793,7 +793,7 @@ TEST_CASE("0≡'c'≤'a'") {
                   {{6, 6, 5, 5, 2, 2, 5, 1, 1, 0, 0, 1, 0},
                    {8, 8, 5, 5, 4, 4, 5, 1, 1, 0, 0, 1, 0}},
                   std::make_shared<Array>(U"0≡\'c\'≤\'a\'")};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto n = dynamic_pointer_cast<Number>(ret.v);
@@ -812,7 +812,7 @@ TEST_CASE("⟨⟩≡≢<2") {
                   {{5, 5, 4, 4, 4, 3, 3, 3, 2, 2, 0, 0, 2, 0},
                    {5, 5, 4, 4, 4, 3, 3, 3, 2, 2, 1, 1, 2, 1}},
                   std::make_shared<Array>(U"⟨⟩≡≢<2")};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto n = dynamic_pointer_cast<Number>(ret.v);
@@ -832,7 +832,7 @@ TEST_CASE("⟨3⟩≡≢\"abc\"") {
       {{5, 5, 4, 4, 4, 3, 3, 1, 1, 0, 0, 3, 0},
        {9, 9, 4, 4, 4, 3, 3, 1, 1, 2, 2, 3, 2}},
       std::make_shared<Array>(U"⟨3⟩≡≢\"abc\"")};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto n = dynamic_pointer_cast<Number>(ret.v);
@@ -854,7 +854,7 @@ TEST_CASE("⟨2,3⟩≡≢>\"abc\"‿\"fed\"") {
        {12, 12, 18, 18, 18, 18, 7, 7, 7, 6, 6,
         6,  5,  5,  1,  1,  3,  3, 4, 4, 5, 4}},
       std::make_shared<Array>(U"⟨2,3⟩≡≢>\"abc\"‿\"fed\"")};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto n = dynamic_pointer_cast<Number>(ret.v);
@@ -877,7 +877,7 @@ TEST_CASE("⟨2,3,4,5⟩≡≢2‿3‿4‿5⥊↕120") {
        {22, 22, 19, 19, 19, 18, 18, 11, 11, 13, 13, 15, 15, 17, 17, 17, 17, 18,
         10, 10, 10, 9,  9,  1,  1,  3,  3,  5,  5,  7,  7,  8,  8,  9,  8}},
       std::make_shared<Array>(U"⟨2,3,4,5⟩≡≢2‿3‿4‿5⥊↕120")};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto n = dynamic_pointer_cast<Number>(ret.v);
@@ -901,7 +901,7 @@ TEST_CASE("⟨6⟩≡≢⥊>\"abc\"‿\"fed\"") {
                    {11, 11, 17, 17, 17, 17, 6, 6, 6, 5, 5, 5,
                     4,  4,  4,  3,  3,  1,  1, 2, 2, 3, 2}},
                   std::make_shared<Array>(U"⟨6⟩≡≢⥊>\"abc\"‿\"fed\"")};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto n = dynamic_pointer_cast<Number>(ret.v);
@@ -921,7 +921,7 @@ TEST_CASE("\"abc\"≡0⊑\"abc\"‿\"de\"") {
                   {{8, 8, 14, 14, 14, 14, 7, 7, 6, 6, 7, 5, 5, 0, 0, 5, 0},
                    {12, 12, 17, 17, 17, 17, 7, 7, 6, 6, 7, 5, 5, 4, 4, 5, 4}},
                   std::make_shared<Array>(U"\"abc\"≡0⊑\"abc\"‿\"de\"")};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto n = dynamic_pointer_cast<Number>(ret.v);
@@ -941,7 +941,7 @@ TEST_CASE("\"de\"≡1⊑\"abc\"‿\"de\"") {
                   {{7, 7, 13, 13, 13, 13, 6, 6, 5, 5, 6, 4, 4, 0, 0, 4, 0},
                    {11, 11, 16, 16, 16, 16, 6, 6, 5, 5, 6, 4, 4, 3, 3, 4, 3}},
                   std::make_shared<Array>(U"\"de\"≡1⊑\"abc\"‿\"de\"")};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto n = dynamic_pointer_cast<Number>(ret.v);
@@ -960,7 +960,7 @@ TEST_CASE("⟨⟩≡↕0") {
       {{0, 0}},
       {{4, 4, 3, 3, 3, 2, 2, 0, 0, 2, 0}, {4, 4, 3, 3, 3, 2, 2, 1, 1, 2, 1}},
       std::make_shared<Array>(U"⟨⟩≡↕0")};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto n = dynamic_pointer_cast<Number>(ret.v);
@@ -979,7 +979,7 @@ TEST_CASE("⟨0⟩≡↕1") {
                   {{5, 5, 4, 4, 4, 3, 3, 1, 1, 0, 0, 3, 0},
                    {5, 5, 4, 4, 4, 3, 3, 1, 1, 2, 2, 3, 2}},
                   std::make_shared<Array>(U"⟨0⟩≡↕1")};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto n = dynamic_pointer_cast<Number>(ret.v);
@@ -1001,7 +1001,7 @@ TEST_CASE("⟨0,1,2,3,4,5,6⟩≡↕7") {
                    {17, 17, 16, 16, 16, 15, 15, 1,  1,  3,  3,  5, 5,
                     7,  7,  9,  9,  11, 11, 13, 13, 14, 14, 15, 14}},
                   std::make_shared<Array>(U"⟨0,1,2,3,4,5,6⟩≡↕7")};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto n = dynamic_pointer_cast<Number>(ret.v);
@@ -1020,7 +1020,7 @@ TEST_CASE("1≡!1") {
       {{0, 0}},
       {{3, 3, 2, 2, 2, 1, 1, 0, 0, 1, 0}, {3, 3, 2, 2, 2, 1, 1, 0, 0, 1, 0}},
       std::make_shared<Array>(U"1≡!1")};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto n = dynamic_pointer_cast<Number>(ret.v);
@@ -1040,7 +1040,7 @@ TEST_CASE("1≡'e'!1") {
       {{6, 6, 5, 5, 2, 2, 5, 1, 1, 0, 0, 1, 0},
        {6, 6, 5, 5, 4, 4, 5, 1, 1, 0, 0, 1, 0}},
       std::make_shared<Array>(U"1≡\'e\'!1")};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto n = dynamic_pointer_cast<Number>(ret.v);

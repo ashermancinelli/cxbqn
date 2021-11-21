@@ -62,7 +62,7 @@ TEST_CASE(\"${tesc}\") {
     file(
       APPEND ${S_TEST_SOURCE}
       "
-    REQUIRE_THROWS(vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies));
+    REQUIRE_THROWS(vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies));
 }
 "
     )
@@ -70,7 +70,7 @@ TEST_CASE(\"${tesc}\") {
     file(
       APPEND ${S_TEST_SOURCE}
       "
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto n = dynamic_pointer_cast<Number>(ret.v);

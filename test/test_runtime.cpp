@@ -14,7 +14,7 @@ TEST_CASE("Evaluate Runtime") {
 #include <cxbqn/__/compiled_runtime>
   };
 
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
 }
@@ -28,7 +28,7 @@ TEST_CASE("Check valence after loading runtime") {
       {runtime[58], 0, 7},
       {{0, 1, 0}, {0, 0, 1}, {0, 0, 2}, {0, 0, {{}, {3}}}, {0, 0, 4}},
       {{0, 0}, {9, 3}, {24, 3}, {31, 3}, {35, 3}}};
-  auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
   auto n = dynamic_pointer_cast<Number>(ret.v);
