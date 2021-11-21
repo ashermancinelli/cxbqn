@@ -22,3 +22,6 @@
 [submodule "ext/filesystem"]
 	path = ext/filesystem
 	url = https://github.com/gulrak/filesystem.git
+[submodule "ext/bqn-libs"]
+	path = ext/bqn-libs
+	url = https://github.com/mlochbaum/bqn-libs.git
