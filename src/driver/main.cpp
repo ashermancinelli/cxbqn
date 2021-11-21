@@ -6,8 +6,8 @@ using namespace cxbqn::sys;
 
 int main(int argc, char **argv) {
 
-  static O<Value> src;
-  static O<Array> sysargs;
+  O<Value> src;
+  auto sysargs = make_shared<Array>(0);
 
   std::vector<std::string> args(argv, argv + argc);
 
@@ -57,7 +57,8 @@ int main(int argc, char **argv) {
     CompileParams pfmt(
 #include <cxbqn/__/compiled_formatter>
     );
-    auto fmtret = vm::run(pfmt.bc, pfmt.consts.to_arr(), pfmt.blk_defs, pfmt.bodies);
+    auto fmtret =
+        vm::run(pfmt.bc, pfmt.consts.to_arr(), pfmt.blk_defs, pfmt.bodies);
 #ifdef CXBQN_PROFILE_STARTUP
     auto t_fmt = std::chrono::high_resolution_clock::now();
 #endif
@@ -78,20 +79,27 @@ int main(int argc, char **argv) {
     // runtime. This funcionality is not documented at the time of writing.
     auto compw = make_shared<Array>(2);
     compw->values[0] = bqnruntime;
-    compw->values[1] = O<Value>(new SystemFunctionResolver(sysargs, fmt, repr));
+
+    // It may seem counterintuitive to pass the compiler and compiler arguments
+    // to the sys func resolver which is itself part of the compiler arguments,
+    // but this is needed for •Import to work without recreating the compiler
+    compw->values[1] = O<Value>(
+        new SystemFunctionResolver(sysargs, fmt, repr, compiler, compw));
+
     auto compiled = compiler->call(2, {compiler, src, compw});
 
     auto runret = vm::run(compiled);
-    auto formatted = fmt->call(1, {fmt, runret.v, bi_Nothing()});
 
+    (void)runret;
+    // auto formatted = fmt->call(1, {fmt, runret.v, bi_Nothing()});
     // fmt::print("{}\n", dynamic_pointer_cast<Array>(formatted)->to_string());
 
 #ifdef CXBQN_PROFILE_STARTUP
     auto t_final = std::chrono::high_resolution_clock::now();
     fmt::print("runtime: {}ms\ncompiler: {}ms\nexecute: {}ms\n",
-        duration_cast<milliseconds>(t_rt - t_start).count(),
-        duration_cast<milliseconds>(t_comp - t_start).count(),
-        duration_cast<milliseconds>(t_final - t_start).count());
+               duration_cast<milliseconds>(t_rt - t_start).count(),
+               duration_cast<milliseconds>(t_comp - t_start).count(),
+               duration_cast<milliseconds>(t_final - t_start).count());
 #endif
 
   } catch (std::runtime_error &e) {

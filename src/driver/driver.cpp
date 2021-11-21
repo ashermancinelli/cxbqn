@@ -21,8 +21,6 @@ int parse_args(std::vector<std::string> args, O<Value> src, O<Array> sysargs) {
   auto it = args.begin();
   it++; // skip exe name
 
-  sysargs.reset(new Array(0));
-
   while (it != args.end()) {
     if ("-e" == *it) {
       it++;

@@ -31,6 +31,8 @@ add_library(
 
   # System functions, eg •Open
   sys/open.cpp
+  sys/out.cpp
+  sys/import.cpp
   sys/flines.cpp
   sys/unixtime.cpp
   sys/timed.cpp

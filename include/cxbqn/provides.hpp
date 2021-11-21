@@ -149,28 +149,62 @@ namespace cxbqn::sys {
 
 using namespace cxbqn::types;
 
-// System functions
-struct SystemFunctionResolver : public Function {
-
-  SystemFunctionResolver(O<Value> args, O<Value> fmt, O<Value> repr)
-      : _args{args}, _fmt{fmt}, _repr{repr} {}
-
-  std::ostream &repr(std::ostream &os) const override {
-    return os << "•SystemFunctionResolver";
-  }
-
-  O<Value> _args;
-  O<Value> _fmt;
-  O<Value> _repr;
-
-  O<Value> call(u8 nargs = 0, std::vector<O<Value>> args = {}) override;
-};
-
+// Simple system functions
 CXBQN_BUILTIN_FN_DECL(CXBQN, "•CXBQN");
 CXBQN_BUILTIN_FN_DECL(Show, "•Show");
 CXBQN_BUILTIN_FN_DECL(Timed, "•_timed");
 CXBQN_BUILTIN_FN_DECL(UnixTime, "•UnixTime");
 CXBQN_BUILTIN_FN_DECL(FLines, "•FLines");
+
+// System functions that require pointers to objects we need at runtime, for
+// example the runtime itself.
+struct SystemFunctionResolver : public Function {
+
+  SystemFunctionResolver(O<Array> args, O<Value> fmt, O<Value> repr,
+                         O<Value> compiler, O<Array> compiler_args)
+      : _args{args}, _fmt{fmt}, _repr{repr}, _compiler{compiler},
+        _compiler_args{_compiler_args} {}
+
+  std::ostream &repr(std::ostream &os) const override {
+    return os << "•SystemFunctionResolver";
+  }
+
+  O<Array> _args;
+  O<Value> _fmt;
+  O<Value> _repr;
+  O<Value> _compiler;
+  O<Array> _compiler_args;
+
+  O<Value> call(u8 nargs = 0, std::vector<O<Value>> args = {}) override;
+};
+
+struct Import : public Function {
+
+  Import(O<Value> compiler, O<Array> compiler_args)
+      : _compiler{compiler}, _compiler_args{_compiler_args} {}
+
+  std::ostream &repr(std::ostream &os) const override {
+    return os << "•Import";
+  }
+
+  O<Value> _compiler;
+  O<Array> _compiler_args;
+
+  O<Value> call(u8 nargs = 0, std::vector<O<Value>> args = {}) override;
+};
+
+struct Out : public Function {
+
+  Out(O<Value> fmt) : _fmt{fmt} {}
+
+  std::ostream &repr(std::ostream &os) const override {
+    return os << "•Out";
+  }
+
+  O<Value> _fmt;
+
+  O<Value> call(u8 nargs = 0, std::vector<O<Value>> args = {}) override;
+};
 
 } // namespace cxbqn::sys
 
