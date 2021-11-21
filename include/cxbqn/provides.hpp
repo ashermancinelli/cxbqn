@@ -178,6 +178,21 @@ struct SystemFunctionResolver : public Function {
   O<Value> call(u8 nargs = 0, std::vector<O<Value>> args = {}) override;
 };
 
+struct BQN : public Function {
+
+  BQN(O<Value> compiler, O<Array> compiler_args)
+      : _compiler{compiler}, _compiler_args{compiler_args} {}
+
+  std::ostream &repr(std::ostream &os) const override {
+    return os << "•Import";
+  }
+
+  O<Value> _compiler;
+  O<Array> _compiler_args;
+
+  O<Value> call(u8 nargs = 0, std::vector<O<Value>> args = {}) override;
+};
+
 struct Import : public Function {
 
   Import(O<Value> compiler, O<Array> compiler_args)
