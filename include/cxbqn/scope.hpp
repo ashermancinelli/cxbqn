@@ -48,8 +48,8 @@ struct Scope : public std::enable_shared_from_this<Scope> {
    * a root scope. Otherwise, `Scope::consts` will retrieve the consts from
    * somewhere up the scope lineage.
    */
-  // std::optional<std::vector<O<Value>>> _consts;
-  std::vector<O<Value>> _consts;
+  std::optional<std::vector<O<Value>>> _consts;
+  // std::vector<O<Value>> _consts;
 
   /*
    * Blocks and bodies use non-owning/reference semantics when passing around
