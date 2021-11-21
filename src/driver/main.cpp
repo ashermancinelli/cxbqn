@@ -89,24 +89,7 @@ int main(int argc, char **argv) {
         new SystemFunctionResolver(sysargs, fmt, repr, compiler, compw));
 
     if (repl) {
-      fmt::print("   ");
-      for (std::string line, section = ""; std::getline(std::cin, line);) {
-        section += line;
-        if (0 == line.size()) {
-          src.reset(new Array(section));
-          auto compiled = compiler->call(2, {compiler, src, compw});
-          auto runret = vm::run(compiled);
-
-          // By default, print the result
-          auto formatted = fmt->call(1, {fmt, runret.v, bi_Nothing()});
-          fmt::print("{}\n",
-                     dynamic_pointer_cast<Array>(formatted)->to_string());
-          fmt::print("   ");
-          section = "";
-        } else {
-          fmt::print("> ");
-        }
-      }
+      return driver::repl(compiler, bqnruntime, compw->values[1], fmt);
     } else {
       auto compiled = compiler->call(2, {compiler, src, compw});
       auto runret = vm::run(compiled);

@@ -2,6 +2,32 @@
 
 namespace cxbqn::driver {
 
+int repl(O<Value> compiler, O<Array> bqnruntime, O<Value> sysfn_handler,
+         O<Value> fmt) {
+  fmt::print("   ");
+  for (std::string line; std::getline(std::cin, line); fmt::print("   ")) {
+
+    if (0 == line.size())
+      continue;
+
+    auto compw = make_shared<Array>(2);
+    compw->values[0] = bqnruntime;
+    compw->values[1] = sysfn_handler;
+    //compw->values[2] = bi_Nothing();
+    //compw->values[3] = bi_Nothing();
+
+    auto src = make_shared<Array>(line);
+    auto compiled = compiler->call(2, {compiler, src, compw});
+    auto runret = vm::run(compiled);
+
+    // By default, print the result
+    auto formatted = fmt->call(1, {fmt, runret.v, bi_Nothing()});
+    fmt::print("{}\n", dynamic_pointer_cast<Array>(formatted)->to_string());
+  }
+
+  return 0;
+}
+
 int version() {
   fmt::print("CXBQN {}\ncompiled on " __DATE__ "\n", cxbqn::config::version());
   return 1;

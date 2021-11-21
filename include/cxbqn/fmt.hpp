@@ -59,7 +59,7 @@ template <> struct fmt::formatter<Character> {
   auto format(Character const &v, FormatContext &ctx) -> decltype(ctx.out()) {
     auto &&out = ctx.out();
     std::string s="";
-    utf8::append(v.c(), s);
+    utf8::append(v.c(), std::back_inserter(s));
     format_to(out, "{}", s);
     return out;
   }

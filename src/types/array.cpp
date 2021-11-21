@@ -22,7 +22,7 @@ Array::Array(const std::string& s) {
 
 std::ostream &Array::repr(std::ostream &os) const {
   if (t()[t_String]) {
-    return os << "\"" << to_string() << "\"";
+    return os << to_string();
   }
   os << "⟨sh=⟨";
   for (int i = 0; i < shape.size(); i++) {
@@ -36,7 +36,7 @@ std::ostream &Array::repr(std::ostream &os) const {
     if (e)
       if (t_Character == type_builtin(e)) {
         std::string s="";
-        utf8::append(dynamic_pointer_cast<Character>(e)->c(), s);
+        utf8::append(dynamic_pointer_cast<Character>(e)->c(), std::back_inserter(s));
         os << s;
       } else
         e->repr(os);
@@ -88,7 +88,7 @@ std::string Array::to_string() const {
     if (nullptr == v or t_Character != type_builtin(v))
       s += " ";
     else
-      utf8::append(dynamic_pointer_cast<Character>(v)->c(), s);
+      utf8::append(dynamic_pointer_cast<Character>(v)->c(), std::back_inserter(s));
   }
   return s;
 }

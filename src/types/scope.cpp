@@ -145,7 +145,7 @@ void Scope::set_source_info(std::vector<std::vector<uz>> si, O<Array> s) {
   // create a standard string of the source text
   std::string _s;
   for (auto v : s->values)
-    utf8::append(dynamic_pointer_cast<Character>(v)->c(), _s);
+    utf8::append(dynamic_pointer_cast<Character>(v)->c(), std::back_inserter(_s));
   _source_str = _s;
 }
 

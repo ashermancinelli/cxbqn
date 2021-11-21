@@ -10,8 +10,7 @@ O<Value> Show::call(u8 nargs, std::vector<O<Value>> args) {
   if (nullptr == x)
     throw std::runtime_error("•Show: can only be called with strings");
 
-  auto s = x->to_string();
-  fmt::print("{}\n", s);
+  fmt::print("{}\n", x->to_string());
 
   return x;
 }

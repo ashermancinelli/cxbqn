@@ -184,8 +184,8 @@ struct Character : public Number {
     if (c() == '\0') {
       return os << "'@'";
     }
-    std::string s;
-    utf8::append(c(), s);
+    std::string s="";
+    utf8::append(c(), std::back_inserter(s));
     fmt::print(os, "'{}'", s);
     return os;
   }
