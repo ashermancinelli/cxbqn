@@ -17,7 +17,7 @@ int usage() {
   return 1;
 }
 
-int parse_args(std::vector<std::string> args, O<Value> src, O<Array> sysargs) {
+int parse_args(std::vector<std::string> args, O<Array>& src, O<Array> sysargs) {
   auto it = args.begin();
   it++; // skip exe name
 
@@ -48,7 +48,6 @@ int parse_args(std::vector<std::string> args, O<Value> src, O<Array> sysargs) {
           _src += ch;
         }
         std::fclose(fp);
-        fmt::print("{}\n", _src);
         src.reset(new Array(_src));
         sysargs->values.push_back(O<Value>(new Array(std::string(f))));
         sysargs->shape[0]++;

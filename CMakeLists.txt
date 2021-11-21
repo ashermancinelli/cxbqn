@@ -100,6 +100,10 @@ else()
   )
 endif()
 
+if("${CMAKE_BUILD_TYPE}" STREQUAL "")
+  set(CMAKE_BUILD_TYPE "Release" CACHE STRING "")
+endif()
+
 set(HAS_BQN_EXE OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CXBQN_EXT_DIR ${PROJECT_SOURCE_DIR}/ext/)

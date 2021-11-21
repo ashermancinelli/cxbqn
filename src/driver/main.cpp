@@ -6,8 +6,8 @@ using namespace cxbqn::sys;
 
 int main(int argc, char **argv) {
 
-  O<Value> src;
   auto sysargs = make_shared<Array>(0);
+  auto src = make_shared<Array>("\"CXBQN internal: Empty program\" ! 0");
 
   std::vector<std::string> args(argv, argv + argc);
 

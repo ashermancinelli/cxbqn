@@ -10,27 +10,24 @@ O<Value> Import::call(u8 nargs, std::vector<O<Value>> args) {
   if (!x)
     throw std::runtime_error("•Import: 𝕩 must be a string");
 
-  auto w =
-      2 == nargs ? dynamic_pointer_cast<Array>(args[2]) : make_shared<Array>(0);
+  auto w = 2 == nargs ? args[2] : O<Value>(new Array(0));
 
   auto f = fs::path(x->to_string());
   if (!fs::exists(f))
     throw std::runtime_error("•Import path does not exist");
 
   // auto sys_func_rslvr = make_shared<SystemFunctionResolver>(*_compw)
-  O<Array> src;
-  std::string _src = "";
-  if (std::FILE *fp = std::fopen(f.c_str(), "r")) {
-    int ch;
-    while ((ch = fgetc(fp)) != EOF) {
-      _src += ch;
-    }
-    std::fclose(fp);
-    fmt::print("{}\n", _src);
-    src.reset(new Array(_src));
-  } else {
+  std::FILE *fp = std::fopen(f.c_str(), "r");
+  if (!fp)
     throw std::runtime_error("•Import: could not open path");
+
+  std::string _src = "";
+  int ch;
+  while ((ch = fgetc(fp)) != EOF) {
+    _src += ch;
   }
+  std::fclose(fp);
+  auto src = make_shared<Array>(_src);
 
   auto compiled = _compiler->call(2, {_compiler, src, _compiler_args});
 

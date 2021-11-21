@@ -33,6 +33,10 @@ O<Value> SystemFunctionResolver::call(u8 nargs, std::vector<O<Value>> args) {
       ret.push_back(make_shared<UnixTime>());
     } else if ("flines" == s) {
       ret.push_back(make_shared<FLines>());
+    } else if ("out" == s) {
+      ret.push_back(make_shared<Out>(_fmt));
+    } else if ("import" == s) {
+      ret.push_back(make_shared<Import>(_compiler, _compiler_args));
     } else if ("fmt" == s) {
       ret.push_back(_fmt);
     } else if ("args" == s) {

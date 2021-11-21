@@ -163,7 +163,7 @@ struct SystemFunctionResolver : public Function {
   SystemFunctionResolver(O<Array> args, O<Value> fmt, O<Value> repr,
                          O<Value> compiler, O<Array> compiler_args)
       : _args{args}, _fmt{fmt}, _repr{repr}, _compiler{compiler},
-        _compiler_args{_compiler_args} {}
+        _compiler_args{compiler_args} {}
 
   std::ostream &repr(std::ostream &os) const override {
     return os << "•SystemFunctionResolver";
@@ -181,7 +181,7 @@ struct SystemFunctionResolver : public Function {
 struct Import : public Function {
 
   Import(O<Value> compiler, O<Array> compiler_args)
-      : _compiler{compiler}, _compiler_args{_compiler_args} {}
+      : _compiler{compiler}, _compiler_args{compiler_args} {}
 
   std::ostream &repr(std::ostream &os) const override {
     return os << "•Import";
