@@ -144,13 +144,14 @@ int main(int argc, char **argv) {
 
     auto fmtarr = dynamic_pointer_cast<Array>(_fmtarr);
     auto fmt = fmtarr->values[0];
+    auto repr = fmtarr->values[1];
 
     // Here, we could just call the compiler with the runtime as 𝕨. To add the
     // system functions, we will pass another value in an array along with the
     // runtime. This funcionality is not documented at the time of writing.
     auto compw = make_shared<Array>(2);
     compw->values[0] = bqnruntime;
-    compw->values[1] = bi_SystemFunctionResolver();
+    compw->values[1] = O<Value>(new SystemFunctionResolver(fmt, repr));
     auto compiled = compiler->call(2, {compiler, src, compw});
 
     auto runret = vm::run(compiled);

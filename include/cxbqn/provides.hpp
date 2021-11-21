@@ -106,9 +106,7 @@ struct Glyph : public Function {
   Glyph(O<Value> _runtime)
       : runtime{dynamic_pointer_cast<Array>(_runtime)->values} {}
   O<Value> call(u8 nargs = 0, std::vector<O<Value>> args = {}) override;
-  std::ostream &repr(std::ostream &os) const override {
-    return os << "•Glyph";
-  }
+  std::ostream &repr(std::ostream &os) const override { return os << "•Glyph"; }
 };
 
 struct Decompose : public Function {
@@ -152,12 +150,26 @@ namespace cxbqn::sys {
 using namespace cxbqn::types;
 
 // System functions
-CXBQN_BUILTIN_FN_DECL(SystemFunctionResolver, "•SystemFunctionResolver");
+struct SystemFunctionResolver : public Function {
+
+  SystemFunctionResolver(O<Value> fmt, O<Value> repr)
+      : _fmt{fmt}, _repr{repr} {}
+
+  std::ostream &repr(std::ostream &os) const override {
+    return os << "•SystemFunctionResolver";
+  }
+
+  O<Value> _fmt;
+  O<Value> _repr;
+
+  O<Value> call(u8 nargs = 0, std::vector<O<Value>> args = {}) override;
+};
+
 CXBQN_BUILTIN_FN_DECL(CXBQN, "•CXBQN");
 CXBQN_BUILTIN_FN_DECL(Show, "•Show");
 CXBQN_BUILTIN_FN_DECL(Timed, "•_timed");
 CXBQN_BUILTIN_FN_DECL(UnixTime, "•UnixTime");
 
-}
+} // namespace cxbqn::sys
 
 #undef CXBQN_BUILTIN_DECL

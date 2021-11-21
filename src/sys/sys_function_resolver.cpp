@@ -31,6 +31,10 @@ O<Value> SystemFunctionResolver::call(u8 nargs, std::vector<O<Value>> args) {
       ret.push_back(make_shared<Timed>());
     } else if ("unixtime" == s) {
       ret.push_back(make_shared<UnixTime>());
+    } else if ("fmt" == s) {
+      ret.push_back(_fmt);
+    } else if ("repr" == s) {
+      ret.push_back(_repr);
     } else {
       ret.push_back(make_shared<SysError>(s));
     }
@@ -38,10 +42,6 @@ O<Value> SystemFunctionResolver::call(u8 nargs, std::vector<O<Value>> args) {
   auto vret = make_shared<Array>(ret.size());
   vret->values = ret;
   return vret;
-}
-O<Value> bi_SystemFunctionResolver() {
-  static SystemFunctionResolver s;
-  return O<Value>(&s, [](auto*){});
 }
 
 } // namespace cxbqn::sys
