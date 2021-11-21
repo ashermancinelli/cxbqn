@@ -5,7 +5,8 @@
 
 namespace cxbqn::types {
 
-BlockInst::BlockInst(O<Scope> scp, uz blk_idx) : scp{scp}, blk_idx{blk_idx} {
+BlockInst::BlockInst(O<Scope> scp, uz blk_idx, O<Array> consts)
+    : scp{scp}, blk_idx{blk_idx}, consts{consts} {
   // In the specification, the return of •Type for a function, 1mod, and 2mod
   // are 3, 4, and 5, but the block types as returned from the compiler are
   // either 0, 1, or 2. That's why we have this offset.
@@ -20,7 +21,8 @@ O<Value> BlockInst::call(u8 nargs, std::vector<O<Value>> args) {
 
 #ifdef CXBQN_DEEPCHECKS
   if ((1 == nargs) != (args[2]->t()[t_Nothing]))
-    throw std::runtime_error("BlockInst: got · for 𝕨 with 2 args, or non-· with 1 arg");
+    throw std::runtime_error(
+        "BlockInst: got · for 𝕨 with 2 args, or non-· with 1 arg");
 #endif
 
   const auto blk = scp->blocks()[blk_idx];
@@ -39,7 +41,7 @@ O<Value> BlockInst::call(u8 nargs, std::vector<O<Value>> args) {
   try {
 #endif
     CXBQN_DEBUG("BlockInst::call:recursing into vm");
-    auto ret = vm::vm(bc, child->consts(), stk, child);
+    auto ret = vm::vm(bc, consts, stk, child);
     CXBQN_DEBUG("BlockInst::call:returning {}", CXBQN_STR_NC(ret));
     return ret;
 #ifdef CXBQN_STACKTRACE_DEEP

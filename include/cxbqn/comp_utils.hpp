@@ -24,6 +24,9 @@ struct Consts {
             static_cast<cxbqn::f64>(std::get<i32>(e))));
     }
   }
+  O<Array> to_arr() const {
+    return make_shared<Array>(v);
+  }
 };
 
 struct CompileParams {

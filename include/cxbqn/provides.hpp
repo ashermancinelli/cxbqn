@@ -152,13 +152,14 @@ using namespace cxbqn::types;
 // System functions
 struct SystemFunctionResolver : public Function {
 
-  SystemFunctionResolver(O<Value> fmt, O<Value> repr)
-      : _fmt{fmt}, _repr{repr} {}
+  SystemFunctionResolver(O<Value> args, O<Value> fmt, O<Value> repr)
+      : _args{args}, _fmt{fmt}, _repr{repr} {}
 
   std::ostream &repr(std::ostream &os) const override {
     return os << "•SystemFunctionResolver";
   }
 
+  O<Value> _args;
   O<Value> _fmt;
   O<Value> _repr;
 

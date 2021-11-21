@@ -25,8 +25,9 @@ std::size_t replace_all(std::string &inout, std::string_view what,
   return count;
 }
 
-void version() {
+int version() {
   fmt::print("CXBQN {}: compiled on " __DATE__ "\n", cxbqn::config::version());
+  return 0;
 }
 
 int usage() {
@@ -38,10 +39,13 @@ int usage() {
 }
 
 static O<Value> src;
+static O<Array> sysargs;
 
 int parse_args(std::vector<std::string> args) {
   auto it = args.begin();
   it++; // skip exe name
+
+  sysargs.reset(new Array(0));
 
   while (it != args.end()) {
     if ("-e" == *it) {
@@ -49,6 +53,9 @@ int parse_args(std::vector<std::string> args) {
       auto _src = *it;
       src.reset(new Array(_src));
       return 0;
+    }
+    if ("-v" == *it or "--version" == *it) {
+      return version();
     }
     if ("-h" == *it or "--help" == *it) {
       return usage();
@@ -76,6 +83,8 @@ int parse_args(std::vector<std::string> args) {
       }
       return usage();
     }
+    sysargs->values.push_back(O<Value>(new Array(*it)));
+    sysargs->shape[0]++;
   }
 
   return 0;
@@ -94,7 +103,7 @@ int main(int argc, char **argv) {
     CompileParams p(
 #include <cxbqn/__/compiled_runtime>
     );
-    auto ret = vm::run(p.bc, p.consts.v, p.blk_defs, p.bodies);
+    auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
     auto runtime_ret = std::dynamic_pointer_cast<Array>(ret.v);
 
 #ifdef CXBQN_PROFILE_STARTUP
@@ -117,7 +126,7 @@ int main(int argc, char **argv) {
 #include <cxbqn/__/compiled_compiler>
     );
 
-    auto cret = vm::run(p2.bc, p2.consts.v, p2.blk_defs, p2.bodies);
+    auto cret = vm::run(p2.bc, p2.consts.to_arr(), p2.blk_defs, p2.bodies);
 #ifdef CXBQN_PROFILE_STARTUP
     auto t_comp = std::chrono::high_resolution_clock::now();
 #endif
@@ -130,7 +139,7 @@ int main(int argc, char **argv) {
     CompileParams pfmt(
 #include <cxbqn/__/compiled_formatter>
     );
-    auto fmtret = vm::run(pfmt.bc, pfmt.consts.v, pfmt.blk_defs, pfmt.bodies);
+    auto fmtret = vm::run(pfmt.bc, pfmt.consts.to_arr(), pfmt.blk_defs, pfmt.bodies);
 #ifdef CXBQN_PROFILE_STARTUP
     auto t_fmt = std::chrono::high_resolution_clock::now();
 #endif
@@ -151,7 +160,7 @@ int main(int argc, char **argv) {
     // runtime. This funcionality is not documented at the time of writing.
     auto compw = make_shared<Array>(2);
     compw->values[0] = bqnruntime;
-    compw->values[1] = O<Value>(new SystemFunctionResolver(fmt, repr));
+    compw->values[1] = O<Value>(new SystemFunctionResolver(sysargs, fmt, repr));
     auto compiled = compiler->call(2, {compiler, src, compw});
 
     auto runret = vm::run(compiled);

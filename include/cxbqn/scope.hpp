@@ -7,7 +7,6 @@ struct Scope : public std::enable_shared_from_this<Scope> {
 
   /* Create a new root scope */
   static O<Scope> root_scope(std::vector<Block> blks, ByteCode bc,
-                             std::vector<O<Value>> consts,
                              std::vector<Body> bods);
 
   /* Create a new child scope */
@@ -18,8 +17,6 @@ struct Scope : public std::enable_shared_from_this<Scope> {
    * potentially owned by this scope.
    */
   const ByteCodeRef bc() const;
-
-  std::vector<O<Value>> consts() const;
 
   std::span<const Block> blocks() const;
 
@@ -42,14 +39,6 @@ struct Scope : public std::enable_shared_from_this<Scope> {
    * the first six will always be the relevant members of 𝕤𝕩𝕨𝕣𝕗𝕘.
    */
   std::vector<O<Value>> vars;
-
-  /*
-   * Possibly own the consts passed to the top-level `vm::run` call if this is
-   * a root scope. Otherwise, `Scope::consts` will retrieve the consts from
-   * somewhere up the scope lineage.
-   */
-  std::optional<std::vector<O<Value>>> _consts;
-  // std::vector<O<Value>> _consts;
 
   /*
    * Blocks and bodies use non-owning/reference semantics when passing around

@@ -41,7 +41,7 @@ RunResult run(O<Value> compiled) {
   for (auto v : bqnbc)
     bc.push_back(dynamic_pointer_cast<Number>(v)->v);
 
-  auto consts = dynamic_pointer_cast<Array>(comparr->values[1])->values;
+  auto consts = dynamic_pointer_cast<Array>(comparr->values[1]);
 
   std::vector<BlockDef> blk_defs;
   auto bqnblks = dynamic_pointer_cast<Array>(comparr->values[2]);
@@ -82,7 +82,7 @@ RunResult run(O<Value> compiled) {
 // auto cret = vm::run(p2.bc, p2.consts.v, p2.blk_defs, p2.bodies);
 
 static bool loginit = false;
-RunResult run(std::vector<i32> bc, std::vector<O<Value>> consts,
+RunResult run(std::vector<i32> bc, O<Array> consts,
               std::vector<BlockDef> blk_defs, std::vector<Body> &bodies,
               std::optional<std::vector<std::vector<uz>>> source_indices,
               O<Array> source) {
@@ -112,7 +112,7 @@ RunResult run(std::vector<i32> bc, std::vector<O<Value>> consts,
 
   RunResult ret;
 
-  ret.scp = Scope::root_scope(blks, bc, consts, bodies);
+  ret.scp = Scope::root_scope(blks, bc, bodies);
 
   if (source_indices.has_value()) {
     if (nullptr == source)
@@ -135,7 +135,7 @@ RunResult run(std::vector<i32> bc, std::vector<O<Value>> consts,
 }
 
 static u64 iii = 0;
-O<Value> vm(ByteCodeRef bc, std::vector<O<Value>> consts,
+O<Value> vm(ByteCodeRef bc, O<Array> consts,
             std::vector<O<Value>> stk, O<Scope> scope) {
 
   CXBQN_NEWEVAL();
@@ -162,7 +162,7 @@ O<Value> vm(ByteCodeRef bc, std::vector<O<Value>> consts,
       switch (bc[pc]) {
       case op::PUSH:
         INSTR1("PUSH");
-        stk.push_back(consts[bc[++pc]]);
+        stk.push_back(consts->values[bc[++pc]]);
         INSTR("PUSH");
         break;
       case op::RETN:
@@ -210,7 +210,7 @@ O<Value> vm(ByteCodeRef bc, std::vector<O<Value>> consts,
         break;
       case op::DFND:
         INSTR1("DFND");
-        instructions::dfnd(bc, pc, stk, scope);
+        instructions::dfnd(bc, pc, stk, scope, consts);
         INSTR("DFND");
         break;
       case op::ARRO:

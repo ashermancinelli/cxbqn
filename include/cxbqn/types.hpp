@@ -255,6 +255,7 @@ struct Function : public Value {
 
 struct BlockInst : public Function {
   O<Scope> scp;
+  O<Array> consts;
   uz blk_idx;
 
   // Is the block at index blk_idx immediate?
@@ -263,7 +264,7 @@ struct BlockInst : public Function {
   u32 type;
   TypeType t() const override { return TypeType{type | annot(t_BlockInst)}; }
 
-  BlockInst(O<Scope> scp, uz blk_idx);
+  BlockInst(O<Scope> scp, uz blk_idx, O<Array> consts);
 
   O<Value> call(u8 nargs = 0, std::vector<O<Value>> args = {}) override;
   std::ostream &repr(std::ostream &os) const override {

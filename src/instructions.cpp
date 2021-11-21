@@ -276,7 +276,7 @@ void fn2o(std::vector<O<Value>> &stk) {
   stk.push_back(v);
 }
 
-void dfnd(const ByteCodeRef bc, uz &pc, std::vector<O<Value>> &stk, O<Scope> scp) {
+void dfnd(const ByteCodeRef bc, uz &pc, std::vector<O<Value>> &stk, O<Scope> scp, O<Array> consts) {
   auto blk_idx = bc[++pc];
 
   const auto blk = scp->blocks()[blk_idx];
@@ -288,10 +288,10 @@ void dfnd(const ByteCodeRef bc, uz &pc, std::vector<O<Value>> &stk, O<Scope> scp
     std::vector<O<Value>> stk_;
 
     CXBQN_DEBUG("dfnd:recursing into vm");
-    auto ret = vm::vm(blk_bc, child->consts(), stk_, child);
+    auto ret = vm::vm(blk_bc, consts, stk_, child);
     stk.push_back(ret);
   } else {
-    stk.push_back(make_shared<BlockInst>(scp, blk_idx));
+    stk.push_back(make_shared<BlockInst>(scp, blk_idx, consts));
   }
 }
 

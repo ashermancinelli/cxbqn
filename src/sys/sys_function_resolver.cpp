@@ -35,6 +35,8 @@ O<Value> SystemFunctionResolver::call(u8 nargs, std::vector<O<Value>> args) {
       ret.push_back(make_shared<FLines>());
     } else if ("fmt" == s) {
       ret.push_back(_fmt);
+    } else if ("args" == s) {
+      ret.push_back(_args);
     } else if ("repr" == s) {
       ret.push_back(_repr);
     } else {
