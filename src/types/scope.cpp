@@ -145,12 +145,12 @@ void Scope::set_source_info(std::vector<std::vector<uz>> si, O<Array> s) {
   // create a standard string of the source text
   std::string _s;
   for (auto v : s->values)
-    utf8::append(dynamic_pointer_cast<Character>(v)->c(), std::back_inserter(_s));
+    utf8::append(dynamic_pointer_cast<Character>(v)->c(),
+                 std::back_inserter(_s));
   _source_str = _s;
 }
 
-const void Scope::source_for_program_counter(uz pc,
-                                             std::stringstream &ss) const {
+void Scope::source_for_program_counter(uz pc, std::stringstream &ss) const {
   const auto &si = source_indices();
   const auto b = si.first[pc], e = si.second[pc];
   const auto s = source_str();

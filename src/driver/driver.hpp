@@ -3,10 +3,9 @@
 #include <cxbqn/comp_utils.hpp>
 #include <cxbqn/cxbqn.hpp>
 #include <cxbqn/debug.hpp>
-#include <filesystem>
+#include <cxbqn/fs.hpp>
 #include <spdlog/spdlog.h>
 #include <utf8.h>
-namespace fs = std::filesystem;
 
 namespace cxbqn::driver {
 

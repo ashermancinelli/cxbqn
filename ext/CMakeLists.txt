@@ -7,6 +7,11 @@ endif()
 add_subdirectory(doctest)
 add_subdirectory(utfcpp)
 
+if(CXBQN_EXT_STD_FILESYSTEM)
+  add_subdirectory(filesystem)
+  target_link_libraries(tpl INTERFACE ghc_filesystem)
+endif()
+
 target_link_libraries(tpl INTERFACE spdlog::spdlog utf8::cpp)
 
 include(CheckCXXSourceCompiles)

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.18)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 project(
@@ -14,11 +14,17 @@ set(CXBQN_INIT_STACK_SIZE
     CACHE STRING "The size the VM stack is initialized with"
 )
 
-set(CMAKE_CXX_FLAGS
-    "-Wall -Wextra ${CMAKE_CXX_FLAGS}"
-    CACHE STRING ""
-)
+if(NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "NVHPC")
+  set(CMAKE_CXX_FLAGS
+      "-Wall -Wextra ${CMAKE_CXX_FLAGS}"
+      CACHE STRING ""
+  )
+endif()
 
+set(CXBQN_EXT_STD_FILESYSTEM
+    OFF
+    CACHE BOOL "Build std::filesystem using git submodule"
+)
 set(CXBQN_BUILD_TESTS
     OFF
     CACHE BOOL "Build tests, add CTest support"
@@ -101,7 +107,10 @@ else()
 endif()
 
 if("${CMAKE_BUILD_TYPE}" STREQUAL "")
-  set(CMAKE_BUILD_TYPE "Release" CACHE STRING "")
+  set(CMAKE_BUILD_TYPE
+      "Release"
+      CACHE STRING ""
+  )
 endif()
 
 set(HAS_BQN_EXE OFF)

@@ -19,3 +19,6 @@
 [submodule "ext/utfcpp"]
 	path = ext/utfcpp
 	url = https://github.com/nemtrif/utfcpp.git
+[submodule "ext/filesystem"]
+	path = ext/filesystem
+	url = https://github.com/gulrak/filesystem.git

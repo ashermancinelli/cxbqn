@@ -181,13 +181,13 @@ struct Character : public Number {
   inline c32 c() const { return static_cast<c32>(v); }
   std::ostream &repr(std::ostream &os) const override {
     return os << "ch=" << v;
-    if (c() == '\0') {
-      return os << "'@'";
-    }
-    std::string s="";
-    utf8::append(c(), std::back_inserter(s));
-    fmt::print(os, "'{}'", s);
-    return os;
+    // if (c() == '\0') {
+    //   return os << "'@'";
+    // }
+    // std::string s="";
+    // utf8::append(c(), std::back_inserter(s));
+    // fmt::print(os, "'{}'", s);
+    // return os;
   }
 };
 
@@ -196,7 +196,7 @@ struct Array : public Value {
   std::vector<uz> shape;
   Array(const uz N, std::vector<O<Value>> &stk);
   Array(std::vector<O<Value>> vs) : values{vs}, shape{vs.size()} {}
-  inline const uz N() const {
+  inline uz N() const {
     const auto N = values.size();
 #ifdef CXBQN_DEEPCHECKS
     if (N !=

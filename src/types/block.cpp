@@ -46,7 +46,6 @@ std::tuple<uz, ByteCodeRef, uz> Block::body(const ByteCodeRef bc,
   }
 
   throw std::runtime_error("Block::body: unreachable");
-  return {};
 }
 
 } // namespace cxbqn::types

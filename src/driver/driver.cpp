@@ -89,7 +89,6 @@ int parse_args(std::vector<std::string> args, O<Array> &src, O<Array> sysargs,
         fmt::print("could not open path {}\n", f);
         return 1;
       }
-      return usage();
     }
     sysargs->values.push_back(O<Value>(new Array(*it)));
     sysargs->shape[0]++;

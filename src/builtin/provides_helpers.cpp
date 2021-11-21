@@ -103,7 +103,6 @@ bool equivilant_helper(O<Value> a, O<Value> b) {
         return false;
   }
   throw std::runtime_error("equivilant_helper: something went wrong");
-  return false;
 }
 
 }

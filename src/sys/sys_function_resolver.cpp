@@ -6,9 +6,9 @@ struct SysError : public Function {
   std::string mock = "";
   SysError(std::string m) : mock{m} {}
   O<Value> call(u8 nargs = 0, std::vector<O<Value>> args = {}) override {
-    const auto s = fmt::format("System Error: {} is not current available in CXBQN", mock);
+    const auto s =
+        fmt::format("System Error: {} is not current available in CXBQN", mock);
     throw std::runtime_error(s);
-    return bi_Nothing();
   }
   std::ostream &repr(std::ostream &os) const override {
     return os << "•SystemError";
@@ -20,7 +20,7 @@ O<Value> SystemFunctionResolver::call(u8 nargs, std::vector<O<Value>> args) {
   auto x = dynamic_pointer_cast<Array>(args[1]);
   std::vector<O<Value>> ret;
 
-  for (int i=0; i < x->N(); i++) {
+  for (int i = 0; i < x->N(); i++) {
     auto foo = dynamic_pointer_cast<Array>(x->values[i]);
     auto s = foo->to_string();
     if ("cxbqn" == s) {
