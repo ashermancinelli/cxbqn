@@ -1,4 +1,5 @@
 #include "driver.hpp"
+
 using namespace cxbqn;
 using namespace cxbqn::types;
 using namespace cxbqn::provides;
@@ -6,12 +7,13 @@ using namespace cxbqn::sys;
 
 int main(int argc, char **argv) {
 
+  bool repl;
   auto sysargs = make_shared<Array>(0);
   auto src = make_shared<Array>("\"CXBQN internal: Empty program\" ! 0");
 
   std::vector<std::string> args(argv, argv + argc);
 
-  if (auto ec = driver::parse_args(args, src, sysargs))
+  if (auto ec = driver::parse_args(args, src, sysargs, repl))
     return ec;
 
   try {
@@ -86,13 +88,30 @@ int main(int argc, char **argv) {
     compw->values[1] = O<Value>(
         new SystemFunctionResolver(sysargs, fmt, repr, compiler, compw));
 
-    auto compiled = compiler->call(2, {compiler, src, compw});
+    if (repl) {
+      fmt::print("   ");
+      for (std::string line, section = ""; std::getline(std::cin, line);) {
+        section += line;
+        if (0 == line.size()) {
+          src.reset(new Array(section));
+          auto compiled = compiler->call(2, {compiler, src, compw});
+          auto runret = vm::run(compiled);
 
-    auto runret = vm::run(compiled);
-
-    (void)runret;
-    // auto formatted = fmt->call(1, {fmt, runret.v, bi_Nothing()});
-    // fmt::print("{}\n", dynamic_pointer_cast<Array>(formatted)->to_string());
+          // By default, print the result
+          auto formatted = fmt->call(1, {fmt, runret.v, bi_Nothing()});
+          fmt::print("{}\n",
+                     dynamic_pointer_cast<Array>(formatted)->to_string());
+          fmt::print("   ");
+          section = "";
+        } else {
+          fmt::print("> ");
+        }
+      }
+    } else {
+      auto compiled = compiler->call(2, {compiler, src, compw});
+      auto runret = vm::run(compiled);
+      (void)runret;
+    }
 
 #ifdef CXBQN_PROFILE_STARTUP
     auto t_final = std::chrono::high_resolution_clock::now();

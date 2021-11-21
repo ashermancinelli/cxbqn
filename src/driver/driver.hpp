@@ -12,6 +12,6 @@ namespace cxbqn::driver {
 
 int version();
 int usage();
-int parse_args(std::vector<std::string> args, O<Array> &src, O<Array> sysargs);
+int parse_args(std::vector<std::string> args, O<Array> &src, O<Array> sysargs, bool& repl);
 
 } // namespace cxbqn::driver

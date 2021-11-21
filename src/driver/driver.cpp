@@ -12,17 +12,20 @@ int usage() {
   fmt::print("usage: BQN [options] [file.bqn [arguments]]\n");
   fmt::print("\t-e <string>: execute BQN expression\n");
   fmt::print("\t-f <file>: execute <file>\n");
+  fmt::print("\t-i: start repl (WIP)\n");
   fmt::print("\t-h, --help: print this message\n");
   fmt::print("\t-v, --version: show full version information\n");
   return 1;
 }
 
-int parse_args(std::vector<std::string> args, O<Array>& src, O<Array> sysargs) {
+int parse_args(std::vector<std::string> args, O<Array> &src, O<Array> sysargs,
+               bool &repl) {
   auto it = args.begin();
   it++; // skip exe name
 
   while (it != args.end()) {
     if ("-e" == *it) {
+      repl = false;
       it++;
       auto _src = *it;
       src.reset(new Array(_src));
@@ -34,7 +37,11 @@ int parse_args(std::vector<std::string> args, O<Array>& src, O<Array> sysargs) {
     if ("-h" == *it or "--help" == *it) {
       return usage();
     }
+    if ("-i" == *it) {
+      repl = true;
+    }
     if ("-f" == *it) {
+      repl = false;
       it++;
       auto f = fs::path(*it);
       if (!fs::exists(f)) {
