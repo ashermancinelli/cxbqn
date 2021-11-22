@@ -13,6 +13,8 @@ enum class BlockType : u8 {
 struct Body {
   uz bc_offset;
   uz var_count;
+  O<Array> var_name_ids;
+  O<Array> exported;
 };
 
 /**

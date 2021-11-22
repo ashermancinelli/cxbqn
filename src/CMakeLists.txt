@@ -3,6 +3,8 @@ add_library(
 
   # Top level definitions for basic types, mostly defined in types.hpp
   types/bi.cpp
+  types/varalias.cpp
+  types/namespace.cpp
   types/vm.cpp
   types/types.cpp
   types/array.cpp
@@ -18,6 +20,12 @@ add_library(
   instructions/varo.cpp
   instructions/fn1c.cpp
   instructions/fn1o.cpp
+  instructions/pred.cpp
+  instructions/retd.cpp
+  instructions/seth.cpp
+  instructions/vfym.cpp
+  instructions/fldo.cpp
+  instructions/fldm.cpp
   instructions/fn2c.cpp
   instructions/fn2o.cpp
   instructions/dfnd.cpp

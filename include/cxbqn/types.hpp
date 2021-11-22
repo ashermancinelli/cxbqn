@@ -318,6 +318,26 @@ struct Md2 : public Function {
   TypeType t() const override { return TypeType{t_Md2}; }
 };
 
+struct Namespace : public Value {
+  O<Scope> scp;
+  O<Array> name_origin;
+  O<Value> call(u8 nargs = 0, std::vector<O<Value>> args = {}) override;
+  std::ostream &repr(std::ostream &os) const override {
+    return os << "( namespace )";
+  }
+};
+
+struct VarAlias : public Value {
+  O<Value> v;
+  int name_id;
+  O<Value> call(u8 nargs = 0, std::vector<O<Value>> args = {}) override;
+  std::ostream &repr(std::ostream &os) const override {
+    os << "( alias ";
+    v->repr(os);
+    return os << ")";
+  }
+};
+
 // The t() method on all values in cxbqn uses higher bits to indicate internal
 // type annotations. We only want the lowest 3 bits for the builtin •Type.
 inline auto type_builtin(const O<Value> v) {
