@@ -16,10 +16,13 @@ O<Value> SH::call(u8 nargs, std::vector<O<Value>> args) {
 
   auto p = subprocess::popen(cmd, _args);
   int ec = p.wait();
-  std::stringstream out; out << p.stdout().rdbuf();
-  std::stringstream err; err << p.stderr().rdbuf();
+  std::stringstream out;
+  out << p.stdout().rdbuf();
+  std::stringstream err;
+  err << p.stderr().rdbuf();
 
-  return O<Value>(new Array({make_shared<Number>(ec), make_shared<Array>(out.str()),
-                             make_shared<Array>(err.str())}));
+  return O<Value>(
+      new Array({make_shared<Number>(ec), make_shared<Array>(out.str()),
+                 make_shared<Array>(err.str())}));
 }
 } // namespace cxbqn::sys

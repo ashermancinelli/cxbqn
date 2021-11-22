@@ -97,9 +97,15 @@ target_link_libraries(BQN PUBLIC cxbqn::cxbqn)
 install(TARGETS BQN DESTINATION bin)
 
 if(CXBQN_BUILD_TOOLS)
-  add_executable(cxxc driver/cxxc.cpp driver/driver.cpp)
-  target_link_libraries(cxxc PUBLIC cxbqn::cxbqn)
-  install(TARGETS cxxc DESTINATION bin)
+  add_executable(C driver/C.cpp driver/driver.cpp)
+  target_link_libraries(C PUBLIC cxbqn::cxbqn)
+  install(TARGETS C DESTINATION bin)
+  add_custom_command(
+    TARGET C
+    POST_BUILD
+    COMMAND "${CMAKE_COMMAND}" -E copy "$<TARGET_FILE:C>"
+            ${PROJECT_BINARY_DIR}
+            )
 endif()
 
 add_custom_command(

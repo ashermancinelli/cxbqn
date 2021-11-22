@@ -7,7 +7,7 @@ using namespace cxbqn::provides;
 using namespace cxbqn::sys;
 
 void usage() {
-  fmt::print("ccxx: compile BQN expressions using CXBQN.\n");
+  fmt::print("C: compile BQN expressions using CXBQN.\n");
   fmt::print("-c <string>: compile BQN expression\n");
   fmt::print("-f <file>: compile contents of file\n");
 }
@@ -16,7 +16,8 @@ int main(int argc, char **argv) {
 
   bool repl, pp_res;
   std::vector<std::string> args(argv, argv + argc);
-  auto it = args.begin(); it++;
+  auto it = args.begin();
+  it++;
 
   O<Value> src;
   auto path = make_shared<Array>(0);
@@ -24,10 +25,10 @@ int main(int argc, char **argv) {
     it++;
     src.reset(new Array(*it));
   } else if ("-f" == *it) {
-    std::string _src="";
+    std::string _src = "";
     it++;
     std::ifstream f{(*it).c_str()};
-    for (std::string line; std::getline(f, line); ) {
+    for (std::string line; std::getline(f, line);) {
       _src += "\n" + line;
     }
     src.reset(new Array(_src));
@@ -86,7 +87,7 @@ int main(int argc, char **argv) {
     auto fmtarr = dynamic_pointer_cast<Array>(_fmtarr);
     auto fmt = fmtarr->values[0];
     auto repr = fmtarr->values[1];
-    auto dofmt = [fmt] (auto v) {
+    auto dofmt = [fmt](auto v) {
       auto formatted = fmt->call(1, {fmt, v, bi_Nothing()});
       fmt::print("{}\n", dynamic_pointer_cast<Array>(formatted)->to_string());
     };
@@ -100,13 +101,13 @@ int main(int argc, char **argv) {
     // It may seem counterintuitive to pass the compiler and compiler arguments
     // to the sys func resolver which is itself part of the compiler arguments,
     // but this is needed for •Import to work without recreating the compiler
-    compw->values[1] = O<Value>(
-        new SystemFunctionResolver(make_shared<Array>(0), fmt, repr, compiler, compw, path));
+    compw->values[1] = O<Value>(new SystemFunctionResolver(
+        make_shared<Array>(0), fmt, repr, compiler, bqnruntime, path));
 
     auto compiled = compiler->call(2, {compiler, src, compw});
 
     auto c = dynamic_pointer_cast<Array>(compiled);
-    for (int i=0; i < c->N(); i++)
+    for (int i = 0; i < c->N(); i++)
       dofmt(c->values[i]);
 
   } catch (std::runtime_error &e) {

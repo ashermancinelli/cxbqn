@@ -2,6 +2,8 @@
 
 namespace cxbqn::sys {
 
+using namespace cxbqn::provides;
+
 struct SysError : public Function {
   std::string mock = "";
   SysError(std::string m) : mock{m} {}
@@ -40,6 +42,10 @@ O<Value> SystemFunctionResolver::call(u8 nargs, std::vector<O<Value>> args) {
       ret.push_back(ls);
     } else if ("sh" == s) {
       ret.push_back(make_shared<SH>());
+    } else if ("type" == s) {
+      ret.push_back(make_shared<Type>());
+    } else if ("decompose" == s) {
+      ret.push_back(O<Value>(new Decompose(_runtime)));
     } else if ("list" == s) {
       ret.push_back(make_shared<List>());
     } else if ("exit" == s) {
@@ -53,9 +59,15 @@ O<Value> SystemFunctionResolver::call(u8 nargs, std::vector<O<Value>> args) {
     } else if ("out" == s) {
       ret.push_back(make_shared<Out>(_fmt));
     } else if ("import" == s) {
-      ret.push_back(make_shared<Import>(_compiler, _compiler_args));
+      auto args = make_shared<Array>(2);
+      args->values[0] = _runtime;
+      args->values[1] = shared_from_this();
+      ret.push_back(make_shared<Import>(_compiler, args));
     } else if ("bqn" == s) {
-      ret.push_back(make_shared<BQN>(_compiler, _compiler_args));
+      auto args = make_shared<Array>(2);
+      args->values[0] = _runtime;
+      args->values[1] = shared_from_this();
+      ret.push_back(make_shared<BQN>(_compiler, args));
     } else if ("fmt" == s) {
       ret.push_back(_fmt);
     } else if ("args" == s) {

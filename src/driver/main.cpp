@@ -86,8 +86,8 @@ int main(int argc, char **argv) {
     // It may seem counterintuitive to pass the compiler and compiler arguments
     // to the sys func resolver which is itself part of the compiler arguments,
     // but this is needed for •Import to work without recreating the compiler
-    compw->values[1] = O<Value>(
-        new SystemFunctionResolver(sysargs, fmt, repr, compiler, compw, path));
+    compw->values[1] = O<Value>(new SystemFunctionResolver(
+        sysargs, fmt, repr, compiler, bqnruntime, path));
 
     if (repl) {
       return driver::repl(compiler, bqnruntime, compw->values[1], fmt);

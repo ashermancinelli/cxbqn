@@ -172,9 +172,9 @@ CXBQN_BUILTIN_FN_DECL(SH, "•SH");
 struct SystemFunctionResolver : public Function {
 
   SystemFunctionResolver(O<Array> args, O<Value> fmt, O<Value> repr,
-                         O<Value> compiler, O<Array> compiler_args, O<Array> path)
+                         O<Value> compiler, O<Array> runtime, O<Array> path)
       : _args{args}, _fmt{fmt}, _repr{repr}, _compiler{compiler},
-        _compiler_args{compiler_args}, _path{path} {}
+        _runtime{runtime}, _path{path} {}
 
   std::ostream &repr(std::ostream &os) const override {
     return os << "•SystemFunctionResolver";
@@ -185,9 +185,14 @@ struct SystemFunctionResolver : public Function {
   O<Value> _fmt;
   O<Value> _repr;
   O<Value> _compiler;
-  O<Array> _compiler_args;
+  O<Array> _runtime;
 
   O<Value> call(u8 nargs = 0, std::vector<O<Value>> args = {}) override;
+};
+
+struct CUDAFor : public Function {
+  CUDAFor(O<Array> runtime) : _runtime{runtime} {}
+  O<Array> _runtime;
 };
 
 struct BQN : public Function {
