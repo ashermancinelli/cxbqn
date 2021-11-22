@@ -25,6 +25,10 @@ set(CXBQN_EXT_STD_FILESYSTEM
     OFF
     CACHE BOOL "Build std::filesystem using git submodule"
 )
+set(CXBQN_BUILD_TOOLS
+    OFF
+    CACHE BOOL "Build extra tools, eg the compiler examiner"
+)
 set(CXBQN_BUILD_TESTS
     OFF
     CACHE BOOL "Build tests, add CTest support"

@@ -93,11 +93,13 @@ add_library(cxbqn::cxbqn ALIAS cxbqn)
 
 add_executable(BQN driver/driver.cpp driver/main.cpp)
 target_link_libraries(BQN PUBLIC cxbqn::cxbqn)
+install(TARGETS BQN DESTINATION bin)
 
-add_executable(ccxx driver/ccxx.cpp driver/driver.cpp)
-target_link_libraries(ccxx PUBLIC cxbqn::cxbqn)
-
-install(TARGETS ccxx BQN DESTINATION bin)
+if(CXBQN_BUILD_TOOLS)
+  add_executable(cxxc driver/cxxc.cpp driver/driver.cpp)
+  target_link_libraries(cxxc PUBLIC cxbqn::cxbqn)
+  install(TARGETS cxxc DESTINATION bin)
+endif()
 
 add_custom_command(
   TARGET BQN

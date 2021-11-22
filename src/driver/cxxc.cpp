@@ -6,13 +6,10 @@ using namespace cxbqn::types;
 using namespace cxbqn::provides;
 using namespace cxbqn::sys;
 
-static bool print_raw = false;
-
 void usage() {
   fmt::print("ccxx: compile BQN expressions using CXBQN.\n");
   fmt::print("-c <string>: compile BQN expression\n");
   fmt::print("-f <file>: compile contents of file\n");
-  fmt::print("-r: print raw contents, don't use formatter\n");
 }
 
 int main(int argc, char **argv) {
@@ -22,11 +19,6 @@ int main(int argc, char **argv) {
   auto it = args.begin(); it++;
 
   O<Value> src;
-  if ("-r" == *it) {
-    print_raw = true;
-    it++;
-  } 
-
   if ("-c" == *it) {
     it++;
     src.reset(new Array(*it));
@@ -112,14 +104,9 @@ int main(int argc, char **argv) {
 
     auto compiled = compiler->call(2, {compiler, src, compw});
 
-    if (print_raw) {
-      auto c = dynamic_pointer_cast<Array>(compiled);
-      for (int i=0; i < c->N(); i++)
-        dofmt(c->values[i]);
-    }
-    else {
-      dofmt(compiled);
-    }
+    auto c = dynamic_pointer_cast<Array>(compiled);
+    for (int i=0; i < c->N(); i++)
+      dofmt(c->values[i]);
 
   } catch (std::runtime_error &e) {
     fmt::print("{}\n", e.what());

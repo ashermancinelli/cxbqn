@@ -27,6 +27,10 @@ O<Value> SystemFunctionResolver::call(u8 nargs, std::vector<O<Value>> args) {
       ret.push_back(make_shared<CXBQN>());
     } else if ("show" == s) {
       ret.push_back(make_shared<Show>());
+    } else if ("sh" == s) {
+      ret.push_back(make_shared<SH>());
+    } else if ("exit" == s) {
+      ret.push_back(make_shared<Exit>());
     } else if ("timed" == s) {
       ret.push_back(make_shared<Timed>());
     } else if ("unixtime" == s) {

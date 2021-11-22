@@ -155,6 +155,16 @@ CXBQN_BUILTIN_FN_DECL(Show, "•Show");
 CXBQN_BUILTIN_FN_DECL(Timed, "•_timed");
 CXBQN_BUILTIN_FN_DECL(UnixTime, "•UnixTime");
 CXBQN_BUILTIN_FN_DECL(FLines, "•FLines");
+CXBQN_BUILTIN_FN_DECL(Exit, "•Exit");
+
+/* NONSTANDARD
+ *
+ * Run with: `•SH "ls"‿"-lah"‿"~"`, get back list `exitcode‿output`.
+ * Note that stdout is merged with stdin.
+ *
+ * Optionally pass working directory as 𝕨.
+ */
+CXBQN_BUILTIN_FN_DECL(SH, "•SH");
 
 // System functions that require pointers to objects we need at runtime, for
 // example the runtime itself.
