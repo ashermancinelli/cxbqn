@@ -25,3 +25,6 @@
 [submodule "ext/bqn-libs"]
 	path = ext/bqn-libs
 	url = https://github.com/mlochbaum/bqn-libs.git
+[submodule "ext/cpp-subprocess"]
+	path = ext/cpp-subprocess
+	url = https://github.com/tsaarni/cpp-subprocess.git
