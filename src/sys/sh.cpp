@@ -1,30 +1,25 @@
 #include "sys_helper.hpp"
+#include <subprocess.hpp>
+
 namespace cxbqn::sys {
 O<Value> SH::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("•SH: nargs={},args={}", nargs, args);
-  std::stringstream ss;
 
-  if (nargs == 2) {
-    ss << "cd " << dynamic_pointer_cast<Array>(args[2])->to_string() << "; ";
-  }
+  if (nargs == 2)
+    throw std::runtime_error("•SH: only monadic calls");
 
-  auto cmds = dynamic_pointer_cast<Array>(args[1]);
-  for (auto v : cmds->values)
-    ss << dynamic_pointer_cast<Array>(v)->to_string() << " ";
+  auto x = dynamic_pointer_cast<Array>(args[1]);
+  auto cmd = dynamic_pointer_cast<Array>(x->values[0])->to_string();
+  std::vector<std::string> _args;
+  for (int i = 1; i < x->N(); i++)
+    _args.push_back(dynamic_pointer_cast<Array>(x->values[i])->to_string());
 
-  std::string res = "";
-  char b[128];
-  std::FILE *p = popen(ss.str().c_str(), "r");
+  auto p = subprocess::popen(cmd, _args);
+  int ec = p.wait();
+  std::stringstream out; out << p.stdout().rdbuf();
+  std::stringstream err; err << p.stderr().rdbuf();
 
-  if (!p)
-    throw std::runtime_error("popen() failed!");
-
-  while (fgets(b, sizeof b, p) != NULL)
-    res += b;
-
-  auto rc = pclose(p);
-
-  return O<Value>(
-      new Array({make_shared<Number>(rc), make_shared<Array>(res)}));
+  return O<Value>(new Array({make_shared<Number>(ec), make_shared<Array>(out.str()),
+                             make_shared<Array>(err.str())}));
 }
 } // namespace cxbqn::sys

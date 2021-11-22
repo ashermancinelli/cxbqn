@@ -6,6 +6,8 @@ endif()
 
 add_subdirectory(doctest)
 add_subdirectory(utfcpp)
+target_include_directories(tpl INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/cpp-subprocess/include)
+message(STATUS "${CMAKE_CURRENT_SOURCE_DIR}/cpp-subprocess/include")
 
 if(CXBQN_EXT_STD_FILESYSTEM)
   add_subdirectory(filesystem)
