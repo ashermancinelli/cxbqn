@@ -322,6 +322,7 @@ struct Namespace : public Value {
   O<Scope> scp;
   O<Array> name_origin;
   O<Value> call(u8 nargs = 0, std::vector<O<Value>> args = {}) override;
+  TypeType t() const override { return TypeType{t_Namespace}; }
   std::ostream &repr(std::ostream &os) const override {
     return os << "( namespace )";
   }

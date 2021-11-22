@@ -172,6 +172,15 @@ O<Value> vm(ByteCodeRef bc, O<Array> consts,
         INSTR("RETN");
         goto done;
         break;
+      case op::RETD:
+      case op::PRED:
+      case op::SETH:
+      case op::VFYM:
+      case op::FLDO:
+      case op::FLDM:
+      case op::ALIM:
+        throw std::runtime_error("unsupported");
+        break;
       case op::POPS:
         INSTR("POPS");
         stk.pop_back();

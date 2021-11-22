@@ -39,6 +39,8 @@ add_library(
 
   # System functions, eg •Open
   sys/open.cpp
+  sys/sh.cpp
+  sys/exit.cpp
   sys/bqn.cpp
   sys/out.cpp
   sys/import.cpp
@@ -91,7 +93,11 @@ add_library(cxbqn::cxbqn ALIAS cxbqn)
 
 add_executable(BQN driver/driver.cpp driver/main.cpp)
 target_link_libraries(BQN PUBLIC cxbqn::cxbqn)
-install(TARGETS BQN DESTINATION bin)
+
+add_executable(ccxx driver/ccxx.cpp driver/driver.cpp)
+target_link_libraries(ccxx PUBLIC cxbqn::cxbqn)
+
+install(TARGETS ccxx BQN DESTINATION bin)
 
 add_custom_command(
   TARGET BQN

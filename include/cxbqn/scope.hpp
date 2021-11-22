@@ -39,6 +39,7 @@ struct Scope : public std::enable_shared_from_this<Scope> {
    * the first six will always be the relevant members of 𝕤𝕩𝕨𝕣𝕗𝕘.
    */
   std::vector<O<Value>> vars;
+  std::vector<std::string> var_names;
 
   /*
    * Blocks and bodies use non-owning/reference semantics when passing around

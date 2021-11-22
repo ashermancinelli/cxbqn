@@ -1,20 +1,48 @@
 #include "driver.hpp"
+#include <fstream>
 
 using namespace cxbqn;
 using namespace cxbqn::types;
 using namespace cxbqn::provides;
 using namespace cxbqn::sys;
 
+static bool print_raw = false;
+
+void usage() {
+  fmt::print("ccxx: compile BQN expressions using CXBQN.\n");
+  fmt::print("-c <string>: compile BQN expression\n");
+  fmt::print("-f <file>: compile contents of file\n");
+  fmt::print("-r: print raw contents, don't use formatter\n");
+}
+
 int main(int argc, char **argv) {
 
   bool repl, pp_res;
-  auto sysargs = make_shared<Array>(0);
-  auto src = make_shared<Array>("\"CXBQN internal: Empty program\" ! 0");
-
   std::vector<std::string> args(argv, argv + argc);
+  auto it = args.begin(); it++;
 
-  if (auto ec = driver::parse_args(args, src, sysargs, repl, pp_res))
-    return ec;
+  O<Value> src;
+  if ("-r" == *it) {
+    print_raw = true;
+    it++;
+  } 
+
+  if ("-c" == *it) {
+    it++;
+    src.reset(new Array(*it));
+  } else if ("-f" == *it) {
+    std::string _src="";
+    it++;
+    std::ifstream f{(*it).c_str()};
+    for (std::string line; std::getline(f, line); ) {
+      _src += "\n" + line;
+    }
+    src.reset(new Array(_src));
+  } else {
+    fmt::print("Invalid option {}.\n", *it);
+    usage();
+    return 1;
+  }
 
   try {
 
@@ -25,10 +53,6 @@ int main(int argc, char **argv) {
     );
     auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
     auto runtime_ret = std::dynamic_pointer_cast<Array>(ret.v);
-
-#ifdef CXBQN_PROFILE_STARTUP
-    auto t_rt = std::chrono::high_resolution_clock::now();
-#endif
 
     auto bqnruntime = std::dynamic_pointer_cast<Array>(runtime_ret->values[0]);
 
@@ -47,9 +71,6 @@ int main(int argc, char **argv) {
     );
 
     auto cret = vm::run(p2.bc, p2.consts.to_arr(), p2.blk_defs, p2.bodies);
-#ifdef CXBQN_PROFILE_STARTUP
-    auto t_comp = std::chrono::high_resolution_clock::now();
-#endif
 
     auto compiler = cret.v;
 
@@ -61,9 +82,6 @@ int main(int argc, char **argv) {
     );
     auto fmtret =
         vm::run(pfmt.bc, pfmt.consts.to_arr(), pfmt.blk_defs, pfmt.bodies);
-#ifdef CXBQN_PROFILE_STARTUP
-    auto t_fmt = std::chrono::high_resolution_clock::now();
-#endif
     auto fmt1 = fmtret.v;
 
     auto glyph = make_shared<Glyph>(bqnruntime);
@@ -75,6 +93,10 @@ int main(int argc, char **argv) {
     auto fmtarr = dynamic_pointer_cast<Array>(_fmtarr);
     auto fmt = fmtarr->values[0];
     auto repr = fmtarr->values[1];
+    auto dofmt = [fmt] (auto v) {
+      auto formatted = fmt->call(1, {fmt, v, bi_Nothing()});
+      fmt::print("{}\n", dynamic_pointer_cast<Array>(formatted)->to_string());
+    };
 
     // Here, we could just call the compiler with the runtime as 𝕨. To add the
     // system functions, we will pass another value in an array along with the
@@ -86,26 +108,18 @@ int main(int argc, char **argv) {
     // to the sys func resolver which is itself part of the compiler arguments,
     // but this is needed for •Import to work without recreating the compiler
     compw->values[1] = O<Value>(
-        new SystemFunctionResolver(sysargs, fmt, repr, compiler, compw));
+        new SystemFunctionResolver(make_shared<Array>(0), fmt, repr, compiler, compw));
 
-    if (repl) {
-      return driver::repl(compiler, bqnruntime, compw->values[1], fmt);
-    } else {
-      auto compiled = compiler->call(2, {compiler, src, compw});
-      auto runret = vm::run(compiled);
-      if (pp_res) {
-        auto formatted = fmt->call(1, {fmt, runret.v, bi_Nothing()});
-        fmt::print("{}\n", dynamic_pointer_cast<Array>(formatted)->to_string());
-      }
+    auto compiled = compiler->call(2, {compiler, src, compw});
+
+    if (print_raw) {
+      auto c = dynamic_pointer_cast<Array>(compiled);
+      for (int i=0; i < c->N(); i++)
+        dofmt(c->values[i]);
     }
-
-#ifdef CXBQN_PROFILE_STARTUP
-    auto t_final = std::chrono::high_resolution_clock::now();
-    fmt::print("runtime: {}ms\ncompiler: {}ms\nexecute: {}ms\n",
-               duration_cast<milliseconds>(t_rt - t_start).count(),
-               duration_cast<milliseconds>(t_comp - t_start).count(),
-               duration_cast<milliseconds>(t_final - t_start).count());
-#endif
+    else {
+      dofmt(compiled);
+    }
 
   } catch (std::runtime_error &e) {
     fmt::print("{}\n", e.what());

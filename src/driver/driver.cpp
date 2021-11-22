@@ -37,6 +37,7 @@ int usage() {
   version();
   fmt::print("usage: BQN [options] [file.bqn [arguments]]\n");
   fmt::print("\t-e <string>: execute BQN expression\n");
+  fmt::print("\t-p <string>: execute BQN expression, pretty print the result\n");
   fmt::print("\t-f <file>: execute <file>\n");
   fmt::print("\t-i: start repl (WIP)\n");
   fmt::print("\t-h, --help: print this message\n");
@@ -45,7 +46,7 @@ int usage() {
 }
 
 int parse_args(std::vector<std::string> args, O<Array> &src, O<Array> sysargs,
-               bool &repl) {
+               bool &repl, bool& pp_res) {
   auto it = args.begin();
   it++; // skip exe name
 
@@ -55,18 +56,15 @@ int parse_args(std::vector<std::string> args, O<Array> &src, O<Array> sysargs,
       it++;
       auto _src = *it;
       src.reset(new Array(_src));
-      continue;
-    }
-    if ("-v" == *it or "--version" == *it) {
+    } else if ("-p" == *it) {
+      pp_res = true;
+    } else if ("-v" == *it or "--version" == *it) {
       return version();
-    }
-    if ("-h" == *it or "--help" == *it) {
+    } else if ("-h" == *it or "--help" == *it) {
       return usage();
-    }
-    if ("-i" == *it) {
+    } else if ("-i" == *it) {
       repl = true;
-    }
-    if ("-f" == *it) {
+    } else if ("-f" == *it) {
       repl = false;
       it++;
       auto f = fs::path(*it);
@@ -89,10 +87,13 @@ int parse_args(std::vector<std::string> args, O<Array> &src, O<Array> sysargs,
         fmt::print("could not open path {}\n", f);
         return 1;
       }
+    } else {
+      for (; it != args.end(); it++) {
+        sysargs->values.push_back(O<Value>(new Array(*it)));
+        sysargs->shape[0]++;
+      }
+      return 0;
     }
-    sysargs->values.push_back(O<Value>(new Array(*it)));
-    sysargs->shape[0]++;
-    it++;
   }
 
   return 0;
