@@ -7,13 +7,19 @@ struct SysError : public Function {
   SysError(std::string m) : mock{m} {}
   O<Value> call(u8 nargs = 0, std::vector<O<Value>> args = {}) override {
     const auto s =
-        fmt::format("System Error: {} is not current available in CXBQN", mock);
-    throw std::runtime_error(s);
+        fmt::format("System Error: {} is not current available in CXBQN.\nSee "
+                    "•listSys for all available system functions.",
+                    mock);
+    return make_shared<Array>(s);
   }
   std::ostream &repr(std::ostream &os) const override {
     return os << "•SystemError";
   }
 };
+
+static std::vector<std::string> listsys{
+    "cxbqn",  "sh",  "show", "exit", "timed", "unixtime", "flines", "out",
+    "import", "bqn", "fmt",  "args", "path",  "repr",     "list"};
 
 O<Value> SystemFunctionResolver::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("SystemFunctionResolver: nargs={},args={}", nargs, args);
@@ -27,8 +33,15 @@ O<Value> SystemFunctionResolver::call(u8 nargs, std::vector<O<Value>> args) {
       ret.push_back(make_shared<CXBQN>());
     } else if ("show" == s) {
       ret.push_back(make_shared<Show>());
+    } else if ("listsys" == s) {
+      auto ls = make_shared<Array>(listsys.size());
+      for (int i = 0; i < listsys.size(); i++)
+        ls->values[i] = make_shared<Array>(listsys[i]);
+      ret.push_back(ls);
     } else if ("sh" == s) {
       ret.push_back(make_shared<SH>());
+    } else if ("list" == s) {
+      ret.push_back(make_shared<List>());
     } else if ("exit" == s) {
       ret.push_back(make_shared<Exit>());
     } else if ("timed" == s) {
@@ -47,6 +60,8 @@ O<Value> SystemFunctionResolver::call(u8 nargs, std::vector<O<Value>> args) {
       ret.push_back(_fmt);
     } else if ("args" == s) {
       ret.push_back(_args);
+    } else if ("path" == s) {
+      ret.push_back(_path);
     } else if ("repr" == s) {
       ret.push_back(_repr);
     } else {

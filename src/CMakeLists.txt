@@ -39,6 +39,7 @@ add_library(
 
   # System functions, eg •Open
   sys/open.cpp
+  sys/list.cpp
   sys/sh.cpp
   sys/exit.cpp
   sys/bqn.cpp

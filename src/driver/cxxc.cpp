@@ -19,6 +19,7 @@ int main(int argc, char **argv) {
   auto it = args.begin(); it++;
 
   O<Value> src;
+  auto path = make_shared<Array>(0);
   if ("-c" == *it) {
     it++;
     src.reset(new Array(*it));
@@ -100,7 +101,7 @@ int main(int argc, char **argv) {
     // to the sys func resolver which is itself part of the compiler arguments,
     // but this is needed for •Import to work without recreating the compiler
     compw->values[1] = O<Value>(
-        new SystemFunctionResolver(make_shared<Array>(0), fmt, repr, compiler, compw));
+        new SystemFunctionResolver(make_shared<Array>(0), fmt, repr, compiler, compw, path));
 
     auto compiled = compiler->call(2, {compiler, src, compw});
 

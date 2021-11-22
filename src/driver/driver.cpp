@@ -13,8 +13,8 @@ int repl(O<Value> compiler, O<Array> bqnruntime, O<Value> sysfn_handler,
     auto compw = make_shared<Array>(2);
     compw->values[0] = bqnruntime;
     compw->values[1] = sysfn_handler;
-    //compw->values[2] = bi_Nothing();
-    //compw->values[3] = bi_Nothing();
+    // compw->values[2] = bi_Nothing();
+    // compw->values[3] = bi_Nothing();
 
     auto src = make_shared<Array>(line);
     auto compiled = compiler->call(2, {compiler, src, compw});
@@ -37,7 +37,8 @@ int usage() {
   version();
   fmt::print("usage: BQN [options] [file.bqn [arguments]]\n");
   fmt::print("\t-e <string>: execute BQN expression\n");
-  fmt::print("\t-p <string>: execute BQN expression, pretty print the result\n");
+  fmt::print(
+      "\t-p <string>: execute BQN expression, pretty print the result\n");
   fmt::print("\t-f <file>: execute <file>\n");
   fmt::print("\t-i: start repl (WIP)\n");
   fmt::print("\t-h, --help: print this message\n");
@@ -45,8 +46,8 @@ int usage() {
   return 1;
 }
 
-int parse_args(std::vector<std::string> args, O<Array> &src, O<Array> sysargs,
-               bool &repl, bool& pp_res) {
+int parse_args(std::vector<std::string> args, O<Array> &path, O<Array> &src,
+               O<Array> sysargs, bool &repl, bool &pp_res) {
   auto it = args.begin();
   it++; // skip exe name
 
@@ -72,6 +73,7 @@ int parse_args(std::vector<std::string> args, O<Array> &src, O<Array> sysargs,
         fmt::print("path {} does not exist\n", f);
         return 1;
       }
+      path.reset(new Array(fs::absolute(f)));
       std::string _src = "";
       if (std::FILE *fp = std::fopen(f.c_str(), "r")) {
         int ch;

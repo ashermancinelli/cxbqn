@@ -156,6 +156,7 @@ CXBQN_BUILTIN_FN_DECL(Timed, "•_timed");
 CXBQN_BUILTIN_FN_DECL(UnixTime, "•UnixTime");
 CXBQN_BUILTIN_FN_DECL(FLines, "•FLines");
 CXBQN_BUILTIN_FN_DECL(Exit, "•Exit");
+CXBQN_BUILTIN_FN_DECL(List, "•List");
 
 /* NONSTANDARD
  *
@@ -171,15 +172,16 @@ CXBQN_BUILTIN_FN_DECL(SH, "•SH");
 struct SystemFunctionResolver : public Function {
 
   SystemFunctionResolver(O<Array> args, O<Value> fmt, O<Value> repr,
-                         O<Value> compiler, O<Array> compiler_args)
+                         O<Value> compiler, O<Array> compiler_args, O<Array> path)
       : _args{args}, _fmt{fmt}, _repr{repr}, _compiler{compiler},
-        _compiler_args{compiler_args} {}
+        _compiler_args{compiler_args}, _path{path} {}
 
   std::ostream &repr(std::ostream &os) const override {
     return os << "•SystemFunctionResolver";
   }
 
   O<Array> _args;
+  O<Array> _path;
   O<Value> _fmt;
   O<Value> _repr;
   O<Value> _compiler;

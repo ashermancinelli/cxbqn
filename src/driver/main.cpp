@@ -9,11 +9,12 @@ int main(int argc, char **argv) {
 
   bool repl, pp_res;
   auto sysargs = make_shared<Array>(0);
+  auto path = make_shared<Array>(0);
   auto src = make_shared<Array>("\"CXBQN internal: Empty program\" ! 0");
 
   std::vector<std::string> args(argv, argv + argc);
 
-  if (auto ec = driver::parse_args(args, src, sysargs, repl, pp_res))
+  if (auto ec = driver::parse_args(args, path, src, sysargs, repl, pp_res))
     return ec;
 
   try {
@@ -86,7 +87,7 @@ int main(int argc, char **argv) {
     // to the sys func resolver which is itself part of the compiler arguments,
     // but this is needed for •Import to work without recreating the compiler
     compw->values[1] = O<Value>(
-        new SystemFunctionResolver(sysargs, fmt, repr, compiler, compw));
+        new SystemFunctionResolver(sysargs, fmt, repr, compiler, compw, path));
 
     if (repl) {
       return driver::repl(compiler, bqnruntime, compw->values[1], fmt);
