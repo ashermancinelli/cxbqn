@@ -9,9 +9,6 @@ O<Scope> Scope::root_scope(O<CompUnit> cu, std::vector<Block> blks, ByteCode byt
                            std::vector<Body> bods,
                            O<std::unordered_map<std::string, uz>> exported) {
   auto scp = make_shared<Scope>(cu, 0, true);
-  scp->_bods = bods;
-  scp->_bc = bytecode;
-  scp->_blks = blks;
   scp->_exported = exported;
   scp->vars.resize(8 + blks[scp->blk_idx].max_nvars(bods));
   std::fill(scp->vars.begin(), scp->vars.end(), nullptr);
@@ -26,33 +23,6 @@ O<Scope> Scope::child_scope(W<Scope> parent, uz blk_idx, uz nvars) {
   scp->vars.resize(nvars);
   std::fill(scp->vars.begin(), scp->vars.end(), nullptr);
   return scp;
-}
-
-std::span<const Body> Scope::bodies() const {
-#ifdef CXBQN_DEEPCHECKS
-  if (nullopt == _bods and 0 == parent.use_count())
-    throw std::runtime_error("scope: expected to either own blocks or to have "
-                             "parent, but neither is the case.");
-#endif
-  return _bods.has_value() ? _bods.value() : parent.lock()->bodies();
-}
-
-std::span<const Block> Scope::blocks() const {
-#ifdef CXBQN_DEEPCHECKS
-  if (nullopt == _blks and 0 == parent.use_count())
-    throw std::runtime_error("scope: expected to either own blocks or to have "
-                             "parent, but neither is the case.");
-#endif
-  return _blks.has_value() ? _blks.value() : parent.lock()->blocks();
-}
-
-const ByteCodeRef Scope::bc() const {
-#ifdef CXBQN_DEEPCHECKS
-  if (0 == parent.use_count() and !_bc.has_value())
-    throw std::runtime_error("scope: expected to either own bc or to have "
-                             "parent, but neither is the case.");
-#endif
-  return _bc.has_value() ? _bc.value() : parent.lock()->bc();
 }
 
 O<Value> Scope::get(O<Reference> r) {

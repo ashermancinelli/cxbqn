@@ -135,8 +135,8 @@ RunResult run(std::vector<i32> bc, O<Array> consts,
 
   auto cu = make_shared<CompUnit>();
   cu->_bc= bc;
-  cu->_blks = blks;
-  cu->_bods = bodies;
+  cu->_blocks = blks;
+  cu->_bodies = bodies;
   cu->_consts = consts;
 
   ret.scp = Scope::root_scope(cu, blks, bc, bodies, exported);

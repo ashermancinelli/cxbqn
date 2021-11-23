@@ -93,12 +93,6 @@ int main(int argc, char **argv) {
       return driver::repl(compiler, bqnruntime, compw->values[1], fmt);
     } else {
       auto compiled = compiler->call(2, {compiler, src, compw});
-      {
-        // auto formatted = fmt->call(1, {fmt, compiled, bi_Nothing()});
-        int i=0;
-        for (auto e : dynamic_pointer_cast<Array>(compiled)->values)
-          fmt::print("{}: {}\n", i++, *e);
-      }
       auto runret = vm::run(compiled);
       if (pp_res) {
         auto formatted = fmt->call(1, {fmt, runret.v, bi_Nothing()});

@@ -16,16 +16,6 @@ struct Scope : public std::enable_shared_from_this<Scope> {
 
   O<CompUnit> cu;
 
-  /*
-   * Get a span of the bytecode owned by a scope somewhere up the scope lineage,
-   * potentially owned by this scope.
-   */
-  const ByteCodeRef bc() const;
-
-  std::span<const Block> blocks() const;
-
-  std::span<const Body> bodies() const;
-
   /* Get a reference by traversing the scope lineage */
   O<Value> get(O<Reference> r);
 
@@ -44,19 +34,6 @@ struct Scope : public std::enable_shared_from_this<Scope> {
    */
   std::vector<O<Value>> vars;
   O<std::unordered_map<std::string, uz>> _exported = {};
-
-  /*
-   * Blocks and bodies use non-owning/reference semantics when passing around
-   * bytecode, and Scope is the owner of the bytecode.
-   *
-   * \see Block::body()
-   * \see Scope::bc()
-   */
-  std::optional<ByteCode> _bc;
-
-  std::optional<std::vector<Block>> _blks;
-
-  std::optional<std::vector<Body>> _bods;
 
   const uz blk_idx;
 

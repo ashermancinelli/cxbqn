@@ -91,11 +91,11 @@ O<CompUnit> CompUnit::from_raw(O<Value> compiled) {
     // for(auto& [k,v]:*exported)
       // fmt::print("{}->{}\n",k,v);
 
-    cu->_bods.push_back(b);
+    cu->_bodies.push_back(b);
   }
 
   for (auto &blkd : blk_defs)
-    cu->_blks.emplace_back(blkd);
+    cu->_blocks.emplace_back(blkd);
 
   return cu;
 }
