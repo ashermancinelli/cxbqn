@@ -97,10 +97,6 @@ RunResult run(O<Value> compiled) {
       }
     }
 
-    if (exported)
-      for (auto &it : *exported)
-        fmt::print("{} -> {}\n", it.first, it.second);
-
     bodies.push_back(b);
   }
 
