@@ -6,6 +6,9 @@ namespace cxbqn::vm {
 
 using namespace types;
 
+#define ARR(x) dynamic_pointer_cast<Array>(x)
+#define NUM(x) dynamic_pointer_cast<Number>(x)
+
 /*
 Example compiled output of "5+5":
 
@@ -34,34 +37,34 @@ Block{i=164}),( md2D Block{i=169} _fillBy_ Block{i=168})⟩), 5⟩,
       */
 
 RunResult run(O<Value> compiled) {
-  auto comparr = dynamic_pointer_cast<Array>(compiled);
+  auto comparr = ARR(compiled);
 
   std::vector<i32> bc;
-  auto bqnbc = dynamic_pointer_cast<Array>(comparr->values[0])->values;
+  auto bqnbc = ARR(comparr->values[0])->values;
   for (auto v : bqnbc)
-    bc.push_back(dynamic_pointer_cast<Number>(v)->v);
+    bc.push_back(NUM(v)->v);
 
-  auto consts = dynamic_pointer_cast<Array>(comparr->values[1]);
+  auto consts = ARR(comparr->values[1]);
 
   std::vector<BlockDef> blk_defs;
-  auto bqnblks = dynamic_pointer_cast<Array>(comparr->values[2]);
+  auto bqnblks = ARR(comparr->values[2]);
   for (auto v : bqnblks->values) {
-    auto vv = dynamic_pointer_cast<Array>(v);
-    auto type = static_cast<uz>(dynamic_pointer_cast<Number>(vv->values[0])->v);
-    auto imm = static_cast<uz>(dynamic_pointer_cast<Number>(vv->values[1])->v);
+    auto vv = ARR(v);
+    auto type = static_cast<uz>(NUM(vv->values[0])->v);
+    auto imm = static_cast<uz>(NUM(vv->values[1])->v);
 
-    if (auto ambiv_idx = dynamic_pointer_cast<Number>(vv->values[2])) {
+    if (auto ambiv_idx = NUM(vv->values[2])) {
       blk_defs.push_back(BlockDef{type, imm, static_cast<uz>(ambiv_idx->v)});
     } else {
-      auto body_idxs = dynamic_pointer_cast<Array>(vv->values[2]);
-      auto mon = dynamic_pointer_cast<Array>(body_idxs->values[0]);
-      auto dya = dynamic_pointer_cast<Array>(body_idxs->values[1]);
+      auto body_idxs = ARR(vv->values[2]);
+      auto mon = ARR(body_idxs->values[0]);
+      auto dya = ARR(body_idxs->values[1]);
       std::vector<uz> moni, dyai;
 
       for (auto i : mon->values)
-        moni.push_back(static_cast<uz>(dynamic_pointer_cast<Number>(i)->v));
+        moni.push_back(static_cast<uz>(NUM(i)->v));
       for (auto i : dya->values)
-        dyai.push_back(static_cast<uz>(dynamic_pointer_cast<Number>(i)->v));
+        dyai.push_back(static_cast<uz>(NUM(i)->v));
 
       const auto bods = std::vector<std::vector<uz>>{moni, dyai};
       blk_defs.push_back(BlockDef{type, imm, bods});
@@ -71,38 +74,32 @@ RunResult run(O<Value> compiled) {
   auto exported = make_shared<std::unordered_map<std::string, uz>>();
 
   std::vector<Body> bodies;
-  auto bqnbodies = dynamic_pointer_cast<Array>(comparr->values[3]);
+  auto bqnbodies = ARR(comparr->values[3]);
   for (auto v : bqnbodies->values) {
-    auto bod = dynamic_pointer_cast<Array>(v);
-    const auto offset =
-        static_cast<uz>(dynamic_pointer_cast<Number>(bod->values[0])->v);
-    const auto varcnt =
-        static_cast<uz>(dynamic_pointer_cast<Number>(bod->values[1])->v);
+    auto bod = ARR(v);
+    const auto offset = static_cast<uz>(NUM(bod->values[0])->v);
+    const auto varcnt = static_cast<uz>(NUM(bod->values[1])->v);
 
     Body b{offset, varcnt};
 
-    if (bod->N() > 2) {
-      const auto name_idxs = dynamic_pointer_cast<Array>(bod->values[2]);
-      const auto mask = dynamic_pointer_cast<Array>(bod->values[3]);
-      std::vector<std::string> namelist;
-      {
-        const auto tok_info = dynamic_pointer_cast<Array>(comparr->values[5]);
-        const auto tmp = dynamic_pointer_cast<Array>(tok_info->values[2]);
-        const auto _namelist = dynamic_pointer_cast<Array>(tmp->values[0]);
-        for (auto n : _namelist->values)
-          namelist.push_back(dynamic_pointer_cast<Array>(n)->to_string());
-      }
-      for (int i = 0; i < mask->N(); i++) {
-        exported->insert({namelist[i], i});
-      }
+    const auto name_idxs = ARR(bod->values[2]);
+    const auto mask = ARR(bod->values[3]);
+    std::vector<std::string> namelist;
+    {
+      const auto tok_info = ARR(comparr->values[5]);
+      const auto tmp = ARR(tok_info->values[2]);
+      const auto _namelist = ARR(tmp->values[0]);
+      for(uz i=0; i<_namelist->N(); i++)
+        exported->insert({ARR(_namelist->values[i])->to_string(), i});
     }
+    for(auto& [k,v]:*exported)
+      fmt::print("{}->{}\n",k,v);
 
     bodies.push_back(b);
   }
 
   return vm::run(bc, consts, blk_defs, bodies, exported);
 }
-// auto cret = vm::run(p2.bc, p2.consts.v, p2.blk_defs, p2.bodies);
 
 static bool loginit = false;
 RunResult run(std::vector<i32> bc, O<Array> consts,
@@ -192,12 +189,14 @@ O<Value> vm(ByteCodeRef bc, O<Array> consts, std::vector<O<Value>> stk,
         break;
       }
       case op::FLDO: {
+        fmt::print("fldo\n");
         INSTR1("FLDO");
-        instructions::fldo(bc, pc, stk);
+        instructions::fldo(bc, pc, stk, scope->_exported);
         INSTR("FLDO");
         break;
       }
       case op::ALIM: {
+        fmt::print("alim\n");
         INSTR1("ALIM");
         instructions::alim(bc, pc, stk, scope->_exported);
         INSTR("ALIM");

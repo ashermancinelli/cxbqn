@@ -26,11 +26,12 @@ static O<Value> safe_set_refer(O<Value> opaque_refer, O<Value> value,
       throw std::runtime_error(
           "setn: Could not cast reference to type RefArray");
 #endif
-    if (value->t()[t_DataValue]) {
+    if (value->t()[t_DataValue] or t_Namespace == type_builtin(value)) {
       for (int i = 0; i < aref->N(); i++)
         scp->set(ShouldVarBeSet, aref->getref(i), value);
       return value;
     }
+
     auto aval = dynamic_pointer_cast<Array>(value);
 #ifdef CXBQN_DEEPCHECKS
     if (nullptr == aval)
@@ -66,6 +67,8 @@ static O<Value> set_un_helper(std::vector<O<Value>> &stk, O<Scope> scp) {
 
   CXBQN_DEBUG("set_un_helper:ref={},val={}", CXBQN_STR_NC(opaque_refer),
               CXBQN_STR_NC(value));
+  // fmt::print("set_un_helper:ref={},val={}\n", CXBQN_STR_NC(opaque_refer),
+              // CXBQN_STR_NC(value));
 
   return safe_set_refer<ShouldVarBeSet>(opaque_refer, value, scp);
 }

@@ -44,18 +44,9 @@ std::ostream &Fork::repr(std::ostream &os) const {
 }
 
 O<Value> Md1Deferred::call(u8 nargs, std::vector<O<Value>> args) {
-  //args.resize(6);
-  //args[3] = m1;
-  // args[4] = f;
   CXBQN_DEBUG("Md1Deferred::call(after adding 𝕣, 𝕗):nargs={},args={}", nargs,
               args);
 
-  // if ((1 == nargs) != (args[2]->t()[t_Nothing])) throw std::runtime_error("Md1Def: got · for 𝕨 with 2 args, or non-· with 1 arg");
-
-  if (!f)
-    fmt::print("calling md1D with null f\n");
-  // CXBQN_LOGFLUSH();
-  // return m1->call(nargs, args);
   return m1->call(nargs, {m1, args[1], args[2], shared_from_this(), f});
 }
 std::ostream &Md1Deferred::repr(std::ostream &os) const {
@@ -64,19 +55,8 @@ std::ostream &Md1Deferred::repr(std::ostream &os) const {
 }
 
 O<Value> Md2Deferred::call(u8 nargs, std::vector<O<Value>> args) {
-  //args.resize(6);
-  //args[3] = m2;
-  //args[4] = f;
-  //args[5] = g;
   CXBQN_DEBUG("Md1Deferred::call(after adding 𝕣, 𝕗, 𝕘):nargs={},args={}", nargs,
               args);
-  // CXBQN_LOGFLUSH();
-
-  // if ((1 == nargs) != (args[2]->t()[t_Nothing])) throw std::runtime_error("Md2Def: got · for 𝕨 with 2 args, or non-· with 1 arg");
-  if (!f or !g)
-    fmt::print("calling md2D with null f or g\n");
-
-  // return m2->call(nargs, args);
   return m2->call(nargs, {m2, args[1], args[2], shared_from_this(), f, g});
 }
 

@@ -55,7 +55,8 @@ void tr3o(std::vector<O<Value>> &stk);
 // Namespaces
 void alim(const ByteCodeRef bc, uz &pc, std::vector<O<Value>> &stk,
           O<std::unordered_map<std::string, uz>> exported);
-void fldo(const ByteCodeRef bc, uz &pc, std::vector<O<Value>> &stk);
+void fldo(const ByteCodeRef bc, uz &pc, std::vector<O<Value>> &stk,
+    O<std::unordered_map<std::string, uz>> exported);
 
 // Headers
 void seth(std::vector<O<Value>> &stk);

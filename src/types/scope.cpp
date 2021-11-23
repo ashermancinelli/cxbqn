@@ -67,14 +67,28 @@ O<Value> Scope::get(O<Reference> r) {
   return scp->vars[r->position_in_parent];
 }
 
-void Scope::set(bool should_var_be_set, O<Reference> r, O<Value> v) {
+void Scope::set(bool should_var_be_set, O<Reference> r, O<Value> _v) {
 
 #ifdef CXBQN_DEEPCHECKS
   if (nullptr == r)
     throw std::runtime_error("assign: got nullptr reference");
-  if (nullptr == v)
+  if (nullptr == _v)
     throw std::runtime_error("assign: got nullptr value");
 #endif
+
+  // fmt::print("ref.tag={}\n",(r->tag.has_value()?r->tag.value():"none"));
+
+  O<Value> v = _v;
+  if (r->tag.has_value()) {
+    fmt::print("tag={}\n", r->tag.value());
+    auto ns = dynamic_pointer_cast<Namespace>(_v);
+    auto n = r->tag.value();
+    v = ns->get(n);
+  }
+
+  if (t_Namespace == type_builtin(_v)) {
+    fmt::print("scope:ns\n");
+  }
 
   const auto n = r->depth;
   CXBQN_DEBUG("Scope::set:shoudbeset={},depth={}", should_var_be_set, n);

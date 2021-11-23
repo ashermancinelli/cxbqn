@@ -96,6 +96,7 @@ enum TypeAnnotations {
   // Some operations can only take certain combinations of data values, eg +.
   t_DataValue,
   t_String,
+  t_Alias,
 };
 
 static constexpr u32 annot(TypeAnnotations ta) { return 1 << ta; }
@@ -231,6 +232,7 @@ struct Array : public Value {
 struct Reference : public Value {
   uz depth;
   uz position_in_parent;
+  std::optional<std::string> tag=nullopt;
   Reference(uz d, uz p) : depth{d}, position_in_parent{p} {}
   TypeType t() const override { return TypeType{annot(t_Reference)}; }
   std::ostream &repr(std::ostream &os) const override {
@@ -329,9 +331,8 @@ struct Namespace : public Value {
       : _scp{scp}, _exported{exp} {}
   O<Value> get(const std::string &n);
   O<Value> get(uz i);
-  O<Value> call(u8 nargs = 0, std::vector<O<Value>> args = {}) override {
-    return shared_from_this();
-  };
+  O<Value> set(bool should_be_set, const std::string& n, O<Value> v);
+  O<Value> set(bool should_be_set, uz n, O<Value> v);
   TypeType t() const override { return TypeType{t_Namespace}; }
   std::ostream &repr(std::ostream &os) const override {
     return os << "( namespace )";
@@ -343,12 +344,11 @@ struct VarAlias : public Value {
   std::string _name;
   VarAlias(O<Value> ns, std::string n)
       : _ns{dynamic_pointer_cast<Namespace>(ns)}, _name{n} {}
-  O<Value> call(u8 nargs = 0, std::vector<O<Value>> args = {}) override {
-    return nullptr;
-  };
+  TypeType t() const override { return TypeType{annot(t_Alias)}; }
   std::ostream &repr(std::ostream &os) const override {
     return os << "( alias " << _name << ")";
   }
+  O<Value> set(bool should_be_set, O<Value> v);
 };
 
 // The t() method on all values in cxbqn uses higher bits to indicate internal
