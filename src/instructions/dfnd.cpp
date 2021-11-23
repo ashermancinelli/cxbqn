@@ -13,7 +13,7 @@ void dfnd(const ByteCodeRef bc, uz &pc, std::vector<O<Value>> &stk, O<Scope> scp
     std::vector<O<Value>> stk_;
 
     CXBQN_DEBUG("dfnd:recursing into vm");
-    auto ret = vm::vm(blk_bc, consts, stk_, child);
+    auto ret = vm::vm(child->cu, blk_bc, consts, stk_, child);
     stk.push_back(ret);
   } else {
     stk.push_back(make_shared<BlockInst>(scp, blk_idx, consts));

@@ -1,18 +1,20 @@
 #pragma once
+#include <cxbqn/comp_unit.hpp>
 #include <cxbqn/types.hpp>
-#include <cxbqn/block.hpp>
 
 namespace cxbqn::types {
 
 struct Scope : public std::enable_shared_from_this<Scope> {
 
   /* Create a new root scope */
-  static O<Scope> root_scope(std::vector<Block> blks, ByteCode bc,
-                             std::vector<Body> bods, 
+  static O<Scope> root_scope(O<CompUnit> cu, std::vector<Block> blks,
+                             ByteCode bc, std::vector<Body> bods,
                              O<std::unordered_map<std::string, uz>> exported);
 
   /* Create a new child scope */
   static O<Scope> child_scope(W<Scope> parent, uz blk_idx, uz nvars);
+
+  O<CompUnit> cu;
 
   /*
    * Get a span of the bytecode owned by a scope somewhere up the scope lineage,
@@ -41,7 +43,7 @@ struct Scope : public std::enable_shared_from_this<Scope> {
    * the first six will always be the relevant members of 𝕤𝕩𝕨𝕣𝕗𝕘.
    */
   std::vector<O<Value>> vars;
-  O<std::unordered_map<std::string, uz>> _exported={};
+  O<std::unordered_map<std::string, uz>> _exported = {};
 
   /*
    * Blocks and bodies use non-owning/reference semantics when passing around
@@ -71,7 +73,8 @@ struct Scope : public std::enable_shared_from_this<Scope> {
       nullopt;
   std::optional<std::string> _source_str = nullopt;
 
-  Scope(uz bi, bool isroot) : blk_idx{bi}, _root{isroot}, parent{O<Scope>{}} {}
+  Scope(O<CompUnit> cu, uz bi, bool isroot)
+      : cu{cu}, blk_idx{bi}, _root{isroot}, parent{O<Scope>{}} {}
   bool _root;
 };
 

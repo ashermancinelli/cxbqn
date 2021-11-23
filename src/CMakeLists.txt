@@ -13,6 +13,8 @@ add_library(
   types/blockinst.cpp
   types/scope.cpp
   types/op.cpp
+  types/vm2.cpp
+  types/comp_unit.cpp
 
   # Implementation of instructions
   instructions/set_.cpp

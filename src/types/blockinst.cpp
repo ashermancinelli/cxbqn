@@ -41,7 +41,7 @@ O<Value> BlockInst::call(u8 nargs, std::vector<O<Value>> args) {
   try {
 #endif
     CXBQN_DEBUG("BlockInst::call:recursing into vm");
-    auto ret = vm::vm(bc, consts, stk, child);
+    auto ret = vm::vm(scp->cu, bc, consts, stk, child);
     CXBQN_DEBUG("BlockInst::call:returning {}", CXBQN_STR_NC(ret));
     return ret;
 #ifdef CXBQN_STACKTRACE_DEEP

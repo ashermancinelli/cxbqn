@@ -1,5 +1,5 @@
 #pragma once
-#include <cxbqn/cxbqn.hpp>
+#include <cxbqn/types.hpp>
 
 namespace cxbqn::provides {
 

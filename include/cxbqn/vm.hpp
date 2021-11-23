@@ -26,7 +26,7 @@ run(ByteCode bc, O<Array> consts, std::vector<BlockDef> blks,
 
 RunResult run(O<Value> compiled);
 
-O<Value> vm(ByteCodeRef bc, O<Array> consts, std::vector<O<Value>> stk,
+O<Value> vm(O<CompUnit> cu, ByteCodeRef bc, O<Array> consts, std::vector<O<Value>> stk,
             O<Scope> scope);
 
 namespace instructions {
