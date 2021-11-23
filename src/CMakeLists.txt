@@ -16,12 +16,12 @@ add_library(
 
   # Implementation of instructions
   instructions/set_.cpp
+  instructions/alim.cpp
   instructions/varm.cpp
   instructions/varo.cpp
   instructions/fn1c.cpp
   instructions/fn1o.cpp
   instructions/pred.cpp
-  instructions/retd.cpp
   instructions/seth.cpp
   instructions/vfym.cpp
   instructions/fldo.cpp

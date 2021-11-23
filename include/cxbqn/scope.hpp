@@ -1,5 +1,6 @@
 #pragma once
 #include <cxbqn/types.hpp>
+#include <cxbqn/block.hpp>
 
 namespace cxbqn::types {
 
@@ -7,7 +8,8 @@ struct Scope : public std::enable_shared_from_this<Scope> {
 
   /* Create a new root scope */
   static O<Scope> root_scope(std::vector<Block> blks, ByteCode bc,
-                             std::vector<Body> bods);
+                             std::vector<Body> bods, 
+                             O<std::unordered_map<std::string, uz>> exported);
 
   /* Create a new child scope */
   static O<Scope> child_scope(W<Scope> parent, uz blk_idx, uz nvars);
@@ -39,7 +41,7 @@ struct Scope : public std::enable_shared_from_this<Scope> {
    * the first six will always be the relevant members of 𝕤𝕩𝕨𝕣𝕗𝕘.
    */
   std::vector<O<Value>> vars;
-  std::vector<std::string> var_names;
+  O<std::unordered_map<std::string, uz>> _exported={};
 
   /*
    * Blocks and bodies use non-owning/reference semantics when passing around

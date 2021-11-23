@@ -209,7 +209,7 @@ struct Array : public Value {
     shape.push_back(N);
     values.resize(N);
   }
-  Array(const std::string& s);
+  Array(const std::string &s);
   Array(const std::u32string &s) {
     shape.push_back(s.size());
     values.reserve(s.size());
@@ -292,7 +292,9 @@ struct Atop : public Function {
  * is pushed back on the stack
  */
 struct Md1Deferred : public Function {
-  TypeType t() const override { return TypeType{t_Function | annot(t_Deferred)}; }
+  TypeType t() const override {
+    return TypeType{t_Function | annot(t_Deferred)};
+  }
   O<Value> f, m1;
   Md1Deferred(O<Value> f, O<Value> m1) : f{f}, m1{m1} {}
   O<Value> call(u8 nargs = 0, std::vector<O<Value>> args = {}) override;
@@ -307,7 +309,9 @@ struct Md1 : public Function {
  * Same as above, but two modifier
  */
 struct Md2Deferred : public Function {
-  TypeType t() const override { return TypeType{t_Function | annot(t_Deferred)}; }
+  TypeType t() const override {
+    return TypeType{t_Function | annot(t_Deferred)};
+  }
   O<Value> f, m2, g;
   Md2Deferred(O<Value> f, O<Value> m2, O<Value> g) : f{f}, m2{m2}, g{g} {}
   O<Value> call(u8 nargs = 0, std::vector<O<Value>> args = {}) override;
@@ -319,9 +323,15 @@ struct Md2 : public Function {
 };
 
 struct Namespace : public Value {
-  O<Scope> scp;
-  O<Array> name_origin;
-  O<Value> call(u8 nargs = 0, std::vector<O<Value>> args = {}) override;
+  O<Scope> _scp;
+  O<std::unordered_map<std::string, uz>> _exported;
+  Namespace(O<Scope> scp, O<std::unordered_map<std::string, uz>> exp)
+      : _scp{scp}, _exported{exp} {}
+  O<Value> get(const std::string &n);
+  O<Value> get(uz i);
+  O<Value> call(u8 nargs = 0, std::vector<O<Value>> args = {}) override {
+    return shared_from_this();
+  };
   TypeType t() const override { return TypeType{t_Namespace}; }
   std::ostream &repr(std::ostream &os) const override {
     return os << "( namespace )";
@@ -329,13 +339,15 @@ struct Namespace : public Value {
 };
 
 struct VarAlias : public Value {
-  O<Value> v;
-  int name_id;
-  O<Value> call(u8 nargs = 0, std::vector<O<Value>> args = {}) override;
+  O<Namespace> _ns;
+  std::string _name;
+  VarAlias(O<Value> ns, std::string n)
+      : _ns{dynamic_pointer_cast<Namespace>(ns)}, _name{n} {}
+  O<Value> call(u8 nargs = 0, std::vector<O<Value>> args = {}) override {
+    return nullptr;
+  };
   std::ostream &repr(std::ostream &os) const override {
-    os << "( alias ";
-    v->repr(os);
-    return os << ")";
+    return os << "( alias " << _name << ")";
   }
 };
 

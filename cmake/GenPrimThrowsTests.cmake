@@ -178,7 +178,7 @@ foreach(test ${P_TESTS})
       const auto runtime = rt->values;
       spdlog::critical(\"test='{}'\", \"${esc}\");
       CompileParams p( ${compiled_test} );
-      REQUIRE_THROWS(vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies, p.source_indices.value(), p.source_str));
+      REQUIRE_THROWS(vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies));
       }
       "
   )

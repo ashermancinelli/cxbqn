@@ -1,5 +1,6 @@
 #pragma once
 #include <cxbqn/types.hpp>
+#include <map>
 #include <tuple>
 
 namespace cxbqn::types {
@@ -11,10 +12,9 @@ enum class BlockType : u8 {
 };
 
 struct Body {
+  Body(uz offset, uz cnt) : bc_offset{offset}, var_count{cnt} {}
   uz bc_offset;
   uz var_count;
-  O<Array> var_name_ids;
-  O<Array> exported;
 };
 
 /**

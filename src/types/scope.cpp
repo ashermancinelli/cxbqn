@@ -6,11 +6,13 @@
 namespace cxbqn::types {
 
 O<Scope> Scope::root_scope(std::vector<Block> blks, ByteCode bytecode,
-                           std::vector<Body> bods) {
+                           std::vector<Body> bods,
+                           O<std::unordered_map<std::string, uz>> exported) {
   auto scp = make_shared<Scope>(0, true);
   scp->_bods = bods;
   scp->_bc = bytecode;
   scp->_blks = blks;
+  scp->_exported = exported;
   scp->vars.resize(8 + blks[scp->blk_idx].max_nvars(bods));
   std::fill(scp->vars.begin(), scp->vars.end(), nullptr);
   return scp;
@@ -19,6 +21,7 @@ O<Scope> Scope::root_scope(std::vector<Block> blks, ByteCode bytecode,
 O<Scope> Scope::child_scope(W<Scope> parent, uz blk_idx, uz nvars) {
   auto scp = make_shared<Scope>(blk_idx, false);
   scp->parent = parent;
+  scp->_exported = parent.lock()->_exported;
   scp->vars.resize(nvars);
   std::fill(scp->vars.begin(), scp->vars.end(), nullptr);
   return scp;
