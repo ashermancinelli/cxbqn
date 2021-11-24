@@ -8,6 +8,29 @@
 
 namespace cxbqn::driver {
 
+static std::vector<std::string> curr_names={};
+
+char* match_names(const char* text, int state) {
+  static uz len, i;
+
+  if (!state) {
+    len = strlen(text);
+    i=0;
+  }
+
+  while (i < curr_names.size()) {
+    if (curr_names[i++].starts_with(text))
+      return strdup(curr_names[i-1].c_str());
+  }
+
+  return nullptr;
+}
+
+char** scp_name_completion(const char* text, int start, int end) {
+  rl_attempted_completion_over = 1;
+  return rl_completion_matches(text, match_names);
+}
+
 bool getline(std::string& line) {
 #ifdef CXBQN_READLINE
   auto *buf = readline("   ");
@@ -35,6 +58,9 @@ static inline O<Array> to_arr(std::vector<std::string> n) {
 
 int repl(O<Value> compiler, O<Array> bqnruntime, O<Value> sysfn_handler,
     O<Value> fmt) {
+
+  rl_attempted_completion_function = &scp_name_completion;
+
   std::string line;
   if (!getline(line))
     return 1;
@@ -59,6 +85,7 @@ int repl(O<Value> compiler, O<Array> bqnruntime, O<Value> sysfn_handler,
   // global scope.
   auto scp = runret.scp;
   compw->values[2] = to_arr(scp->names);
+  curr_names = scp->names;
 
   while (getline(line)) {
 
@@ -76,7 +103,7 @@ int repl(O<Value> compiler, O<Array> bqnruntime, O<Value> sysfn_handler,
     scp->vars.resize(body.var_count + scp->vars.size());
 
     // Extend names with names from new compilation unit
-    std::copy(cu->_namelist.begin(), cu->_namelist.end(), std::back_inserter(scp->names));
+    curr_names = scp->names = cu->_namelist;
     auto ret = vm::vm(cu, scp, body);
 
     // By default, print the result
