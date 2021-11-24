@@ -7,12 +7,11 @@ namespace cxbqn::types {
 struct Scope : public std::enable_shared_from_this<Scope> {
 
   /* Create a new root scope */
-  static O<Scope> root_scope(O<CompUnit> cu, std::vector<Block> blks,
-                             ByteCode bc, std::vector<Body> bods,
+  static O<Scope> root_scope(O<CompUnit> cu,
                              O<std::unordered_map<std::string, uz>> exported);
 
   /* Create a new child scope */
-  static O<Scope> child_scope(W<Scope> parent, uz blk_idx, uz nvars);
+  static O<Scope> child_scope(W<Scope> parent, uz blk_idx);
 
   O<CompUnit> cu;
 

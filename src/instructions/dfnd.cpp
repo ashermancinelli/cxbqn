@@ -7,16 +7,15 @@ void dfnd(const ByteCodeRef bc, uz &pc, std::vector<O<Value>> &stk, O<Scope> scp
   const auto blk = scp->cu->_blocks[blk_idx];
   CXBQN_DEBUG("dfnd:pc={},block={}", pc, blk);
 
-  if (blk.def.type == BlockType::func && blk.def.immediate) {
-    auto [offset, blk_bc, nvars] = blk.body(scp->cu->_bc, scp->cu->_bodies);
-    auto child = Scope::child_scope(scp, blk_idx, nvars);
-    std::vector<O<Value>> stk_;
-
+  if (blk.type == BlockType::func && blk.immediate) {
+    auto bod = scp->cu->_bodies[blk.body_idx(0)];
+    auto child = Scope::child_scope(scp, blk_idx);
+    child->vars.resize(bod.var_count+10);
     CXBQN_DEBUG("dfnd:recursing into vm");
-    auto ret = vm::vm(child->cu, blk_bc, scp->cu->_consts, stk_, child);
+    auto ret = vm::vm(child->cu, child, bod);
     stk.push_back(ret);
   } else {
-    stk.push_back(make_shared<BlockInst>(scp, blk_idx, scp->cu->_consts));
+    stk.push_back(make_shared<BlockInst>(scp, blk_idx));
   }
 }
 }

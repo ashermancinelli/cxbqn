@@ -139,7 +139,9 @@ RunResult run(std::vector<i32> bc, O<Array> consts,
   cu->_bodies = bodies;
   cu->_consts = consts;
 
-  ret.scp = Scope::root_scope(cu, blks, bc, bodies, exported);
+  ret.scp = Scope::root_scope(cu, exported);
+  auto body = bodies[blks[0].body_idx(0)];
+  ret.scp->vars.resize(body.var_count);
 
   if (source_indices.has_value()) {
     if (nullptr == source)

@@ -41,11 +41,19 @@ struct BlockDef {
 };
 
 struct Block {
-  BlockDef def;
+  BlockType type;
+  bool immediate;
 
-  // Gives the bytecode and number of variables for a given call
-  std::tuple<uz, ByteCodeRef, uz>
-  body(const ByteCodeRef bc, std::span<const Body> bods, u8 nargs = 0) const;
+  // FIXME: body_idx and mon/dya indices should really be a variant
+
+  // "ambivalent index", which is used in immediate blocks
+  uz _body_idx;
+
+  // list of bodies to try executing in sequence for monadic and dyadic calls
+  std::vector<uz> mon_body_idxs;
+  std::vector<uz> dya_body_idxs;
+
+  uz body_idx(u8 nargs, uz attempt=0) const;
 
   uz max_nvars(std::span<const Body> bods) const;
 

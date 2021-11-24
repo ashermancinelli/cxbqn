@@ -29,6 +29,8 @@ RunResult run(O<Value> compiled);
 O<Value> vm(O<CompUnit> cu, ByteCodeRef bc, O<Array> consts, std::vector<O<Value>> stk,
             O<Scope> scope);
 
+O<Value> vm(O<CompUnit> cu, O<Scope> scope, Body b);
+
 namespace instructions {
 
 void setu(std::vector<O<Value>> &stk, O<Scope>);

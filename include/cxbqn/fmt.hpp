@@ -21,8 +21,8 @@ template <typename OS> OS &operator<<(OS &os, const Value *v) {
 }
 
 template <typename OS> OS &operator<<(OS &os, const Block &b) {
-  os << "(block type=" << static_cast<int>(b.def.type)
-     << " imm=" << b.def.immediate << ")";
+  os << "(block type=" << static_cast<int>(b.type)
+     << " imm=" << b.immediate << ")";
   return os;
 }
 
