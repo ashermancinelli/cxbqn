@@ -95,7 +95,7 @@ target_link_libraries(cxbqn PUBLIC tpl)
 add_library(cxbqn::cxbqn ALIAS cxbqn)
 
 add_executable(BQN driver/driver.cpp driver/main.cpp)
-target_link_libraries(BQN PUBLIC cxbqn::cxbqn)
+target_link_libraries(BQN PUBLIC cxbqn::cxbqn cxbqn::tpl)
 install(TARGETS BQN DESTINATION bin)
 
 if(CXBQN_BUILD_TOOLS)

@@ -15,7 +15,13 @@ O<Value> Assert::call(u8 nargs, std::vector<O<Value>> args) {
       else
         s += fmt::format("{}", CXBQN_STR_NC(w));
     }
-    s += fmt::format(" ! {}", CXBQN_STR_NC(args[1]));
+    s += " ! ";
+    if (t_Array == type_builtin(args[1])) {
+      auto ar = dynamic_pointer_cast<Array>(args[1]);
+
+    }
+    else
+      s += fmt::format("{}", CXBQN_STR_NC(args[1]));
     CXBQN_CRIT("{}", s);
     throw std::runtime_error(s);
   }
