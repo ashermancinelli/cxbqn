@@ -3,7 +3,6 @@ namespace cxbqn::vm::instructions {
 
 void fldo(const ByteCodeRef bc, uz &pc, std::vector<O<Value>> &stk,
           O<CompUnit> cu) {
-  fmt::print("fldo\n");
   auto i = bc[++pc];
 
   auto ns = dynamic_pointer_cast<Namespace>(stk.back());

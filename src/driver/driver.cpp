@@ -2,26 +2,59 @@
 
 namespace cxbqn::driver {
 
+static inline O<Array> to_arr(std::vector<std::string> n) {
+  auto ar = make_shared<Array>(n.size());
+  for (auto& e : n)
+    ar->values.push_back(make_shared<Array>(e));
+  return ar;
+}
+
 int repl(O<Value> compiler, O<Array> bqnruntime, O<Value> sysfn_handler,
          O<Value> fmt) {
   fmt::print("   ");
-  for (std::string line; std::getline(std::cin, line); fmt::print("   ")) {
+  std::string line;
+  std::getline(std::cin, line);
+
+  auto compw = make_shared<Array>(2);
+  compw->values[0] = bqnruntime;
+  compw->values[1] = sysfn_handler;
+  // compw->values[2] = bi_Nothing();
+  // compw->values[3] = bi_Nothing();
+
+  auto src = make_shared<Array>(line);
+  auto compiled = compiler->call(2, {compiler, src, compw});
+  auto runret = vm::run(compiled);
+
+  // Now that we've gotten the repl started with the first execution, we pass
+  // the existing names back into the compiler so all the variables exist in the
+  // global scope.
+  auto scp = runret.scp;
+  auto names = scp->names;
+  compw->shape[0] = 4;
+  compw->values.resize(4);
+  compw->values[3] = to_arr(names);
+  compw->values[4] = make_shared<Number>(-1); // allow shadowing
+
+  for (; std::getline(std::cin, line); fmt::print("   ")) {
 
     if (0 == line.size())
       continue;
 
-    auto compw = make_shared<Array>(2);
-    compw->values[0] = bqnruntime;
-    compw->values[1] = sysfn_handler;
-    // compw->values[2] = bi_Nothing();
-    // compw->values[3] = bi_Nothing();
-
     auto src = make_shared<Array>(line);
     auto compiled = compiler->call(2, {compiler, src, compw});
-    auto runret = vm::run(compiled);
+    auto cu = vm::deconstruct(compiled);
+
+    auto body = cu->_bodies[cu->_blocks[0].body_idx(0)];
+
+    // extend slots to hold new variables
+    scp->vars.resize(body.var_count + scp->vars.size());
+
+    // Extend names with names from new compilation unit
+    std::copy(cu->_namelist.begin(), cu->_namelist.end(), std::back_inserter(scp->names));
+    auto ret = vm::vm(cu, scp, body);
 
     // By default, print the result
-    auto formatted = fmt->call(1, {fmt, runret.v, bi_Nothing()});
+    auto formatted = fmt->call(1, {fmt, ret, bi_Nothing()});
     fmt::print("{}\n", dynamic_pointer_cast<Array>(formatted)->to_string());
   }
 
@@ -60,6 +93,7 @@ int parse_args(std::vector<std::string> args, O<Array> &path, O<Array> &src,
       src.reset(new Array(_src));
     } else if ("-p" == *it) {
       pp_res = true;
+      it++;
     } else if ("-x" == *it) {
       show_cu = true;
       it++;
@@ -69,6 +103,7 @@ int parse_args(std::vector<std::string> args, O<Array> &path, O<Array> &src,
       return usage();
     } else if ("-i" == *it) {
       repl = true;
+      it++;
     } else if ("-f" == *it) {
       repl = false;
       it++;
