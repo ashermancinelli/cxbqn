@@ -28,7 +28,7 @@ usage: BQN [options] [arguments]
 	-e <string>: execute BQN expression
 	-p <string>: execute BQN expression, pretty print the result
 	-f <file>: execute <file>
-	-i: start repl (WIP)
+	-r: start repl (WIP)
 	-h, --help: print this message
 	-v, --version: show full version information
 	-x: show compilation unit before executing
@@ -36,7 +36,7 @@ usage: BQN [options] [arguments]
 $ ./BQN -e '•Show 5+5'
 10
 
-$ ./BQN -i
+$ ./BQN -r
    foo←5
 5
 ```
@@ -53,7 +53,7 @@ them and provide a much nicer REPL environment with variable name completion
 like so:
 
 ```
-$ ./BQN -i
+$ ./BQN -r
    foo←5
 5
    foobar←10

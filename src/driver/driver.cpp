@@ -10,6 +10,7 @@ namespace cxbqn::driver {
 
 static std::vector<std::string> curr_names = {};
 
+#ifdef CXBQN_READLINE
 char *match_names(const char *text, int state) {
   static uz len, i;
 
@@ -30,6 +31,7 @@ char **scp_name_completion(const char *text, int start, int end) {
   rl_attempted_completion_over = 1;
   return rl_completion_matches(text, match_names);
 }
+#endif
 
 bool getline(std::string &line) {
 #ifdef CXBQN_READLINE
@@ -45,7 +47,7 @@ bool getline(std::string &line) {
   return true;
 #else
   fmt::print("   ");
-  return std::getline(std::cin, line);
+  return (bool)std::getline(std::cin, line);
 #endif
 }
 
@@ -59,7 +61,9 @@ static inline O<Array> to_arr(std::vector<std::string> n) {
 int repl(O<Value> compiler, O<Array> bqnruntime, O<Value> sysfn_handler,
          O<Value> fmt) {
 
+#ifdef CXBQN_READLINE
   rl_attempted_completion_function = &scp_name_completion;
+#endif
 
   std::string line;
   if (!getline(line))
@@ -126,7 +130,7 @@ int usage() {
   fmt::print(
       "\t-p <string>: execute BQN expression, pretty print the result\n");
   fmt::print("\t-f <file>: execute <file>\n");
-  fmt::print("\t-i: start repl (WIP)\n");
+  fmt::print("\t-r: start repl (WIP)\n");
   fmt::print("\t-h, --help: print this message\n");
   fmt::print("\t-v, --version: show full version information\n");
   fmt::print("\t-x: show compilation unit before executing\n");
@@ -154,7 +158,7 @@ int parse_args(std::vector<std::string> args, O<Array> &path, O<Array> &src,
       return version();
     } else if ("-h" == *it or "--help" == *it) {
       return usage();
-    } else if ("-i" == *it) {
+    } else if ("-r" == *it) {
       repl = true;
       it++;
     } else if ("-f" == *it) {
