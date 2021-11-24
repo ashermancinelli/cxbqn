@@ -151,7 +151,7 @@ using namespace cxbqn::types;
 
 // Simple system functions
 CXBQN_BUILTIN_FN_DECL(CXBQN, "•CXBQN");
-CXBQN_BUILTIN_FN_DECL(Show, "•Show");
+CXBQN_BUILTIN_FN_DECL(Out, "•Out");
 CXBQN_BUILTIN_FN_DECL(Timed, "•_timed");
 CXBQN_BUILTIN_FN_DECL(UnixTime, "•UnixTime");
 CXBQN_BUILTIN_FN_DECL(FLines, "•FLines");
@@ -225,12 +225,12 @@ struct Import : public Function {
   O<Value> call(u8 nargs = 0, std::vector<O<Value>> args = {}) override;
 };
 
-struct Out : public Function {
+struct Show : public Function {
 
-  Out(O<Value> fmt) : _fmt{fmt} {}
+  Show(O<Value> fmt) : _fmt{fmt} {}
 
   std::ostream &repr(std::ostream &os) const override {
-    return os << "•Out";
+    return os << "•Show";
   }
 
   O<Value> _fmt;

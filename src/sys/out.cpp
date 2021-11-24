@@ -6,12 +6,13 @@ O<Value> Out::call(u8 nargs, std::vector<O<Value>> args) {
   if (2 == nargs)
     throw std::runtime_error("•Out: can only be called with one arg");
 
-  auto x = args[1];
+  auto x = dynamic_pointer_cast<Array>(args[1]);
+  if (nullptr == x)
+    throw std::runtime_error("•Out: can only be called with strings");
 
-  auto formatted = _fmt->call(1, {_fmt, x, bi_Nothing()});
-  fmt::print("{}\n", dynamic_pointer_cast<Array>(formatted)->to_string());
+  fmt::print("{}\n", x->to_string());
 
-  return formatted;
+  return x;
 }
 
 }

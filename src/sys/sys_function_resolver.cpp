@@ -34,7 +34,7 @@ O<Value> SystemFunctionResolver::call(u8 nargs, std::vector<O<Value>> args) {
     if ("cxbqn" == s) {
       ret.push_back(make_shared<CXBQN>());
     } else if ("show" == s) {
-      ret.push_back(make_shared<Show>());
+      ret.push_back(make_shared<Show>(_fmt));
     } else if ("listsys" == s) {
       auto ls = make_shared<Array>(listsys.size());
       for (int i = 0; i < listsys.size(); i++)
@@ -57,7 +57,7 @@ O<Value> SystemFunctionResolver::call(u8 nargs, std::vector<O<Value>> args) {
     } else if ("flines" == s) {
       ret.push_back(make_shared<FLines>());
     } else if ("out" == s) {
-      ret.push_back(make_shared<Out>(_fmt));
+      ret.push_back(make_shared<Out>());
     } else if ("import" == s) {
       auto args = make_shared<Array>(2);
       args->values[0] = _runtime;
