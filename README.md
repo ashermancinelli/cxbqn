@@ -11,7 +11,8 @@ mkdir build
 cd build
 cmake ..
 make -j12
-./BQN -e '5+5'
+./BQN -e '•Show 5+5'
+10
 ```
 
 ## Feature Support
