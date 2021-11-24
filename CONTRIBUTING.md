@@ -38,3 +38,6 @@ To find a system function to write, see the
 and find one not already in `include/cxbqn/sys.hpp`.
 Feel free to email me at ashermancinelli@gmail.com with questions, or better yet,
 [join the Matrix server](https://mlochbaum.github.io/BQN/community/forums.html).
+
+I would also love help implementing a garbage collector, however this will be
+far more involved.
