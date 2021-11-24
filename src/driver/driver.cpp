@@ -1,37 +1,37 @@
 #include "driver.hpp"
 
 #ifdef CXBQN_READLINE
-#include <stdlib.h>
-#include <readline/readline.h>
 #include <readline/history.h>
+#include <readline/readline.h>
+#include <stdlib.h>
 #endif
 
 namespace cxbqn::driver {
 
-static std::vector<std::string> curr_names={};
+static std::vector<std::string> curr_names = {};
 
-char* match_names(const char* text, int state) {
+char *match_names(const char *text, int state) {
   static uz len, i;
 
   if (!state) {
     len = strlen(text);
-    i=0;
+    i = 0;
   }
 
   while (i < curr_names.size()) {
     if (curr_names[i++].starts_with(text))
-      return strdup(curr_names[i-1].c_str());
+      return strdup(curr_names[i - 1].c_str());
   }
 
   return nullptr;
 }
 
-char** scp_name_completion(const char* text, int start, int end) {
+char **scp_name_completion(const char *text, int start, int end) {
   rl_attempted_completion_over = 1;
   return rl_completion_matches(text, match_names);
 }
 
-bool getline(std::string& line) {
+bool getline(std::string &line) {
 #ifdef CXBQN_READLINE
   auto *buf = readline("   ");
   if (nullptr == buf)
@@ -40,7 +40,7 @@ bool getline(std::string& line) {
     add_history(buf);
   }
   line.resize(strlen(buf));
-  std::copy(buf, buf+strlen(buf), line.begin());
+  std::copy(buf, buf + strlen(buf), line.begin());
   free(buf);
   return true;
 #else
@@ -51,13 +51,13 @@ bool getline(std::string& line) {
 
 static inline O<Array> to_arr(std::vector<std::string> n) {
   auto ar = make_shared<Array>(n.size());
-  for (int i=0; i < n.size(); i++)
+  for (int i = 0; i < n.size(); i++)
     ar->values[i] = make_shared<Array>(n[i]);
   return ar;
 }
 
 int repl(O<Value> compiler, O<Array> bqnruntime, O<Value> sysfn_handler,
-    O<Value> fmt) {
+         O<Value> fmt) {
 
   rl_attempted_completion_function = &scp_name_completion;
 
@@ -68,7 +68,7 @@ int repl(O<Value> compiler, O<Array> bqnruntime, O<Value> sysfn_handler,
   auto compw = make_shared<Array>(4);
   compw->values[0] = bqnruntime;
   compw->values[1] = sysfn_handler;
-  compw->values[2] = make_shared<Array>(0); // no names currently in scope
+  compw->values[2] = make_shared<Array>(0);   // no names currently in scope
   compw->values[3] = make_shared<Number>(-1); // allow shadowing
 
   auto src = make_shared<Array>(line);
@@ -134,7 +134,7 @@ int usage() {
 }
 
 int parse_args(std::vector<std::string> args, O<Array> &path, O<Array> &src,
-    O<Array> sysargs, bool &repl, bool &pp_res, bool& show_cu) {
+               O<Array> sysargs, bool &repl, bool &pp_res, bool &show_cu) {
   auto it = args.begin();
   it++; // skip exe name
 
