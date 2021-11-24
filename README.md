@@ -1,4 +1,4 @@
-## cxbqn
+# CXBQN
 
 VM for [BQN](https://mlochbaum.github.io/BQN/).
 
@@ -13,3 +13,14 @@ cmake ..
 make -j12
 ./BQN -e '5+5'
 ```
+
+## Feature Support
+
+| Spec Item          | Compliance      | Notes                                                                                                                                        |
+|--------------------|-----------------|----------------------------------------------------------------------------------------------------------------------------------------------|
+| Bytecode           | Full            |                                                                                                                                              |
+| Runtime            | BQN-native only | Plan to replace elements of r0 then r1 with native functions                                                                                 |
+| System Functions   | Partial         | See `•listsys` for the supported system values. Good candidate for first contribution.                                                       |
+| Namespaces         | Partial         | Using fields of a namespace and destructuring without aliasing work, however mutable namespace fields are not supported.                     |
+| GPU Execution      | None            | Plan to add support for primitive operations on data values (chars, numbers, strings, and arrays of any of these) on GPUs in the near future |
+| Threaded Execution | None            | Same plan as above. Needs more discussion                                                                                                    |
