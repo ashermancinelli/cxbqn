@@ -36,7 +36,7 @@ Block{i=164}),( md2D Block{i=169} _fillBy_ Block{i=168})⟩), 5⟩,
     ⟨sh=⟨5⟩⟨sh=⟨3⟩92,0,92⟩,⟨sh=⟨3⟩0,1,0⟩,⟨sh=⟨5⟩⟨sh=⟨0⟩⟩,⟨sh=⟨0⟩⟩,⟨sh=⟨1⟩5⟩,⟨sh=⟨0⟩⟩,⟨sh=⟨0⟩⟩⟩,⟨sh=⟨3⟩0,1,2⟩,⟨sh=⟨3⟩0,1,2⟩⟩⟩
       */
 
-RunResult run(O<Value> compiled) {
+O<CompUnit> deconstruct(O<Value> compiled) {
   auto comparr = ARR(compiled);
 
   auto cu = make_shared<CompUnit>();
@@ -72,7 +72,6 @@ RunResult run(O<Value> compiled) {
     }
   }
 
-  std::vector<std::string> namelist;
   auto bqnbodies = ARR(comparr->values[3]);
   for (auto v : bqnbodies->values) {
     auto bod = ARR(v);
@@ -87,17 +86,17 @@ RunResult run(O<Value> compiled) {
       const auto tok_info = ARR(comparr->values[5]);
       const auto tmp = ARR(tok_info->values[2]);
       const auto _namelist = ARR(tmp->values[0]);
-      namelist.resize(_namelist->N());
+      cu->_namelist.resize(_namelist->N());
       for(uz i=0; i<_namelist->N(); i++) {
         auto s = ARR(_namelist->values[i])->to_string();
-        namelist[i] = s;
+        cu->_namelist[i] = s;
         cu->_exported.insert({s, i});
       }
     }
-    for(auto& [k,v]:cu->_exported)
-      fmt::print("{}->{}\n",k,v);
-    for(int i=0; i < namelist.size(); i++)
-      fmt::print("{}->{}\n",i,namelist[i]);
+    //for(auto& [k,v]:cu->_exported)
+    //  fmt::print("{}->{}\n",k,v);
+    //for(int i=0; i < namelist.size(); i++)
+    //  fmt::print("{}->{}\n",i,namelist[i]);
 
     cu->_bodies.push_back(b);
   }
@@ -105,12 +104,18 @@ RunResult run(O<Value> compiled) {
   for (auto &blkd : blk_defs)
     cu->_blocks.emplace_back(blkd);
 
+  return cu;
+}
+
+RunResult run(O<Value> compiled) {
+  auto cu = deconstruct(compiled);
+
   RunResult ret;
 
   ret.scp = make_shared<Scope>(cu);
   auto body = cu->_bodies[cu->_blocks[0].body_idx(0)];
   ret.scp->vars.resize(body.var_count);
-  ret.scp->names = namelist;
+  ret.scp->names = cu->_namelist;
 
   ret.v = vm::vm(cu, ret.scp, body);
 

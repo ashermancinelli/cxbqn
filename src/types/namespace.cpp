@@ -5,11 +5,6 @@
 namespace cxbqn::types {
 
 O<Value> Namespace::get(const std::string &n) {
-  fmt::print("ns:get n={}\n", n);
-  // auto exported = _scp->cu->_exported;
-  // auto e = _scp->vars[exported.at(n)];
-  // fmt::print("ns:{}->{}->{}\n", n, exported.at(n),
-             // CXBQN_STR_NC(e));
   if (_scp->cu->_exported.contains(n))
     return _scp->vars[_scp->cu->_exported.at(n)];
   throw std::runtime_error("Namespace: could not find name");

@@ -12,6 +12,11 @@ namespace cxbqn::vm {
 
 using namespace cxbqn::types;
 
+/* Takes the raw output from the compiler and constructs a compilation unit from
+ * it.
+ */
+O<CompUnit> deconstruct(O<Value> compiled);
+
 struct RunResult {
   O<Value> v;
   O<Scope> scp;

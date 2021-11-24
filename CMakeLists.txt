@@ -77,6 +77,10 @@ set(CXBQN_DEEPCHECKS
     ON
     CACHE BOOL "Deep null checking and debugging information"
 )
+set(CXBQN_READLINE
+    OFF
+    CACHE BOOL "Use libreadline for BQN REPL"
+)
 set(CXBQN_COLOR
     OFF
     CACHE BOOL "Output VM information in color"
@@ -126,6 +130,12 @@ list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 add_library(tpl INTERFACE)
 add_library(cxbqn::tpl ALIAS tpl)
+
+if(CXBQN_READLINE)
+  find_package(Readline)
+  target_link_libraries(tpl INTERFACE ${Readline_LIBRARY})
+  target_include_directories(tpl INTERFACE ${Readline_INCLUDE_DIR})
+endif()
 
 find_package(UnixCommands REQUIRED)
 include(cmake/Linters.cmake)

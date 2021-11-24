@@ -1,27 +1,113 @@
 #include "driver.hpp"
 
+#ifdef CXBQN_READLINE
+#include <stdlib.h>
+#include <readline/readline.h>
+#include <readline/history.h>
+#endif
+
 namespace cxbqn::driver {
 
-int repl(O<Value> compiler, O<Array> bqnruntime, O<Value> sysfn_handler,
-         O<Value> fmt) {
+static std::vector<std::string> curr_names={};
+
+char* match_names(const char* text, int state) {
+  static uz len, i;
+
+  if (!state) {
+    len = strlen(text);
+    i=0;
+  }
+
+  while (i < curr_names.size()) {
+    if (curr_names[i++].starts_with(text))
+      return strdup(curr_names[i-1].c_str());
+  }
+
+  return nullptr;
+}
+
+char** scp_name_completion(const char* text, int start, int end) {
+  rl_attempted_completion_over = 1;
+  return rl_completion_matches(text, match_names);
+}
+
+bool getline(std::string& line) {
+#ifdef CXBQN_READLINE
+  auto *buf = readline("   ");
+  if (nullptr == buf)
+    return false;
+  if (strlen(buf) > 0) {
+    add_history(buf);
+  }
+  line.resize(strlen(buf));
+  std::copy(buf, buf+strlen(buf), line.begin());
+  free(buf);
+  return true;
+#else
   fmt::print("   ");
-  for (std::string line; std::getline(std::cin, line); fmt::print("   ")) {
+  return std::getline(std::cin, line);
+#endif
+}
+
+static inline O<Array> to_arr(std::vector<std::string> n) {
+  auto ar = make_shared<Array>(n.size());
+  for (int i=0; i < n.size(); i++)
+    ar->values[i] = make_shared<Array>(n[i]);
+  return ar;
+}
+
+int repl(O<Value> compiler, O<Array> bqnruntime, O<Value> sysfn_handler,
+    O<Value> fmt) {
+
+  rl_attempted_completion_function = &scp_name_completion;
+
+  std::string line;
+  if (!getline(line))
+    return 1;
+
+  auto compw = make_shared<Array>(4);
+  compw->values[0] = bqnruntime;
+  compw->values[1] = sysfn_handler;
+  compw->values[2] = make_shared<Array>(0); // no names currently in scope
+  compw->values[3] = make_shared<Number>(-1); // allow shadowing
+
+  auto src = make_shared<Array>(line);
+  auto compiled = compiler->call(2, {compiler, src, compw});
+  auto runret = vm::run(compiled);
+
+  {
+    auto formatted = fmt->call(1, {fmt, runret.v, bi_Nothing()});
+    fmt::print("{}\n", dynamic_pointer_cast<Array>(formatted)->to_string());
+  }
+
+  // Now that we've gotten the repl started with the first execution, we pass
+  // the existing names back into the compiler so all the variables exist in the
+  // global scope.
+  auto scp = runret.scp;
+  compw->values[2] = to_arr(scp->names);
+  curr_names = scp->names;
+
+  while (getline(line)) {
 
     if (0 == line.size())
       continue;
 
-    auto compw = make_shared<Array>(2);
-    compw->values[0] = bqnruntime;
-    compw->values[1] = sysfn_handler;
-    // compw->values[2] = bi_Nothing();
-    // compw->values[3] = bi_Nothing();
-
     auto src = make_shared<Array>(line);
+    compw->values[2] = to_arr(scp->names);
     auto compiled = compiler->call(2, {compiler, src, compw});
-    auto runret = vm::run(compiled);
+    auto cu = vm::deconstruct(compiled);
+
+    auto body = cu->_bodies[cu->_blocks[0].body_idx(0)];
+
+    // extend slots to hold new variables
+    scp->vars.resize(body.var_count + scp->vars.size());
+
+    // Extend names with names from new compilation unit
+    curr_names = scp->names = cu->_namelist;
+    auto ret = vm::vm(cu, scp, body);
 
     // By default, print the result
-    auto formatted = fmt->call(1, {fmt, runret.v, bi_Nothing()});
+    auto formatted = fmt->call(1, {fmt, ret, bi_Nothing()});
     fmt::print("{}\n", dynamic_pointer_cast<Array>(formatted)->to_string());
   }
 
@@ -48,7 +134,7 @@ int usage() {
 }
 
 int parse_args(std::vector<std::string> args, O<Array> &path, O<Array> &src,
-               O<Array> sysargs, bool &repl, bool &pp_res, bool& show_cu) {
+    O<Array> sysargs, bool &repl, bool &pp_res, bool& show_cu) {
   auto it = args.begin();
   it++; // skip exe name
 
@@ -60,6 +146,7 @@ int parse_args(std::vector<std::string> args, O<Array> &path, O<Array> &src,
       src.reset(new Array(_src));
     } else if ("-p" == *it) {
       pp_res = true;
+      it++;
     } else if ("-x" == *it) {
       show_cu = true;
       it++;
@@ -69,6 +156,7 @@ int parse_args(std::vector<std::string> args, O<Array> &path, O<Array> &src,
       return usage();
     } else if ("-i" == *it) {
       repl = true;
+      it++;
     } else if ("-f" == *it) {
       repl = false;
       it++;
