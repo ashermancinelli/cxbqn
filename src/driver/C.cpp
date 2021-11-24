@@ -8,7 +8,7 @@ using namespace cxbqn::sys;
 
 void usage() {
   fmt::print("C: compile BQN expressions using CXBQN.\n");
-  fmt::print("-c <string>: compile BQN expression\n");
+  fmt::print("-e <string>: compile BQN expression\n");
   fmt::print("-f <file>: compile contents of file\n");
 }
 
@@ -21,7 +21,7 @@ int main(int argc, char **argv) {
 
   O<Value> src;
   auto path = make_shared<Array>(0);
-  if ("-c" == *it) {
+  if ("-e" == *it) {
     it++;
     src.reset(new Array(*it));
   } else if ("-f" == *it) {

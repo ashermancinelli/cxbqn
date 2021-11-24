@@ -35,7 +35,7 @@ int version() {
 
 int usage() {
   version();
-  fmt::print("usage: BQN [options] [file.bqn [arguments]]\n");
+  fmt::print("usage: BQN [options] [arguments]\n");
   fmt::print("\t-e <string>: execute BQN expression\n");
   fmt::print(
       "\t-p <string>: execute BQN expression, pretty print the result\n");
@@ -43,11 +43,12 @@ int usage() {
   fmt::print("\t-i: start repl (WIP)\n");
   fmt::print("\t-h, --help: print this message\n");
   fmt::print("\t-v, --version: show full version information\n");
+  fmt::print("\t-x: show compilation unit before executing\n");
   return 1;
 }
 
 int parse_args(std::vector<std::string> args, O<Array> &path, O<Array> &src,
-               O<Array> sysargs, bool &repl, bool &pp_res) {
+               O<Array> sysargs, bool &repl, bool &pp_res, bool& show_cu) {
   auto it = args.begin();
   it++; // skip exe name
 
@@ -59,6 +60,9 @@ int parse_args(std::vector<std::string> args, O<Array> &path, O<Array> &src,
       src.reset(new Array(_src));
     } else if ("-p" == *it) {
       pp_res = true;
+    } else if ("-x" == *it) {
+      show_cu = true;
+      it++;
     } else if ("-v" == *it or "--version" == *it) {
       return version();
     } else if ("-h" == *it or "--help" == *it) {

@@ -15,6 +15,7 @@ struct Body {
   Body(uz offset, uz cnt) : bc_offset{offset}, var_count{cnt} {}
   uz bc_offset;
   uz var_count;
+  std::vector<std::string> namelist;
 };
 
 /**
@@ -53,7 +54,7 @@ struct Block {
   std::vector<uz> mon_body_idxs;
   std::vector<uz> dya_body_idxs;
 
-  uz body_idx(u8 nargs, uz attempt=0) const;
+  uz body_idx(u8 nargs, uz attempt = 0) const;
 
   Block(BlockDef bd);
 };

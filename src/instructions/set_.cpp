@@ -26,22 +26,31 @@ static O<Value> safe_set_refer(O<Value> opaque_refer, O<Value> value,
       throw std::runtime_error(
           "setn: Could not cast reference to type RefArray");
 #endif
-    if (value->t()[t_DataValue] or t_Namespace == type_builtin(value)) {
+
+    if (t_Namespace == type_builtin(value)) {
+      for (int i = 0; i < aref->N(); i++) {
+        auto r = aref->getref(i);
+        auto tmp_scp = scp->get_nth_parent(r->depth);
+        r->tag = tmp_scp->names[r->position_in_parent];
+        scp->set(ShouldVarBeSet, aref->getref(i), value);
+      }
+      return value;
+    } else if (value->t()[t_DataValue]) {
       for (int i = 0; i < aref->N(); i++)
         scp->set(ShouldVarBeSet, aref->getref(i), value);
       return value;
-    }
+    } else {
 
-    auto aval = dynamic_pointer_cast<Array>(value);
+      auto aval = dynamic_pointer_cast<Array>(value);
 #ifdef CXBQN_DEEPCHECKS
-    if (nullptr == aval)
-      throw std::runtime_error("setn: Could not cast value to type Array when "
-                               "assigning to RefArray");
+      if (nullptr == aval)
+        throw std::runtime_error("setn: Could not cast value to type Array when "
+                                 "assigning to RefArray");
 #endif
-    for (int i = 0; i < aval->N(); i++)
-      scp->set(ShouldVarBeSet, aref->getref(i), aval->values[i]);
-    return aval;
-
+      for (int i = 0; i < aval->N(); i++)
+        scp->set(ShouldVarBeSet, aref->getref(i), aval->values[i]);
+      return aval;
+    }
   } else {
 
     auto refer = dynamic_pointer_cast<Reference>(opaque_refer);

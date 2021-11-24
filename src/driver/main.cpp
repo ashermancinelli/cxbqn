@@ -7,14 +7,14 @@ using namespace cxbqn::sys;
 
 int main(int argc, char **argv) {
 
-  bool repl, pp_res;
+  bool repl, pp_res, show_cu;
   auto sysargs = make_shared<Array>(0);
   auto path = make_shared<Array>(0);
   auto src = make_shared<Array>("\"CXBQN internal: Empty program\" ! 0");
 
   std::vector<std::string> args(argv, argv + argc);
 
-  if (auto ec = driver::parse_args(args, path, src, sysargs, repl, pp_res))
+  if (auto ec = driver::parse_args(args, path, src, sysargs, repl, pp_res, show_cu))
     return ec;
 
   try {
@@ -93,6 +93,9 @@ int main(int argc, char **argv) {
       return driver::repl(compiler, bqnruntime, compw->values[1], fmt);
     } else {
       auto compiled = compiler->call(2, {compiler, src, compw});
+      if (show_cu)
+        for (auto v : dynamic_pointer_cast<Array>(compiled)->values)
+          fmt::print("{}\n",*v);
       auto runret = vm::run(compiled);
       if (pp_res) {
         auto formatted = fmt->call(1, {fmt, runret.v, bi_Nothing()});

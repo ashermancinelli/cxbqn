@@ -128,16 +128,11 @@ struct Array;
 
 struct Value : public std::enable_shared_from_this<Value> {
 
-  // When blocks are not immediate, we sometimes need to cache arguments to be
-  // referred to later. For example, a modifier block may need to refer both to
-  // the modifier arguments (𝕣𝕗𝕘) as well as the function arguments (𝕤𝕩𝕨). In
-  // this case, when the modifier is defined, 𝕣 𝕗 and 𝕘 are stored in
-  // deferred_args so they can be copied into the scope when the function
-  // arguments are present.
-  std::vector<O<Value>> deferred_args;
-  Value() : deferred_args(6, nullptr) {}
+  Value() {}
 
   virtual ~Value() {}
+
+  virtual void mark() {}
 
   // A type must be able to tell you it's •Type. We also use this over trying to
   // dynamic cast to a bunch of different types since the object creation
@@ -167,10 +162,9 @@ struct Number : public Value {
     return TypeType{t_Number | annot(t_DataValue)};
   }
   std::ostream &repr(std::ostream &os) const override {
-    return (v == std::numeric_limits<f64>::infinity()
-                ? os << "∞"
-                : v == -std::numeric_limits<f64>::infinity() ? os << "¯∞"
-                                                             : os << v);
+    return (v == std::numeric_limits<f64>::infinity()    ? os << "∞"
+            : v == -std::numeric_limits<f64>::infinity() ? os << "¯∞"
+                                                         : os << v);
   }
 };
 
@@ -232,7 +226,7 @@ struct Array : public Value {
 struct Reference : public Value {
   uz depth;
   uz position_in_parent;
-  std::optional<std::string> tag=nullopt;
+  std::optional<std::string> tag = nullopt;
   Reference(uz d, uz p) : depth{d}, position_in_parent{p} {}
   TypeType t() const override { return TypeType{annot(t_Reference)}; }
   std::ostream &repr(std::ostream &os) const override {
@@ -259,11 +253,10 @@ struct BlockInst : public Function {
   O<Scope> scp;
   uz blk_idx;
 
-  // Is the block at index blk_idx immediate?
-  bool imm() const;
-
   u32 type;
   TypeType t() const override { return TypeType{type | annot(t_BlockInst)}; }
+
+  bool imm() const;
 
   BlockInst(O<Scope> scp, uz blk_idx);
 
@@ -328,7 +321,7 @@ struct Namespace : public Value {
   Namespace(O<Scope> scp) : _scp{scp} {}
   O<Value> get(const std::string &n);
   O<Value> get(uz i);
-  O<Value> set(bool should_be_set, const std::string& n, O<Value> v);
+  O<Value> set(bool should_be_set, const std::string &n, O<Value> v);
   O<Value> set(bool should_be_set, uz n, O<Value> v);
   TypeType t() const override { return TypeType{t_Namespace}; }
   std::ostream &repr(std::ostream &os) const override {

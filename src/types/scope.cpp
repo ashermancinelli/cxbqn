@@ -27,20 +27,6 @@ void Scope::set(bool should_var_be_set, O<Reference> r, O<Value> _v) {
     throw std::runtime_error("assign: got nullptr value");
 #endif
 
-  // fmt::print("ref.tag={}\n",(r->tag.has_value()?r->tag.value():"none"));
-
-  O<Value> v = _v;
-  if (r->tag.has_value()) {
-    fmt::print("tag={}\n", r->tag.value());
-    auto ns = dynamic_pointer_cast<Namespace>(_v);
-    auto n = r->tag.value();
-    v = ns->get(n);
-  }
-
-  if (t_Namespace == type_builtin(_v)) {
-    fmt::print("scope:ns\n");
-  }
-
   const auto n = r->depth;
   CXBQN_DEBUG("Scope::set:shoudbeset={},depth={}", should_var_be_set, n);
   auto scp = get_nth_parent(n);
@@ -48,6 +34,14 @@ void Scope::set(bool should_var_be_set, O<Reference> r, O<Value> _v) {
 
   CXBQN_DEBUG("Scope::set:r->pos={},scp->vars={}", r->position_in_parent,
               scp->vars);
+
+  O<Value> v = _v;
+  if (r->tag.has_value()) {
+    // fmt::print("{}\n",r->position_in_parent);
+    auto ns = dynamic_pointer_cast<Namespace>(_v);
+    auto name = r->tag.value();
+    v = ns->get(name);
+  }
 
   if (r->position_in_parent > scp->vars.size())
     scp->vars.resize(1 + r->position_in_parent);
@@ -61,8 +55,6 @@ void Scope::set(bool should_var_be_set, O<Reference> r, O<Value> _v) {
         "Expected var to be set or unset, but this was not the case");
   }
 
-  // fmt::print("{} = {}\n", CXBQN_STR_NC(scp->vars[r->position_in_parent]),
-  // CXBQN_STR_NC(v)); assign to the underlying value
   scp->vars[r->position_in_parent] = v;
 }
 
