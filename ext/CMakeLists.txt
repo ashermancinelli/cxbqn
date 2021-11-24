@@ -1,20 +1,13 @@
-find_package(spdlog QUIET)
-if(NOT TARGET spdlog::spdlog)
-  message(STATUS "Cant find external spdlog, building it as a subproject")
-  add_subdirectory(spdlog)
-endif()
-
+add_subdirectory(spdlog)
 add_subdirectory(doctest)
 add_subdirectory(utfcpp)
 target_include_directories(tpl INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/cpp-subprocess/include)
-message(STATUS "${CMAKE_CURRENT_SOURCE_DIR}/cpp-subprocess/include")
+target_link_libraries(tpl INTERFACE spdlog::spdlog utf8::cpp)
 
 if(CXBQN_EXT_STD_FILESYSTEM)
   add_subdirectory(filesystem)
   target_link_libraries(tpl INTERFACE ghc_filesystem)
 endif()
-
-target_link_libraries(tpl INTERFACE spdlog::spdlog utf8::cpp)
 
 include(CheckCXXSourceCompiles)
 check_cxx_source_compiles("
