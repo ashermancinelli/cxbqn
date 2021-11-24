@@ -25,8 +25,7 @@ make -j12
 
 ## Nonstandard Extensions
 
-| Extension          | Completion      | Notes                                                                                                                                        |
-|--------------------|-----------------|----------------------------------------------------------------------------------------------------------------------------------------------|
-
-| GPU Execution      | None            | Plan to add support for primitive operations on data values (chars, numbers, strings, and arrays of any of these) on GPUs in the near future |
-| Threaded Execution | None            | Same plan as above. Needs more discussion                                                                                                    |
+|      Extension     | Completion |                                                                     Notes                                                                    |
+|:------------------:|:----------:|:--------------------------------------------------------------------------------------------------------------------------------------------:|
+| GPU Execution      | None       | Plan to add support for primitive operations on data values (chars, numbers, strings, and arrays of any of these) on GPUs in the near future |
+| Threaded Execution | None       | Same plan as above. Needs more discussion                                                                                                    |
