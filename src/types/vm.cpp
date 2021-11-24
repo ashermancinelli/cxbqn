@@ -39,12 +39,13 @@ Block{i=164}),( md2D Block{i=169} _fillBy_ Block{i=168})⟩), 5⟩,
 RunResult run(O<Value> compiled) {
   auto comparr = ARR(compiled);
 
-  std::vector<i32> bc;
+  auto cu = make_shared<CompUnit>();
+
   auto bqnbc = ARR(comparr->values[0])->values;
   for (auto v : bqnbc)
-    bc.push_back(NUM(v)->v);
+    cu->_bc.push_back(NUM(v)->v);
 
-  auto consts = ARR(comparr->values[1]);
+  cu->_consts = ARR(comparr->values[1]);
 
   std::vector<BlockDef> blk_defs;
   auto bqnblks = ARR(comparr->values[2]);
@@ -73,7 +74,6 @@ RunResult run(O<Value> compiled) {
 
   std::unordered_map<std::string, uz>exported;
 
-  std::vector<Body> bodies;
   auto bqnbodies = ARR(comparr->values[3]);
   for (auto v : bqnbodies->values) {
     auto bod = ARR(v);
@@ -95,10 +95,21 @@ RunResult run(O<Value> compiled) {
     for(auto& [k,v]:exported)
       fmt::print("{}->{}\n",k,v);
 
-    bodies.push_back(b);
+    cu->_bodies.push_back(b);
   }
 
-  return vm::run(bc, consts, blk_defs, bodies, exported);
+  for (auto &blkd : blk_defs)
+    cu->_blocks.emplace_back(blkd);
+
+  RunResult ret;
+
+  ret.scp = make_shared<Scope>(cu);
+  auto body = cu->_bodies[cu->_blocks[0].body_idx(0)];
+  ret.scp->vars.resize(body.var_count);
+
+  ret.v = vm::vm(cu, ret.scp, body);
+
+  return ret;
 }
 
 static bool loginit = false;
