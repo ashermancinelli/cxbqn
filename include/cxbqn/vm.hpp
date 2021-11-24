@@ -20,7 +20,7 @@ struct RunResult {
 RunResult
 run(ByteCode bc, O<Array> consts, std::vector<BlockDef> blks,
     std::vector<Body> &bds,
-    O<std::unordered_map<std::string, uz>> exported = {},
+    std::unordered_map<std::string, uz> exported = {},
     std::optional<std::vector<std::vector<uz>>> source_indices = nullopt,
     O<Array> source = nullptr);
 
@@ -55,10 +55,8 @@ void tr3d(std::vector<O<Value>> &stk);
 void tr3o(std::vector<O<Value>> &stk);
 
 // Namespaces
-void alim(const ByteCodeRef bc, uz &pc, std::vector<O<Value>> &stk,
-          O<std::unordered_map<std::string, uz>> exported);
-void fldo(const ByteCodeRef bc, uz &pc, std::vector<O<Value>> &stk,
-    O<std::unordered_map<std::string, uz>> exported);
+void alim(const ByteCodeRef bc, uz &pc, std::vector<O<Value>> &stk, O<CompUnit> cu);
+void fldo(const ByteCodeRef bc, uz &pc, std::vector<O<Value>> &stk, O<CompUnit> cu);
 
 // Headers
 void seth(std::vector<O<Value>> &stk);

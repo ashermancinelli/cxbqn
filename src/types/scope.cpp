@@ -5,21 +5,6 @@
 
 namespace cxbqn::types {
 
-O<Scope> Scope::root_scope(O<CompUnit> cu,
-                           O<std::unordered_map<std::string, uz>> exported) {
-  auto scp = make_shared<Scope>(cu, 0, true);
-  scp->_exported = exported;
-  return scp;
-}
-
-O<Scope> Scope::child_scope(W<Scope> parent, uz blk_idx) {
-  auto p = parent.lock();
-  auto scp = make_shared<Scope>(p->cu, blk_idx, false);
-  scp->parent = parent;
-  scp->_exported = p->_exported;
-  return scp;
-}
-
 O<Value> Scope::get(O<Reference> r) {
 
 #ifdef CXBQN_DEEPCHECKS

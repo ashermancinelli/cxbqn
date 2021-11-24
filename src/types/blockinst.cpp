@@ -28,7 +28,7 @@ O<Value> BlockInst::call(u8 nargs, std::vector<O<Value>> args) {
   const auto blk = scp->cu->_blocks[blk_idx];
 
   auto body = scp->cu->_bodies[blk.body_idx(nargs)];
-  auto child = Scope::child_scope(scp, blk_idx);
+  auto child = make_shared<Scope>(scp, blk_idx);
   child->vars.resize(body.var_count+10);
   std::copy(args.begin(), args.end(), child->vars.begin());
 

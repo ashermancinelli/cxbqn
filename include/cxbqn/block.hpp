@@ -55,8 +55,6 @@ struct Block {
 
   uz body_idx(u8 nargs, uz attempt=0) const;
 
-  uz max_nvars(std::span<const Body> bods) const;
-
   Block(BlockDef bd);
 };
 

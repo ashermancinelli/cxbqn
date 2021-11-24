@@ -325,9 +325,7 @@ struct Md2 : public Function {
 
 struct Namespace : public Value {
   O<Scope> _scp;
-  O<std::unordered_map<std::string, uz>> _exported;
-  Namespace(O<Scope> scp, O<std::unordered_map<std::string, uz>> exp)
-      : _scp{scp}, _exported{exp} {}
+  Namespace(O<Scope> scp) : _scp{scp} {}
   O<Value> get(const std::string &n);
   O<Value> get(uz i);
   O<Value> set(bool should_be_set, const std::string& n, O<Value> v);

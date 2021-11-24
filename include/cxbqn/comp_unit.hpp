@@ -9,8 +9,7 @@ struct CompUnit {
   std::vector<Block> _blocks;
   std::vector<Body> _bodies;
   O<Array> _consts;
-  static O<CompUnit> from_raw(O<Value> compiled);
-  static O<CompUnit> from_raw(CompileParams p);
+  std::unordered_map<std::string, uz> _exported;
 };
 
 }

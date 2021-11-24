@@ -9,7 +9,7 @@ void dfnd(const ByteCodeRef bc, uz &pc, std::vector<O<Value>> &stk, O<Scope> scp
 
   if (blk.type == BlockType::func && blk.immediate) {
     auto bod = scp->cu->_bodies[blk.body_idx(0)];
-    auto child = Scope::child_scope(scp, blk_idx);
+    auto child = make_shared<Scope>(scp, blk_idx);
     child->vars.resize(bod.var_count+10);
     CXBQN_DEBUG("dfnd:recursing into vm");
     auto ret = vm::vm(child->cu, child, bod);

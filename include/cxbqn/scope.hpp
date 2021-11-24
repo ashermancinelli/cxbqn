@@ -6,12 +6,9 @@ namespace cxbqn::types {
 
 struct Scope : public std::enable_shared_from_this<Scope> {
 
-  /* Create a new root scope */
-  static O<Scope> root_scope(O<CompUnit> cu,
-                             O<std::unordered_map<std::string, uz>> exported);
-
-  /* Create a new child scope */
-  static O<Scope> child_scope(W<Scope> parent, uz blk_idx);
+  Scope(O<CompUnit> cu) : cu{cu}, blk_idx{0} {}
+  Scope(O<Scope> parent, uz blk_idx)
+      : parent{parent}, cu{parent->cu}, blk_idx{blk_idx} {}
 
   O<CompUnit> cu;
 
@@ -32,7 +29,6 @@ struct Scope : public std::enable_shared_from_this<Scope> {
    * the first six will always be the relevant members of 𝕤𝕩𝕨𝕣𝕗𝕘.
    */
   std::vector<O<Value>> vars;
-  O<std::unordered_map<std::string, uz>> _exported = {};
 
   const uz blk_idx;
 
@@ -49,9 +45,7 @@ struct Scope : public std::enable_shared_from_this<Scope> {
       nullopt;
   std::optional<std::string> _source_str = nullopt;
 
-  Scope(O<CompUnit> cu, uz bi, bool isroot)
-      : cu{cu}, blk_idx{bi}, _root{isroot}, parent{O<Scope>{}} {}
-  bool _root;
+  Scope(O<CompUnit> cu, uz bi) : cu{cu}, blk_idx{bi}, parent{O<Scope>{}} {}
 };
 
 } // namespace cxbqn::types

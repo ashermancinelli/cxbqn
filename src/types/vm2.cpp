@@ -40,14 +40,14 @@ O<Value> vm(O<CompUnit> cu, O<Scope> scope, Body b) {
       case op::FLDO: {
         fmt::print("fldo\n");
         INSTR1("FLDO");
-        instructions::fldo(bc, pc, stk, scope->_exported);
+        instructions::fldo(bc, pc, stk, scope->cu);
         INSTR("FLDO");
         break;
       }
       case op::ALIM: {
         fmt::print("alim\n");
         INSTR1("ALIM");
-        instructions::alim(bc, pc, stk, scope->_exported);
+        instructions::alim(bc, pc, stk, scope->cu);
         INSTR("ALIM");
         break;
       }
@@ -67,7 +67,7 @@ O<Value> vm(O<CompUnit> cu, O<Scope> scope, Body b) {
       }
       case op::RETD: {
         INSTR("RETD");
-        stk.push_back(O<Value>(new Namespace(scope, scope->_exported)));
+        stk.push_back(O<Value>(new Namespace(scope)));
         ret = stk.back();
         INSTR("RETD");
         goto done;

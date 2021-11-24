@@ -71,7 +71,7 @@ RunResult run(O<Value> compiled) {
     }
   }
 
-  auto exported = make_shared<std::unordered_map<std::string, uz>>();
+  std::unordered_map<std::string, uz>exported;
 
   std::vector<Body> bodies;
   auto bqnbodies = ARR(comparr->values[3]);
@@ -90,9 +90,9 @@ RunResult run(O<Value> compiled) {
       const auto tmp = ARR(tok_info->values[2]);
       const auto _namelist = ARR(tmp->values[0]);
       for(uz i=0; i<_namelist->N(); i++)
-        exported->insert({ARR(_namelist->values[i])->to_string(), i});
+        exported.insert({ARR(_namelist->values[i])->to_string(), i});
     }
-    for(auto& [k,v]:*exported)
+    for(auto& [k,v]:exported)
       fmt::print("{}->{}\n",k,v);
 
     bodies.push_back(b);
@@ -104,7 +104,7 @@ RunResult run(O<Value> compiled) {
 static bool loginit = false;
 RunResult run(std::vector<i32> bc, O<Array> consts,
               std::vector<BlockDef> blk_defs, std::vector<Body> &bodies,
-              O<std::unordered_map<std::string, uz>> exported,
+              std::unordered_map<std::string, uz> exported,
               std::optional<std::vector<std::vector<uz>>> source_indices,
               O<Array> source) {
 
@@ -138,8 +138,9 @@ RunResult run(std::vector<i32> bc, O<Array> consts,
   cu->_blocks = blks;
   cu->_bodies = bodies;
   cu->_consts = consts;
+  cu->_exported = exported;
 
-  ret.scp = Scope::root_scope(cu, exported);
+  ret.scp = make_shared<Scope>(cu);
   auto body = bodies[blks[0].body_idx(0)];
   ret.scp->vars.resize(body.var_count);
 
@@ -150,7 +151,7 @@ RunResult run(std::vector<i32> bc, O<Array> consts,
     ret.scp->set_source_info(source_indices.value(), source);
   }
 
-  ret.v = vm::vm(cu, bc, consts, stk, ret.scp);
+  ret.v = vm::vm(cu, ret.scp, body);
 
 #ifdef CXBQN_DEEPCHECKS
   if (nullptr == ret.v)
@@ -163,6 +164,7 @@ RunResult run(std::vector<i32> bc, O<Array> consts,
   return ret;
 }
 
+#if 0
 static u64 iii = 0;
 O<Value> vm(O<CompUnit> cu, ByteCodeRef bc, O<Array> consts, std::vector<O<Value>> stk,
             O<Scope> scope) {
@@ -379,9 +381,11 @@ done:
 
   return ret;
 }
+#endif
 
 #undef INSTR
 #undef INSTR1
 #undef INSTR2
+
 
 } // namespace cxbqn::vm
