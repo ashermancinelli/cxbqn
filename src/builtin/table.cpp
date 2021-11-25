@@ -13,7 +13,7 @@ O<Value> Table::call(u8 nargs, std::vector<O<Value>> args) {
   // if ((1 == nargs) != (args[2]->t()[t_Nothing])) throw std::runtime_error("⌜:
   // got · for 𝕨 with 2 args, or non-· with 1 arg");
 
-  auto x = std::dynamic_pointer_cast<Array>(args[1]);
+  auto x = dyncast<Array>(args[1]);
   if (nullptr == x)
     throw std::runtime_error("⌜: 𝕩 must be an array");
   const auto &xv = x->values;
@@ -26,7 +26,7 @@ O<Value> Table::call(u8 nargs, std::vector<O<Value>> args) {
     return ret;
   }
 
-  auto w = std::dynamic_pointer_cast<Array>(args[2]);
+  auto w = dyncast<Array>(args[2]);
   if (nullptr == w)
     throw std::runtime_error("⌜: 𝕩 and 𝕨 must be arrays");
   const auto &wv = w->values;

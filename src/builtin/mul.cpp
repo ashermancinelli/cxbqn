@@ -7,8 +7,8 @@ O<Value> Mul::call(u8 nargs, std::vector<O<Value>> args) {
   XNULLCHK("×");
   auto ox = args[1];
   auto ow = args[2];
-  auto x = std::dynamic_pointer_cast<Number>(args[1]);
-  auto w = std::dynamic_pointer_cast<Number>(args[2]);
+  auto x = dyncast<Number>(args[1]);
+  auto w = dyncast<Number>(args[2]);
   if (t_Number != type_builtin(ox) || t_Number != type_builtin(ow))
     throw std::runtime_error("×: arguments must be numbers");
   if (2 == nargs)

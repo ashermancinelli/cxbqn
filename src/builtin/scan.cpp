@@ -11,7 +11,7 @@ O<Value> Scan::call(u8 nargs, std::vector<O<Value>> args) {
   // if ((1 == nargs) != (args[2]->t()[t_Nothing])) throw std::runtime_error("`:
   // got · for 𝕨 with 2 args, or non-· with 1 arg");
 
-  auto x = std::dynamic_pointer_cast<Array>(args[1]);
+  auto x = dyncast<Array>(args[1]);
 
   if (x->N() == 0) {
     if (1 == x->shape.size() and 0 == x->shape.back())
@@ -28,11 +28,11 @@ O<Value> Scan::call(u8 nargs, std::vector<O<Value>> args) {
   auto iswarr = (t_Array == type_builtin(w));
   if (2 == nargs) {
     auto w_rank =
-        iswarr ? std::dynamic_pointer_cast<Array>(w)->shape.size() : 0;
+        iswarr ? dyncast<Array>(w)->shape.size() : 0;
     if (1 + w_rank != x->shape.size())
       throw std::runtime_error("`: rank of 𝕨 must be cell rank of 𝕩");
     if (iswarr) {
-      const auto &wsh = std::dynamic_pointer_cast<Array>(w)->shape;
+      const auto &wsh = dyncast<Array>(w)->shape;
       for (int i = 0; i < x->shape.size() - 1; i++)
         if (wsh[i] != x->shape[i + 1])
           throw std::runtime_error("`: shape of 𝕨 must be cell shape of 𝕩");
@@ -51,7 +51,7 @@ O<Value> Scan::call(u8 nargs, std::vector<O<Value>> args) {
   for (int i = 1; i < x->shape.size(); i++)
     cnt *= x->shape[i];
   int i = 0;
-  auto warr = iswarr ? std::dynamic_pointer_cast<Array>(w)
+  auto warr = iswarr ? dyncast<Array>(w)
                      : std::shared_ptr<Array>(new Array({w}));
   CXBQN_DEBUG("cnt={},warr={}", cnt, CXBQN_STR_NC((O<Value>)warr));
   if (1 == nargs)

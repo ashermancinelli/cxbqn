@@ -7,8 +7,8 @@ O<Value> Minus::call(u8 nargs, std::vector<O<Value>> args) {
   XNULLCHK("-");
   auto ox = args[1];
   auto ow = args[2];
-  auto x = std::dynamic_pointer_cast<Number>(args[1]);
-  auto w = std::dynamic_pointer_cast<Number>(args[2]);
+  auto x = dyncast<Number>(args[1]);
+  auto w = dyncast<Number>(args[2]);
 
   if (t_Character == type_builtin(ow) and t_Number == type_builtin(ox)) {
     return check_char(make_shared<Character>(w->v - x->v));

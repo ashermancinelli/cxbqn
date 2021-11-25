@@ -11,8 +11,8 @@ O<Value> Power::call(u8 nargs, std::vector<O<Value>> args) {
     throw std::runtime_error("⋆: only numbers");
   if (2 == nargs and t_Number != type_builtin(ow))
     throw std::runtime_error("⋆: only numbers");
-  auto x = std::dynamic_pointer_cast<Number>(ox);
-  auto w = std::dynamic_pointer_cast<Number>(ow);
+  auto x = dyncast<Number>(ox);
+  auto w = dyncast<Number>(ow);
   return NN(2 == nargs ? std::pow(w->v, x->v) : std::exp(x->v));
 }
 

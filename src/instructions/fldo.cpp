@@ -5,7 +5,7 @@ void fldo(const ByteCodeRef bc, uz &pc, std::vector<O<Value>> &stk,
           shared_ptr<CompUnit> cu) {
   auto i = bc[++pc];
 
-  auto ns = dynamic_pointer_cast<Namespace>(stk.back());
+  auto ns = dyncast<Namespace>(stk.back());
   stk.pop_back();
 
   auto it = std::find_if(cu->_exported.begin(), cu->_exported.end(),

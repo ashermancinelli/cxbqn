@@ -5,7 +5,7 @@ namespace cxbqn::provides {
 O<Value> FmtNum::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("•FmtNum:nargs={},args={}", nargs, args);
   XNULLCHK("•FmtNum");
-  auto x = std::dynamic_pointer_cast<Number>(args[1]);
+  auto x = dyncast<Number>(args[1]);
   std::stringstream ss;
   if (x->v == std::numeric_limits<f64>::infinity())
     ss << "∞";

@@ -21,16 +21,16 @@ O<Value> Decompose::call(u8 nargs, std::vector<O<Value>> args) {
   if (it != runtime.end())
     return (O<Value>(new Array({NNC(0), x})));
 
-  if (auto xx = dynamic_pointer_cast<Atop>(x))
+  if (auto xx = dyncast<Atop>(x))
     return (O<Value>(new Array({NNC(2), xx->f, xx->g})));
 
-  if (auto xx = dynamic_pointer_cast<Fork>(x))
+  if (auto xx = dyncast<Fork>(x))
     return (O<Value>(new Array({NNC(3), xx->f, xx->g, xx->h})));
 
-  if (auto xx = dynamic_pointer_cast<Md1Deferred>(x))
+  if (auto xx = dyncast<Md1Deferred>(x))
     return (O<Value>(new Array({NNC(4), xx->f, xx->m1})));
 
-  if (auto xx = dynamic_pointer_cast<Md2Deferred>(x))
+  if (auto xx = dyncast<Md2Deferred>(x))
     return (O<Value>(new Array({NNC(5), xx->f, xx->m2, xx->g})));
 
   return (O<Value>(new Array({NNC(1), x})));

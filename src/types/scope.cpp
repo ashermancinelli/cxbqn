@@ -38,7 +38,7 @@ void Scope::set(bool should_var_be_set, O<Reference> r, O<Value> _v) {
   O<Value> v = _v;
   if (r->tag.has_value()) {
     // fmt::print("{}\n",r->position_in_parent);
-    auto ns = dynamic_pointer_cast<Namespace>(_v);
+    auto ns = dyncast<Namespace>(_v);
     auto name = r->tag.value();
     v = ns->get(name);
   }
@@ -105,7 +105,7 @@ void Scope::set_source_info(std::vector<std::vector<uz>> si, O<Array> s) {
   // create a standard string of the source text
   std::string _s;
   for (auto v : s->values)
-    utf8::append(dynamic_pointer_cast<Character>(v)->c(),
+    utf8::append(dyncast<Character>(v)->c(),
                  std::back_inserter(_s));
   _source_str = _s;
 }

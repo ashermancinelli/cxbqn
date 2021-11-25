@@ -11,8 +11,8 @@ O<Value> Plus::call(u8 nargs, std::vector<O<Value>> args) {
     return ox;
 
   /* compare by value for data types */
-  auto x = std::dynamic_pointer_cast<Number>(ox);
-  auto w = std::dynamic_pointer_cast<Number>(ow);
+  auto x = dyncast<Number>(ox);
+  auto w = dyncast<Number>(ow);
 
   if (t_Character == type_builtin(ox) and t_Character == type_builtin(ow))
     throw std::runtime_error("+: Cannot add two characters");

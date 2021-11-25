@@ -25,13 +25,13 @@ int main(int argc, char **argv) {
 #include <cxbqn/__/compiled_runtime>
     );
     auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
-    auto runtime_ret = std::dynamic_pointer_cast<Array>(ret.v);
+    auto runtime_ret = dyncast<Array>(ret.v);
 
 #ifdef CXBQN_PROFILE_STARTUP
     auto t_rt = std::chrono::high_resolution_clock::now();
 #endif
 
-    auto bqnruntime = std::dynamic_pointer_cast<Array>(runtime_ret->values[0]);
+    auto bqnruntime = dyncast<Array>(runtime_ret->values[0]);
 
     auto setprims = runtime_ret->values[1];
 
@@ -73,7 +73,7 @@ int main(int argc, char **argv) {
         1, {fmt1, O<Value>(new Array({bi_Type(), decompose, glyph, fmtnum})),
             bi_Nothing()});
 
-    auto fmtarr = dynamic_pointer_cast<Array>(_fmtarr);
+    auto fmtarr = dyncast<Array>(_fmtarr);
     auto fmt = fmtarr->values[0];
     auto repr = fmtarr->values[1];
 
@@ -94,12 +94,12 @@ int main(int argc, char **argv) {
     } else {
       auto compiled = compiler->call(2, {compiler, src, compw});
       if (show_cu)
-        for (auto v : dynamic_pointer_cast<Array>(compiled)->values)
+        for (auto v : dyncast<Array>(compiled)->values)
           fmt::print("{}\n",*v);
       auto runret = vm::run(compiled);
       if (pp_res) {
         auto formatted = fmt->call(1, {fmt, runret.v, bi_Nothing()});
-        fmt::print("{}\n", dynamic_pointer_cast<Array>(formatted)->to_string());
+        fmt::print("{}\n", dyncast<Array>(formatted)->to_string());
       }
     }
 

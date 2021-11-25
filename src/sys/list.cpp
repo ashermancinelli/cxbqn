@@ -3,7 +3,7 @@
 namespace cxbqn::sys {
 O<Value> List::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("•List: nargs={},args={}", nargs, args);
-  auto d = dynamic_pointer_cast<Array>(args[1])->to_string();
+  auto d = dyncast<Array>(args[1])->to_string();
   auto ret = make_shared<Array>(0);
   for (const auto& dd : fs::directory_iterator{d}) {
     auto fn = fs::path(dd).filename();

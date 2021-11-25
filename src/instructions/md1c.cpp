@@ -10,7 +10,7 @@ void md1c(std::vector<O<Value>> &stk) {
 
   CXBQN_DEBUG("md1c:r={},f={}", CXBQN_STR_NC(opaque_r), CXBQN_STR_NC(f));
 
-  auto r = dynamic_pointer_cast<BlockInst>(opaque_r);
+  auto r = dyncast<BlockInst>(opaque_r);
   if (nullptr != r and r->imm()) {
     auto v = r->call(1, {opaque_r, f, bi_Nothing()});
     stk.push_back(v);

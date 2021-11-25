@@ -16,8 +16,8 @@ O<Value> LE::call(u8 nargs, std::vector<O<Value>> args) {
   if (t_Function == tx or t_Function == tw)
     throw std::runtime_error("≤: cannot compare functions");
 
-  auto nx = dynamic_pointer_cast<Number>(ox);
-  auto nw = dynamic_pointer_cast<Number>(ow);
+  auto nx = dyncast<Number>(ox);
+  auto nw = dyncast<Number>(ow);
 
   return NNC(tx != tw ? tw <= tx : nw->v <= nx->v);
 }

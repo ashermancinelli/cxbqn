@@ -81,7 +81,7 @@ int repl(O<Value> compiler, O<Array> bqnruntime, O<Value> sysfn_handler,
 
   {
     auto formatted = fmt->call(1, {fmt, runret.v, bi_Nothing()});
-    fmt::print("{}\n", dynamic_pointer_cast<Array>(formatted)->to_string());
+    fmt::print("{}\n", dyncast<Array>(formatted)->to_string());
   }
 
   // Now that we've gotten the repl started with the first execution, we pass
@@ -112,7 +112,7 @@ int repl(O<Value> compiler, O<Array> bqnruntime, O<Value> sysfn_handler,
 
     // By default, print the result
     auto formatted = fmt->call(1, {fmt, ret, bi_Nothing()});
-    fmt::print("{}\n", dynamic_pointer_cast<Array>(formatted)->to_string());
+    fmt::print("{}\n", dyncast<Array>(formatted)->to_string());
   }
 
   return 0;

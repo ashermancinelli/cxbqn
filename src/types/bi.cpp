@@ -51,9 +51,9 @@ O<Array> get_runtime() {
 #include <cxbqn/__/compiled_runtime>
   );
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
-  auto runtime_ret = std::dynamic_pointer_cast<Array>(ret.v);
+  auto runtime_ret = dyncast<Array>(ret.v);
 
-  return std::dynamic_pointer_cast<Array>(runtime_ret->values[0]);
+  return dyncast<Array>(runtime_ret->values[0]);
 }
 
 static O<Array> rtsp = nullptr;
@@ -75,8 +75,8 @@ O<Array> get_runtime_setprims() {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
 
   // Decompose the result to get the array with just the runtime
-  auto runtime_ret = std::dynamic_pointer_cast<Array>(ret.v);
-  auto runtime_raw = std::dynamic_pointer_cast<Array>(runtime_ret->values[0]);
+  auto runtime_ret = dyncast<Array>(ret.v);
+  auto runtime_raw = dyncast<Array>(runtime_ret->values[0]);
 
   auto setprims = runtime_ret->values[1];
 

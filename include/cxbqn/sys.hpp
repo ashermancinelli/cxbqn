@@ -104,7 +104,7 @@ CXBQN_BUILTIN_DECL(Md2, Catch, "⎊");
 struct Glyph : public Function {
   std::vector<O<Value>> runtime;
   Glyph(O<Value> _runtime)
-      : runtime{dynamic_pointer_cast<Array>(_runtime)->values} {}
+      : runtime{dyncast<Array>(_runtime)->values} {}
   O<Value> call(u8 nargs = 0, std::vector<O<Value>> args = {}) override;
   std::ostream &repr(std::ostream &os) const override { return os << "•Glyph"; }
 };
@@ -112,7 +112,7 @@ struct Glyph : public Function {
 struct Decompose : public Function {
 
   Decompose(O<Value> _runtime)
-      : runtime{dynamic_pointer_cast<Array>(_runtime)->values} {}
+      : runtime{dyncast<Array>(_runtime)->values} {}
 
   std::ostream &repr(std::ostream &os) const override {
     return os << "•Decompose";
@@ -129,7 +129,7 @@ O<Value> bi_Decompose();
 struct PrimInd : public Function {
 
   PrimInd(O<Value> _runtime)
-      : runtime{dynamic_pointer_cast<Array>(_runtime)->values} {}
+      : runtime{dyncast<Array>(_runtime)->values} {}
 
   std::ostream &repr(std::ostream &os) const override {
     return os << "PrimInd";

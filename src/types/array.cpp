@@ -36,7 +36,7 @@ std::ostream &Array::repr(std::ostream &os) const {
     if (e)
       if (t_Character == type_builtin(e)) {
         std::string s="";
-        utf8::append(dynamic_pointer_cast<Character>(e)->c(), std::back_inserter(s));
+        utf8::append(dyncast<Character>(e)->c(), std::back_inserter(s));
         os << s;
       } else
         e->repr(os);
@@ -72,7 +72,7 @@ O<Reference> RefArray::getref(uz idx) {
   if (nullptr == v)
     throw std::runtime_error("RefArray::getref: values[idx] is nullptr");
 #endif
-  auto r = std::dynamic_pointer_cast<Reference>(v);
+  auto r = dyncast<Reference>(v);
 #ifdef CXBQN_DEEPCHECKS
   if (nullptr == r)
     throw std::runtime_error(
@@ -88,7 +88,7 @@ std::string Array::to_string() const {
     if (nullptr == v or t_Character != type_builtin(v))
       s += " ";
     else
-      utf8::append(dynamic_pointer_cast<Character>(v)->c(), std::back_inserter(s));
+      utf8::append(dyncast<Character>(v)->c(), std::back_inserter(s));
   }
   return s;
 }

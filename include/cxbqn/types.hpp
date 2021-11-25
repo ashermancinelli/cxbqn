@@ -324,7 +324,7 @@ struct VarAlias : public Value {
   O<Namespace> _ns;
   std::string _name;
   VarAlias(O<Value> ns, std::string n)
-      : _ns{dynamic_pointer_cast<Namespace>(ns)}, _name{n} {}
+      : _ns{dyncast<Namespace>(ns)}, _name{n} {}
   TypeType t() const override { return TypeType{annot(t_Alias)}; }
   std::ostream &repr(std::ostream &os) const override {
     return os << "( alias " << _name << ")";

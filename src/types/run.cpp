@@ -6,8 +6,8 @@ namespace cxbqn::vm {
 
 using namespace types;
 
-#define ARR(x) dynamic_pointer_cast<Array>(x)
-#define NUM(x) dynamic_pointer_cast<Number>(x)
+#define ARR(x) dyncast<Array>(x)
+#define NUM(x) dyncast<Number>(x)
 
 /*
 Example compiled output of "5+5":

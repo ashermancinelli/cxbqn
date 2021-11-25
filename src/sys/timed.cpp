@@ -16,7 +16,7 @@ O<Value> Timed::call(u8 nargs, std::vector<O<Value>> args) {
   auto x = args[1];
   auto w = args[2];
 
-  uz cnt = 2 == nargs ? static_cast<uz>(dynamic_pointer_cast<Number>(w)->v) : 1;
+  uz cnt = 2 == nargs ? static_cast<uz>(dyncast<Number>(w)->v) : 1;
 
   auto start = std::chrono::high_resolution_clock::now();
   for (int i=0; i < cnt; i++)

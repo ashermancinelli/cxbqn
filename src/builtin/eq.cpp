@@ -10,7 +10,7 @@ O<Value> EQ::call(u8 nargs, std::vector<O<Value>> args) {
   auto ow = args[2];
 
   if (1 == nargs)
-    if (auto x = dynamic_pointer_cast<Array>(ox))
+    if (auto x = dyncast<Array>(ox))
       return NNC(x->shape.size());
     else
       return NNC(0);

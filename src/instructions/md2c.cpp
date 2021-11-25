@@ -14,7 +14,7 @@ void md2c(std::vector<O<Value>> &stk) {
   CXBQN_DEBUG("md2c:(F _r_ G)=({} {} {})", CXBQN_STR_NC(f),
               CXBQN_STR_NC(opaque_r), CXBQN_STR_NC(g));
 
-  auto r = dynamic_pointer_cast<BlockInst>(opaque_r);
+  auto r = dyncast<BlockInst>(opaque_r);
 
   if (nullptr != r and r->imm()) {
     auto v = r->call(2, {opaque_r, f, g});

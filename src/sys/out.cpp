@@ -6,7 +6,7 @@ O<Value> Out::call(u8 nargs, std::vector<O<Value>> args) {
   if (2 == nargs)
     throw std::runtime_error("•Out: can only be called with one arg");
 
-  auto x = dynamic_pointer_cast<Array>(args[1]);
+  auto x = dyncast<Array>(args[1]);
   if (nullptr == x)
     throw std::runtime_error("•Out: can only be called with strings");
 

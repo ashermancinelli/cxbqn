@@ -9,7 +9,7 @@ O<Value> Show::call(u8 nargs, std::vector<O<Value>> args) {
   auto x = args[1];
 
   auto formatted = _fmt->call(1, {_fmt, x, bi_Nothing()});
-  fmt::print("{}\n", dynamic_pointer_cast<Array>(formatted)->to_string());
+  fmt::print("{}\n", dyncast<Array>(formatted)->to_string());
 
   return formatted;
 }

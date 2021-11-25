@@ -6,8 +6,8 @@ namespace cxbqn::vm {
 
 using namespace types;
 
-#define ARR(x) dynamic_pointer_cast<Array>(x)
-#define NUM(x) dynamic_pointer_cast<Number>(x)
+#define ARR(x) dyncast<Array>(x)
+#define NUM(x) dyncast<Number>(x)
 
 O<Value> vm(shared_ptr<CompUnit> cu, shared_ptr<Scope> scope, Body b) {
   uz pc = b.bc_offset;

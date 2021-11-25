@@ -25,11 +25,11 @@ static std::vector<std::string> listsys{
 
 O<Value> SystemFunctionResolver::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("SystemFunctionResolver: nargs={},args={}", nargs, args);
-  auto x = dynamic_pointer_cast<Array>(args[1]);
+  auto x = dyncast<Array>(args[1]);
   std::vector<O<Value>> ret;
 
   for (int i = 0; i < x->N(); i++) {
-    auto foo = dynamic_pointer_cast<Array>(x->values[i]);
+    auto foo = dyncast<Array>(x->values[i]);
     auto s = foo->to_string();
     if ("cxbqn" == s) {
       ret.push_back(make_shared<CXBQN>());

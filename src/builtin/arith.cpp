@@ -11,8 +11,8 @@ namespace cxbqn::provides {
     XNULLCHK(SYMBOL);                                                          \
     auto ox = args[1];                                                         \
     auto ow = args[2];                                                         \
-    auto x = std::dynamic_pointer_cast<Number>(args[1]);                       \
-    auto w = std::dynamic_pointer_cast<Number>(args[2]);                       \
+    auto x = dyncast<Number>(args[1]);                       \
+    auto w = dyncast<Number>(args[2]);                       \
     auto ret = (RETURN);                                                       \
     return ret;                                                                \
   }

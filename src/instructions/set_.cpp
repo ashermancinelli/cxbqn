@@ -20,7 +20,7 @@ static O<Value> safe_set_refer(O<Value> opaque_refer, O<Value> value,
   // If we're setting a reference, the type is either reference or refarray.
   // If the masked type matches t_Array, we know we're working with an array.
   if (opaque_refer->t()[t_RefArray]) {
-    auto aref = dynamic_pointer_cast<RefArray>(opaque_refer);
+    auto aref = dyncast<RefArray>(opaque_refer);
 #ifdef CXBQN_DEEPCHECKS
     if (nullptr == aref)
       throw std::runtime_error(
@@ -41,7 +41,7 @@ static O<Value> safe_set_refer(O<Value> opaque_refer, O<Value> value,
       return value;
     } else {
 
-      auto aval = dynamic_pointer_cast<Array>(value);
+      auto aval = dyncast<Array>(value);
 #ifdef CXBQN_DEEPCHECKS
       if (nullptr == aval)
         throw std::runtime_error("setn: Could not cast value to type Array when "
@@ -53,7 +53,7 @@ static O<Value> safe_set_refer(O<Value> opaque_refer, O<Value> value,
     }
   } else {
 
-    auto refer = dynamic_pointer_cast<Reference>(opaque_refer);
+    auto refer = dyncast<Reference>(opaque_refer);
 #ifdef CXBQN_DEEPCHECKS
     if (nullptr == refer)
       throw std::runtime_error(
@@ -83,7 +83,7 @@ static O<Value> set_un_helper(std::vector<O<Value>> &stk, shared_ptr<Scope> scp)
 }
 
 static O<Value> setm_ref(O<Value> F, O<Value> x, O<Value> r, shared_ptr<Scope> scp) {
-  auto refer = dynamic_pointer_cast<Reference>(r);
+  auto refer = dyncast<Reference>(r);
   auto v = F->call(2, {F, x, scp->get(refer)});
 
   // Set the new value of the reference, and push it back on the stack
@@ -93,7 +93,7 @@ static O<Value> setm_ref(O<Value> F, O<Value> x, O<Value> r, shared_ptr<Scope> s
 
 static O<Value> setm_refarray(O<Value> F, O<Value> x, O<Value> r,
                               shared_ptr<Scope> scp) {
-  auto refarr = dynamic_pointer_cast<RefArray>(r);
+  auto refarr = dyncast<RefArray>(r);
   auto varr = make_shared<Array>(refarr->N());
 
   // create an array from the reference array to pass into F
@@ -161,7 +161,7 @@ void setc(std::vector<O<Value>> &stk, shared_ptr<Scope> scp) {
   CXBQN_DEBUG("setm:F={},r={}", CXBQN_STR_NC(F), CXBQN_STR_NC(r));
 
   // F is called with 𝕩 and dereferenced r
-  auto refer = dynamic_pointer_cast<Reference>(r);
+  auto refer = dyncast<Reference>(r);
   auto v = F->call(1, {F, scp->get(refer), bi_Nothing()});
 
   // Set the new value of the reference, and push it back on the stack

@@ -7,17 +7,17 @@ O<Value> Assert::call(u8 nargs, std::vector<O<Value>> args) {
   XNULLCHK("!");
   auto x = args[1], w = args[2];
   if (t_Number != type_builtin(args[1]) or
-      !feq_helper(1., std::dynamic_pointer_cast<Number>(args[1])->v)) {
+      !feq_helper(1., dyncast<Number>(args[1])->v)) {
     std::string s = "";
     if (nargs == 2) {
       if (type_builtin(w) == t_Array)
-        s += dynamic_pointer_cast<Array>(w)->to_string();
+        s += dyncast<Array>(w)->to_string();
       else
         s += fmt::format("{}", CXBQN_STR_NC(w));
     }
     s += " ! ";
     if (t_Array == type_builtin(args[1])) {
-      auto ar = dynamic_pointer_cast<Array>(args[1]);
+      auto ar = dyncast<Array>(args[1]);
 
     }
     else
