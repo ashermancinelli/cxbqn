@@ -7,17 +7,8 @@
 		<title>reveal.js - Slide Transitions</title>
 
 		<link rel="stylesheet" href="node_modules/reveal.js/dist/reveal.css">
+		<link rel="stylesheet" href="node_modules/reveal.js/plugin/highlight/zenburn.css">
 		<link rel="stylesheet" href="node_modules/reveal.js/dist/theme/black.css" id="theme">
-		<style type="text/css" media="screen">
-			.slides section.has-dark-background,
-			.slides section.has-dark-background h3 {
-				color: #fff;
-			}
-			.slides section.has-light-background,
-			.slides section.has-light-background h3 {
-				color: #222;
-			}
-		</style>
 	</head>
 
 	<body>
@@ -37,8 +28,8 @@
 
         <section data-auto-animate>
           <h2><div data-id="0">Purpose             </div></h2>
-          <h2><div data-id="1">Spec                </div></h2>
-          <h2><div data-id="2">Implementation      </div></h2>
+          <h2><div data-id="1">Bytecode                </div></h2>
+          <h2><div data-id="2">Runtime      </div></h2>
           <h2><div data-id="3">Looking Forward     </div></h2>
         </section>
 
@@ -46,37 +37,310 @@
           <h1><div data-id="0">Purpose</div></h1>
           <ul>
             <li>Fun!                 </li>
-            <li>GPU-enabled APL      </li>
+            <li>GPU-enabled APL!     </li>
             <li>Easy to contribute   </li>
           </ul>
         </section>
 
         <section data-auto-animate>
           <h2><div data-id="0">Purpose             </div></h2>
-          <h2><div data-id="1">Spec                </div></h2>
-          <h2><div data-id="2">Implementation      </div></h2>
+          <h2><div data-id="1">Bytecode            </div></h2>
+          <h2><div data-id="2">Runtime      </div></h2>
           <h2><div data-id="3">Looking Forward     </div></h2>
         </section>
 
+        <section>
+          <section data-auto-animate>
+            <h1><div data-id="1">Bytecode</div></h1>
+          </section>
+
+          <section>
+            <pre>
+              <code class="language-python" data-trim data-line-numbers="|1-2|3-4|6-7|9-10|12-13|15-16">
+                # Compilation unit for the BQN program "2+2"
+                compiler_output = [
+                  # Bytecode
+                  [0,1,0,0,0,1,17,7],
+
+                  # Consts
+                  [runtime[0],2],
+
+                  # Blocks (block type, block immediateness, Index or indices in bodies)
+                  [[0,1,0]],
+
+                  # Bodies (starting index in bc, num vars, 2 more optional fields)
+                  [[0,0]]
+
+                  [...] # optional field
+                  [...] # optional field
+                ]
+              </code>
+            </pre>
+          </section>
+
+          <section><pre><code lass="language-python" data-trim data-line-numbers>
+            class CompilationUnit:
+              def __init__(self, bc, consts, blocks, bodies):
+                self.bc = bc
+                self.consts = consts
+                self.blocks = blocks
+                self.bodies = bodies
+          </code></pre></section>
+
+          <section><pre><code lass="language-python" data-trim data-line-numbers>
+            # Names for instructions in bytecode
+            class OP:
+              PUSH = 0x00
+              DFND = 0x01
+              # ...
+          </code></pre></section>
+
+          <section><pre><code lass="language-python" data-trim data-line-numbers>
+            class Body:
+              def __init__(self, var_count, bc_offset):
+                self.var_count = var_count
+                self.bc_offset = bc_offset
+            </code></pre></section>
+
+          <section data-auto-animate>
+            <pre data-id="vm::vm"><code class="language-python" data-trim data-line-numbers="|3-5|3|4|5|7-9">
+              def vm(comp_unit):
+
+                body = comp_unit.bodies[comp_unit.blocks[0].body_idx]
+                pc = body.bc_offset
+                stack = []
+
+                while True:
+                  match comp_unit.bc[pc]:
+                    # ...
+            </code></pre>
+          </section>
+
+          <section data-auto-animate>
+            <pre data-id="vm::vm"><code class="language-python" data-trim data-line-numbers="9-12">
+              def vm(comp_unit):
+
+                  body = comp_unit.bodies[comp_unit.blocks[0].body_idx]
+                  pc = body.bc_offset
+                  stack = []
+
+                  while True:
+                      match comp_unit.bc[pc]:
+                          case OP.PUSH:
+                              pc += 1
+                              arg = comp_unit.bc[pc]
+                              stack.append(comp_unit.consts[arg])
+                          # ...
+            </code></pre>
+          </section>
+
+          <section data-auto-animate=""><pre data-id="py-exe-vm">
+            <code class="language-python" data-trim data-line-numbers="|5">
+              bytecode:     [0,1,0,0,0,1,17,7]
+              prog counter:  ^
+              instruction:  PUSH 1
+              stack:        []
+              constants:    [runtime[0],2]
+            </code>
+          </pre></section>
+
+          <section data-auto-animate=""><pre data-id="py-exe-vm">
+            <code class="language-python" data-trim data-line-numbers="5|1-5|1-3|4,5">
+              bytecode:     [0,1,0,0,0,1,17,7]
+              prog counter:  ^
+              instruction:  PUSH 1
+              stack:        []
+              constants:    [+,2]
+            </code>
+          </pre></section>
+
+          <section data-auto-animate=""><pre data-id="py-exe-vm">
+            <code class="language-python" data-trim data-line-numbers="4,5|">
+              bytecode:     [0,1,0,0,0,1,17,7]
+              prog counter:  ^
+              instruction:  PUSH 1
+              stack:        [2]
+              constants:    [+,2]
+            </code>
+          </pre></section>
+
+          <section data-auto-animate=""><pre data-id="py-exe-vm">
+            <code class="language-python" data-trim data-line-numbers="1-3|4,5">
+              bytecode:     [0,1,0,0,0,1,17,7]
+              prog counter:      ^
+              instruction:  PUSH 0
+              stack:        [2]
+              constants:    [+,2]
+            </code>
+          </pre></section>
+        
+          <section data-auto-animate=""><pre data-id="py-exe-vm">
+            <code class="language-python" data-trim data-line-numbers="4,5|">
+              bytecode:     [0,1,0,0,0,1,17,7]
+              prog counter:      ^
+              instruction:  PUSH 0
+              stack:        [2,+]
+              constants:    [+,2]
+            </code>
+          </pre></section>
+                  
+          <section data-auto-animate=""><pre data-id="py-exe-vm">
+            <code class="language-python" data-trim data-line-numbers="1-3|4-5">
+              bytecode:     [0,1,0,0,0,1,17,7]
+              prog counter:          ^
+              instruction:  PUSH 1
+              stack:        [2,+]
+              constants:    [+,2]
+            </code>
+          </pre></section>
+
+          <section data-auto-animate=""><pre data-id="py-exe-vm">
+            <code class="language-python" data-trim data-line-numbers="4-5|">
+              bytecode:     [0,1,0,0,0,1,17,7]
+              prog counter:          ^
+              instruction:  PUSH 1
+              stack:        [2,+,2]
+              constants:    [+,2]
+            </code>
+          </pre></section>
+
+          <section data-auto-animate=""><pre data-id="py-exe-vm">
+            <code class="language-python" data-trim data-line-numbers="1-3">
+              bytecode:     [0,1,0,0,0,1,17,7]
+              prog counter:              ^
+              instruction:  FN2O
+              stack:        [2,+,2]
+              constants:    [+,2]
+            </code>
+          </pre></section>
+
+          <section data-auto-animate=""><pre data-id="py-exe-vm">
+            <code class="language-python" data-trim data-line-numbers>
+              while True:
+                  match comp_unit.bc[pc]:
+                      case ...: # other instructions...
+                      case OP.FN2O:
+                          x = stack.pop() # 2
+                          s = stack.pop() # +
+                          w = stack.pop() # 2
+                          stack.append(s(x, w)) # 2 + 2 = 4
+            </code>
+          </pre></section>
+
+          <section data-auto-animate=""><pre data-id="py-exe-vm">
+            <code class="language-python" data-trim data-line-numbers="3-4">
+              bytecode:     [0,1,0,0,0,1,17,7]
+              prog counter:              ^
+              instruction:  FN2O
+              stack:        [2,+,2]
+              constants:    [+,2]
+            </code>
+          </pre></section>
+
+          <section data-auto-animate=""><pre data-id="py-exe-vm">
+            <code class="language-python" data-trim data-line-numbers="3-4|">
+              bytecode:     [0,1,0,0,0,1,17,7]
+              prog counter:              ^
+              instruction:  FN2O
+              stack:        [4]
+              constants:    [+,2]
+            </code>
+          </pre></section>
+
+          <section data-auto-animate=""><pre data-id="py-exe-vm">
+            <code class="language-python" data-trim data-line-numbers="1-3|3-4|">
+              bytecode:     [0,1,0,0,0,1,17,7]
+              prog counter:                 ^
+              instruction:  RETD
+              stack:        [4]
+              constants:    [+,2]
+            </code>
+          </pre></section>
+
+          <section>
+            <pre><code class="language-plaintext" data-trim data-line-numbers>
+              # Tests are meant to be run in order; comments indicate
+              # new instructions introduced by each.
+              
+              5  % 5                     #  0 PUSH,  7 RETN
+              3  % 4⋄3                   #  6 POPS
+              5  % a←5                   # 33 VARM, 48 SETN
+              ...    
+            </code></pre>
+          </section>
+        </section>
+
         <section data-auto-animate>
-          <h1><div data-id="1">Spec</div></h1>
+          <h1><div data-id="1">Bytecode</div></h1>
         </section>
 
         <section data-auto-animate>
           <h2><div data-id="0">Purpose             </div></h2>
-          <h2><div data-id="1">Spec                </div></h2>
-          <h2><div data-id="2">Implementation      </div></h2>
+          <h2><div data-id="1">Bytecode                </div></h2>
+          <h2><div data-id="2">Runtime      </div></h2>
           <h2><div data-id="3">Looking Forward     </div></h2>
         </section>
 
-        <section data-auto-animate>
-          <h1><div data-id="2">Implementation</div></h1>
+        <section>
+          <section data-auto-animate>
+            <h1><div data-id="2">Runtime</div></h1>
+          </section>
+        
+          <section>
+            <pre><code class="language-plaintext" data-trim data-line-numbers="|3">
+              compiler_output = [
+                [0,1,0,0,0,1,17,7],
+                [runtime[0],2],
+                [[0,1,0]],
+                [[0,0]]
+                [...] # optional field
+                [...] # optional field
+              ]
+            </code></pre>
+          </section>
+
+          <section>
+            <img src="asset/provides.png">
+          </section>
+
+          <section data-auto-animate>
+            <pre data-id="prim"><code class="language-python" data-trim data-line-numbers>
+              def pick(x, w=None): # aka ⊑
+                  return x[0 if w is None else w]
+            </code></pre>
+          </section>
+
+          <section data-auto-animate>
+            <pre data-id="prim"><code class="language-python" data-trim data-line-numbers>
+              def lessequal(x, w=None): 
+                  ...
+              def deshape(x, w=None):
+                  ...
+              def pick(x, w=None): # aka ⊑
+                  return x[0 if w is None else w]
+            </code></pre>
+          </section>
+
+          <section data-auto-animate>
+            <pre data-id="prim"><code class="language-python" data-trim data-line-numbers>
+              def lessequal(x, w=None): 
+                  ...
+              def deshape(x, w=None):
+                  ...
+              def pick(x, w=None):
+                  ...
+              runtime = [
+                  lessequal, deshape, ...
+              ]
+            </code></pre>
+          </section>
+
         </section>
 
         <section data-auto-animate>
           <h2><div data-id="0">Purpose             </div></h2>
-          <h2><div data-id="1">Spec                </div></h2>
-          <h2><div data-id="2">Implementation      </div></h2>
+          <h2><div data-id="1">Bytecode                </div></h2>
+          <h2><div data-id="2">Runtime      </div></h2>
           <h2><div data-id="3">Looking Forward     </div></h2>
         </section>
 
@@ -86,8 +350,8 @@
 
         <section data-auto-animate>
           <h2><div data-id="0">Purpose             </div></h2>
-          <h2><div data-id="1">Spec                </div></h2>
-          <h2><div data-id="2">Implementation      </div></h2>
+          <h2><div data-id="1">Bytecode                </div></h2>
+          <h2><div data-id="2">Runtime      </div></h2>
           <h2><div data-id="3">Looking Forward     </div></h2>
         </section>
 
@@ -96,16 +360,27 @@
     </div>
 
     <script src="node_modules/reveal.js/dist/reveal.js"></script>
+    <script src="node_modules/reveal.js/plugin/highlight/highlight.js"></script>
+    <script src="node_modules/reveal.js/plugin/markdown/markdown.js"></script>
     <script>
       Reveal.initialize({
               center: true,
               history: true,
-
-              // transition: 'slide',
-              // transitionSpeed: 'slow',
-              // backgroundTransition: 'slide'
+              progress: true,
+              plugins: [ RevealHighlight, RevealMarkdown ]
             });
     </script>
 
   </body>
 </html>
+
+<style type="text/css">
+  .highlight-inline {
+      background:yellow;
+      color:gray;
+  }
+  .highlight-inline span {
+      background:inherit;
+      color:inherit;
+  }
+</style>
