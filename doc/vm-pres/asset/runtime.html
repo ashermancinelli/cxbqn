@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<body>
+
+<script src="https://d3js.org/d3.v4.js"></script>
+<script>
+
+var g = d3.select('body')
+    .append('svg').attr('id', 'vm')
+    .attr('width', '1000')
+    .attr('height', '600')
+    .append('g')
+
+var mr = (r) => {
+  g.append('rect')
+    .attr('width', r.w)
+    .attr('height', r.h)
+    .attr('x', r.x)
+    .attr('y', r.y)
+    .attr('fill', r.c)
+    .attr('id', r.id);
+    
+  g.append('text')
+    .attr('id', r.id + '-label')
+    .text(r.t)
+    .attr('font-size', '20')
+    .attr('x', r.x+(r.w/2))
+    .attr('y', r.y+(r.h/2))
+    .attr('fill', 'black')
+    .attr('text-anchor', 'middle')
+    .attr('alignment-baseline', 'central')
+}
+
+var vm = {
+  id: 'vm', c: '#ed574c', t: 'Compilation Unit',
+  h: 100,  w: 200,  x: 400,  y: 300,
+}
+
+
+var _transitions = [
+  {
+    transitionForward: () => {
+    },
+  },
+]
+</script>
+</body>
+</html>
