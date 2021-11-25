@@ -21,8 +21,9 @@ O<Value> SH::call(u8 nargs, std::vector<O<Value>> args) {
   std::stringstream err;
   err << p.stderr().rdbuf();
 
-  return O<Value>(
-      new Array({make_shared<Number>(ec), make_shared<Array>(out.str()),
-                 make_shared<Array>(err.str())}));
+  auto ret = CXBQN_NEW(Array, 3);
+  ret->values.assign({CXBQN_NEW(Number, ec), CXBQN_NEW(Array, out.str()),
+                      CXBQN_NEW(Array, err.str())});
+  return ret;
 }
 } // namespace cxbqn::sys

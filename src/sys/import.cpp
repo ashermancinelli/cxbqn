@@ -27,7 +27,7 @@ O<Value> Import::call(u8 nargs, std::vector<O<Value>> args) {
     _src += ch;
   }
   std::fclose(fp);
-  auto src = make_shared<Array>(_src);
+  auto src = CXBQN_NEW(Array,_src);
 
   auto compiled = _compiler->call(2, {_compiler, src, _compiler_args});
 

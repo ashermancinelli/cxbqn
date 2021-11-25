@@ -12,7 +12,7 @@ struct SysError : public Function {
         fmt::format("System Error: {} is not current available in CXBQN.\nSee "
                     "•listSys for all available system functions.",
                     mock);
-    return make_shared<Array>(s);
+    return CXBQN_NEW(Array,s);
   }
   std::ostream &repr(std::ostream &os) const override {
     return os << "•SystemError";
@@ -32,42 +32,42 @@ O<Value> SystemFunctionResolver::call(u8 nargs, std::vector<O<Value>> args) {
     auto foo = dyncast<Array>(x->values[i]);
     auto s = foo->to_string();
     if ("cxbqn" == s) {
-      ret.push_back(make_shared<CXBQN>());
+      ret.push_back(CXBQN_NEW(CXBQN));
     } else if ("show" == s) {
-      ret.push_back(make_shared<Show>(_fmt));
+      ret.push_back(CXBQN_NEW(Show,_fmt));
     } else if ("listsys" == s) {
-      auto ls = make_shared<Array>(listsys.size());
+      auto ls = CXBQN_NEW(Array,listsys.size());
       for (int i = 0; i < listsys.size(); i++)
-        ls->values[i] = make_shared<Array>(listsys[i]);
+        ls->values[i] = CXBQN_NEW(Array,listsys[i]);
       ret.push_back(ls);
     } else if ("sh" == s) {
-      ret.push_back(make_shared<SH>());
+      ret.push_back(CXBQN_NEW(SH));
     } else if ("type" == s) {
-      ret.push_back(make_shared<Type>());
+      ret.push_back(CXBQN_NEW(Type));
     } else if ("decompose" == s) {
       ret.push_back(O<Value>(new Decompose(_runtime)));
     } else if ("list" == s) {
-      ret.push_back(make_shared<List>());
+      ret.push_back(CXBQN_NEW(List));
     } else if ("exit" == s) {
-      ret.push_back(make_shared<Exit>());
+      ret.push_back(CXBQN_NEW(Exit));
     } else if ("timed" == s) {
-      ret.push_back(make_shared<Timed>());
+      ret.push_back(CXBQN_NEW(Timed));
     } else if ("unixtime" == s) {
-      ret.push_back(make_shared<UnixTime>());
+      ret.push_back(CXBQN_NEW(UnixTime));
     } else if ("flines" == s) {
-      ret.push_back(make_shared<FLines>());
+      ret.push_back(CXBQN_NEW(FLines));
     } else if ("out" == s) {
-      ret.push_back(make_shared<Out>());
+      ret.push_back(CXBQN_NEW(Out));
     } else if ("import" == s) {
-      auto args = make_shared<Array>(2);
+      auto args = CXBQN_NEW(Array,2);
       args->values[0] = _runtime;
       args->values[1] = shared_from_this();
-      ret.push_back(make_shared<Import>(_compiler, args));
+      ret.push_back(CXBQN_NEW(Import,_compiler, args));
     } else if ("bqn" == s) {
-      auto args = make_shared<Array>(2);
+      auto args = CXBQN_NEW(Array,2);
       args->values[0] = _runtime;
       args->values[1] = shared_from_this();
-      ret.push_back(make_shared<BQN>(_compiler, args));
+      ret.push_back(CXBQN_NEW(BQN,_compiler, args));
     } else if ("fmt" == s) {
       ret.push_back(_fmt);
     } else if ("args" == s) {
@@ -77,10 +77,10 @@ O<Value> SystemFunctionResolver::call(u8 nargs, std::vector<O<Value>> args) {
     } else if ("repr" == s) {
       ret.push_back(_repr);
     } else {
-      ret.push_back(make_shared<SysError>(s));
+      ret.push_back(CXBQN_NEW(SysError,s));
     }
   }
-  auto vret = make_shared<Array>(ret.size());
+  auto vret = CXBQN_NEW(Array,ret.size());
   vret->values = ret;
   return vret;
 }

@@ -12,9 +12,9 @@ O<Value> FLines::call(u8 nargs, std::vector<O<Value>> args) {
   auto x = args[1];
   auto pth = fs::path(dyncast<Array>(x)->to_string());
   std::ifstream f(pth.c_str());
-  auto ret = make_shared<Array>(0);
+  auto ret = CXBQN_NEW(Array,0);
   for (std::string line; std::getline(f, line); )
-    ret->values.push_back(O<Value>(new Array(line)));
+    ret->values.push_back(CXBQN_NEW(Array,line));
   ret->shape[0] = ret->values.size();
   return ret;
 }

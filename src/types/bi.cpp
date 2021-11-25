@@ -1,12 +1,12 @@
 #include <cmath>
 #include <cxbqn/comp_utils.hpp>
-#include <cxbqn/sys.hpp>
 #include <cxbqn/debug.hpp>
+#include <cxbqn/sys.hpp>
 
 namespace cxbqn::provides {
 O<types::Array> get_provides() {
   CXBQN_DEBUG("provides::get_provides");
-  auto prov = make_shared<Array>(23);
+  auto prov = CXBQN_NEW(Array, 23);
 
   prov->values[0] = bi_Type();
   prov->values[1] = bi_Fill();
@@ -81,17 +81,19 @@ O<Array> get_runtime_setprims() {
   auto setprims = runtime_ret->values[1];
 
   // Inform the two latter builtins of the runtime so they can refer to it
-  auto decompose = make_shared<Decompose>(runtime_raw);
-  auto primind = make_shared<PrimInd>(runtime_raw);
+  auto decompose = CXBQN_NEW(Decompose, runtime_raw);
+  auto primind = CXBQN_NEW(PrimInd, runtime_raw);
+  auto xarg = CXBQN_NEW(Array, 2);
+  xarg->values.assign({decompose, primind});
 
-  setprims->call(1, {setprims, O<Array>(new Array({decompose, primind})), bi_Nothing()});
+  setprims->call(1, {setprims, xarg, bi_Nothing()});
 
   return runtime_raw;
 }
 
 O<Array> get_runtime_bionly() {
   CXBQN_DEBUG("provides::get_runtime_bionly");
-  auto rt = make_shared<Array>(60);
+  auto rt = CXBQN_NEW(Array,60);
 
   rt->values[0] = bi_Plus();
   rt->values[1] = bi_Minus();

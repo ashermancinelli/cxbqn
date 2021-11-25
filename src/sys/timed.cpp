@@ -24,7 +24,7 @@ O<Value> Timed::call(u8 nargs, std::vector<O<Value>> args) {
   auto stop = std::chrono::high_resolution_clock::now();
   auto dur = std::chrono::duration_cast<std::chrono::seconds>(stop - start).count();
 
-  return make_shared<Number>(static_cast<f64>(dur));
+  return CXBQN_NEW(Number,static_cast<f64>(dur));
 }
 
 } // namespace cxbqn::sys
