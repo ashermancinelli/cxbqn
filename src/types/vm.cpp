@@ -9,7 +9,7 @@ using namespace types;
 #define ARR(x) dynamic_pointer_cast<Array>(x)
 #define NUM(x) dynamic_pointer_cast<Number>(x)
 
-O<Value> vm(O<CompUnit> cu, O<Scope> scope, Body b) {
+O<Value> vm(shared_ptr<CompUnit> cu, shared_ptr<Scope> scope, Body b) {
   uz pc = b.bc_offset;
   auto &bc = cu->_bc;
   auto &consts = cu->_consts;

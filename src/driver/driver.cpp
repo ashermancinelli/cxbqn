@@ -1,8 +1,8 @@
 #include "driver.hpp"
 
 #ifdef CXBQN_READLINE
-#include <readline/history.h>
 #include <readline/readline.h>
+#include <readline/history.h>
 #include <stdlib.h>
 #endif
 

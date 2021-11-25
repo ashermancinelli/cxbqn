@@ -5,7 +5,7 @@
 
 namespace cxbqn::types {
 
-BlockInst::BlockInst(O<Scope> scp, uz blk_idx)
+BlockInst::BlockInst(shared_ptr<Scope> scp, uz blk_idx)
     : scp{scp}, blk_idx{blk_idx} {
   // In the specification, the return of •Type for a function, 1mod, and 2mod
   // are 3, 4, and 5, but the block types as returned from the compiler are

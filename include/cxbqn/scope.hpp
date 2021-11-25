@@ -6,11 +6,11 @@ namespace cxbqn::types {
 
 struct Scope : public std::enable_shared_from_this<Scope> {
 
-  Scope(O<CompUnit> cu) : cu{cu}, blk_idx{0} {}
-  Scope(O<Scope> parent, uz blk_idx)
+  Scope(shared_ptr<CompUnit> cu) : cu{cu}, blk_idx{0} {}
+  Scope(shared_ptr<Scope> parent, uz blk_idx)
       : parent{parent}, cu{parent->cu}, blk_idx{blk_idx} {}
 
-  O<CompUnit> cu;
+  shared_ptr<CompUnit> cu;
 
   /* Get a reference by traversing the scope lineage */
   O<Value> get(O<Reference> r);
@@ -19,10 +19,10 @@ struct Scope : public std::enable_shared_from_this<Scope> {
   void set(bool should_var_be_set, O<Reference> r, O<Value> v);
 
   /* Get the parent scope `depth` generations up. */
-  O<Scope> get_nth_parent(uz depth);
+  shared_ptr<Scope> get_nth_parent(uz depth);
 
   /* When using references, we must have a way to traverse the scope lineage */
-  W<Scope> parent;
+  weak_ptr<Scope> parent;
 
   /*
    * Each scope contains some number of variables. For functions/modifiers,
@@ -46,7 +46,7 @@ struct Scope : public std::enable_shared_from_this<Scope> {
       nullopt;
   std::optional<std::string> _source_str = nullopt;
 
-  Scope(O<CompUnit> cu, uz bi) : cu{cu}, blk_idx{bi}, parent{O<Scope>{}} {}
+  Scope(shared_ptr<CompUnit> cu, uz bi) : cu{cu}, blk_idx{bi}, parent{shared_ptr<Scope>{}} {}
 };
 
 } // namespace cxbqn::types

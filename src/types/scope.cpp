@@ -13,7 +13,7 @@ O<Value> Scope::get(O<Reference> r) {
 #endif
 
   const auto n = r->depth;
-  O<Scope> scp = get_nth_parent(n);
+  shared_ptr<Scope> scp = get_nth_parent(n);
 
   return scp->vars[r->position_in_parent];
 }
@@ -58,7 +58,7 @@ void Scope::set(bool should_var_be_set, O<Reference> r, O<Value> _v) {
   scp->vars[r->position_in_parent] = v;
 }
 
-O<Scope> Scope::get_nth_parent(uz depth) {
+shared_ptr<Scope> Scope::get_nth_parent(uz depth) {
   CXBQN_DEBUG("Scope::get_nth_parent:depth={}", depth);
   auto scp = shared_from_this();
   while (depth-- > 0) {

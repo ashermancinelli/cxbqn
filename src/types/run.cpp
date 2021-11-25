@@ -36,7 +36,7 @@ Block{i=164}),( md2D Block{i=169} _fillBy_ Block{i=168})⟩), 5⟩,
     ⟨sh=⟨5⟩⟨sh=⟨3⟩92,0,92⟩,⟨sh=⟨3⟩0,1,0⟩,⟨sh=⟨5⟩⟨sh=⟨0⟩⟩,⟨sh=⟨0⟩⟩,⟨sh=⟨1⟩5⟩,⟨sh=⟨0⟩⟩,⟨sh=⟨0⟩⟩⟩,⟨sh=⟨3⟩0,1,2⟩,⟨sh=⟨3⟩0,1,2⟩⟩⟩
       */
 
-O<CompUnit> deconstruct(O<Value> compiled) {
+shared_ptr<CompUnit> deconstruct(O<Value> compiled) {
   auto comparr = ARR(compiled);
 
   auto cu = make_shared<CompUnit>();

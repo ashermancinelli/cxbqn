@@ -1,6 +1,7 @@
 #pragma once
 #include <bitset>
 #include <cxbqn/scalar_types.hpp>
+#include <cxbqn/mem.hpp>
 #include <functional>
 #include <initializer_list>
 #include <memory>
@@ -111,16 +112,6 @@ using TypeType = std::bitset<32>;
 
 using ByteCode = std::vector<i32>;
 using ByteCodeRef = std::span<const i32>;
-
-// "Owned Value"
-template <typename T> using O = std::shared_ptr<T>;
-
-// "Weak/Unowned Value"
-template <typename T> using W = std::weak_ptr<T>;
-
-using std::dynamic_pointer_cast;
-using std::make_shared;
-using std::static_pointer_cast;
 
 struct Scope;
 struct Block;
@@ -250,7 +241,7 @@ struct Function : public Value {
 };
 
 struct BlockInst : public Function {
-  O<Scope> scp;
+  shared_ptr<Scope> scp;
   uz blk_idx;
 
   u32 type;
@@ -258,7 +249,7 @@ struct BlockInst : public Function {
 
   bool imm() const;
 
-  BlockInst(O<Scope> scp, uz blk_idx);
+  BlockInst(shared_ptr<Scope> scp, uz blk_idx);
 
   O<Value> call(u8 nargs = 0, std::vector<O<Value>> args = {}) override;
   std::ostream &repr(std::ostream &os) const override {
@@ -317,8 +308,8 @@ struct Md2 : public Function {
 };
 
 struct Namespace : public Value {
-  O<Scope> _scp;
-  Namespace(O<Scope> scp) : _scp{scp} {}
+  shared_ptr<Scope> _scp;
+  Namespace(shared_ptr<Scope> scp) : _scp{scp} {}
   O<Value> get(const std::string &n);
   O<Value> get(uz i);
   O<Value> set(bool should_be_set, const std::string &n, O<Value> v);

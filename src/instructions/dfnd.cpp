@@ -1,7 +1,7 @@
 #include "instr_helpers.hpp"
 namespace cxbqn::vm::instructions {
 
-void dfnd(const ByteCodeRef bc, uz &pc, std::vector<O<Value>> &stk, O<Scope> scp, O<Array> consts) {
+void dfnd(const ByteCodeRef bc, uz &pc, std::vector<O<Value>> &stk, shared_ptr<Scope> scp, O<Array> consts) {
   auto blk_idx = bc[++pc];
 
   const auto blk = scp->cu->_blocks[blk_idx];
