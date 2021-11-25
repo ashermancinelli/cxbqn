@@ -11,10 +11,10 @@ O<Value> Minus::call(u8 nargs, std::vector<O<Value>> args) {
   auto w = dyncast<Number>(args[2]);
 
   if (t_Character == type_builtin(ow) and t_Number == type_builtin(ox)) {
-    return check_char(make_shared<Character>(w->v - x->v));
+    return check_char(CXBQN_NEW(Character,w->v - x->v));
   }
   if (t_Character == type_builtin(ow) and t_Character == type_builtin(ox)) {
-    return make_shared<Number>(w->v - x->v);
+    return CXBQN_NEW(Number,w->v - x->v);
   }
   if (t_Number != type_builtin(ox))
     throw std::runtime_error("-: can only negate numbers");

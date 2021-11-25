@@ -10,7 +10,7 @@ O<Value> GroupOrd::call(u8 nargs, std::vector<O<Value>> args) {
   auto x = dyncast<Array>(args[1]);
 
   if (0 == w->N())
-    return make_shared<Array>(0);
+    return CXBQN_NEW(Array, 0);
 
   std::vector<uz> tmp(w->N(), 0);
   CXBQN_DEBUG("wn={},xn={},tmpn={}", w->N(), x->N(), tmp.size());
@@ -32,9 +32,9 @@ O<Value> GroupOrd::call(u8 nargs, std::vector<O<Value>> args) {
     }
   }
 
-  auto ret = make_shared<Array>(retlen);
+  auto ret = CXBQN_NEW(Array, retlen);
   for (int i = 0; i < retlen; i++) {
-    ret->values[i] = make_shared<Number>(retv[i]);
+    ret->values[i] = CXBQN_NEW(Number, retv[i]);
   }
   return ret;
 }

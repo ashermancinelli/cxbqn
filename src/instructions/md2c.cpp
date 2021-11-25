@@ -20,7 +20,7 @@ void md2c(std::vector<O<Value>> &stk) {
     auto v = r->call(2, {opaque_r, f, g});
     stk.push_back(v);
   } else {
-    stk.push_back(make_shared<Md2Deferred>(f, opaque_r, g));
+    stk.push_back(CXBQN_NEW(Md2Deferred,f, opaque_r, g));
   }
 }
 

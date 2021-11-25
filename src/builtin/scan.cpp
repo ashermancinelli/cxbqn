@@ -15,8 +15,8 @@ O<Value> Scan::call(u8 nargs, std::vector<O<Value>> args) {
 
   if (x->N() == 0) {
     if (1 == x->shape.size() and 0 == x->shape.back())
-      return make_shared<Array>(0);
-    auto ret = make_shared<Array>(0);
+      return CXBQN_NEW(Array, 0);
+    auto ret = CXBQN_NEW(Array, 0);
     ret->values.clear();
     ret->shape = x->shape;
   }
@@ -39,7 +39,7 @@ O<Value> Scan::call(u8 nargs, std::vector<O<Value>> args) {
     }
   }
 
-  auto ret = make_shared<Array>();
+  auto ret = CXBQN_NEW(Array);
   ret->values.resize(x->N());
   ret->shape.resize(x->shape.size());
   std::copy(x->shape.begin(), x->shape.end(), ret->shape.begin());

@@ -15,7 +15,7 @@ void dfnd(const ByteCodeRef bc, uz &pc, std::vector<O<Value>> &stk, shared_ptr<S
     auto ret = vm::vm(child->cu, child, bod);
     stk.push_back(ret);
   } else {
-    stk.push_back(make_shared<BlockInst>(scp, blk_idx));
+    stk.push_back(CXBQN_NEW(BlockInst,scp, blk_idx));
   }
 }
 }

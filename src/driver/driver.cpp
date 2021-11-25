@@ -52,9 +52,9 @@ bool getline(std::string &line) {
 }
 
 static inline O<Array> to_arr(std::vector<std::string> n) {
-  auto ar = make_shared<Array>(n.size());
+  auto ar = CXBQN_NEW(Array,n.size());
   for (int i = 0; i < n.size(); i++)
-    ar->values[i] = make_shared<Array>(n[i]);
+    ar->values[i] = CXBQN_NEW(Array,n[i]);
   return ar;
 }
 
@@ -69,13 +69,13 @@ int repl(O<Value> compiler, O<Array> bqnruntime, O<Value> sysfn_handler,
   if (!getline(line))
     return 1;
 
-  auto compw = make_shared<Array>(4);
+  auto compw = CXBQN_NEW(Array,4);
   compw->values[0] = bqnruntime;
   compw->values[1] = sysfn_handler;
-  compw->values[2] = make_shared<Array>(0);   // no names currently in scope
-  compw->values[3] = make_shared<Number>(-1); // allow shadowing
+  compw->values[2] = CXBQN_NEW(Array,0);   // no names currently in scope
+  compw->values[3] = CXBQN_NEW(Number,-1); // allow shadowing
 
-  auto src = make_shared<Array>(line);
+  auto src = CXBQN_NEW(Array,line);
   auto compiled = compiler->call(2, {compiler, src, compw});
   auto runret = vm::run(compiled);
 
@@ -96,7 +96,7 @@ int repl(O<Value> compiler, O<Array> bqnruntime, O<Value> sysfn_handler,
     if (0 == line.size())
       continue;
 
-    auto src = make_shared<Array>(line);
+    auto src = CXBQN_NEW(Array,line);
     compw->values[2] = to_arr(scp->names);
     auto compiled = compiler->call(2, {compiler, src, compw});
     auto cu = vm::deconstruct(compiled);

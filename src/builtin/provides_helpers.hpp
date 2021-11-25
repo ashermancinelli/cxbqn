@@ -15,11 +15,11 @@
 #endif
 
 // I promise this makes the definitions more readable :)
-#define NN(x) make_shared<Number>(x)
+#define NN(x) CXBQN_NEW(Number,x)
 
 // "new number casted", creates a new number after casting some expression into
 // an f64
-#define NNC(x) make_shared<Number>(static_cast<f64>(x))
+#define NNC(x) CXBQN_NEW(Number,static_cast<f64>(x))
 
 namespace cxbqn::provides {
 

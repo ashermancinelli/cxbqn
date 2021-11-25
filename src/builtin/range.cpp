@@ -6,9 +6,9 @@ O<Value> Range::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("↕: nargs={},args={}", nargs, args);
   XNULLCHK("↕");
   auto n = static_cast<uz>(dyncast<Number>(args[1])->v);
-  auto arr = make_shared<Array>(n);
+  auto arr = CXBQN_NEW(Array, n);
   for (int i = 0; i < arr->N(); i++)
-    arr->values[i] = make_shared<Number>(i);
+    arr->values[i] = CXBQN_NEW(Number, i);
   return arr;
 }
 }

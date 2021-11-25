@@ -11,7 +11,7 @@ O<Value> Div::call(u8 nargs, std::vector<O<Value>> args) {
     throw std::runtime_error("÷: only numbers");
   auto x = dyncast<Number>(ox);
   auto w = dyncast<Number>(ow);
-  return make_shared<Number>(2 == nargs ? w->v / x->v : 1 / x->v);
+  return CXBQN_NEW(Number, 2 == nargs ? w->v / x->v : 1 / x->v);
 }
 
 }

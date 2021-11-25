@@ -8,9 +8,9 @@ using namespace cxbqn::sys;
 int main(int argc, char **argv) {
 
   bool repl, pp_res, show_cu;
-  auto sysargs = make_shared<Array>(0);
-  auto path = make_shared<Array>(0);
-  auto src = make_shared<Array>("\"CXBQN internal: Empty program\" ! 0");
+  auto sysargs = CXBQN_NEW(Array,0);
+  auto path = CXBQN_NEW(Array,0);
+  auto src = CXBQN_NEW(Array,"\"CXBQN internal: Empty program\" ! 0");
 
   std::vector<std::string> args(argv, argv + argc);
 
@@ -36,8 +36,8 @@ int main(int argc, char **argv) {
     auto setprims = runtime_ret->values[1];
 
     // Inform the two latter builtins of the runtime so they can refer to it
-    auto decompose = make_shared<Decompose>(bqnruntime);
-    auto primind = make_shared<PrimInd>(bqnruntime);
+    auto decompose = CXBQN_NEW(Decompose,bqnruntime);
+    auto primind = CXBQN_NEW(PrimInd,bqnruntime);
 
     setprims->call(
         1, {setprims, O<Array>(new Array({decompose, primind})), bi_Nothing()});
@@ -67,8 +67,8 @@ int main(int argc, char **argv) {
 #endif
     auto fmt1 = fmtret.v;
 
-    auto glyph = make_shared<Glyph>(bqnruntime);
-    auto fmtnum = make_shared<FmtNum>();
+    auto glyph = CXBQN_NEW(Glyph,bqnruntime);
+    auto fmtnum = CXBQN_NEW(FmtNum);
     auto _fmtarr = fmt1->call(
         1, {fmt1, O<Value>(new Array({bi_Type(), decompose, glyph, fmtnum})),
             bi_Nothing()});
@@ -80,7 +80,7 @@ int main(int argc, char **argv) {
     // Here, we could just call the compiler with the runtime as 𝕨. To add the
     // system functions, we will pass another value in an array along with the
     // runtime. This funcionality is not documented at the time of writing.
-    auto compw = make_shared<Array>(2);
+    auto compw = CXBQN_NEW(Array,2);
     compw->values[0] = bqnruntime;
 
     // It may seem counterintuitive to pass the compiler and compiler arguments

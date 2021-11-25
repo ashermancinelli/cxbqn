@@ -12,17 +12,17 @@ O<Value> Deshape::call(u8 nargs, std::vector<O<Value>> args) {
 
   if (1 == nargs) {
     if (isxarr) {
-      auto ret = make_shared<Array>(xarr->N());
+      auto ret = CXBQN_NEW(Array, xarr->N());
       ret->values = xarr->values;
       return ret;
     } else {
-      auto r = make_shared<Array>(1);
+      auto r = CXBQN_NEW(Array, 1);
       r->values[0] = args[1];
       return r;
     }
   }
 
-  auto ret = make_shared<Array>();
+  auto ret = CXBQN_NEW(Array);
   if (iswarr) {
     auto warr = dyncast<Array>(args[2]);
     for (int i = 0; i < warr->N(); i++)

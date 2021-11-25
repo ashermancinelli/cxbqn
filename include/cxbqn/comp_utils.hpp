@@ -20,14 +20,14 @@ struct Consts {
       if (std::holds_alternative<O<Value>>(e))
         v.push_back(std::get<O<Value>>(e));
       else if (std::holds_alternative<f64>(e))
-        v.push_back(std::make_shared<Number>(std::get<f64>(e)));
+        v.push_back(CXBQN_NEW(Number, std::get<f64>(e)));
       else
-        v.push_back(std::make_shared<Number>(
+        v.push_back(CXBQN_NEW(Number,
             static_cast<cxbqn::f64>(std::get<i32>(e))));
     }
   }
   O<Array> to_arr() const {
-    return make_shared<Array>(v);
+    return CXBQN_NEW(Array, v);
   }
 };
 

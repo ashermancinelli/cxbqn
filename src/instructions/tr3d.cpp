@@ -15,6 +15,6 @@ void tr3d(std::vector<O<Value>> &stk) {
   CXBQN_DEBUG("tr3d:f={},g={},h={}", CXBQN_STR_NC(f), CXBQN_STR_NC(g),
               CXBQN_STR_NC(h));
 
-  stk.push_back(make_shared<Fork>(f, g, h));
+  stk.push_back(CXBQN_NEW(Fork,f, g, h));
 }
 }

@@ -19,7 +19,7 @@ O<Value> Table::call(u8 nargs, std::vector<O<Value>> args) {
   const auto &xv = x->values;
 
   if (1 == nargs) {
-    auto ret = make_shared<Array>(x->N());
+    auto ret = CXBQN_NEW(Array, x->N());
     for (int i = 0; i < x->N(); i++)
       ret->values[i] = F->call(1, {F, x->values[i], bi_Nothing()});
     ret->shape = x->shape;
@@ -30,7 +30,7 @@ O<Value> Table::call(u8 nargs, std::vector<O<Value>> args) {
   if (nullptr == w)
     throw std::runtime_error("⌜: 𝕩 and 𝕨 must be arrays");
   const auto &wv = w->values;
-  auto ret = make_shared<Array>(x->N() * w->N());
+  auto ret = CXBQN_NEW(Array, x->N() * w->N());
 #ifdef CXBQN_STACKTRACE_DEEP
   try {
 #endif

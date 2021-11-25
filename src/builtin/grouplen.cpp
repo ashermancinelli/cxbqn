@@ -20,7 +20,7 @@ O<Value> GroupLen::call(u8 nargs, std::vector<O<Value>> args) {
   for (auto e : xs)
     if (fge_helper(e, 0.0))
       retv[static_cast<uz>(e)]++;
-  auto ret = make_shared<Array>(retv.size());
+  auto ret = CXBQN_NEW(Array, retv.size());
   for (int i = 0; i < ret->N(); i++)
     ret->values[i] = NN(retv[i]);
   return ret;

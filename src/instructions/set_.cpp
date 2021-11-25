@@ -94,7 +94,7 @@ static O<Value> setm_ref(O<Value> F, O<Value> x, O<Value> r, shared_ptr<Scope> s
 static O<Value> setm_refarray(O<Value> F, O<Value> x, O<Value> r,
                               shared_ptr<Scope> scp) {
   auto refarr = dyncast<RefArray>(r);
-  auto varr = make_shared<Array>(refarr->N());
+  auto varr = CXBQN_NEW(Array,refarr->N());
 
   // create an array from the reference array to pass into F
   for (int i = 0; i < refarr->N(); i++)

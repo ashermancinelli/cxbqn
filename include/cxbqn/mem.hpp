@@ -17,8 +17,11 @@ template <typename T> using W = std::weak_ptr<T>;
 template <typename T, typename F> auto dyncast(O<F> f) {
   return std::dynamic_pointer_cast<T>(f);
 }
+template<typename T, typename... Args> auto make(Args... args) {
+  return make_shared<T>(args...);
+}
 
-#define CXBQN_NEW(Type, ...) std::make_shared<Type>(__VA_ARGS__)
+#define CXBQN_NEW(Type, ...) make_shared<Type>(__VA_ARGS__)
 
 #elif CXBQN_MEM_GC // Use mark/sweep
 #error "unsupported"
@@ -28,6 +31,9 @@ template <typename T> using O = std::add_pointer<T>;
 template <typename T> using W = std::add_pointer<T>;
 template <typename T, typename F> auto dyncast(O<F> f) {
   return dynamic_cast<T>(f);
+}
+template<typename T, typename... Args> O<T> auto(Args... args) {
+  return new T(args...);
 }
 #define CXBQN_NEW(Type, ...) new Type(__VA_ARGS__)
 
