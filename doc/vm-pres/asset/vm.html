@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<body>
+
+<script src="https://d3js.org/d3.v4.js"></script>
+<script>
+
+var src = {
+  id: 'src',  c: '#e8dc6f',  t: 'BQN Source',
+  h: 150,  w: 150,  x: 75,  y: 50,
+}; 
+var bqnc = {
+  id: 'bqnc',  c: '#db9d5e',  t: 'BQN Compiler',
+  h: 100,  w: 200,  x: 50,  y: 350,
+};
+var hostvm = {
+  id: 'hostvm', c: '#1e9e5e', t: 'Host VM',
+  h: 100,  w: 300,  x: 0,  y: 450,
+}
+var newvm = {
+  id: 'newvm',  c: '#ed574c',  t: 'New VM',
+  h: 100,  w: 150,  x: 700,  y: 300,
+};
+var compout = {
+  id: 'compout', c: '#459995', t: 'Compilation Unit',
+  h: 100,  w: 200,  x: 400,  y: 300,
+}
+
+
+var vmg = d3.select('body')
+    .append('svg').attr('id', 'vm')
+    .attr('width', '1000')
+    .attr('height', '600')
+    .append('g');
+
+var mr = (r) => {
+  vmg.append('rect')
+    .attr('width', r.w)
+    .attr('height', r.h)
+    .attr('x', r.x)
+    .attr('y', r.y)
+    .attr('fill', r.c)
+    .attr('id', r.id);
+    
+  vmg.append('text')
+    .attr('id', r.id + '-label')
+    .text(r.t)
+    .attr('font-size', '20')
+    .attr('x', r.x+(r.w/2))
+    .attr('y', r.y+(r.h/2))
+    .attr('fill', 'black')
+    .attr('text-anchor', 'middle')
+    .attr('alignment-baseline', 'central')
+}
+
+[bqnc, src, compout, newvm, hostvm].forEach((e)=>mr(e));
+
+var srcpath = d3.path();
+srcpath.moveTo(src.x + (src.w/2), src.y+src.h);
+srcpath.lineTo(bqnc.x+(bqnc.w/2), bqnc.y);
+
+var cup = d3.path();
+cup.moveTo(bqnc.x+bqnc.w, bqnc.y+(bqnc.h/2))
+cup.bezierCurveTo(
+  bqnc.x+bqnc.w+70,bqnc.y+bqnc.h-25,
+  compout.x-75,compout.y-10,
+  compout.x,compout.y+(compout.h/2)
+);
+
+var nvp = d3.path()
+nvp.moveTo(compout.x+compout.w,compout.y+(compout.h/2))
+nvp.lineTo(newvm.x,newvm.y+(newvm.h/2))
+
+var mi = (p, id) => () => {
+  vmg.append('path')
+    .attr('d', p)
+    .attr("stroke", "darkgrey")
+    .attr('fill', 'none')
+    .attr('id', id)
+    .attr('stroke-width', 4);
+}
+
+var initnvp = mi(nvp, 'nvp');
+var initsp = mi(srcpath, 'srcpath');
+var initcup = mi(cup, 'cup');
+
+function renvp() {
+  var n = d3.select('#nvp');
+  const nl=n.node().getTotalLength();
+  n
+      .attr("stroke-dasharray", nl/2 + " " + nl/2)
+      .attr("stroke-dashoffset", nl)
+      .transition()
+      .ease(d3.easeLinear)
+      .attr("stroke-dashoffset", 0)
+      .duration(500)
+      .on("end", () => setTimeout(renvp, 0));
+}
+function resp() {
+  var sp = d3.select('#srcpath');
+  const sl=sp.node().getTotalLength();
+  sp
+      .attr("stroke-dasharray", sl/2 + " " + sl/2)
+      .attr("stroke-dashoffset", sl)
+      .transition()
+      .ease(d3.easeLinear)
+      .attr("stroke-dashoffset", 0)
+      .duration(500)
+      .on("end", () => setTimeout(resp, 0));
+}
+function recup() {
+  var cp = d3.select('#cup');
+  const cl=cp.node().getTotalLength();
+  cp
+      .attr("stroke-dasharray", cl/2 + " " + cl/2)
+      .attr("stroke-dashoffset", cl)
+      .transition()
+      .ease(d3.easeLinear)
+      .attr("stroke-dashoffset", 0)
+      .duration(500)
+      .on("end", () => setTimeout(recup, 0));
+}
+
+
+var _transitions = [
+  {
+    transitionForward: () => {
+      initsp();
+      resp();
+    },
+  },
+  {
+    transitionForward: () => {
+      initcup();
+      recup();
+    }
+  },
+  {
+    transitionForward: () => {
+      initnvp();
+      renvp();
+    }
+  }
+]
+</script>
+</body>
+</html>

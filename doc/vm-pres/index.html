@@ -335,6 +335,20 @@
             </code></pre>
           </section>
 
+          <section>
+            <h2>Runtime and Compiler</h2>
+          </section>
+
+          <section data-state="vmbox-section">
+            <div id="vm-anim"></div>
+            <div class="fig-container" data-file="asset/vm.html"></div>
+            <p class="fragment" id="vm-init"></p>
+          </section>
+
+        </section>
+
+        <section data-auto-animate>
+          <h1><div data-id="2">Runtime</div></h1>
         </section>
 
         <section data-auto-animate>
@@ -362,13 +376,30 @@
     <script src="node_modules/reveal.js/dist/reveal.js"></script>
     <script src="node_modules/reveal.js/plugin/highlight/highlight.js"></script>
     <script src="node_modules/reveal.js/plugin/markdown/markdown.js"></script>
+    <script src="https://d3js.org/d3.v6.js"></script>
+
     <script>
       Reveal.initialize({
               center: true,
               history: true,
               progress: true,
-              plugins: [ RevealHighlight, RevealMarkdown ]
+              plugins: [ RevealHighlight, RevealMarkdown ],
+              dependencies: [
+                { src: 'node_modules/reveald3/reveald3.js' }
+              ],
+              reveald3: {
+                disableCheckFile: true,
+              },
             });
+
+      Reveal.on( 'fragmentshown', event => {
+        switch (event.fragment.id) {
+          case "vm-init": {
+            console.log('vm-init');
+                  break;
+          }
+        }
+      });
     </script>
 
   </body>
