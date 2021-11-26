@@ -3,40 +3,48 @@
 <body>
 
 <script src="https://d3js.org/d3.v4.js"></script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@200;500&display=swap" rel="stylesheet">
+
 <script>
 
-var src = {
-  id: 'src',  c: '#e8dc6f',  t: 'BQN Source',
-  h: 150,  w: 150,  x: 75,  y: 50,
-}; 
-var bqnc = {
-  id: 'bqnc',  c: '#db9d5e',  t: 'BQN Compiler',
-  h: 100,  w: 200,  x: 50,  y: 350,
-};
-var hostvm = {
-  id: 'hostvm', c: '#1e9e5e', t: 'Host VM',
-  h: 100,  w: 300,  x: 0,  y: 450,
+var VP = {
+  w: 1000,
+  h: 600
 }
-var newvm = {
-  id: 'newvm',  c: '#ed574c',  t: 'New VM',
-  h: 100,  w: 150,  x: 750,  y: 300,
-};
-var compout = {
-  id: 'compout', c: '#459995', t: 'Compilation Unit',
-  h: 100,  w: 200,  x: 400,  y: 300,
-}
-
 var vmg = d3.select('body')
     .append('svg').attr('id', 'vm')
-    .attr('width', '1000')
-    .attr('height', '600')
+    .attr('width', VP.w)
+    .attr('height', VP.h)
     .append('g');
 
-var mr = (r) => {
+draw = (r) => {    
+  console.log('transl', r)
+  d3.select('#'+r.id)
+    .transition()
+    .duration(700)
+    .attr('x',r.x)
+    .attr('y',r.y)
+  d3.select('#'+r.id+'-label')
+    .transition() 
+    .duration(700)
+    .attr('x',r.mx())
+    .attr('y',r.my())
+}
+
+trsl = (r, x, y) => {
+  r.x+=x;r.y+=y;
+  draw(r)
+}
+
+var R = (r) => {
   vmg.append('rect')
     .attr('width', r.w)
     .attr('height', r.h)
     .attr('x', r.x)
+    .style("opacity", 0)
     .attr('y', r.y)
     .attr('fill', r.c)
     .attr('id', r.id);
@@ -44,15 +52,83 @@ var mr = (r) => {
   vmg.append('text')
     .attr('id', r.id + '-label')
     .text(r.t)
-    .attr('font-size', '20')
+    .attr('font-size', '17')
+    .attr('font-family', 'Roboto Mono')
     .attr('x', r.x+(r.w/2))
     .attr('y', r.y+(r.h/2))
+    .style("opacity", 0)
     .attr('fill', 'black')
     .attr('text-anchor', 'middle')
     .attr('alignment-baseline', 'central')
+
+  r.get = () => d3.select('#'+r.id)
+  r.getl = () => d3.select('#'+r.id+'-label')
+
+  r.hide = () => {
+    d3.select('#' + r.id)
+      .transition()
+      .duration(500)
+      .style("opacity", 0)
+    d3.select('#' + r.id + '-label')
+      .transition()
+      .duration(500)
+      .style("opacity", 0)
+  }
+  r.hide();
+  r.show = () => {
+    d3.select('#' + r.id + '-label')
+      .transition()
+      .duration(500)
+      .style("opacity", 1)
+    d3.select('#' + r.id)
+      .transition()
+      .duration(500)
+      .style("opacity", 1)
+  }
+  r.mx=()=>r.x+(r.w/2)
+  r.my=()=>r.y+(r.h/2)
+  return r;
 }
 
-[bqnc, src, compout, newvm, hostvm].forEach((e)=>mr(e));
+var src = R({
+  id: 'src',  c: '#e8dc6f',  t: 'BQN Source',
+  h: 150,  w: 150,  x: 75,  y: 50,
+}); 
+var bqnc = R({
+  id: 'bqnc',  c: '#db9d5e',  t: 'BQN Compiler',
+  h: 100,  w: 200,  x: 50,  y: 350,
+});
+var hostvm = R({
+  id: 'hostvm', c: '#1e9e5e', t: 'Host VM',
+  h: 100,  w: 300,  x: 0,  y: 450,
+})
+var compout = R({
+  id: 'compout', c: '#459995', t: 'Compilation Unit',
+  h: 100,  w: 200,  x: 400,  y: 300,
+})
+var newvm = R({
+  id: 'newvm',  c: '#ed574c',  t: 'New VM',
+  h: 100,  w: 150,  x: 750,  y: 300,
+});
+var rt = R({
+  id: 'rt', c: '#f29766', t: 'Runtime',
+  h: 100,  w: 200,  x: 725,  y: 200,
+})
+var prim = R({
+  id: 'prim', c: '#65d2e6', t: 'Primitive Runtime',
+  h: 100,  w: 200,  x: 600,  y: VP.h-100,
+})
+var r0 = R({
+  id: 'r0', c: '#65d2e6', t: 'r0',
+  h: 100,  w: 200,  x: 600,  y: 300,
+})
+var r1 = R({
+  id: 'r1', c: '#65d2e6', t: 'r1',
+  h: 100,  w: 200,  x: 600,  y: 100,
+})
+
+var mx = (r) => r.x+(r.w/2)
+var my = (r) => r.y+(r.h/2)
 
 var srcpath = d3.path();
 srcpath.moveTo(src.x + (src.w/2), src.y+src.h);
@@ -65,6 +141,17 @@ cup.bezierCurveTo(
   compout.x-75,compout.y-10,
   compout.x,compout.y+(compout.h/2)
 );
+
+var rtp = d3.path()
+rtp.moveTo(rt.x,my(rt))
+rtp.bezierCurveTo(
+  mx(compout)+50,
+  my(rt)-50,
+  mx(compout),
+  my(rt),
+  mx(compout),
+  compout.y
+)
 
 var nvp = d3.path()
 nvp.moveTo(compout.x+compout.w,compout.y+(compout.h/2))
@@ -79,10 +166,11 @@ var mi = (p, id) => () => {
     .attr('stroke-width', 4);
 }
 
+var initrtp = mi(rtp, 'rtp')
 var initnvp = mi(nvp, 'nvp');
 var initsp = mi(srcpath, 'srcpath');
 var initcup = mi(cup, 'cup');
-
+var dopath=1
 function renvp() {
   var n = d3.select('#nvp');
   const nl=n.node().getTotalLength();
@@ -93,7 +181,7 @@ function renvp() {
       .ease(d3.easeLinear)
       .attr("stroke-dashoffset", 0)
       .duration(500)
-      .on("end", () => setTimeout(renvp, 0));
+      .on("end", () => dopath?setTimeout(renvp, 0):false);
 }
 function resp() {
   var sp = d3.select('#srcpath');
@@ -105,7 +193,7 @@ function resp() {
       .ease(d3.easeLinear)
       .attr("stroke-dashoffset", 0)
       .duration(500)
-      .on("end", () => setTimeout(resp, 0));
+      .on("end", () => dopath?setTimeout(resp, 0):false);
 }
 function recup() {
   var cp = d3.select('#cup');
@@ -117,13 +205,15 @@ function recup() {
       .ease(d3.easeLinear)
       .attr("stroke-dashoffset", 0)
       .duration(500)
-      .on("end", () => setTimeout(recup, 0));
+      .on("end", () => dopath?setTimeout(recup, 0):false);
 }
 
+src.show()
 
 var _transitions = [
   {
     transitionForward: () => {
+      [bqnc,hostvm,src].forEach(e=>e.show());
       initsp();
       resp();
     },
@@ -132,12 +222,181 @@ var _transitions = [
     transitionForward: () => {
       initcup();
       recup();
+      compout.show()
     }
   },
   {
     transitionForward: () => {
       initnvp();
       renvp();
+      newvm.show()
+    }
+  },
+  {
+    transitionForward: () => {
+      rt.show()
+    }
+  },
+  {
+    transitionForward: () => {
+      initrtp()
+      var cp = d3.select('#rtp');
+      const cl=cp.node().getTotalLength();
+      cp
+        .attr("stroke-dasharray", cl + " " + cl)
+        .attr("stroke-dashoffset", cl)
+        .transition()
+        .ease(d3.easeLinear)
+        .attr("stroke-dashoffset", 0)
+        .duration(300)
+        .on('end', () => { // draw arrows
+          var i = 0;
+          [
+            `M ${mx(compout)} ${compout.y} l -25 -25`,
+            `M ${mx(compout)} ${compout.y} l 25 -25`,
+          ].forEach(dat => {
+            vmg.append('path')
+              .attr('d', dat)
+              .attr('id', 'ar'+i++)
+              .attr("stroke", "darkgrey")
+              .attr('fill', 'none')
+              .attr('stroke-width', 4);
+            var l = d3.select(`#ar${i-1}`)
+            var ll = l.node().getTotalLength();
+            l
+              .attr("stroke-dasharray", ll + " " + ll)
+              .attr("stroke-dashoffset", ll)
+              .transition()
+              .ease(d3.easeLinear)
+              .attr("stroke-dashoffset", 0)
+          })
+        })
+    }
+  },
+  {
+    transitionForward: () => {
+      vmg.append('text')
+        .text('runtime[0] aka `+`')
+        .attr('font-size', '17')
+        .attr('font-family', 'Roboto Mono')
+        .attr('id', 'rtnote')
+        .attr('x', mx(compout))
+        .attr('y', my(src))
+        .attr('fill', 'white')
+        .attr('text-anchor', 'middle')
+        .attr('alignment-baseline', 'central')
+    }
+  },
+  {
+    transitionForward: () => {
+      [bqnc,src,hostvm,compout].forEach(e=>e.hide())
+      dopath = 0
+      d3.selectAll('path').remove();
+      d3.select('#rtnote').remove();
+      rt.get()
+        .transition()
+        .duration(600)
+        .attr('x', (VP.w/4)-rt.w)
+        .attr('y', VP.h/4)
+      rt.getl()
+        .transition()
+        .duration(600)
+        .attr('x', (VP.w/4)-(rt.w/2))
+        .attr('y', (VP.h/4)+(rt.h/2))
+      newvm.get()
+        .transition()
+        .duration(600)
+        .attr('x', (VP.w/4)-newvm.w)
+        .attr('y', VP.h-newvm.h)
+      newvm.x = (VP.w/4)-newvm.w;
+      newvm.y = VP.h-newvm.h;
+      newvm.getl()
+        .transition()
+        .duration(600)
+        .attr('x', (VP.w/4)-(newvm.w/2))
+        .attr('y', (VP.h)-(newvm.h/2))
+    }
+  },
+  {
+    transitionForward: () => {
+      [prim, r0, r1].forEach(r=>r.show());
+    }
+  },
+  {
+    transitionForward: () => {
+      var i=0;
+      [ // Line starts
+        [r1.x, r1.my()],
+        [r0.x, r0.my()],
+        [prim.x, prim.my()]
+      ].forEach(coord => {
+        const x = coord[0], y=coord[1];
+        vmg.append('path')
+          .attr('d', `M ${x} ${y} L ${VP.w/4} ${(VP.h/4)+(rt.h/2)}`)
+          .attr("stroke", "darkgrey")
+          .attr('fill', 'none')
+          .attr('id', 'rtl'+i++)
+          .attr('stroke-width', 4);
+        var l = d3.select(`#rtl${i-1}`)
+        var ll = l.node().getTotalLength();
+        l
+          .attr("stroke-dasharray", ll + " " + ll)
+          .attr("stroke-dashoffset", ll)
+          .transition()
+          .ease(d3.easeLinear)
+          .attr("stroke-dashoffset", 0)
+      });
+    }
+  },
+  {
+    transitionForward: () => {
+      d3.selectAll('path').remove();
+      d3.select(`#${rt.id}`).remove();
+      d3.select(`#${rt.id}-label`).remove();
+      [r0, r1].forEach(r => {
+        ['', '-label'].forEach(lab => {
+          d3.select(`#${r.id}${lab}`)
+            .transition()
+            .duration(500)
+            .attr('transform', `translate(-${VP.w/4},0)`)
+        });
+      })
+    }
+  },
+  {
+    transitionForward: () => {
+      var nvmx=newvm.mx();
+      var nvmy=newvm.y;
+      [ // path starts
+        `M ${nvmx} ${nvmy}`,
+        `M ${prim.mx()} ${prim.y}`
+      ].forEach(s=>{
+        var i=0;
+        var rx = r0.x-(r0.w)+50,
+            ry = r0.y + r0.h;
+        vmg.append('path')
+          .attr('d', `${s} L ${rx} ${ry}`)
+          .attr("stroke", "darkgrey")
+          .attr('fill', 'none')
+          .attr('id', 'r0l'+i++)
+          .attr('stroke-width', 4);
+        var l = d3.select(`#r0l${i-1}`)
+        var ll = l.node().getTotalLength();
+        l
+          .attr("stroke-dasharray", ll + " " + ll)
+          .attr("stroke-dashoffset", ll)
+          .transition()
+          .ease(d3.easeLinear)
+          .attr("stroke-dashoffset", 0)
+      })
+    }
+  },
+  {
+    transitionForward: () => {
+      d3.selectAll('path').remove();
+      newvm.get().remove();newvm.getl().remove();
+      prim.get().transition().duration(500).attr('transform', `translate(-${VP.w/4},0)`);
+      prim.getl().transition().duration(500).attr('transform', `translate(-${VP.w/4},0)`);
     }
   }
 ]
