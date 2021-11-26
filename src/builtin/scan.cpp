@@ -51,8 +51,10 @@ O<Value> Scan::call(u8 nargs, std::vector<O<Value>> args) {
   for (int i = 1; i < x->shape.size(); i++)
     cnt *= x->shape[i];
   int i = 0;
+  auto maybe_ret = CXBQN_NEW(Array, 1);
+  maybe_ret->values[0] = w;
   auto warr = iswarr ? dyncast<Array>(w)
-                     : CXBQN_NEW(Array, {w});
+                     : maybe_ret;
   CXBQN_DEBUG("cnt={},warr={}", cnt, CXBQN_STR_NC((O<Value>)warr));
   if (1 == nargs)
     for (; i < cnt; i++)
