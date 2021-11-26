@@ -16,13 +16,15 @@ template <typename OS> OS &operator<<(OS &os, const ByteCodeRef &bc) {
   return os;
 }
 
+#ifdef CXBQN_MEM_shared_ptr
 template <typename OS> OS &operator<<(OS &os, const Value *v) {
   return v->repr(os);
 }
+#endif
 
 template <typename OS> OS &operator<<(OS &os, const Block &b) {
-  os << "(block type=" << static_cast<int>(b.type)
-     << " imm=" << b.immediate << ")";
+  os << "(block type=" << static_cast<int>(b.type) << " imm=" << b.immediate
+     << ")";
   return os;
 }
 
@@ -58,7 +60,7 @@ template <> struct fmt::formatter<Character> {
   template <typename FormatContext>
   auto format(Character const &v, FormatContext &ctx) -> decltype(ctx.out()) {
     auto &&out = ctx.out();
-    std::string s="";
+    std::string s = "";
     utf8::append(v.c(), std::back_inserter(s));
     format_to(out, "{}", s);
     return out;
@@ -97,9 +99,7 @@ template <> struct fmt::formatter<Value> {
   else                                                                         \
     format_to(out, str, *x);
 
-// These require a null check first - the rest can be built from a template
-// macro
-#define FMT_PTR_CONTAINER(Container, ValueType)                                \
+#define FMT_PTR_CONTAINER_RAW(Container, ValueType)                            \
   template <> struct fmt::formatter<Container<ValueType *>> {                  \
     constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin()) { \
       return ctx.end();                                                        \
@@ -117,7 +117,8 @@ template <> struct fmt::formatter<Value> {
       }                                                                        \
       return format_to(out, "{}", "⟩");                                        \
     }                                                                          \
-  };                                                                           \
+  };
+#define FMT_PTR_CONTAINER_WRAPPED(Container, ValueType)                        \
   template <> struct fmt::formatter<Container<O<ValueType>>> {                 \
     constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin()) { \
       return ctx.end();                                                        \
@@ -136,6 +137,17 @@ template <> struct fmt::formatter<Value> {
       return format_to(out, "{}", "⟩");                                        \
     }                                                                          \
   };
+
+// These require a null check first - the rest can be built from a template
+// macro
+#ifdef CXBQN_MEM_shared_ptr
+#define FMT_PTR_CONTAINER(Container, ValueType)                                \
+  FMT_PTR_CONTAINER_RAW(Container, ValueType)                                  \
+  FMT_PTR_CONTAINER_WRAPPED(Container, ValueType)
+#else
+#define FMT_PTR_CONTAINER(Container, ValueType)                                \
+  FMT_PTR_CONTAINER_RAW(Container, ValueType)
+#endif
 
 FMT_PTR_CONTAINER(std::vector, Value);
 FMT_PTR_CONTAINER(std::span, Value);

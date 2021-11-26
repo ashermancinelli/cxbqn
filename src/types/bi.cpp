@@ -93,7 +93,7 @@ O<Array> get_runtime_setprims() {
 
 O<Array> get_runtime_bionly() {
   CXBQN_DEBUG("provides::get_runtime_bionly");
-  auto rt = CXBQN_NEW(Array,60);
+  auto rt = CXBQN_NEW(Array, 60);
 
   rt->values[0] = bi_Plus();
   rt->values[1] = bi_Minus();
@@ -126,11 +126,19 @@ O<Array> get_runtime_bionly() {
   return rt;
 }
 
+#ifdef CXBQN_MEM_shared_ptr
 #define BI_DEF(T)                                                              \
   O<Value> bi_##T() {                                                          \
     static T v;                                                                \
     return std::shared_ptr<T>(&v, [](T *) {});                                 \
   }
+#else
+#define BI_DEF(T)                                                              \
+  O<Value> bi_##T() {                                                          \
+    static T v;                                                                \
+    return &v;                                                             \
+  }
+#endif
 BI_DEF(Plus);
 BI_DEF(Minus);
 BI_DEF(Mul);

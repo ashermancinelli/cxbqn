@@ -134,7 +134,7 @@ struct Value : public std::enable_shared_from_this<Value> {
   // If a value type does not define it's own call, we probably just push it
   // back on the stack.
   virtual O<Value> call(u8 nargs = 0, std::vector<O<Value>> args = {}) {
-    return shared_from_this();
+    return CXBQN_SHARED_FROM_THIS();
   };
 
   virtual std::ostream &repr(std::ostream &os) const { return os << "V"; }

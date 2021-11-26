@@ -4,9 +4,7 @@
 
 namespace cxbqn::types {
 
-#define CXBQN_MEM_SHAREDPTR 1
-
-#ifdef CXBQN_MEM_SHAREDPTR // Use shared ptrs to manage memory
+#ifdef CXBQN_MEM_shared_ptr // Use shared ptrs to manage memory
 
 // "Owned Value"
 template <typename T> using O = std::shared_ptr<T>;
@@ -17,25 +15,20 @@ template <typename T> using W = std::weak_ptr<T>;
 template <typename T, typename F> auto dyncast(O<F> f) {
   return std::dynamic_pointer_cast<T>(f);
 }
-template<typename T, typename... Args> auto make(Args... args) {
-  return make_shared<T>(args...);
-}
-
 #define CXBQN_NEW(Type, ...) make_shared<Type>(__VA_ARGS__)
+#define CXBQN_SHARED_FROM_THIS() shared_from_this()
 
-#elif CXBQN_MEM_GC // Use mark/sweep
+#elif CXBQN_MEM_gc // Use mark/sweep
 #error "unsupported"
-#elif CXBQN_MEM_LEAK // Leak everything
+#elif CXBQN_MEM_leak // Leak everything
 
-template <typename T> using O = std::add_pointer<T>;
-template <typename T> using W = std::add_pointer<T>;
+template <typename T> using O = T*;
+template <typename T> using W = T*;
 template <typename T, typename F> auto dyncast(O<F> f) {
-  return dynamic_cast<T>(f);
-}
-template<typename T, typename... Args> O<T> auto(Args... args) {
-  return new T(args...);
+  return dynamic_cast<T*>(f);
 }
 #define CXBQN_NEW(Type, ...) new Type(__VA_ARGS__)
+#define CXBQN_SHARED_FROM_THIS() this
 
 #else
 #error "unsupported"

@@ -47,7 +47,7 @@ O<Value> Md1Deferred::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("Md1Deferred::call(after adding 𝕣, 𝕗):nargs={},args={}", nargs,
               args);
 
-  return m1->call(nargs, {m1, args[1], args[2], shared_from_this(), f});
+  return m1->call(nargs, {m1, args[1], args[2], CXBQN_SHARED_FROM_THIS(), f});
 }
 std::ostream &Md1Deferred::repr(std::ostream &os) const {
   fmt::print(os, "( md1D {} {} )", CXBQN_STR_NC(f), CXBQN_STR_NC(m1));
@@ -57,7 +57,7 @@ std::ostream &Md1Deferred::repr(std::ostream &os) const {
 O<Value> Md2Deferred::call(u8 nargs, std::vector<O<Value>> args) {
   CXBQN_DEBUG("Md1Deferred::call(after adding 𝕣, 𝕗, 𝕘):nargs={},args={}", nargs,
               args);
-  return m2->call(nargs, {m2, args[1], args[2], shared_from_this(), f, g});
+  return m2->call(nargs, {m2, args[1], args[2], CXBQN_SHARED_FROM_THIS(), f, g});
 }
 
 std::ostream &Md2Deferred::repr(std::ostream &os) const {

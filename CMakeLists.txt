@@ -37,6 +37,10 @@ set(CXBQN_REGEN_TESTS
     OFF
     CACHE BOOL "Regenerate bytecode, simple, and primitive tests"
 )
+set(CXBQN_MEM_STRATEGY
+  "shared_ptr"
+  CACHE STRING "Select memory management strategy from 'shared_ptr', 'gc', 'leak'"
+  )
 set(CXBQN_STACKTRACE
     OFF
     CACHE
@@ -101,6 +105,8 @@ set(CXBQN_CUDA
     OFF
     CACHE BOOL "Enable CUDA acceleration and non-standard builtins"
 )
+
+add_definitions("-DCXBQN_MEM_${CXBQN_MEM_STRATEGY}=1")
 
 if("${CXBQN_DEBUG_VM_FILE}" STREQUAL "stdout")
   set(CXBQN_DEBUG_VM_USE_FILE
