@@ -7,7 +7,13 @@ namespace cxbqn::types {
 
 O<Value> bi_Nothing() {
   static Nothing n;
+#ifdef CXBQN_MEM_shared_ptr
   return std::shared_ptr<Nothing>(&n, [](Nothing *) {});
+#elif CXBQN_MEM_leak
+  return &n;
+#else
+#error "unsupported"
+#endif
 }
 
 O<Value> Atop::call(u8 nargs, std::vector<O<Value>> args) {

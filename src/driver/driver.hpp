@@ -9,6 +9,14 @@
 
 namespace cxbqn::driver {
 
+#ifdef CXBQN_MEM_shared_ptr
+#define CXBQN_PTR_RESET(ptr, newptr) ptr.reset(newptr);
+#elif CXBQN_MEM_leak
+#define CXBQN_PTR_RESET(ptr, newptr) ptr = newptr;
+#else
+#error "unsupported"
+#endif
+
 int version();
 int usage();
 int parse_args(std::vector<std::string> args, O<Array> &path, O<Array> &src,

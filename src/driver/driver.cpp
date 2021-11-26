@@ -147,7 +147,8 @@ int parse_args(std::vector<std::string> args, O<Array> &path, O<Array> &src,
       repl = false;
       it++;
       auto _src = *it;
-      src.reset(new Array(_src));
+      CXBQN_PTR_RESET(src, CXBQN_NEW(Array, _src));
+      // src.reset(new Array(_src));
     } else if ("-p" == *it) {
       pp_res = true;
       it++;
@@ -169,7 +170,8 @@ int parse_args(std::vector<std::string> args, O<Array> &path, O<Array> &src,
         fmt::print("path {} does not exist\n", f);
         return 1;
       }
-      path.reset(new Array(fs::absolute(f)));
+      CXBQN_PTR_RESET(path, CXBQN_NEW(Array, fs::absolute(f)));
+      // path.reset(new Array(fs::absolute(f)));
       std::string _src = "";
       if (std::FILE *fp = std::fopen(f.c_str(), "r")) {
         int ch;
@@ -177,8 +179,9 @@ int parse_args(std::vector<std::string> args, O<Array> &path, O<Array> &src,
           _src += ch;
         }
         std::fclose(fp);
-        src.reset(new Array(_src));
-        sysargs->values.push_back(O<Value>(new Array(std::string(f))));
+        // src.reset(new Array(_src));
+        CXBQN_PTR_RESET(src, CXBQN_NEW(Array, _src));
+        sysargs->values.push_back(CXBQN_NEW(Array,std::string(f)));
         sysargs->shape[0]++;
         continue;
       } else {
@@ -187,7 +190,7 @@ int parse_args(std::vector<std::string> args, O<Array> &path, O<Array> &src,
       }
     } else {
       for (; it != args.end(); it++) {
-        sysargs->values.push_back(O<Value>(new Array(*it)));
+        sysargs->values.push_back(CXBQN_NEW(Array,*it));
         sysargs->shape[0]++;
       }
       return 0;

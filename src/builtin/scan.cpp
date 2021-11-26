@@ -52,7 +52,7 @@ O<Value> Scan::call(u8 nargs, std::vector<O<Value>> args) {
     cnt *= x->shape[i];
   int i = 0;
   auto warr = iswarr ? dyncast<Array>(w)
-                     : std::shared_ptr<Array>(new Array({w}));
+                     : CXBQN_NEW(Array, {w});
   CXBQN_DEBUG("cnt={},warr={}", cnt, CXBQN_STR_NC((O<Value>)warr));
   if (1 == nargs)
     for (; i < cnt; i++)

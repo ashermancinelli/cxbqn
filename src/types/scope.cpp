@@ -60,7 +60,7 @@ void Scope::set(bool should_var_be_set, O<Reference> r, O<Value> _v) {
 
 shared_ptr<Scope> Scope::get_nth_parent(uz depth) {
   CXBQN_DEBUG("Scope::get_nth_parent:depth={}", depth);
-  auto scp = CXBQN_SHARED_FROM_THIS();
+  auto scp = shared_from_this();
   while (depth-- > 0) {
     CXBQN_DEBUG("Scope::get_nth_parent:traversing to parent. depth={}", depth);
     CXBQN_DEBUG_NC("before={}", scp);
