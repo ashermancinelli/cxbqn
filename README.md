@@ -6,12 +6,14 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for information on contributing.
 
 ## Building
 
-Requires a compiler capable of C++20. GCC 9.3.1 is the oldest compiler I have tested it with.
+Requires a compiler capable of C++20.
+GCC 9.3.1 is the oldest compiler I have tested it with.
 
 ```console
 mkdir build
 cd build
-cmake ..
+# Use CXX to choose your compiler
+CXX=g++-11 cmake ..
 make -j12
 ./BQN -v
 CXBQN 0.7.0
