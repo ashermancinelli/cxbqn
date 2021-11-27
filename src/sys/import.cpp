@@ -1,7 +1,7 @@
 #include "sys_helper.hpp"
 namespace cxbqn::sys {
 
-O<Value> Import::call(u8 nargs, Args args) {
+O<Value> Import::call(u8 nargs, Args& args) {
   CXBQN_DEBUG("•Import: nargs={},args={}", nargs, args);
   if (2 == nargs)
     throw std::runtime_error("•Import: can only be called with one arg");
@@ -29,7 +29,8 @@ O<Value> Import::call(u8 nargs, Args args) {
   std::fclose(fp);
   auto src = CXBQN_NEW(Array,_src);
 
-  auto compiled = _compiler->call(2, {_compiler, src, _compiler_args});
+  Args a{_compiler, src, _compiler_args};
+  auto compiled = _compiler->call(2, a);
 
   auto ret = vm::run(compiled);
 

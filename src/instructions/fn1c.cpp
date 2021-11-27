@@ -16,7 +16,8 @@ void fn1c(std::vector<O<Value>> &stk) {
 #endif
 
   CXBQN_DEBUG("fn1c:calling S={} on x={}", CXBQN_STR_NC(S), CXBQN_STR_NC(x));
-  auto v = S->call(1, {S, x, bi_Nothing()});
+  Args a{S, x, bi_Nothing()};
+  auto v = S->call(1, a);
   CXBQN_DEBUG("fn1c:returning {}", CXBQN_STR_NC(v));
 #ifdef CXBQN_DEEPCHECKS
   if (nullptr == v)

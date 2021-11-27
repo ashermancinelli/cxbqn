@@ -19,12 +19,14 @@ void fn2o(std::vector<O<Value>> &stk) {
 
   if (w->t()[t_Nothing]) {
     CXBQN_DEBUG("fn2o: got nothing for 𝕨, calling monadically");
-    stk.push_back(S->call(1, {S, x, bi_Nothing()}));
+    Args a{S, x, bi_Nothing()};
+    stk.push_back(S->call(1, a));
     return;
   }
 
   CXBQN_DEBUG("fn2o: got vals for both 𝕩 and 𝕨, calling dyadically");
-  auto v = S->call(2, {S, x, w});
+  Args aa{S, x, w};
+  auto v = S->call(2, aa);
   stk.push_back(v);
 }
 

@@ -78,11 +78,16 @@ int repl(O<Value> compiler, O<Array> bqnruntime, O<Value> sysfn_handler,
   compw->values[3] = CXBQN_NEW(Number,-1); // allow shadowing
 
   auto src = CXBQN_NEW(Array,line);
-  auto compiled = compiler->call(2, {compiler, src, compw});
+  O<Value> compiled;
+  {
+    Args a{compiler, src, compw};
+    compiled = compiler->call(2, a);
+  }
   auto runret = vm::run(compiled);
 
   {
-    auto formatted = fmt->call(1, {fmt, runret.v, bi_Nothing()});
+    Args a{fmt, runret.v, bi_Nothing()};
+    auto formatted = fmt->call(1, a);
     fmt::print("{}\n", dyncast<Array>(formatted)->to_string());
   }
 
@@ -100,7 +105,11 @@ int repl(O<Value> compiler, O<Array> bqnruntime, O<Value> sysfn_handler,
 
     auto src = CXBQN_NEW(Array,line);
     compw->values[2] = to_arr(scp->names);
-    auto compiled = compiler->call(2, {compiler, src, compw});
+    O<Value> compiled;
+    {
+      Args a{compiler, src, compw};
+      compiled = compiler->call(2, a);
+    }
     auto cu = vm::deconstruct(compiled);
 
     auto body = cu->_bodies[cu->_blocks[0].body_idx(0)];
@@ -113,8 +122,11 @@ int repl(O<Value> compiler, O<Array> bqnruntime, O<Value> sysfn_handler,
     auto ret = vm::vm(cu, scp, body);
 
     // By default, print the result
-    auto formatted = fmt->call(1, {fmt, ret, bi_Nothing()});
-    fmt::print("{}\n", dyncast<Array>(formatted)->to_string());
+    {
+      Args a{fmt, ret, bi_Nothing()};
+      auto formatted = fmt->call(1, a);
+      fmt::print("{}\n", dyncast<Array>(formatted)->to_string());
+    }
   }
 
   return 0;

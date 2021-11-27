@@ -13,6 +13,7 @@ void fn1o(std::vector<O<Value>> &stk) {
     return;
   }
 
-  stk.push_back(S->call(1, {S, x, bi_Nothing()}));
+  Args a{S, x, bi_Nothing()};
+  stk.push_back(S->call(1, a));
 }
 }

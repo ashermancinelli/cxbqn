@@ -84,7 +84,8 @@ static O<Value> set_un_helper(std::vector<O<Value>> &stk, shared_ptr<Scope> scp)
 
 static O<Value> setm_ref(O<Value> F, O<Value> x, O<Value> r, shared_ptr<Scope> scp) {
   auto refer = dyncast<Reference>(r);
-  auto v = F->call(2, {F, x, scp->get(refer)});
+  Args a{F, x, scp->get(refer)};
+  auto v = F->call(2, a);
 
   // Set the new value of the reference, and push it back on the stack
   scp->set(true, refer, v);
@@ -100,7 +101,8 @@ static O<Value> setm_refarray(O<Value> F, O<Value> x, O<Value> r,
   for (int i = 0; i < refarr->N(); i++)
     varr->values.push_back(scp->get(refarr->getref(i)));
 
-  auto v = F->call(2, {F, x, varr});
+  Args a{F, x, varr};
+  auto v = F->call(2, a);
 
   safe_set_refer<true>(r, v, scp);
 
@@ -162,7 +164,8 @@ void setc(std::vector<O<Value>> &stk, shared_ptr<Scope> scp) {
 
   // F is called with 𝕩 and dereferenced r
   auto refer = dyncast<Reference>(r);
-  auto v = F->call(1, {F, scp->get(refer), bi_Nothing()});
+  Args a{F, scp->get(refer), bi_Nothing()};
+  auto v = F->call(1, a);
 
   // Set the new value of the reference, and push it back on the stack
   scp->set(true, refer, v);

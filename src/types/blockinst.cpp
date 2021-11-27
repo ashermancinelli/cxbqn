@@ -17,7 +17,7 @@ bool BlockInst::imm() const {
   return this->scp->cu->_blocks[this->blk_idx].immediate;
 }
 
-O<Value> BlockInst::call(u8 nargs, Args args) {
+O<Value> BlockInst::call(u8 nargs, Args& args) {
 
 #ifdef CXBQN_DEEPCHECKS
   if ((1 == nargs) != (args[2]->t()[t_Nothing]))

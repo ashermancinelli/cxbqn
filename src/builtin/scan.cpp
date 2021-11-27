@@ -2,7 +2,7 @@
 
 namespace cxbqn::provides {
 
-O<Value> Scan::call(u8 nargs, Args args) {
+O<Value> Scan::call(u8 nargs, Args& args) {
   CXBQN_DEBUG("`: nargs={},args={}", nargs, args);
   XNULLCHK("`");
   if (t_Array != type_builtin(args[1]))
@@ -64,11 +64,14 @@ O<Value> Scan::call(u8 nargs, Args args) {
       auto xv = x->values[i];
       auto wv = warr->values[i];
       CXBQN_DEBUG("xv={},wv={},i={}", CXBQN_STR_NC(xv), CXBQN_STR_NC(wv), i);
-      ret->values[i] = F->call(2, {F, x->values[i], warr->values[i]});
+      Args a{F, x->values[i], warr->values[i]};
+      ret->values[i] = F->call(2, a);
     }
 
-  for (; i < x->N(); i++)
-    ret->values[i] = F->call(2, {F, x->values[i], ret->values[i - cnt]});
+  for (; i < x->N(); i++) {
+    Args a{F, x->values[i], ret->values[i - cnt]};
+    ret->values[i] = F->call(2, a);
+  }
   return ret;
 }
 }

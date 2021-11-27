@@ -2,11 +2,12 @@
 
 namespace cxbqn::provides {
 
-O<Value> FillBy::call(u8 nargs, Args args) {
+O<Value> FillBy::call(u8 nargs, Args& args) {
   CXBQN_DEBUG("_fillBy_: nargs={},args={}", nargs, args);
   XNULLCHK("_fillBy_");
   auto F = args[4];
-  return F->call(nargs, {F, args[1], args[2]});
+  Args a{F, args[1], args[2]};
+  return F->call(nargs, a);
 }
 
 }

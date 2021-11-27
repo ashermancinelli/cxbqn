@@ -6,7 +6,7 @@ namespace cxbqn::provides {
 // `ox` and `ow` are short for the opaque pointers to each argument, in case the
 // operator needs to do some checks on the values before casting them.
 #define CXBQN_BI_CALL_DEF_NUMONLY(TYPE, SYMBOL, RETURN)                        \
-  O<Value> TYPE::call(u8 nargs, Args args) {                  \
+  O<Value> TYPE::call(u8 nargs, Args& args) {                  \
     CXBQN_DEBUG(SYMBOL ":nargs={},args={}", nargs, args);                      \
     XNULLCHK(SYMBOL);                                                          \
     auto ox = args[1];                                                         \

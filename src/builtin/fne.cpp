@@ -2,7 +2,7 @@
 
 namespace cxbqn::provides {
 
-O<Value> FNE::call(u8 nargs, Args args) {
+O<Value> FNE::call(u8 nargs, Args& args) {
   CXBQN_DEBUG("≢:nargs={},args={}", nargs, args);
   XNULLCHK("≢");
   if (2 == nargs)

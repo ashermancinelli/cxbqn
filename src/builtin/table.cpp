@@ -2,7 +2,7 @@
 
 namespace cxbqn::provides {
 
-O<Value> Table::call(u8 nargs, Args args) {
+O<Value> Table::call(u8 nargs, Args& args) {
   CXBQN_DEBUG("⌜: nargs={},args={}", nargs, args);
   XNULLCHK("⌜");
   auto F = args[4];
@@ -20,8 +20,10 @@ O<Value> Table::call(u8 nargs, Args args) {
 
   if (1 == nargs) {
     auto ret = CXBQN_NEW(Array, x->N());
-    for (int i = 0; i < x->N(); i++)
-      ret->values[i] = F->call(1, {F, x->values[i], bi_Nothing()});
+    for (int i = 0; i < x->N(); i++) {
+      Args a{F, x->values[i], bi_Nothing()};
+      ret->values[i] = F->call(1, a);
+    }
     ret->shape = x->shape;
     return ret;
   }
@@ -36,7 +38,8 @@ O<Value> Table::call(u8 nargs, Args args) {
 #endif
     for (int iw = 0; iw < w->N(); iw++)
       for (int ix = 0; ix < x->N(); ix++) {
-        ret->values[(iw * x->N()) + ix] = F->call(2, {F, xv[ix], wv[iw]});
+        Args a{F, xv[ix], wv[iw]};
+        ret->values[(iw * x->N()) + ix] = F->call(2, a);
       }
 #ifdef CXBQN_STACKTRACE_DEEP
   } catch (std::runtime_error &e) {

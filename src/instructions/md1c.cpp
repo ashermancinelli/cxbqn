@@ -12,7 +12,8 @@ void md1c(std::vector<O<Value>> &stk) {
 
   auto r = dyncast<BlockInst>(opaque_r);
   if (nullptr != r and r->imm()) {
-    auto v = r->call(1, {opaque_r, f, bi_Nothing()});
+    Args a{opaque_r, f, bi_Nothing()};
+    auto v = r->call(1, a);
     stk.push_back(v);
   } else {
     stk.push_back(CXBQN_NEW(Md1Deferred,f, opaque_r));

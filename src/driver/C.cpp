@@ -56,8 +56,10 @@ int main(int argc, char **argv) {
     auto decompose = CXBQN_NEW(Decompose,bqnruntime);
     auto primind = CXBQN_NEW(PrimInd,bqnruntime);
 
-    setprims->call(
-        1, {setprims, O<Array>(new Array({decompose, primind})), bi_Nothing()});
+    {
+      Args a{setprims, O<Array>(new Array({decompose, primind})), bi_Nothing()};
+      setprims->call(1, a);
+    }
 
     auto runtime = bqnruntime->values;
     CompileParams p2(
@@ -80,15 +82,19 @@ int main(int argc, char **argv) {
 
     auto glyph = CXBQN_NEW(Glyph,bqnruntime);
     auto fmtnum = CXBQN_NEW(FmtNum);
-    auto _fmtarr = fmt1->call(
-        1, {fmt1, O<Value>(new Array({bi_Type(), decompose, glyph, fmtnum})),
-            bi_Nothing()});
+    {
+      Args a{fmt1, O<Value>(new Array({bi_Type(), decompose, glyph, fmtnum})),
+          bi_Nothing()};
+      auto _fmtarr = fmt1->call(
+          1, a);
+    }
 
     auto fmtarr = dyncast<Array>(_fmtarr);
     auto fmt = fmtarr->values[0];
     auto repr = fmtarr->values[1];
     auto dofmt = [fmt](auto v) {
-      auto formatted = fmt->call(1, {fmt, v, bi_Nothing()});
+      Args a{fmt, v, bi_Nothing()};
+      auto formatted = fmt->call(1, a);
       fmt::print("{}\n", dyncast<Array>(formatted)->to_string());
     };
 
@@ -104,7 +110,10 @@ int main(int argc, char **argv) {
     compw->values[1] = O<Value>(new SystemFunctionResolver(
         CXBQN_NEW(Array,0), fmt, repr, compiler, bqnruntime, path));
 
-    auto compiled = compiler->call(2, {compiler, src, compw});
+    {
+      Args a{compiler, src, compw};
+      auto compiled = compiler->call(2, a);
+    }
 
     auto c = dyncast<Array>(compiled);
     for (int i = 0; i < c->N(); i++)

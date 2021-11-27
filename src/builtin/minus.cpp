@@ -2,7 +2,7 @@
 
 namespace cxbqn::provides {
 
-O<Value> Minus::call(u8 nargs, Args args) {
+O<Value> Minus::call(u8 nargs, Args& args) {
   CXBQN_DEBUG("-: nargs={},args={}", nargs, args);
   XNULLCHK("-");
   auto ox = args[1];

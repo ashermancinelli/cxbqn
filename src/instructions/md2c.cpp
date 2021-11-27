@@ -17,7 +17,8 @@ void md2c(std::vector<O<Value>> &stk) {
   auto r = dyncast<BlockInst>(opaque_r);
 
   if (nullptr != r and r->imm()) {
-    auto v = r->call(2, {opaque_r, f, g});
+    Args a{opaque_r, f, g};
+    auto v = r->call(2, a);
     stk.push_back(v);
   } else {
     stk.push_back(CXBQN_NEW(Md2Deferred,f, opaque_r, g));

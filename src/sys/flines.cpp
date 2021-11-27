@@ -3,7 +3,7 @@
 
 namespace cxbqn::sys {
 
-O<Value> FLines::call(u8 nargs, Args args) {
+O<Value> FLines::call(u8 nargs, Args& args) {
   CXBQN_DEBUG("•FLines: nargs={},args={}", nargs, args);
 #ifdef CXBQN_DEEPCHECKS
   if (2 == nargs)

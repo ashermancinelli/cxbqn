@@ -2,7 +2,7 @@
 
 namespace cxbqn::provides {
 
-O<Value> Range::call(u8 nargs, Args args) {
+O<Value> Range::call(u8 nargs, Args& args) {
   CXBQN_DEBUG("↕: nargs={},args={}", nargs, args);
   XNULLCHK("↕");
   auto n = static_cast<uz>(dyncast<Number>(args[1])->v);

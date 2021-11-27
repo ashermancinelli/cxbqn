@@ -2,7 +2,7 @@
 
 namespace cxbqn::provides {
 
-O<Value> Deshape::call(u8 nargs, Args args) {
+O<Value> Deshape::call(u8 nargs, Args& args) {
   CXBQN_DEBUG("⥊: nargs={},args={}", nargs, args);
   XNULLCHK("⥊");
 

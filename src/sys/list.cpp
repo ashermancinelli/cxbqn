@@ -1,7 +1,7 @@
 #include "sys_helper.hpp"
 
 namespace cxbqn::sys {
-O<Value> List::call(u8 nargs, Args args) {
+O<Value> List::call(u8 nargs, Args& args) {
   CXBQN_DEBUG("•List: nargs={},args={}", nargs, args);
   auto d = dyncast<Array>(args[1])->to_string();
   auto ret = CXBQN_NEW(Array,0);

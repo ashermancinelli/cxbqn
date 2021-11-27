@@ -20,7 +20,8 @@ void fn2c(std::vector<O<Value>> &stk) {
     throw std::runtime_error("fn2c: got nullptr for S");
 #endif
 
-  auto v = S->call(2, {S, x, w});
+  Args a{S, x, w};
+  auto v = S->call(2, a);
 
 #ifdef CXBQN_DEEPCHECKS
   if (nullptr == v)

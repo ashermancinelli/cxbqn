@@ -86,7 +86,8 @@ O<Array> get_runtime_setprims() {
   auto xarg = CXBQN_NEW(Array, 2);
   xarg->values.assign({decompose, primind});
 
-  setprims->call(1, {setprims, xarg, bi_Nothing()});
+  Args args{setprims, xarg, bi_Nothing()};
+  setprims->call(1, args);
 
   return runtime_raw;
 }
