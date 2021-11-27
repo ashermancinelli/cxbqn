@@ -1,13 +1,19 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <body>
+<head>
+  <meta charset="utf-8">
 
+  <link rel="stylesheet" href="../node_modules/reveal.js/dist/reveal.css">
+  <link rel="stylesheet" href="../node_modules/reveal.js/plugin/highlight/zenburn.css">
+  <link rel="stylesheet" href="../node_modules/reveal.js/dist/theme/black.css" id="theme">
+</head>
 <script src="https://d3js.org/d3.v4.js"></script>
+
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@200;500&display=swap" rel="stylesheet">
-
 <script>
 
 var VP = {
@@ -20,19 +26,20 @@ var vmg = d3.select('body')
     .attr('height', VP.h)
     .append('g');
 
-var sel = vmg.append('rect')
-  .attr('id', 'ul')
-  .attr("stroke", "darkgrey")
-  .attr('fill', 'none')
-  .attr('stroke-width', 4)
-  .attr('x', 15+VP.w/2)
-  .attr('y', (VP.h/4)+80)
-  .attr('width', 0)
-  .attr('height', 4)
 
 var _transitions = [
   {
     transitionForward: () => {
+      console.log(document.querySelector('#hh0'))
+      var sel = vmg.append('rect')
+        .attr('id', 'ul')
+        .attr("stroke", "darkgrey")
+        .attr('fill', 'none')
+        .attr('stroke-width', 4)
+        .attr('x', 15+VP.w/2)
+        .attr('y', VP.h/3)
+        .attr('width', 0)
+        .attr('height', 4)
       const W = 400
       d3.select('#ul')
         .transition()
