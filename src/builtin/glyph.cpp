@@ -3,7 +3,7 @@
 namespace cxbqn::provides {
 
 // Find x in the runtime, and return the glyph at that index in the glyph string
-O<Value> Glyph::call(u8 nargs, std::vector<O<Value>> args) {
+O<Value> Glyph::call(u8 nargs, Args args) {
   static const std::string glyphs
       {"+-×÷⋆√⌊⌈|¬∧∨<>≠=≤≥≡≢⊣⊢⥊∾≍⋈↑↓↕«»⌽⍉/⍋⍒⊏⊑⊐⊒∊⍷⊔!˙˜˘¨⌜⁼´˝`∘○⊸⟜⌾⊘◶⎉⚇⍟⎊"};
   auto x = args[1];

@@ -3,7 +3,7 @@
 namespace cxbqn::provides {
 
 #define SYMBOL "GroupLen"
-O<Value> GroupLen::call(u8 nargs, std::vector<O<Value>> args) {
+O<Value> GroupLen::call(u8 nargs, Args args) {
   CXBQN_DEBUG(SYMBOL ": nargs={},args={}", nargs, args);
   XNULLCHK(SYMBOL);
   auto x = dyncast<Array>(args[1]);

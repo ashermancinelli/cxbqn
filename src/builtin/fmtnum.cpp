@@ -2,7 +2,7 @@
 
 namespace cxbqn::provides {
 
-O<Value> FmtNum::call(u8 nargs, std::vector<O<Value>> args) {
+O<Value> FmtNum::call(u8 nargs, Args args) {
   CXBQN_DEBUG("•FmtNum:nargs={},args={}", nargs, args);
   XNULLCHK("•FmtNum");
   auto x = dyncast<Number>(args[1]);

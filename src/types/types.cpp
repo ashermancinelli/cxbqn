@@ -16,7 +16,7 @@ O<Value> bi_Nothing() {
 #endif
 }
 
-O<Value> Atop::call(u8 nargs, std::vector<O<Value>> args) {
+O<Value> Atop::call(u8 nargs, Args args) {
   CXBQN_DEBUG("Atop::call:nargs={},args={}", nargs, args);
   auto ret = g->call(nargs, {g, args[1], args[2]});
   return f->call(1, {f, ret, bi_Nothing()});
@@ -26,20 +26,19 @@ std::ostream &Atop::repr(std::ostream &os) const {
   return os << "(atop f=" << CXBQN_STR_NC(f) << ",g=" << CXBQN_STR_NC(g) << ")";
 }
 
-O<Value> Fork::call(u8 nargs, std::vector<O<Value>> args) {
+O<Value> Fork::call(u8 nargs, Args args) {
   CXBQN_DEBUG("Fork::call:nargs={},args={}", nargs, args);
 
   // Pass 𝕩 and 𝕨 (if exists)
-  std::vector<O<Value>> rargs{h, args[1],
-                              (2 == nargs ? args[2] : bi_Nothing())};
+  Args rargs{h, args[1], (2 == nargs ? args[2] : bi_Nothing())};
   auto r = h->call(nargs, rargs);
 
-  std::vector<O<Value>> largs{f, args[1],
-                              (2 == nargs ? args[2] : bi_Nothing())};
+  Args largs{f, args[1], (2 == nargs ? args[2] : bi_Nothing())};
   auto l = f->call(nargs, largs);
 
   // nargs will always be two for the inner function of a fork
-  auto ret = g->call(2, {g, r, l});
+  Args gargs{g, r, l};
+  auto ret = g->call(2, gargs);
 
   return ret;
 }
@@ -49,7 +48,7 @@ std::ostream &Fork::repr(std::ostream &os) const {
             << ",h=" << CXBQN_STR_NC(h) << ")";
 }
 
-O<Value> Md1Deferred::call(u8 nargs, std::vector<O<Value>> args) {
+O<Value> Md1Deferred::call(u8 nargs, Args args) {
   CXBQN_DEBUG("Md1Deferred::call(after adding 𝕣, 𝕗):nargs={},args={}", nargs,
               args);
 
@@ -60,7 +59,7 @@ std::ostream &Md1Deferred::repr(std::ostream &os) const {
   return os;
 }
 
-O<Value> Md2Deferred::call(u8 nargs, std::vector<O<Value>> args) {
+O<Value> Md2Deferred::call(u8 nargs, Args args) {
   CXBQN_DEBUG("Md1Deferred::call(after adding 𝕣, 𝕗, 𝕘):nargs={},args={}", nargs,
               args);
   return m2->call(nargs, {m2, args[1], args[2], CXBQN_SHARED_FROM_THIS(), f, g});

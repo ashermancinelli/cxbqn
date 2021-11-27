@@ -2,7 +2,7 @@
 #include <subprocess.hpp>
 
 namespace cxbqn::sys {
-O<Value> SH::call(u8 nargs, std::vector<O<Value>> args) {
+O<Value> SH::call(u8 nargs, Args args) {
   CXBQN_DEBUG("•SH: nargs={},args={}", nargs, args);
 
   if (nargs == 2)

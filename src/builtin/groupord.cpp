@@ -3,7 +3,7 @@
 namespace cxbqn::provides {
 
 #define SYMBOL "GroupOrd"
-O<Value> GroupOrd::call(u8 nargs, std::vector<O<Value>> args) {
+O<Value> GroupOrd::call(u8 nargs, Args args) {
   CXBQN_DEBUG(SYMBOL ": nargs={},args={}", nargs, args);
   XNULLCHK(SYMBOL);
   auto w = dyncast<Array>(args[2]);

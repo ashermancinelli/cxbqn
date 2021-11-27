@@ -2,7 +2,7 @@
 
 namespace cxbqn::provides {
 
-O<Value> EQ::call(u8 nargs, std::vector<O<Value>> args) {
+O<Value> EQ::call(u8 nargs, Args args) {
   CXBQN_DEBUG("=:nargs={},args={}", nargs, args);
   XNULLCHK("=");
   CXBQN_LOGFLUSH();

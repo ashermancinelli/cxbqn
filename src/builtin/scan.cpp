@@ -2,7 +2,7 @@
 
 namespace cxbqn::provides {
 
-O<Value> Scan::call(u8 nargs, std::vector<O<Value>> args) {
+O<Value> Scan::call(u8 nargs, Args args) {
   CXBQN_DEBUG("`: nargs={},args={}", nargs, args);
   XNULLCHK("`");
   if (t_Array != type_builtin(args[1]))

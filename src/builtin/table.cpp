@@ -2,7 +2,7 @@
 
 namespace cxbqn::provides {
 
-O<Value> Table::call(u8 nargs, std::vector<O<Value>> args) {
+O<Value> Table::call(u8 nargs, Args args) {
   CXBQN_DEBUG("⌜: nargs={},args={}", nargs, args);
   XNULLCHK("⌜");
   auto F = args[4];

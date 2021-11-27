@@ -2,7 +2,7 @@
 
 namespace cxbqn::provides {
 O<Value> report(O<Value> v) { fmt::print("{}\n",*v); return v;}
-O<Value> Decompose::call(u8 nargs, std::vector<O<Value>> args) {
+O<Value> Decompose::call(u8 nargs, Args args) {
   CXBQN_DEBUG("•Decompose: nargs={},args={}", nargs, args);
   // fmt::print("•Decompose: nargs={},args={}\n", nargs, args);
   XNULLCHK("•Decompose");

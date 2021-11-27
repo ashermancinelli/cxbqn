@@ -1,7 +1,7 @@
 #include "sys_helper.hpp"
 namespace cxbqn::sys {
 
-O<Value> BQN::call(u8 nargs, std::vector<O<Value>> args) {
+O<Value> BQN::call(u8 nargs, Args args) {
   CXBQN_DEBUG("•BQN: nargs={},args={}", nargs, args);
 
   auto x = dyncast<Array>(args[1]);

@@ -3,7 +3,7 @@
 
 namespace cxbqn::sys {
 
-O<Value> UnixTime::call(u8 nargs, std::vector<O<Value>> args) {
+O<Value> UnixTime::call(u8 nargs, Args args) {
   using namespace std::chrono;
   CXBQN_DEBUG("•UnixTime: nargs={},args={}", nargs, args);
   auto now = system_clock::now();

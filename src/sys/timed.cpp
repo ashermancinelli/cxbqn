@@ -10,7 +10,7 @@ auto since(std::chrono::time_point<clock_t, duration_t> const &start) {
   return std::chrono::duration_cast<result_t>(clock_t::now() - start);
 }
 
-O<Value> Timed::call(u8 nargs, std::vector<O<Value>> args) {
+O<Value> Timed::call(u8 nargs, Args args) {
   CXBQN_DEBUG("•_timed: nargs={},args={}", nargs, args);
   auto F = args[4];
   auto x = args[1];

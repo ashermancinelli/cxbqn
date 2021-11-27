@@ -1,6 +1,6 @@
 #include "sys_helper.hpp"
 namespace cxbqn::sys {
-O<Value> CXBQN::call(u8 nargs, std::vector<O<Value>> args) {
+O<Value> CXBQN::call(u8 nargs, Args args) {
   CXBQN_DEBUG("•CXBQN: nargs={},args={}", nargs, args);
   return CXBQN_NEW(Number,1);
 }

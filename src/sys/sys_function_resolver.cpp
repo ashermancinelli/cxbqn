@@ -7,7 +7,7 @@ using namespace cxbqn::provides;
 struct SysError : public Function {
   std::string mock = "";
   SysError(std::string m) : mock{m} {}
-  O<Value> call(u8 nargs = 0, std::vector<O<Value>> args = {}) override {
+  O<Value> call(u8 nargs, Args args) override {
     const auto s =
         fmt::format("System Error: {} is not current available in CXBQN.\nSee "
                     "•listSys for all available system functions.",
@@ -23,7 +23,7 @@ static std::vector<std::string> listsys{
     "cxbqn",  "sh",  "show", "exit", "timed", "unixtime", "flines", "out",
     "import", "bqn", "fmt",  "args", "path",  "repr",     "list"};
 
-O<Value> SystemFunctionResolver::call(u8 nargs, std::vector<O<Value>> args) {
+O<Value> SystemFunctionResolver::call(u8 nargs, Args args) {
   CXBQN_DEBUG("SystemFunctionResolver: nargs={},args={}", nargs, args);
   auto x = dyncast<Array>(args[1]);
   std::vector<O<Value>> ret;

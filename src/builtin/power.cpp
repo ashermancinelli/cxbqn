@@ -2,7 +2,7 @@
 
 namespace cxbqn::provides {
 
-O<Value> Power::call(u8 nargs, std::vector<O<Value>> args) {
+O<Value> Power::call(u8 nargs, Args args) {
   CXBQN_DEBUG("⋆:nargs={},args={}", nargs, args);
   XNULLCHK("⋆");
   auto ox = args[1];
