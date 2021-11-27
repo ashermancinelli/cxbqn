@@ -1,9 +1,11 @@
 #include "driver.hpp"
 
 #ifdef CXBQN_READLINE
+namespace rl {
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <stdlib.h>
+}
 #endif
 
 namespace cxbqn::driver {
@@ -28,18 +30,18 @@ char *match_names(const char *text, int state) {
 }
 
 char **scp_name_completion(const char *text, int start, int end) {
-  rl_attempted_completion_over = 1;
-  return rl_completion_matches(text, match_names);
+  rl::rl_attempted_completion_over = 1;
+  return rl::rl_completion_matches(text, match_names);
 }
 #endif
 
 bool getline(std::string &line) {
 #ifdef CXBQN_READLINE
-  auto *buf = readline("   ");
+  auto *buf = rl::readline("   ");
   if (nullptr == buf)
     return false;
   if (strlen(buf) > 0) {
-    add_history(buf);
+    rl::add_history(buf);
   }
   line.resize(strlen(buf));
   std::copy(buf, buf + strlen(buf), line.begin());
@@ -62,7 +64,7 @@ int repl(O<Value> compiler, O<Array> bqnruntime, O<Value> sysfn_handler,
          O<Value> fmt) {
 
 #ifdef CXBQN_READLINE
-  rl_attempted_completion_function = &scp_name_completion;
+  rl::rl_attempted_completion_function = &scp_name_completion;
 #endif
 
   std::string line;
