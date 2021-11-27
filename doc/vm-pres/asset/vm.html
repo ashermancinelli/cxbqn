@@ -126,6 +126,10 @@ var r1 = R({
   id: 'r1', c: '#65d2e6', t: 'r1',
   h: 100,  w: 200,  x: 600,  y: 100,
 })
+var comp = R({
+  id: 'comp', c: '#4de8c1', t: 'Compiler',
+  h: 100,  w: 600,  x: (VP.w/2)-350,  y: VP.h-430,
+})
 
 var mx = (r) => r.x+(r.w/2)
 var my = (r) => r.y+(r.h/2)
@@ -314,11 +318,7 @@ var _transitions = [
         .transition()
         .duration(600)
         .attr('x', (VP.w/4)-(newvm.w/2))
-        .attr('y', (VP.h)-(newvm.h/2))
-    }
-  },
-  {
-    transitionForward: () => {
+        .attr('y', (VP.h)-(newvm.h/2));
       [prim, r0, r1].forEach(r=>r.show());
     }
   },
@@ -357,14 +357,10 @@ var _transitions = [
         ['', '-label'].forEach(lab => {
           d3.select(`#${r.id}${lab}`)
             .transition()
-            .duration(500)
+            .duration(700)
             .attr('transform', `translate(-${VP.w/4},0)`)
         });
-      })
-    }
-  },
-  {
-    transitionForward: () => {
+      });
       var nvmx=newvm.mx();
       var nvmy=newvm.y;
       [ // path starts
@@ -386,6 +382,7 @@ var _transitions = [
           .attr("stroke-dasharray", ll + " " + ll)
           .attr("stroke-dashoffset", ll)
           .transition()
+          .duration(300)
           .ease(d3.easeLinear)
           .attr("stroke-dashoffset", 0)
       })
@@ -397,6 +394,46 @@ var _transitions = [
       newvm.get().remove();newvm.getl().remove();
       prim.get().transition().duration(500).attr('transform', `translate(-${VP.w/4},0)`);
       prim.getl().transition().duration(500).attr('transform', `translate(-${VP.w/4},0)`);
+      var i=2;
+      [r0, r1].forEach(r=>{
+        r.get().transition().duration(500).attr('y',VP.h-(i*r.h+(10*(i-1))))
+        r.getl().transition().duration(500).attr('y',VP.h-(i*r.h+(10*(i-1)))+r.h/2)
+        i++
+      })
+    },
+  },
+  {
+    transitionForward: () => {
+      var i=1;
+      r0.w += i*100;
+      r0.get().transition().duration(500)
+        .attr('width',r0.w)
+        .attr('x', (VP.w/2)+50)
+      i++
+      r1.w += i*100;
+      r1.get().transition().duration(500)
+        .attr('width',r1.w)
+        .attr('x', (VP.w/2))
+    }
+  },
+  {
+    transitionForward: () => {
+      comp.show();
+    }
+  },
+  {
+    transitionForward: () => {
+      [r0, r1, prim].forEach(rect => {
+        rect.get().transition().duration(500)
+          .attr('fill-opacity', .5);
+      });
+    }
+  },
+  {
+    transitionForward: () => {
+      comp.get().transition().duration(500).attr('fill-opacity', .5);
+      prim.get().transition().duration(500).attr('fill-opacity', 1);
+      newvm=R(newvm);newvm.show()
     }
   }
 ]

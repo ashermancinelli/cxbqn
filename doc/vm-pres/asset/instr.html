@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<body>
+
+<script src="https://d3js.org/d3.v4.js"></script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@200;500&display=swap" rel="stylesheet">
+
+<script>
+
+var compUnit = {
+  bc: [0,1,0,0,0,1,17,7],
+  consts: ['+', 2],
+  blocks: [[0,1,0]],
+  bodies: [[0,0]]
+}
+var lens = {0:1,17:0,7:0}
+
+var VP = {
+  w: window.innerWidth-50,
+  h: window.innerHeight-50
+}
+var vmg = d3.select('body')
+    .append('svg').attr('id', 'instrbody')
+    .attr('width', VP.w)
+    .attr('height', VP.h)
+    .append('g');
+var R = (r) => {
+  r.mx=()=>r.x+(r.w/2)
+  r.my=()=>r.y+(r.h/2)
+
+  vmg.append('rect')
+    .attr('width', r.w)
+    .attr('height', r.h)
+    .attr('x', r.x)
+    .style("opacity", 0)
+    .attr('y', r.y)
+    .attr('fill', r.c)
+    .attr('id', r.id);
+    
+  vmg.append('text')
+    .attr('id', r.id + '-label')
+    .text(r.t)
+    .attr('font-size', '30')
+    .attr('font-family', 'Roboto Mono')
+    .attr('x', r.mx())
+    .attr('y', r.my())
+    .style("opacity", 0)
+    .attr('fill', 'black')
+    .attr('text-anchor', 'middle')
+    .attr('alignment-baseline', 'central')
+
+  r.get = () => d3.select('#'+r.id)
+  r.getl = () => d3.select('#'+r.id+'-label')
+
+  r.hide = () => {
+    d3.select('#' + r.id)
+      .transition()
+      .duration(500)
+      .style("opacity", 0)
+    d3.select('#' + r.id + '-label')
+      .transition()
+      .duration(500)
+      .style("opacity", 0)
+  }
+  r.hide();
+  r.show = () => {
+    d3.select('#' + r.id + '-label')
+      .transition()
+      .duration(500)
+      .style("opacity", 1)
+    d3.select('#' + r.id)
+      .transition()
+      .duration(500)
+      .style("opacity", 1)
+  }
+  return r;
+}
+
+var consts = R({
+  id: 'consts', c: '#e6a267', t: `Consts: [${compUnit.consts}]`,
+  h: 75,  w: 400,  x: 300,  y: 300,
+});
+
+var bc = R({
+  id: 'bc', c: '#ed7164', t: `Bytecode: [${compUnit.bc}]`,
+  h: 75,  w: 600,  x: VP.w-(900),  y: 300,
+});
+
+var stack = R({
+  _stack: [], fmt: (s) => {
+  },
+  id: 'stack', c: '#64bbd1', t: `Stack: []`,
+  h: 75,  w: 400,  x: 300,  y: 500,
+})
+stack.fmt = () => {
+  stack.t=`Stack: [${stack._stack}]`
+  stack.w = 400 + (50 * stack._stack.length);
+  stack.getl().transition().duration(200).text(stack.t);
+  stack.get().transition().duration(200).attr('w', stack.w);
+}
+
+var instr = R({
+  _instr: '',
+  id: 'instr', c: '#6ad164', t: `Instruction:`,
+  h: 75,  w: 600,  x: VP.w-(900),  y: 500,
+})
+instr.tup = () => instr.getl().text(instr.t);
+instr.fmt = (_bc,pc) => {
+  console.log('Instr handling ', _bc[pc])
+  switch(_bc[pc]) { case 0: instr._instr="PUSH "+_bc[pc+1]; break;
+                    case 7: instr._instr="RETD";break;
+                    case 17: instr._instr="FN2O";break;
+                  }
+  instr.t = `Instruction: ${instr._instr}`;
+  instr.getl().text(instr.t);
+  console.log(instr.t)
+}
+
+function call(S, x, w) {
+  switch(S) {
+    case '+': return x+w;
+  }
+  throw "bad call";
+}
+
+var pc = 0;
+var _bc = compUnit.bc;
+var Po = () => stack._stack.pop()
+var Pu = (v) => stack._stack.push(v)
+var vmnext = () => {
+  instr.fmt(_bc, pc);
+  switch (_bc[pc]) {
+    case 0: {
+      stack._stack.push(compUnit.consts[_bc[++pc]]);
+      break;
+    }
+    case 17: {
+      var x=Po(),S=Po(),w=Po();
+      stack._stack.push(call(S, x, w))
+      break;
+    }
+    case 7: {
+      // done
+      break;
+    }
+  }
+  pc++;
+}
+
+var _transitions = [];
+
+// Show the boxes
+[consts, bc, instr, stack].forEach(
+  e=>_transitions.push({transitionForward: () => e.show()}))
+
+// Run the VM
+for(var i=0;i<5;i++)_transitions.push(...[
+  {transitionForward: () => vmnext()},
+  {transitionForward: () => stack.fmt()},
+  ]);
+
+</script>
+</body>
+</html>
