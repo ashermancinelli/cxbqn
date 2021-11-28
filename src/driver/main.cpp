@@ -7,7 +7,7 @@ using namespace cxbqn::sys;
 
 int main(int argc, char **argv) {
 
-  bool repl, pp_res, show_cu;
+  bool repl=false, pp_res=false, show_cu=false;
   auto sysargs = CXBQN_NEW(Array,0);
   auto path = CXBQN_NEW(Array,0);
   auto src = CXBQN_NEW(Array,"\"CXBQN internal: Empty program\" ! 0");

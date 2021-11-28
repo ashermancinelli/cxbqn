@@ -30,7 +30,7 @@ run(ByteCode bc, O<Array> consts, std::vector<BlockDef> blks,
     O<Array> source = nullptr);
 
 RunResult run(O<Value> compiled);
-RunResult run(O<CompUnit> compiled);
+RunResult run(std::shared_ptr<CompUnit> compiled);
 
 O<Value> vm(shared_ptr<CompUnit> cu, ByteCodeRef bc, O<Array> consts, std::vector<O<Value>> stk,
             shared_ptr<Scope> scope);

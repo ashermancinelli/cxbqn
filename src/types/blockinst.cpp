@@ -29,7 +29,7 @@ O<Value> BlockInst::call(u8 nargs, Args& args) {
 
   auto body = scp->cu->_bodies[blk.body_idx(nargs)];
   auto child = make_shared<Scope>(scp, blk_idx);
-  child->vars.resize(body.var_count+10);
+  child->vars.resize(std::max((uz)6, body.var_count+1));
   std::copy(args.begin(), args.end(), child->vars.begin());
 
   CXBQN_DEBUG("BlockInst::call:nargs={},childscope={},blk={}", args.size(),

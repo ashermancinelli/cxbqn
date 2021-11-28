@@ -76,7 +76,7 @@ shared_ptr<CompUnit> deconstruct(O<Value> compiled) {
   return cu;
 }
 
-RunResult run(O<CompUnit> cu) {
+RunResult run(std::shared_ptr<CompUnit> cu) {
   RunResult ret;
 
   ret.scp = make_shared<Scope>(cu);
