@@ -9,33 +9,6 @@ using namespace types;
 #define ARR(x) dyncast<Array>(x)
 #define NUM(x) dyncast<Number>(x)
 
-/*
-Example compiled output of "5+5":
-
-⟨sh=⟨6⟩
-
-  0. bytecode
-  ⟨sh=⟨8⟩0,1,0,0,0,1,17,7⟩,
-
-  1. consts
-  ⟨sh=⟨2⟩
-    ( md2D ( md2D + Block{i=7} (fork f=0,g==,h=•Type)) Block{i=10} ⟨sh=⟨3⟩+,(
-md2D ( md2D Block{i=167} ⊘ ( md2D ( md2D (fork f=1,g=-,h=≤) Block{i=7} (fork
-f=0,g==,h=•Type)) Block{i=10} ⟨sh=⟨2⟩Block{i=165},Block{i=166}⟩)) _fillBy_
-Block{i=164}),( md2D Block{i=169} _fillBy_ Block{i=168})⟩), 5⟩,
-
-  2. blocks
-  ⟨sh=⟨1⟩⟨sh=⟨3⟩0,1,0⟩⟩,
-
-  3. bodies
-  ⟨sh=⟨1⟩⟨sh=⟨4⟩0,0,⟨sh=⟨0⟩⟩,⟨sh=⟨0⟩⟩⟩⟩,
-
-  4. error reporting stuff
-  ⟨sh=⟨2⟩
-    ⟨sh=⟨8⟩2,2,1,1,0,0,1,0⟩,⟨sh=⟨8⟩2,2,1,1,0,0,1,0⟩⟩,
-    ⟨sh=⟨5⟩⟨sh=⟨3⟩92,0,92⟩,⟨sh=⟨3⟩0,1,0⟩,⟨sh=⟨5⟩⟨sh=⟨0⟩⟩,⟨sh=⟨0⟩⟩,⟨sh=⟨1⟩5⟩,⟨sh=⟨0⟩⟩,⟨sh=⟨0⟩⟩⟩,⟨sh=⟨3⟩0,1,2⟩,⟨sh=⟨3⟩0,1,2⟩⟩⟩
-      */
-
 shared_ptr<CompUnit> deconstruct(O<Value> compiled) {
   auto comparr = ARR(compiled);
 
@@ -93,10 +66,6 @@ shared_ptr<CompUnit> deconstruct(O<Value> compiled) {
         cu->_exported.insert({s, i});
       }
     }
-    //for(auto& [k,v]:cu->_exported)
-    //  fmt::print("{}->{}\n",k,v);
-    //for(int i=0; i < namelist.size(); i++)
-    //  fmt::print("{}->{}\n",i,namelist[i]);
 
     cu->_bodies.push_back(b);
   }
@@ -107,9 +76,7 @@ shared_ptr<CompUnit> deconstruct(O<Value> compiled) {
   return cu;
 }
 
-RunResult run(O<Value> compiled) {
-  auto cu = deconstruct(compiled);
-
+RunResult run(O<CompUnit> cu) {
   RunResult ret;
 
   ret.scp = make_shared<Scope>(cu);
@@ -120,6 +87,11 @@ RunResult run(O<Value> compiled) {
   ret.v = vm::vm(cu, ret.scp, body);
 
   return ret;
+}
+
+RunResult run(O<Value> compiled) {
+  auto cu = deconstruct(compiled);
+  return run(cu);
 }
 
 static bool loginit = false;

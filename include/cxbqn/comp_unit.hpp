@@ -6,11 +6,11 @@ namespace cxbqn::types {
 
 struct CompUnit {
   ByteCode _bc;
+  O<Array> _consts;
   std::vector<Block> _blocks;
   std::vector<Body> _bodies;
-  O<Array> _consts;
   std::vector<std::string> _namelist;
   std::unordered_map<std::string, uz> _exported;
 };
 
-}
+} // namespace cxbqn::types

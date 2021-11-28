@@ -21,10 +21,10 @@ int main(int argc, char **argv) {
 
     auto t_start = std::chrono::high_resolution_clock::now();
     const auto provide = provides::get_provides()->values;
-    CompileParams p(
-#include <cxbqn/__/compiled_runtime>
-    );
-    auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
+    auto rt_cu =
+#include <cxbqn/__/_compiled_runtime>
+      ;
+    auto ret = vm::run(rt_cu);
     auto runtime_ret = dyncast<Array>(ret.v);
 
 #ifdef CXBQN_PROFILE_STARTUP
@@ -45,11 +45,11 @@ int main(int argc, char **argv) {
     }
 
     auto runtime = bqnruntime->values;
-    CompileParams p2(
-#include <cxbqn/__/compiled_compiler>
-    );
+    auto c_cu =
+#include <cxbqn/__/_compiled_compiler>
+      ;
 
-    auto cret = vm::run(p2.bc, p2.consts.to_arr(), p2.blk_defs, p2.bodies);
+    auto cret = vm::run(c_cu);
 #ifdef CXBQN_PROFILE_STARTUP
     auto t_comp = std::chrono::high_resolution_clock::now();
 #endif
@@ -59,11 +59,10 @@ int main(int argc, char **argv) {
     // Evaluating the formatter bytecode returns [fmt1, repr]. We then use fmt1
     // to create the actual formatter by passing it four arguments, •Type,
     // •Decompose, •Glyph, and •FmtNum.
-    CompileParams pfmt(
-#include <cxbqn/__/compiled_formatter>
-    );
-    auto fmtret =
-        vm::run(pfmt.bc, pfmt.consts.to_arr(), pfmt.blk_defs, pfmt.bodies);
+    auto f_cu =
+#include <cxbqn/__/_compiled_formatter>
+      ;
+    auto fmtret = vm::run(f_cu);
 #ifdef CXBQN_PROFILE_STARTUP
     auto t_fmt = std::chrono::high_resolution_clock::now();
 #endif
@@ -73,7 +72,9 @@ int main(int argc, char **argv) {
     auto fmtnum = CXBQN_NEW(FmtNum);
     O<Value> _fmtarr;
     {
-      Args a{fmt1, O<Value>(new Array({bi_Type(), decompose, glyph, fmtnum})), bi_Nothing()};
+      auto x = CXBQN_NEW(Array, 4);
+      x->values.assign({bi_Type(), decompose, glyph, fmtnum});
+      Args a{fmt1, x, bi_Nothing()};
       _fmtarr = fmt1->call(1, a);
     }
 

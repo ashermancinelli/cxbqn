@@ -57,6 +57,7 @@ struct Block {
   uz body_idx(u8 nargs, uz attempt = 0) const;
 
   Block(BlockDef bd);
+  Block(uz ty, uz immediate, std::vector<std::vector<uz>> indices);
 };
 
 } // namespace cxbqn::types

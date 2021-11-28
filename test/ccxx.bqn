@@ -11,6 +11,8 @@ Import ← {𝕨•Import path∾𝕩}
 FChars ← {𝕨•FChars path∾𝕩}
 FLines ← {𝕨•FLines path∾𝕩}
 
+strings←•Import path∾"../../bqn-libs/strings.bqn"
+
 
 F ← •Repr  # Format number
 # Escape the special characters that appear in BQN sources.
@@ -24,12 +26,11 @@ Esc←{
 
 OStr ← "CXBQN_NEW(Array,U"""∾Esc∾""")"˙  # A BQN string
 OChr ← {"CXBQN_NEW(Character,U'"∾(Esc⥊𝕩)∾"')"} # A BQN character
-ONum ← {s←"-"/˜𝕩<0 ⋄ ∞⊸=∘|◶⟨""∾""∾˜s∾F∘| ⋄ "CXBQN_NEW(Number,"∾s∾"1.0/0.0)"⟩𝕩} # Format number
+ONum ← {s←"-"/˜𝕩<0 ⋄ ∞⊸=∘|◶⟨"CXBQN_NEW(Number,"∾")"∾˜s∾F∘| ⋄ "CXBQN_NEW(Number,"∾s∾"1.0/0.0)"⟩𝕩} # Format number
 OAny ← ≡◶⟨@⊸≤◶ONum‿OChr, OStr, ⊑⟩
 
 List ← (0<≠)◶⟨"",1↓·∾","⊸∾¨⟩
 ShortList ← {"{"∾(List𝕩)∾"}"}
-# ShortList ← {"new "∾𝕨∾"_"∾(F≠𝕩)∾"("∾(List𝕩)∾")"}
 LongList ← {"{"∾(List𝕩)∾"}"}
 MakeList ← (≠∘⊢>4˙)◶ShortList‿LongList
 Li ←  {"i32" MakeList F¨𝕩}
@@ -42,10 +43,13 @@ useInd ← "-i"≡⊑args ⋄ args↓˜↩useInd
 Comp ← ((<"runtime["∾F∾"]"˙)¨↕≠∾glyphs) glyphs _getComp ⊢
 J ← ∾∾⟜(@+10)¨
 
-Fout ← {((≠𝕩)↑⟨Li ⋄ OAny _Lo ⋄ =◶⟨ONum,Li _Lo⟩ _Lo _Lo ⋄ (Li 2⊸↑) _Lo ⋄ Li _Lo ⋄ OStr⟩) {𝕎𝕩}¨ 𝕩}
+Fout ← {
+  ((≠𝕩)↑⟨Li ⋄ OAny _Lo ⋄ =◶⟨ONum,Li _Lo⟩ _Lo _Lo ⋄ (Li 2⊸↑) _Lo ⋄ Li _Lo ⋄ OStr⟩) {𝕎𝕩}¨ 𝕩
+}
+
 Frun ← 1⊸Fout
 Long ← {¯2↓∾𝕩∾¨<","∾@+10}
-LFC ← Long∘Fout∘Comp
+LFC ← Long∘Fout∘{o←Comp𝕩}
 
 RT ← {
   src‿need‿inputs←𝕩Import"pr.bqn"
@@ -55,7 +59,7 @@ RT ← {
 CArg ← {J (¯5⊸↓∾𝕩˙)⌾⊑ FLines "c.bqn"}
 SVG ← {∾⟨"Modify←GetHighlights←⊢⋄"⟩∾ FChars∘∾⟜".bqn"¨ "../svg"‿𝕩}
 
-(@+10)∾˜ •Out⍟(¬return) (⊑"r"‿"r0"‿"r1"‿"c"‿"cc"‿"f"‿"e"‿"p"⊐⊏)◶⟨
+r←(⊑"r"‿"r0"‿"r1"‿"c"‿"cc"‿"f"‿"e"‿"p"⊐⊏)◶⟨
   RT∘2, RT∘0, RT∘1
   {𝕩⋄LFC CArg "⟨"∾"⟩"«∾","⊸∾¨'"'(⊣∾∾˜)¨glyphs}
   {𝕩⋄LFC "{"∾"}"∾˜CArg"𝕩"}
@@ -63,5 +67,35 @@ SVG ← {∾⟨"Modify←GetHighlights←⊢⋄"⟩∾ FChars∘∾⟜".bqn"¨ "
   {𝕩⋄LFC SVG "e"}
   {𝕩⋄LFC SVG "p"}
   ∾LFC¨
-  # ¯1 ↓ · J L∘Fout∘Comp¨
 ⟩ args
+
+# Split into lines
+bc‿consts‿blk‿bod ← (@+10) strings.Split r
+
+# Just replace the CXBQN_NEWs in the blocks as we don't need them there
+blk2←⟨")"⟩‿⟨""⟩ strings.ReplaceAll ⟨"CXBQN_NEW(Number,"⟩‿⟨""⟩ strings.ReplaceAll blk
+
+# No comma
+NC ← {1⊸↓⌾⌽𝕩}
+
+•Out "[=] {
+  std::vector<O<Value>> c"∾(NC consts)∾";
+  std::vector<BlockDef> bds"∾(NC blk2)∾";
+  auto cu = new CompUnit{
+    ._bc"∾(NC bc)∾",
+    ._consts{CXBQN_NEW(Array,c.size())},
+    ._blocks{},
+    ._bodies"∾(NC bod)∾"},
+  };
+  for (auto& bd : bds)
+    cu->_blocks.emplace_back(bd);
+  cu->_consts->values = std::move(c);
+  cu->_consts->shape.push_back(c.size());
+  //cu->_bc.assign({"∾(NC bc)∾"});
+  //cu->_consts = CXBQN_NEW(Array);
+  //cu->_consts->values.assign({"∾(NC consts)∾"});
+  //cu->_consts->shape.push_back(cu->_consts->values.size());
+  //cu->_blocks.assign({"∾(NC blk2)∾"});
+  //cu->_bodies.assign({"∾bod∾"});
+  return std::shared_ptr<CompUnit>(cu);
+}()"
