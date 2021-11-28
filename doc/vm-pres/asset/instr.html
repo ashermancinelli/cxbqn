@@ -8,6 +8,12 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@200;500&display=swap" rel="stylesheet">
 
+
+<!--
+  * Use white text for the instructions I'm currently executing
+  * better transition from instruction into the stack
+  * outline instruction box when executing instructions
+-->
 <script>
 
 var compUnit = {
@@ -38,7 +44,9 @@ var R = (r) => {
     .style("opacity", 0)
     .attr('y', r.y)
     .attr('fill', r.c)
-    .attr('id', r.id);
+    .attr('id', r.id)
+    .attr('rx', 10)
+    ;
     
   vmg.append('text')
     .attr('id', r.id + '-label')
@@ -111,7 +119,7 @@ instr.tup = () => instr.getl().text(instr.t);
 instr.fmt = (_bc,pc) => {
   console.log('Instr handling ', _bc[pc])
   switch(_bc[pc]) { case 0: instr._instr="PUSH "+_bc[pc+1]; break;
-                    case 7: instr._instr="RETD";break;
+                    case 7: instr._instr="RETN";break;
                     case 17: instr._instr="FN2O";break;
                   }
   instr.t = `Instruction: ${instr._instr}`;
