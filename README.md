@@ -20,6 +20,12 @@ CXBQN 0.7.0
 compiled on Nov 24 2021
 ```
 
+Disabling memory management will speed up CXBQN by a large factor.
+To do this, select `leak` as the memory management strategy at configure time.
+```console
+cmake .. -DCXBQN_MEM_STRATEGY=leak
+```
+
 ## Using
 
 ```
@@ -72,17 +78,15 @@ foo     foobar
 
 ## Configuring Options
 
-|       CMake Option      |                                                                          Notes                                                                          |
-|:-----------------------:|:-------------------------------------------------------------------------------------------------------------------------------------------------------:|
-| `CXBQN_READLINE`        | Enable Readline support in the BQN repl (recommended)                                                                                                   |
-| `CXBQN_MEM_STRATEGY`    | Possible values include "shared_ptr", "leak", and "gc". "gc" has not been implemented yet. For best performance, select "leak"                          |
-| `CXBQN_STACKTRACE`      | Enable stack traces using source information, displayed on catchable error                                                                              |
-| `CXBQN_STACKTRACE_DEEP` | Enable further layers of stack trace information (slower)                                                                                               |
-| `CXBQN_BUILD_TESTS`     | Build test suite. Builds take much longer.                                                                                                              |
-| `CXBQN_LOG`             | Enable logging. You will have to set the log level above `level::off` to get output. See log file `cxbqn-debug.log` after running BQN or a test runner. |
-| `CXBQN_LOGLEVEL`        | Wrapper around spdlog's log levels. `level::debug` will produce an extremely large amount of data (~10-15gib for executing "2+2").                      |
-| `CXBQN_DEBUG_VM`        | Output VM debugging information, including the opcode being executed, the program counter, and any opcode arguments.                                    |
-| `CXBQN_DEEPCHECKS`      | Enable deeper checks which may produce more helpful errors but will hurt performance.                                                                   |
+|     CMake Option     |                                                                          Notes                                                                          |
+|:--------------------:|:-------------------------------------------------------------------------------------------------------------------------------------------------------:|
+| `CXBQN_READLINE`     | Enable Readline support in the BQN repl (recommended)                                                                                                   |
+| `CXBQN_MEM_STRATEGY` | Possible values include "shared_ptr", "leak", and "gc". "gc" has not been implemented yet. For best performance, select "leak"                          |
+| `CXBQN_BUILD_TESTS`  | Build test suite. Builds take much longer.                                                                                                              |
+| `CXBQN_LOG`          | Enable logging. You will have to set the log level above `level::off` to get output. See log file `cxbqn-debug.log` after running BQN or a test runner. |
+| `CXBQN_LOGLEVEL`     | Wrapper around spdlog's log levels. `level::debug` will produce an extremely large amount of data (~10-15gib for executing "2+2").                      |
+| `CXBQN_DEBUG_VM`     | Output VM debugging information, including the opcode being executed, the program counter, and any opcode arguments.                                    |
+| `CXBQN_DEEPCHECKS`   | Enable deeper checks which may produce more helpful errors but will hurt performance.                                                                   |
 
 ## Feature Support
 
