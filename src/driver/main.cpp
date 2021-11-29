@@ -95,7 +95,7 @@ int main(int argc, char **argv) {
         sysargs, fmt, repr, compiler, bqnruntime, path));
 
     if (repl) {
-      return driver::repl(compiler, bqnruntime, compw->values[1], fmt);
+      return driver::repl(compiler, bqnruntime, compw->values[1], fmt, show_cu);
     } else {
       O<Value> compiled;
       {

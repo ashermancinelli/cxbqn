@@ -38,14 +38,12 @@ O<Value> vm(shared_ptr<CompUnit> cu, shared_ptr<Scope> scope, Body b) {
         break;
       }
       case op::FLDO: {
-        fmt::print("fldo\n");
         INSTR1("FLDO");
         instructions::fldo(bc, pc, stk, scope->cu);
         INSTR("FLDO");
         break;
       }
       case op::ALIM: {
-        fmt::print("alim\n");
         INSTR1("ALIM");
         instructions::alim(bc, pc, stk, scope->cu);
         INSTR("ALIM");

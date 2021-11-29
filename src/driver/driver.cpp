@@ -2,10 +2,10 @@
 
 #ifdef CXBQN_READLINE
 namespace rl {
-#include <readline/readline.h>
 #include <readline/history.h>
+#include <readline/readline.h>
 #include <stdlib.h>
-}
+} // namespace rl
 #endif
 
 namespace cxbqn::driver {
@@ -54,14 +54,14 @@ bool getline(std::string &line) {
 }
 
 static inline O<Array> to_arr(std::vector<std::string> n) {
-  auto ar = CXBQN_NEW(Array,n.size());
+  auto ar = CXBQN_NEW(Array, n.size());
   for (int i = 0; i < n.size(); i++)
-    ar->values[i] = CXBQN_NEW(Array,n[i]);
+    ar->values[i] = CXBQN_NEW(Array, n[i]);
   return ar;
 }
 
 int repl(O<Value> compiler, O<Array> bqnruntime, O<Value> sysfn_handler,
-         O<Value> fmt) {
+         O<Value> fmt, bool show_cu) {
 
 #ifdef CXBQN_READLINE
   rl::rl_attempted_completion_function = &scp_name_completion;
@@ -71,17 +71,22 @@ int repl(O<Value> compiler, O<Array> bqnruntime, O<Value> sysfn_handler,
   if (!getline(line))
     return 1;
 
-  auto compw = CXBQN_NEW(Array,4);
+  auto compw = CXBQN_NEW(Array, 4);
   compw->values[0] = bqnruntime;
   compw->values[1] = sysfn_handler;
-  compw->values[2] = CXBQN_NEW(Array,0);   // no names currently in scope
-  compw->values[3] = CXBQN_NEW(Number,-1); // allow shadowing
+  compw->values[2] = CXBQN_NEW(Array, 0);   // no names currently in scope
+  compw->values[3] = CXBQN_NEW(Number, -1); // allow shadowing
 
-  auto src = CXBQN_NEW(Array,line);
+  auto src = CXBQN_NEW(Array, line);
   O<Value> compiled;
   {
     Args a{compiler, src, compw};
     compiled = compiler->call(2, a);
+  }
+  if (show_cu) {
+    auto cu = dyncast<Array>(compiled);
+    for (auto e : cu->values)
+      fmt::print("{}\n", *e);
   }
   auto runret = vm::run(compiled);
 
@@ -103,29 +108,39 @@ int repl(O<Value> compiler, O<Array> bqnruntime, O<Value> sysfn_handler,
     if (0 == line.size())
       continue;
 
-    auto src = CXBQN_NEW(Array,line);
-    compw->values[2] = to_arr(scp->names);
-    O<Value> compiled;
-    {
-      Args a{compiler, src, compw};
-      compiled = compiler->call(2, a);
-    }
-    auto cu = vm::deconstruct(compiled);
+    try {
 
-    auto body = cu->_bodies[cu->_blocks[0].body_idx(0)];
+      auto src = CXBQN_NEW(Array, line);
+      compw->values[2] = to_arr(scp->names);
+      O<Value> compiled;
+      {
+        Args a{compiler, src, compw};
+        compiled = compiler->call(2, a);
+      }
+      if (show_cu) {
+        auto cu = dyncast<Array>(compiled);
+        for (auto e : cu->values)
+          fmt::print("{}\n", *e);
+      }
+      auto cu = vm::deconstruct(compiled);
 
-    // extend slots to hold new variables
-    scp->vars.resize(body.var_count + scp->vars.size());
+      auto body = cu->_bodies[cu->_blocks[0].body_idx(0)];
 
-    // Extend names with names from new compilation unit
-    curr_names = scp->names = cu->_namelist;
-    auto ret = vm::vm(cu, scp, body);
+      // extend slots to hold new variables
+      scp->vars.resize(body.var_count + scp->vars.size());
 
-    // By default, print the result
-    {
-      Args a{fmt, ret, bi_Nothing()};
-      auto formatted = fmt->call(1, a);
-      fmt::print("{}\n", dyncast<Array>(formatted)->to_string());
+      // Extend names with names from new compilation unit
+      curr_names = scp->names = cu->_namelist;
+      auto ret = vm::vm(cu, scp, body);
+
+      // By default, print the result
+      {
+        Args a{fmt, ret, bi_Nothing()};
+        auto formatted = fmt->call(1, a);
+        fmt::print("{}\n", dyncast<Array>(formatted)->to_string());
+      }
+    } catch (std::exception &e) {
+      fmt::print("{}\n", e.what());
     }
   }
 
@@ -160,8 +175,13 @@ int parse_args(std::vector<std::string> args, O<Array> &path, O<Array> &src,
     if ("-e" == *it) {
       repl = false;
       it++;
-      auto _src = *it;
+      auto _src = *it++;
       CXBQN_PTR_RESET(src, new Array(_src));
+      while (it != args.end()) {
+        sysargs->values.push_back(CXBQN_NEW(Array, *it++));
+        sysargs->shape[0]++;
+      }
+      return 0;
     } else if ("-p" == *it) {
       pp_res = true;
       it++;
@@ -178,33 +198,33 @@ int parse_args(std::vector<std::string> args, O<Array> &path, O<Array> &src,
     } else if ("-f" == *it) {
       repl = false;
       it++;
-      auto f = fs::path(*it);
+      auto f = fs::path(*it++);
       if (!fs::exists(f)) {
         fmt::print("path {} does not exist\n", f);
         return 1;
       }
       CXBQN_PTR_RESET(path, new Array(fs::absolute(f)));
       std::string _src = "";
-      if (std::FILE *fp = std::fopen(f.c_str(), "r")) {
-        int ch;
-        while ((ch = fgetc(fp)) != EOF) {
-          _src += ch;
-        }
-        std::fclose(fp);
-        CXBQN_PTR_RESET(src, new Array(_src));
-        sysargs->values.push_back(CXBQN_NEW(Array,std::string(f)));
-        sysargs->shape[0]++;
-        continue;
-      } else {
+      std::FILE *fp = std::fopen(f.c_str(), "r");
+      if (!fp) {
         fmt::print("could not open path {}\n", f);
         return 1;
       }
-    } else {
-      for (; it != args.end(); it++) {
-        sysargs->values.push_back(CXBQN_NEW(Array,*it));
+      int ch;
+      while ((ch = fgetc(fp)) != EOF) {
+        _src += ch;
+      }
+      std::fclose(fp);
+      CXBQN_PTR_RESET(src, new Array(_src));
+      sysargs->values.push_back(path);
+      sysargs->shape[0]++;
+      while (it != args.end()) {
+        sysargs->values.push_back(CXBQN_NEW(Array, *it++));
         sysargs->shape[0]++;
       }
       return 0;
+    } else {
+      throw std::runtime_error("invalid argument combination");
     }
   }
 

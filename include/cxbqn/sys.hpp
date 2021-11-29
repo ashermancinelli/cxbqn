@@ -47,7 +47,7 @@ struct Provides : public Function {
     std::ostream &repr(std::ostream &os) const override {                      \
       return os << __VA_ARGS__;                                                \
     }                                                                          \
-    O<Value> call(u8 nargs, Args& args) override;     \
+    O<Value> call(u8 nargs, Args &args) override;                              \
   };                                                                           \
   O<Value> bi_##T();
 
@@ -103,16 +103,14 @@ CXBQN_BUILTIN_DECL(Md2, Catch, "⎊");
 
 struct Glyph : public Function {
   std::vector<O<Value>> runtime;
-  Glyph(O<Value> _runtime)
-      : runtime{dyncast<Array>(_runtime)->values} {}
-  O<Value> call(u8 nargs, Args& args) override;
+  Glyph(O<Value> _runtime) : runtime{dyncast<Array>(_runtime)->values} {}
+  O<Value> call(u8 nargs, Args &args) override;
   std::ostream &repr(std::ostream &os) const override { return os << "•Glyph"; }
 };
 
 struct Decompose : public Function {
 
-  Decompose(O<Value> _runtime)
-      : runtime{dyncast<Array>(_runtime)->values} {}
+  Decompose(O<Value> _runtime) : runtime{dyncast<Array>(_runtime)->values} {}
 
   std::ostream &repr(std::ostream &os) const override {
     return os << "•Decompose";
@@ -122,14 +120,13 @@ struct Decompose : public Function {
   // the runtime to check.
   std::vector<O<Value>> runtime;
 
-  O<Value> call(u8 nargs, Args& args) override;
+  O<Value> call(u8 nargs, Args &args) override;
 };
 O<Value> bi_Decompose();
 
 struct PrimInd : public Function {
 
-  PrimInd(O<Value> _runtime)
-      : runtime{dyncast<Array>(_runtime)->values} {}
+  PrimInd(O<Value> _runtime) : runtime{dyncast<Array>(_runtime)->values} {}
 
   std::ostream &repr(std::ostream &os) const override {
     return os << "PrimInd";
@@ -139,7 +136,7 @@ struct PrimInd : public Function {
   // need to store the runtime in the object.
   std::vector<O<Value>> runtime;
 
-  O<Value> call(u8 nargs, Args& args) override;
+  O<Value> call(u8 nargs, Args &args) override;
 };
 O<Value> bi_PrimInd();
 
@@ -187,7 +184,7 @@ struct SystemFunctionResolver : public Function {
   O<Value> _compiler;
   O<Array> _runtime;
 
-  O<Value> call(u8 nargs, Args& args) override;
+  O<Value> call(u8 nargs, Args &args) override;
 };
 
 struct CUDAFor : public Function {
@@ -200,42 +197,40 @@ struct BQN : public Function {
   BQN(O<Value> compiler, O<Array> compiler_args)
       : _compiler{compiler}, _compiler_args{compiler_args} {}
 
-  std::ostream &repr(std::ostream &os) const override {
-    return os << "•Import";
-  }
+  std::ostream &repr(std::ostream &os) const override { return os << "•BQN"; }
 
   O<Value> _compiler;
   O<Array> _compiler_args;
 
-  O<Value> call(u8 nargs, Args& args) override;
+  O<Value> call(u8 nargs, Args &args) override;
 };
 
 struct Import : public Function {
+  Import(O<Value> f, O<Value> repr, O<Value> c, O<Array> r, O<Array> p)
+      : _fmt{f}, _repr{repr}, _compiler{c}, _bqnruntime{r}, _path{p} {}
 
-  Import(O<Value> compiler, O<Array> compiler_args)
-      : _compiler{compiler}, _compiler_args{compiler_args} {}
+  O<Value> _fmt;
+  O<Value> _repr;
+  O<Value> _compiler;
+  O<Array> _bqnruntime;
+  O<Array> _path;
 
   std::ostream &repr(std::ostream &os) const override {
     return os << "•Import";
   }
 
-  O<Value> _compiler;
-  O<Array> _compiler_args;
-
-  O<Value> call(u8 nargs, Args& args) override;
+  O<Value> call(u8 nargs, Args &args) override;
 };
 
 struct Show : public Function {
 
   Show(O<Value> fmt) : _fmt{fmt} {}
 
-  std::ostream &repr(std::ostream &os) const override {
-    return os << "•Show";
-  }
+  std::ostream &repr(std::ostream &os) const override { return os << "•Show"; }
 
   O<Value> _fmt;
 
-  O<Value> call(u8 nargs, Args& args) override;
+  O<Value> call(u8 nargs, Args &args) override;
 };
 
 } // namespace cxbqn::sys

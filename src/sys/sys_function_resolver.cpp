@@ -59,10 +59,7 @@ O<Value> SystemFunctionResolver::call(u8 nargs, Args& args) {
     } else if ("out" == s) {
       ret.push_back(CXBQN_NEW(Out));
     } else if ("import" == s) {
-      auto args = CXBQN_NEW(Array,2);
-      args->values[0] = _runtime;
-      args->values[1] = CXBQN_SHARED_FROM_THIS();
-      ret.push_back(CXBQN_NEW(Import,_compiler, args));
+      ret.push_back(CXBQN_NEW(Import, _fmt, _repr, _compiler, _runtime, _path));
     } else if ("bqn" == s) {
       auto args = CXBQN_NEW(Array,2);
       args->values[0] = _runtime;
