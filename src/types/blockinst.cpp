@@ -5,7 +5,7 @@
 
 namespace cxbqn::types {
 
-BlockInst::BlockInst(shared_ptr<Scope> scp, uz blk_idx)
+BlockInst::BlockInst(Scope* scp, uz blk_idx)
     : scp{scp}, blk_idx{blk_idx} {
   // In the specification, the return of •Type for a function, 1mod, and 2mod
   // are 3, 4, and 5, but the block types as returned from the compiler are
@@ -28,7 +28,7 @@ O<Value> BlockInst::call(u8 nargs, Args& args) {
   const auto blk = scp->cu->_blocks[blk_idx];
 
   auto body = scp->cu->_bodies[blk.body_idx(nargs)];
-  auto child = make_shared<Scope>(scp, blk_idx);
+  auto child = new Scope(scp, blk_idx);
   child->vars.resize(std::max((uz)6, body.var_count+1));
   std::copy(args.begin(), args.end(), child->vars.begin());
 

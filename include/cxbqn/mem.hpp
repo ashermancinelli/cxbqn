@@ -1,6 +1,6 @@
 #pragma once
 #include <type_traits>
-#include <memory>
+#include <experimental/memory>
 
 namespace cxbqn::types {
 
@@ -37,6 +37,7 @@ template <typename T, typename F> auto dyncast(O<F> f) {
 using std::make_shared;
 using std::dynamic_pointer_cast;
 using std::static_pointer_cast;
+using std::experimental::observer_ptr;
 using std::shared_ptr;
 using std::weak_ptr;
 

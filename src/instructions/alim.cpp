@@ -2,7 +2,7 @@
 namespace cxbqn::vm::instructions {
 
 void alim(const ByteCodeRef bc, uz &pc, std::vector<O<Value>> &stk,
-          shared_ptr<CompUnit> cu) {
+          CompUnit* cu) {
   const auto i = bc[++pc];
   auto refer = dyncast<Reference>(stk.back());
   auto it = std::find_if(cu->_exported.begin(), cu->_exported.end(),

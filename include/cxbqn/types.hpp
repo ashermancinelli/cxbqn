@@ -1,10 +1,9 @@
 #pragma once
 #include <bitset>
-#include <cxbqn/scalar_types.hpp>
 #include <cxbqn/mem.hpp>
+#include <cxbqn/scalar_types.hpp>
 #include <functional>
 #include <initializer_list>
-#include <memory>
 #include <numeric>
 #include <optional>
 #include <span>
@@ -136,7 +135,7 @@ struct Value : public std::enable_shared_from_this<Value> {
 
   // If a value type does not define it's own call, we probably just push it
   // back on the stack.
-  virtual O<Value> call(u8 nargs, Args& args) {
+  virtual O<Value> call(u8 nargs, Args &args) {
     return CXBQN_SHARED_FROM_THIS();
   };
 
@@ -244,7 +243,7 @@ struct Function : public Value {
 };
 
 struct BlockInst : public Function {
-  shared_ptr<Scope> scp;
+  Scope *scp;
   uz blk_idx;
 
   u32 type;
@@ -252,9 +251,9 @@ struct BlockInst : public Function {
 
   bool imm() const;
 
-  BlockInst(shared_ptr<Scope> scp, uz blk_idx);
+  BlockInst(Scope *scp, uz blk_idx);
 
-  O<Value> call(u8 nargs, Args& args) override;
+  O<Value> call(u8 nargs, Args &args) override;
   std::ostream &repr(std::ostream &os) const override {
     return os << "Block{i=" << blk_idx << "}";
   }
@@ -264,14 +263,14 @@ struct Fork : public Function {
   O<Value> f, g, h;
   Fork(O<Value> f, O<Value> g, O<Value> h) : f{f}, g{g}, h{h} {}
   TypeType t() const override { return TypeType{t_Function}; }
-  O<Value> call(u8 nargs, Args& args) override;
+  O<Value> call(u8 nargs, Args &args) override;
   std::ostream &repr(std::ostream &os) const override;
 };
 
 struct Atop : public Function {
   O<Value> g, f;
   Atop(O<Value> f, O<Value> g) : f{f}, g{g} {}
-  O<Value> call(u8 nargs, Args& args) override;
+  O<Value> call(u8 nargs, Args &args) override;
   std::ostream &repr(std::ostream &os) const override;
 };
 
@@ -285,7 +284,7 @@ struct Md1Deferred : public Function {
   }
   O<Value> f, m1;
   Md1Deferred(O<Value> f, O<Value> m1) : f{f}, m1{m1} {}
-  O<Value> call(u8 nargs, Args& args) override;
+  O<Value> call(u8 nargs, Args &args) override;
   std::ostream &repr(std::ostream &os) const override;
 };
 
@@ -302,7 +301,7 @@ struct Md2Deferred : public Function {
   }
   O<Value> f, m2, g;
   Md2Deferred(O<Value> f, O<Value> m2, O<Value> g) : f{f}, m2{m2}, g{g} {}
-  O<Value> call(u8 nargs, Args& args) override;
+  O<Value> call(u8 nargs, Args &args) override;
   std::ostream &repr(std::ostream &os) const override;
 };
 
@@ -311,8 +310,8 @@ struct Md2 : public Function {
 };
 
 struct Namespace : public Value {
-  shared_ptr<Scope> _scp;
-  Namespace(shared_ptr<Scope> scp) : _scp{scp} {}
+  Scope *_scp;
+  Namespace(Scope *scp) : _scp{scp} {}
   O<Value> get(const std::string &n);
   O<Value> get(uz i);
   O<Value> set(bool should_be_set, const std::string &n, O<Value> v);

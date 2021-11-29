@@ -13,7 +13,7 @@ O<Value> Scope::get(O<Reference> r) {
 #endif
 
   const auto n = r->depth;
-  shared_ptr<Scope> scp = get_nth_parent(n);
+  Scope* scp = get_nth_parent(n);
 
   return scp->vars[r->position_in_parent];
 }
@@ -58,18 +58,18 @@ void Scope::set(bool should_var_be_set, O<Reference> r, O<Value> _v) {
   scp->vars[r->position_in_parent] = v;
 }
 
-shared_ptr<Scope> Scope::get_nth_parent(uz depth) {
+Scope* Scope::get_nth_parent(uz depth) {
   CXBQN_DEBUG("Scope::get_nth_parent:depth={}", depth);
-  auto scp = shared_from_this();
+  auto scp = this;
   while (depth-- > 0) {
     CXBQN_DEBUG("Scope::get_nth_parent:traversing to parent. depth={}", depth);
     CXBQN_DEBUG_NC("before={}", scp);
 #ifdef CXBQN_DEEPCHECKS
-    if (nullptr == scp->parent.lock())
+    if (nullptr == scp->parent)
       throw std::runtime_error(
           "assign: got nullptr scope when walking the scope tree");
 #endif
-    scp = scp->parent.lock();
+    scp = scp->parent;
     CXBQN_DEBUG_NC("after={}", scp);
   }
   return scp;
@@ -78,20 +78,20 @@ shared_ptr<Scope> Scope::get_nth_parent(uz depth) {
 const std::pair<std::vector<uz>, std::vector<uz>> &
 Scope::source_indices() const {
 #ifdef CXBQN_DEEPCHECKS
-  if (!_source_indices.has_value() and nullptr == parent.lock())
+  if (!_source_indices.has_value() and nullptr == parent)
     throw std::runtime_error("expected to have source indices or a parent");
 #endif
   return _source_indices.has_value() ? _source_indices.value()
-                                     : parent.lock()->source_indices();
+                                     : parent->source_indices();
 }
 
 const std::string_view Scope::source_str() const {
 #ifdef CXBQN_DEEPCHECKS
-  if (!_source_indices.has_value() and nullptr == parent.lock())
+  if (!_source_indices.has_value() and nullptr == parent)
     throw std::runtime_error("expected to have source indices or a parent");
 #endif
   return _source_str.has_value() ? _source_str.value()
-                                 : parent.lock()->source_str();
+                                 : parent->source_str();
 }
 
 void Scope::set_source_info(std::vector<std::vector<uz>> si, O<Array> s) {

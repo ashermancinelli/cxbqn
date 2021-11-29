@@ -2,7 +2,7 @@
 # Modified version of https://github.com/mlochbaum/BQN/blob/master/src/cjs.bqn, which is under the ISC license (https://github.com/mlochbaum/BQN/blob/master/LICENSE)
 
 args←•args
-"Usage: ./cc.bqn path/to/mlochbaum/BQN [-i] <(r|r0|r1|c|cc|f|e|p) or an expression>"!2≤≠args
+"Usage: ./ccx.bqn path/to/mlochbaum/BQN [-i] <(r|r0|r1|c|cc|f|e|p) or an expression>"!2≤≠args
 return ← 1≡⊑args
 args↓˜↩ return
 path←(⊑args)∾"/src/"
@@ -97,5 +97,5 @@ NC ← {1⊸↓⌾⌽𝕩}
   //cu->_consts->shape.push_back(cu->_consts->values.size());
   //cu->_blocks.assign({"∾(NC blk2)∾"});
   //cu->_bodies.assign({"∾bod∾"});
-  return std::shared_ptr<CompUnit>(cu);
+  return cu;
 }()"

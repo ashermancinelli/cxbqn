@@ -2,7 +2,7 @@
 namespace cxbqn::vm::instructions {
 
 void fldo(const ByteCodeRef bc, uz &pc, std::vector<O<Value>> &stk,
-          shared_ptr<CompUnit> cu) {
+          CompUnit* cu) {
   auto i = bc[++pc];
 
   auto ns = dyncast<Namespace>(stk.back());

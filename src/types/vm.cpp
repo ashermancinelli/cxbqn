@@ -9,7 +9,7 @@ using namespace types;
 #define ARR(x) dyncast<Array>(x)
 #define NUM(x) dyncast<Number>(x)
 
-O<Value> vm(shared_ptr<CompUnit> cu, shared_ptr<Scope> scope, Body b) {
+O<Value> vm(CompUnit* cu, Scope* scope, Body b) {
   uz pc = b.bc_offset;
   auto &bc = cu->_bc;
   auto &consts = cu->_consts;
