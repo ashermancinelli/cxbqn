@@ -40,7 +40,7 @@ init_gen_file(${S_TEST_SOURCE})
 foreach(test ans IN ZIP_LISTS S_TESTS S_ANS)
   execute_process(
     COMMAND ${BASH} -c
-            "${BQN} ${ROOT}/test/ccxx.bqn ${ROOT}/ext//bqn \"${test}\""
+            "${BQN} ${ROOT}/test/ccx.bqn ${ROOT}/ext//bqn \"${test}\""
     WORKING_DIRECTORY "${ROOT}/ext//cbqn"
     OUTPUT_VARIABLE compiled_test
   )
@@ -53,16 +53,16 @@ TEST_CASE(\"${tesc}\") {
   spdlog::critical(\"test='{}', ans='{}'\", \"${tesc}\", \"${ans}\");
   const auto rt = provides::get_runtime_setprims_cached();
   const auto runtime = rt->values;
-  CompileParams p{
+  auto cu =
     ${cesc}
-  };
+    ;
   "
   )
   if("${ans}" STREQUAL "!")
     file(
       APPEND ${S_TEST_SOURCE}
       "
-    REQUIRE_THROWS(vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies));
+    REQUIRE_THROWS(vm::run(cu));
 }
 "
     )
@@ -70,10 +70,10 @@ TEST_CASE(\"${tesc}\") {
     file(
       APPEND ${S_TEST_SOURCE}
       "
-  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
+  auto ret = vm::run(cu);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(${ans} == doctest::Approx(n->v));
 }

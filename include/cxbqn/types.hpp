@@ -120,12 +120,16 @@ struct Value;
 
 using Args = std::array<O<Value>, 6>;
 
-struct Value : public std::enable_shared_from_this<Value> {
+struct Value : public std::enable_shared_from_this<Value>, public Marked {
 
-  Value() {}
+  Value() {
+    GC::register_ptr(this);
+  }
 
   virtual ~Value() {}
 
+  // First we have to determine what ought to be a "root" value before GC'ing
+  // is actually helpful. Until then, this will proabably be empty.
   virtual void mark() {}
 
   // A type must be able to tell you it's •Type. We also use this over trying to
@@ -244,7 +248,7 @@ struct Function : public Value {
 };
 
 struct BlockInst : public Function {
-  shared_ptr<Scope> scp;
+  observer_ptr<Scope> scp;
   uz blk_idx;
 
   u32 type;
@@ -252,7 +256,7 @@ struct BlockInst : public Function {
 
   bool imm() const;
 
-  BlockInst(shared_ptr<Scope> scp, uz blk_idx);
+  BlockInst(observer_ptr<Scope> scp, uz blk_idx);
 
   O<Value> call(u8 nargs, Args& args) override;
   std::ostream &repr(std::ostream &os) const override {
@@ -311,8 +315,8 @@ struct Md2 : public Function {
 };
 
 struct Namespace : public Value {
-  shared_ptr<Scope> _scp;
-  Namespace(shared_ptr<Scope> scp) : _scp{scp} {}
+  observer_ptr<Scope> _scp;
+  Namespace(observer_ptr<Scope> scp) : _scp{scp} {}
   O<Value> get(const std::string &n);
   O<Value> get(uz i);
   O<Value> set(bool should_be_set, const std::string &n, O<Value> v);

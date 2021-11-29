@@ -47,10 +47,10 @@ O<Array> get_runtime() {
   CXBQN_DEBUG("provides::get_runtime");
 
   const auto provide = provides::get_provides()->values;
-  static CompileParams p(
-#include <cxbqn/__/compiled_runtime>
+  static auto rcu(
+#include <cxbqn/__/r>
   );
-  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
+  auto ret = vm::run(rcu);
   auto runtime_ret = dyncast<Array>(ret.v);
 
   return dyncast<Array>(runtime_ret->values[0]);
@@ -69,10 +69,10 @@ O<Array> get_runtime_setprims() {
 
   // First we run the runtime to get the original output
   const auto provide = provides::get_provides()->values;
-  static CompileParams p(
-#include <cxbqn/__/compiled_runtime>
-  );
-  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
+  static auto rcu =
+#include <cxbqn/__/r>
+  ;
+  auto ret = vm::run(rcu);
 
   // Decompose the result to get the array with just the runtime
   auto runtime_ret = dyncast<Array>(ret.v);

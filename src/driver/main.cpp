@@ -22,7 +22,7 @@ int main(int argc, char **argv) {
     auto t_start = std::chrono::high_resolution_clock::now();
     const auto provide = provides::get_provides()->values;
     auto rt_cu =
-#include <cxbqn/__/_compiled_runtime>
+#include <cxbqn/__/r>
       ;
     auto ret = vm::run(rt_cu);
     auto runtime_ret = dyncast<Array>(ret.v);
@@ -46,7 +46,7 @@ int main(int argc, char **argv) {
 
     auto runtime = bqnruntime->values;
     auto c_cu =
-#include <cxbqn/__/_compiled_compiler>
+#include <cxbqn/__/c>
       ;
 
     auto cret = vm::run(c_cu);
@@ -60,7 +60,7 @@ int main(int argc, char **argv) {
     // to create the actual formatter by passing it four arguments, •Type,
     // •Decompose, •Glyph, and •FmtNum.
     auto f_cu =
-#include <cxbqn/__/_compiled_formatter>
+#include <cxbqn/__/f>
       ;
     auto fmtret = vm::run(f_cu);
 #ifdef CXBQN_PROFILE_STARTUP

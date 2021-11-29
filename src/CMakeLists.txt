@@ -3,6 +3,7 @@ add_library(
 
   # Top level definitions for basic types, mostly defined in types.hpp
   types/bi.cpp
+  types/mem.cpp
   types/varalias.cpp
   types/namespace.cpp
   types/vm.cpp

@@ -82,7 +82,7 @@ init_gen_file(${BC_TEST_SOURCE})
 foreach(test ans IN ZIP_LISTS BC_TESTS BC_ANS)
   execute_process(
     COMMAND ${BASH} -c
-            "${BQN} ${ROOT}/test/ccxx.bqn ${ROOT}/ext/bqn \"${test}\""
+            "${BQN} ${ROOT}/test/ccx.bqn ${ROOT}/ext/bqn \"${test}\""
     WORKING_DIRECTORY "${ROOT}/ext/cbqn"
     OUTPUT_VARIABLE compiled_test
   )
@@ -93,13 +93,13 @@ TEST_CASE(\"${test}\") {
   spdlog::critical(\"test='{}', ans='{}'\", \"${test}\", \"${ans}\");
   const auto rt = provides::get_runtime_bionly();
   const auto runtime = rt->values;
-  CompileParams p{
+  auto cu =
     ${compiled_test}
-  };
-  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
+    ;
+  auto ret = vm::run(cu);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(${ans} == doctest::Approx(n->v));
 }

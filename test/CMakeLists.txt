@@ -3,7 +3,6 @@ add_subdirectory(bqn)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 set(tests
-    test_bi
     # test_preruntime test_runtime test_runtime_setprims test_compiler_manual
     test_compiler_setprims test_debug
 )

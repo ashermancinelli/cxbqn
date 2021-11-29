@@ -2,7 +2,7 @@
 # Modified version of https://github.com/mlochbaum/BQN/blob/master/src/cjs.bqn, which is under the ISC license (https://github.com/mlochbaum/BQN/blob/master/LICENSE)
 
 args←•args
-"Usage: ./cc.bqn path/to/mlochbaum/BQN [-i] <(r|r0|r1|c|cc|f|e|p) or an expression>"!2≤≠args
+"Usage: ./ccx.bqn path/to/mlochbaum/BQN [-i] <(r|r0|r1|c|cc|f|e|p) or an expression>"!2≤≠args
 return ← 1≡⊑args
 args↓˜↩ return
 path←(⊑args)∾"/src/"
@@ -81,21 +81,16 @@ NC ← {1⊸↓⌾⌽𝕩}
 •Out "[=] {
   std::vector<O<Value>> c"∾(NC consts)∾";
   std::vector<BlockDef> bds"∾(NC blk2)∾";
-  auto cu = new CompUnit{
-    ._bc"∾(NC bc)∾",
-    ._consts{CXBQN_NEW(Array,c.size())},
-    ._blocks{},
-    ._bodies"∾(NC bod)∾"},
-  };
+  auto cu = make_observer(new CompUnit{
+      ._bc"∾(NC bc)∾",
+      ._consts{CXBQN_NEW(Array,c.size())},
+      ._blocks{},
+      ._bodies"∾(NC bod)∾"},
+      });
   for (auto& bd : bds)
     cu->_blocks.emplace_back(bd);
   cu->_consts->values = std::move(c);
   cu->_consts->shape.push_back(c.size());
-  //cu->_bc.assign({"∾(NC bc)∾"});
-  //cu->_consts = CXBQN_NEW(Array);
-  //cu->_consts->values.assign({"∾(NC consts)∾"});
-  //cu->_consts->shape.push_back(cu->_consts->values.size());
-  //cu->_blocks.assign({"∾(NC blk2)∾"});
-  //cu->_bodies.assign({"∾bod∾"});
-  return std::shared_ptr<CompUnit>(cu);
+  GC::register_ptr(cu.get());
+  return cu;
 }()"

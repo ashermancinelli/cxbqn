@@ -8,7 +8,7 @@ namespace {
 // being set to an array.
 template <bool ShouldVarBeSet>
 static O<Value> safe_set_refer(O<Value> opaque_refer, O<Value> value,
-                               shared_ptr<Scope> scp) {
+                               observer_ptr<Scope> scp) {
 
 #ifdef CXBQN_DEEPCHECKS
   if (not opaque_refer->t()[t_Reference]) {
@@ -65,7 +65,7 @@ static O<Value> safe_set_refer(O<Value> opaque_refer, O<Value> value,
 }
 
 template <bool ShouldVarBeSet>
-static O<Value> set_un_helper(std::vector<O<Value>> &stk, shared_ptr<Scope> scp) {
+static O<Value> set_un_helper(std::vector<O<Value>> &stk, observer_ptr<Scope> scp) {
   // Reference this instruction is assigning to
   auto opaque_refer = stk.back();
   stk.pop_back();
@@ -82,7 +82,7 @@ static O<Value> set_un_helper(std::vector<O<Value>> &stk, shared_ptr<Scope> scp)
   return safe_set_refer<ShouldVarBeSet>(opaque_refer, value, scp);
 }
 
-static O<Value> setm_ref(O<Value> F, O<Value> x, O<Value> r, shared_ptr<Scope> scp) {
+static O<Value> setm_ref(O<Value> F, O<Value> x, O<Value> r, observer_ptr<Scope> scp) {
   auto refer = dyncast<Reference>(r);
   Args a{F, x, scp->get(refer)};
   auto v = F->call(2, a);
@@ -93,7 +93,7 @@ static O<Value> setm_ref(O<Value> F, O<Value> x, O<Value> r, shared_ptr<Scope> s
 }
 
 static O<Value> setm_refarray(O<Value> F, O<Value> x, O<Value> r,
-                              shared_ptr<Scope> scp) {
+                              observer_ptr<Scope> scp) {
   auto refarr = dyncast<RefArray>(r);
   auto varr = CXBQN_NEW(Array,refarr->N());
 
@@ -111,15 +111,15 @@ static O<Value> setm_refarray(O<Value> F, O<Value> x, O<Value> r,
 
 } // namespace
 
-void setu(std::vector<O<Value>> &stk, shared_ptr<Scope> scp) {
+void setu(std::vector<O<Value>> &stk, observer_ptr<Scope> scp) {
   stk.push_back(set_un_helper<true>(stk, scp));
 }
 
-void setn(std::vector<O<Value>> &stk, shared_ptr<Scope> scp) {
+void setn(std::vector<O<Value>> &stk, observer_ptr<Scope> scp) {
   stk.push_back(set_un_helper<false>(stk, scp));
 }
 
-void setm(std::vector<O<Value>> &stk, shared_ptr<Scope> scp) {
+void setm(std::vector<O<Value>> &stk, observer_ptr<Scope> scp) {
   auto r = stk.back();
   stk.pop_back();
 
@@ -153,7 +153,7 @@ void setm(std::vector<O<Value>> &stk, shared_ptr<Scope> scp) {
   }
 }
 
-void setc(std::vector<O<Value>> &stk, shared_ptr<Scope> scp) {
+void setc(std::vector<O<Value>> &stk, observer_ptr<Scope> scp) {
   auto r = stk.back();
   stk.pop_back();
 

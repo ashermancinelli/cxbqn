@@ -15,7 +15,7 @@ TEST_CASE("≡⟜(∾⥊¨)\"abc\"") {
   spdlog::critical("test='{}'", "≡⟜(∾⥊¨)\"abc\"");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{{0, 5, 0, 3, 0, 1, 26, 0, 2, 20, 0, 4, 0, 0, 27, 16, 7},
+  auto rcu ={0, 5, 0, 3, 0, 1, 26, 0, 2, 20, 0, 4, 0, 0, 27, 16, 7},
                   {runtime[18], runtime[22], runtime[23], runtime[47],
                    runtime[56], std::make_shared<Array>(U"abc")},
                   {{0, 1, 0}},
@@ -26,7 +26,7 @@ TEST_CASE("≡⟜(∾⥊¨)\"abc\"") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -35,7 +35,7 @@ TEST_CASE("(∾´≡∾)\"ab\"‿\"cde\"‿\"\"") {
   spdlog::critical("test='{}'", "(∾´≡∾)\"ab\"‿\"cde\"‿\"\"");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{
+  auto rcu =
       {0, 3, 0, 4, 0, 5, 11, 3, 0, 1, 0, 0, 0, 2, 0, 1, 26, 21, 16, 7},
       {runtime[18], runtime[23], runtime[50], std::make_shared<Array>(U"ab"),
        std::make_shared<Array>(U"cde"), std::make_shared<Array>(U"")},
@@ -47,7 +47,7 @@ TEST_CASE("(∾´≡∾)\"ab\"‿\"cde\"‿\"\"") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -56,7 +56,7 @@ TEST_CASE("\"abc\"≡∾\"ab\"‿'c'‿\"\"") {
   spdlog::critical("test='{}'", "\"abc\"≡∾\"ab\"‿'c'‿\"\"");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{{0, 4, 0, 2, 0, 5, 11, 3, 0, 1, 16, 0, 0, 0, 3, 17, 7},
+  auto rcu ={0, 4, 0, 2, 0, 5, 11, 3, 0, 1, 16, 0, 0, 0, 3, 17, 7},
                   {runtime[18], runtime[23], std::make_shared<Character>(U'c'),
                    std::make_shared<Array>(U"abc"),
                    std::make_shared<Array>(U"ab"),
@@ -69,7 +69,7 @@ TEST_CASE("\"abc\"≡∾\"ab\"‿'c'‿\"\"") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -78,7 +78,7 @@ TEST_CASE("1‿2‿3‿4‿6‿9≡∾(⊢×≠↑↓)1+↕3") {
   spdlog::critical("test='{}'", "1‿2‿3‿4‿6‿9≡∾(⊢×≠↑↓)1+↕3");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{{0, 11, 0, 8,  16, 0,  0,  0,  9, 17, 0,  7, 0,  6, 0,
+  auto rcu ={0, 11, 0, 8,  16, 0,  0,  0,  9, 17, 0,  7, 0,  6, 0,
                    2, 21, 0, 1,  0,  4,  21, 16, 0, 5,  16, 0, 3,  0, 9,
                    0, 10, 0, 11, 0,  12, 0,  13, 0, 14, 11, 6, 17, 7},
                   {runtime[0], runtime[2], runtime[14], runtime[18],
@@ -96,7 +96,7 @@ TEST_CASE("1‿2‿3‿4‿6‿9≡∾(⊢×≠↑↓)1+↕3") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -105,7 +105,7 @@ TEST_CASE("(≡⟜∾∧≡⟜(∾<))<4") {
   spdlog::critical("test='{}'", "(≡⟜∾∧≡⟜(∾<))<4");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{
+  auto rcu =
       {0,  5, 0, 1, 16, 0, 1, 0, 3, 20, 0,  4,  0, 2,
        27, 0, 0, 0, 3,  0, 4, 0, 2, 27, 21, 16, 7},
       {runtime[10], runtime[12], runtime[18], runtime[23], runtime[56], 4},
@@ -119,7 +119,7 @@ TEST_CASE("(≡⟜∾∧≡⟜(∾<))<4") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -128,7 +128,7 @@ TEST_CASE("⟨1‿4,⥊2⟩((∾⋆⌜⌜)≡⋆⌜○∾)⟨2‿3‿4,⟨⟩,�
   spdlog::critical("test='{}'", "⟨1‿4,⥊2⟩((∾⋆⌜⌜)≡⋆⌜○∾)⟨2‿3‿4,⟨⟩,⥊5⟩");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{
+  auto rcu =
       {0, 8,  0,  9, 0, 7, 11, 3,  11, 0, 0, 10, 0, 2,  16, 11, 3,  0,  3,
        0, 5,  0,  4, 0, 0, 26, 27, 0,  1, 0, 4,  0, 4,  0,  0,  26, 26, 0,
        3, 20, 21, 0, 6, 0, 7,  11, 2,  0, 8, 0,  2, 16, 11, 2,  17, 7},
@@ -148,7 +148,7 @@ TEST_CASE("⟨1‿4,⥊2⟩((∾⋆⌜⌜)≡⋆⌜○∾)⟨2‿3‿4,⟨⟩,�
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -157,7 +157,7 @@ TEST_CASE("(6‿3⥊0)≡∾⟨2‿3,3,3‿3⟩⥊¨0") {
   spdlog::critical("test='{}'", "(6‿3⥊0)≡∾⟨2‿3,3,3‿3⟩⥊¨0");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{
+  auto rcu =
       {0,  6, 0,  3, 0, 1,  26, 0, 7, 0, 5, 11, 2, 0, 5, 0, 5,  0, 5,  11, 2,
        11, 3, 17, 0, 2, 16, 0,  0, 0, 6, 0, 1,  0, 4, 0, 5, 11, 2, 17, 17, 7},
       {runtime[18], runtime[22], runtime[23], runtime[47], 6, 3, 0, 2},
@@ -173,7 +173,7 @@ TEST_CASE("(6‿3⥊0)≡∾⟨2‿3,3,3‿3⟩⥊¨0") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -182,7 +182,7 @@ TEST_CASE("\"abcd\"≡\"abc\"∾'d'") {
   spdlog::critical("test='{}'", "\"abcd\"≡\"abc\"∾'d'");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{{0, 2, 0, 1, 0, 4, 17, 0, 0, 0, 3, 17, 7},
+  auto rcu ={0, 2, 0, 1, 0, 4, 17, 0, 0, 0, 3, 17, 7},
                   {runtime[18], runtime[23], std::make_shared<Character>(U'd'),
                    std::make_shared<Array>(U"abcd"),
                    std::make_shared<Array>(U"abc")},
@@ -194,7 +194,7 @@ TEST_CASE("\"abcd\"≡\"abc\"∾'d'") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -203,7 +203,7 @@ TEST_CASE("\"abcd\"≡\"abc\"∾<'d'") {
   spdlog::critical("test='{}'", "\"abcd\"≡\"abc\"∾<'d'");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{
+  auto rcu =
       {0, 3, 0, 0, 16, 0, 2, 0, 5, 17, 0, 1, 0, 4, 17, 7},
       {runtime[12], runtime[18], runtime[23], std::make_shared<Character>(U'd'),
        std::make_shared<Array>(U"abcd"), std::make_shared<Array>(U"abc")},
@@ -215,7 +215,7 @@ TEST_CASE("\"abcd\"≡\"abc\"∾<'d'") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -224,7 +224,7 @@ TEST_CASE("(↕4‿3)≡(↕3‿3)∾3∾¨↕3") {
   spdlog::critical("test='{}'", "(↕4‿3)≡(↕3‿3)∾3∾¨↕3");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{{0, 5, 0, 2, 16, 0,  3,  0, 1, 26, 0,  5,  17,
+  auto rcu ={0, 5, 0, 2, 16, 0,  3,  0, 1, 26, 0,  5,  17,
                    0, 1, 0, 5, 0,  5,  11, 2, 0, 2,  16, 17, 0,
                    0, 0, 4, 0, 5,  11, 2,  0, 2, 16, 17, 7},
                   {runtime[18], runtime[23], runtime[28], runtime[47], 4, 3},
@@ -240,7 +240,7 @@ TEST_CASE("(↕4‿3)≡(↕3‿3)∾3∾¨↕3") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -249,7 +249,7 @@ TEST_CASE("(∾˜≡·¯1⊸(×´∘↓∾↑)∘≢⊸⥊≍˜)2‿3⥊\"abcdef
   spdlog::critical("test='{}'", "(∾˜≡·¯1⊸(×´∘↓∾↑)∘≢⊸⥊≍˜)2‿3⥊\"abcdef\"");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{
+  auto rcu =
       {0,  15, 0,  3, 0,  13, 0,  14, 11, 2, 17, 0, 8,  0, 5, 26, 0,  3,  0,
        11, 0,  2,  0, 10, 0,  6,  0,  4,  0, 7,  0, 10, 0, 9, 0,  0,  26, 27,
        21, 0,  11, 0, 12, 27, 27, 27, 20, 0, 1,  0, 8,  0, 4, 26, 21, 16, 7},
@@ -270,7 +270,7 @@ TEST_CASE("(∾˜≡·¯1⊸(×´∘↓∾↑)∘≢⊸⥊≍˜)2‿3⥊\"abcdef
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -279,7 +279,7 @@ TEST_CASE("(∾´≡∾)⟨3‿2‿1,0‿2‿1⟩⥊¨<↕6") {
   spdlog::critical("test='{}'", "(∾´≡∾)⟨3‿2‿1,0‿2‿1⟩⥊¨<↕6");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{{0, 11, 0, 4, 16, 0, 0, 16, 0, 5, 0,  2,  26, 0, 7,
+  auto rcu ={0, 11, 0, 4, 16, 0, 0, 16, 0, 5, 0,  2,  26, 0, 7,
                    0, 8,  0, 9, 11, 3, 0, 10, 0, 8, 0,  9,  11, 3, 11,
                    2, 17, 0, 3, 0,  1, 0, 6,  0, 3, 26, 21, 16, 7},
                   {runtime[12], runtime[18], runtime[22], runtime[23],
@@ -296,7 +296,7 @@ TEST_CASE("(∾´≡∾)⟨3‿2‿1,0‿2‿1⟩⥊¨<↕6") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -305,7 +305,7 @@ TEST_CASE("⟨1‿2,⥊0,⥊3⟩≡⊔1‿0‿0‿2") {
   spdlog::critical("test='{}'", "⟨1‿2,⥊0,⥊3⟩≡⊔1‿0‿0‿2");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{
+  auto rcu =
       {0, 3,  0, 5, 0, 5, 0, 4,  11, 4, 0, 2, 16, 0,  0, 0,  3, 0,
        4, 11, 2, 0, 5, 0, 1, 16, 0,  6, 0, 1, 16, 11, 3, 17, 7},
       {runtime[18], runtime[22], runtime[42], 1, 2, 0, 3},
@@ -319,7 +319,7 @@ TEST_CASE("⟨1‿2,⥊0,⥊3⟩≡⊔1‿0‿0‿2") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -328,7 +328,7 @@ TEST_CASE("⟨⟩≡⊔5⥊¯1") {
   spdlog::critical("test='{}'", "⟨⟩≡⊔5⥊¯1");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{{0, 4, 0, 1, 0, 3, 17, 0, 2, 16, 0, 0, 11, 0, 17, 7},
+  auto rcu ={0, 4, 0, 1, 0, 3, 17, 0, 2, 16, 0, 0, 11, 0, 17, 7},
                   {runtime[18], runtime[22], runtime[42], 5, -1},
                   {{0, 1, 0}},
                   {{0, 0}},
@@ -338,7 +338,7 @@ TEST_CASE("⟨⟩≡⊔5⥊¯1") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -347,7 +347,7 @@ TEST_CASE("≡⟜⊔⟨⟩") {
   spdlog::critical("test='{}'", "≡⟜⊔⟨⟩");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{
+  auto rcu =
       {11, 0, 0, 1, 0, 2, 0, 0, 27, 16, 7},
       {runtime[18], runtime[42], runtime[56]},
       {{0, 1, 0}},
@@ -357,7 +357,7 @@ TEST_CASE("≡⟜⊔⟨⟩") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -366,7 +366,7 @@ TEST_CASE("(⊔≡⥊¨¨∘⊔∘⊑)⟨1‿0‿0‿2⟩") {
   spdlog::critical("test='{}'", "(⊔≡⥊¨¨∘⊔∘⊑)⟨1‿0‿0‿2⟩");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{
+  auto rcu =
       {0, 6, 0, 7, 0, 7, 0, 8,  11, 4,  11, 1, 0, 2, 0, 5,  0,  3, 0,
        5, 0, 4, 0, 4, 0, 1, 26, 26, 27, 27, 0, 0, 0, 3, 21, 16, 7},
       {runtime[18], runtime[22], runtime[37], runtime[42], runtime[47],
@@ -381,7 +381,7 @@ TEST_CASE("(⊔≡⥊¨¨∘⊔∘⊑)⟨1‿0‿0‿2⟩") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -390,7 +390,7 @@ TEST_CASE("(≍⍟2∘<¨⌽↕3‿2)≡⊔⟨2‿1‿0,0‿1⟩") {
   spdlog::critical("test='{}'", "(≍⍟2∘<¨⌽↕3‿2)≡⊔⟨2‿1‿0,0‿1⟩");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{
+  auto rcu =
       {0, 9,  0, 11, 0, 12, 11, 3, 0,  12, 0, 11, 11, 2,  11, 2,  0,
        5, 16, 0, 1,  0, 10, 0,  9, 11, 2,  0, 3,  16, 0,  4,  16, 0,
        6, 0,  0, 0,  7, 0,  9,  0, 8,  0,  2, 27, 27, 26, 16, 17, 7},
@@ -408,7 +408,7 @@ TEST_CASE("(≍⍟2∘<¨⌽↕3‿2)≡⊔⟨2‿1‿0,0‿1⟩") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -417,7 +417,7 @@ TEST_CASE("(↕0‿0)≡⊔⟨⟩‿⟨⟩") {
   spdlog::critical("test='{}'", "(↕0‿0)≡⊔⟨⟩‿⟨⟩");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{
+  auto rcu =
       {11, 0, 11, 0, 11, 2, 0, 2, 16, 0, 0, 0, 3, 0, 3, 11, 2, 0, 1, 16, 17, 7},
       {runtime[18], runtime[28], runtime[42], 0},
       {{0, 1, 0}},
@@ -428,7 +428,7 @@ TEST_CASE("(↕0‿0)≡⊔⟨⟩‿⟨⟩") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -437,7 +437,7 @@ TEST_CASE("(⊔≡·≍⍟2∘<·∾⌜´/∘(0⊸=)¨)⟨0‿¯1‿0‿0,¯1‿
   spdlog::critical("test='{}'", "(⊔≡·≍⍟2∘<·∾⌜´/∘(0⊸=)¨)⟨0‿¯1‿0‿0,¯1‿0‿0⟩");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{
+  auto rcu =
       {0,  14, 0,  15, 0, 14, 0,  14, 11, 4,  0,  15, 0,  14, 0,  14,
        11, 3,  11, 2,  0, 7,  0,  1,  0,  11, 0,  14, 27, 0,  10, 0,
        5,  27, 26, 0,  9, 0,  8,  0,  3,  26, 26, 20, 0,  0,  0,  10,
@@ -459,7 +459,7 @@ TEST_CASE("(⊔≡·≍⍟2∘<·∾⌜´/∘(0⊸=)¨)⟨0‿¯1‿0‿0,¯1‿
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -468,7 +468,7 @@ TEST_CASE("(0‿0‿1↑⌜≍⍟2∘<∘⥊¨1‿0)≡⊔⟨2,1‿0⟩") {
   spdlog::critical("test='{}'", "(0‿0‿1↑⌜≍⍟2∘<∘⥊¨1‿0)≡⊔⟨2,1‿0⟩");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{{0, 12, 0,  11, 0,  10, 11, 2,  11, 2,  0,  5,  16, 0, 1,
+  auto rcu ={0, 12, 0,  11, 0,  10, 11, 2,  11, 2,  0,  5,  16, 0, 1,
                    0, 11, 0,  10, 11, 2,  0,  6,  0,  2,  0,  8,  0,  0, 0,
                    8, 0,  12, 0,  9,  0,  3,  27, 27, 27, 26, 16, 0,  7, 0,
                    4, 26, 0,  10, 0,  10, 0,  11, 11, 3,  17, 17, 7},
@@ -489,7 +489,7 @@ TEST_CASE("(0‿0‿1↑⌜≍⍟2∘<∘⥊¨1‿0)≡⊔⟨2,1‿0⟩") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -498,7 +498,7 @@ TEST_CASE("(0‿0‿1↑⌜≍⍟2∘(<0‿0‿0⊸∾)¨1‿0)≡⊔0‿0⊸↓
   spdlog::critical("test='{}'", "(0‿0‿1↑⌜≍⍟2∘(<0‿0‿0⊸∾)¨1‿0)≡⊔0‿0⊸↓¨⟨2,1‿0⟩");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{
+  auto rcu =
       {0,  14, 0,  13, 0,  12, 11, 2,  11, 2,  0,  7,  0,  5,  0,  10, 0,
        12, 0,  12, 11, 2,  27, 26, 16, 0,  6,  16, 0,  1,  0,  13, 0,  12,
        11, 2,  0,  7,  0,  2,  0,  10, 0,  12, 0,  12, 0,  12, 11, 3,  27,
@@ -523,7 +523,7 @@ TEST_CASE("(0‿0‿1↑⌜≍⍟2∘(<0‿0‿0⊸∾)¨1‿0)≡⊔0‿0⊸↓
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -532,7 +532,7 @@ TEST_CASE("4‿3‿2(⋈≡·(≠¨⋈∾)/⊸⊔)\"abcdefghi\"") {
   spdlog::critical("test='{}'", "4‿3‿2(⋈≡·(≠¨⋈∾)/⊸⊔)\"abcdefghi\"");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{
+  auto rcu =
       {0,  11, 0, 5, 0, 7, 0,  4, 27, 0, 2, 0, 3,  0,  6, 0,  0, 26,
        21, 20, 0, 1, 0, 3, 21, 0, 8,  0, 9, 0, 10, 11, 3, 17, 7},
       {runtime[14], runtime[18], runtime[23], runtime[25], runtime[33],
@@ -548,7 +548,7 @@ TEST_CASE("4‿3‿2(⋈≡·(≠¨⋈∾)/⊸⊔)\"abcdefghi\"") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -557,7 +557,7 @@ TEST_CASE("⟨⟩≡(3⥊¯1)⊔\"abc\"") {
   spdlog::critical("test='{}'", "⟨⟩≡(3⥊¯1)⊔\"abc\"");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{{0, 5, 0, 2, 0, 4, 0, 1, 0, 3, 17, 17, 0, 0, 11, 0, 17, 7},
+  auto rcu ={0, 5, 0, 2, 0, 4, 0, 1, 0, 3, 17, 17, 0, 0, 11, 0, 17, 7},
                   {runtime[18], runtime[22], runtime[42], 3, -1,
                    std::make_shared<Array>(U"abc")},
                   {{0, 1, 0}},
@@ -568,7 +568,7 @@ TEST_CASE("⟨⟩≡(3⥊¯1)⊔\"abc\"") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -577,7 +577,7 @@ TEST_CASE("⟨⟩≡(2⥊¯1)⊔\"a\"") {
   spdlog::critical("test='{}'", "⟨⟩≡(2⥊¯1)⊔\"a\"");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{{0, 5, 0, 2, 0, 4, 0, 1, 0, 3, 17, 17, 0, 0, 11, 0, 17, 7},
+  auto rcu ={0, 5, 0, 2, 0, 4, 0, 1, 0, 3, 17, 17, 0, 0, 11, 0, 17, 7},
                   {runtime[18], runtime[22], runtime[42], 2, -1,
                    std::make_shared<Array>(U"a")},
                   {{0, 1, 0}},
@@ -588,7 +588,7 @@ TEST_CASE("⟨⟩≡(2⥊¯1)⊔\"a\"") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -598,7 +598,7 @@ TEST_CASE("(≍˘1‿1‿4<∘⥊⎉1 16‿4+⌜↕4)≡2↓⟨3‿2,¯1‿0‿�
                    "(≍˘1‿1‿4<∘⥊⎉1 16‿4+⌜↕4)≡2↓⟨3‿2,¯1‿0‿¯1⟩⊔2‿3‿4⥊↕24");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{
+  auto rcu =
       {0,  19, 0,  6,  16, 0,  3,  0,  15, 0,  16, 0,  13, 11, 3,  17, 0,  7,
        0,  16, 0,  15, 11, 2,  0,  17, 0,  18, 0,  17, 11, 3,  11, 2,  17, 0,
        5,  0,  15, 17, 0,  2,  0,  13, 0,  6,  16, 0,  9,  0,  0,  26, 0,  14,
@@ -625,7 +625,7 @@ TEST_CASE("(≍˘1‿1‿4<∘⥊⎉1 16‿4+⌜↕4)≡2↓⟨3‿2,¯1‿0‿�
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -634,7 +634,7 @@ TEST_CASE("⥊⚇0⊸≡○⊔⟜(⥊<)1‿2‿2‿¯1‿0") {
   spdlog::critical("test='{}'", "⥊⚇0⊸≡○⊔⟜(⥊<)1‿2‿2‿¯1‿0");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{
+  auto rcu =
       {0, 9, 0, 10, 0, 10, 0, 11, 0, 8, 11, 5, 0, 0,  0,  2,  20, 0,  6, 0,
        3, 0, 4, 0,  1, 0,  5, 0,  8, 0, 7,  0, 2, 27, 27, 27, 27, 16, 7},
       {runtime[12], runtime[18], runtime[22], runtime[42], runtime[54],
@@ -651,7 +651,7 @@ TEST_CASE("⥊⚇0⊸≡○⊔⟜(⥊<)1‿2‿2‿¯1‿0") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -660,7 +660,7 @@ TEST_CASE("(∾↕¨∘≢⊸⊔)⊸≡ 3‿2‿4⥊↕24") {
   spdlog::critical("test='{}'", "(∾↕¨∘≢⊸⊔)⊸≡ 3‿2‿4⥊↕24");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{
+  auto rcu =
       {0, 12, 0, 4, 16, 0, 2, 0, 9, 0, 10, 0,  11, 11, 3, 17, 0,  0,  0,  8, 0,
        5, 0,  8, 0, 1,  0, 7, 0, 6, 0, 4,  26, 27, 27, 0, 3,  20, 27, 16, 7},
       {runtime[18], runtime[19], runtime[22], runtime[23], runtime[28],
@@ -677,7 +677,7 @@ TEST_CASE("(∾↕¨∘≢⊸⊔)⊸≡ 3‿2‿4⥊↕24") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -686,7 +686,7 @@ TEST_CASE("-⟜'a'⊸(⊔≡⊔○⥊)\"acc\"≍\"bac\"") {
   spdlog::critical("test='{}'", "-⟜'a'⊸(⊔≡⊔○⥊)\"acc\"≍\"bac\"");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{
+  auto rcu =
       {0, 10, 0,  3, 0, 9, 17, 0, 2, 0, 5, 0,  4,  27, 0, 1,
        0, 4,  21, 0, 6, 0, 8,  0, 7, 0, 0, 27, 27, 16, 7},
       {runtime[1], runtime[18], runtime[22], runtime[24], runtime[42],
@@ -702,7 +702,7 @@ TEST_CASE("-⟜'a'⊸(⊔≡⊔○⥊)\"acc\"≍\"bac\"") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -711,7 +711,7 @@ TEST_CASE("(2‿1/⟨↕0‿1,1‿1⥊3⟩)≡2⊔⥊3") {
   spdlog::critical("test='{}'", "(2‿1/⟨↕0‿1,1‿1⥊3⟩)≡2⊔⥊3");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{
+  auto rcu =
       {0, 8,  0,  1, 16, 0,  4, 0, 5, 17, 0,  0, 0,  7,  0,
        6, 11, 2,  0, 2,  16, 0, 8, 0, 1,  0,  6, 0,  6,  11,
        2, 17, 11, 2, 0,  3,  0, 5, 0, 6,  11, 2, 17, 17, 7},
@@ -729,7 +729,7 @@ TEST_CASE("(2‿1/⟨↕0‿1,1‿1⥊3⟩)≡2⊔⥊3") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -738,7 +738,7 @@ TEST_CASE("((<=·↕1⊸+)≡·≢¨<¨⊸⊔⟜(<@))2‿1‿3") {
   spdlog::critical("test='{}'", "((<=·↕1⊸+)≡·≢¨<¨⊸⊔⟜(<@))2‿1‿3");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{
+  auto rcu =
       {0, 11, 0, 10, 0,  12, 11, 3,  0, 13, 0, 1, 16, 0,  9,  0, 6, 0,
        8, 0,  7, 0,  1,  26, 27, 27, 0, 7,  0, 4, 26, 20, 0,  3, 0, 0,
        0, 8,  0, 10, 27, 0,  5,  20, 0, 2,  0, 1, 21, 21, 16, 7},
@@ -757,7 +757,7 @@ TEST_CASE("((<=·↕1⊸+)≡·≢¨<¨⊸⊔⟜(<@))2‿1‿3") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -766,7 +766,7 @@ TEST_CASE("(1‿3/⟨\"a\",\"\"⟩)≡0‿¯1‿4⊔\"ab\"") {
   spdlog::critical("test='{}'", "(1‿3/⟨\"a\",\"\"⟩)≡0‿¯1‿4⊔\"ab\"");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{
+  auto rcu =
       {0, 10, 0, 2,  0, 5, 0, 6, 0, 7, 11, 3,  17, 0,  0,  0,
        8, 0,  9, 11, 2, 0, 1, 0, 3, 0, 4,  11, 2,  17, 17, 7},
       {runtime[18], runtime[33], runtime[42], 1, 3, 0, -1, 4,
@@ -782,7 +782,7 @@ TEST_CASE("(1‿3/⟨\"a\",\"\"⟩)≡0‿¯1‿4⊔\"ab\"") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -791,7 +791,7 @@ TEST_CASE("¯1⊸↓⊸(≡○(⊔⟜\"ab\"))2‿3‿1") {
   spdlog::critical("test='{}'", "¯1⊸↓⊸(≡○(⊔⟜\"ab\"))2‿3‿1");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{
+  auto rcu =
       {0, 7, 0, 8,  0, 9, 11, 3, 0, 10, 0, 5, 0,  2,  27, 0,
        3, 0, 0, 27, 0, 4, 0,  1, 0, 4,  0, 6, 27, 27, 16, 7},
       {runtime[18], runtime[27], runtime[42], runtime[54], runtime[55],
@@ -806,7 +806,7 @@ TEST_CASE("¯1⊸↓⊸(≡○(⊔⟜\"ab\"))2‿3‿1") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -815,7 +815,7 @@ TEST_CASE("(≍1‿1‿0≍∘/⟜≍¨\"bac\")≡⟨0,1‿0‿3⟩⊔\"ab\"") {
   spdlog::critical("test='{}'", "(≍1‿1‿0≍∘/⟜≍¨\"bac\")≡⟨0,1‿0‿3⟩⊔\"ab\"");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{
+  auto rcu =
       {0,  11, 0, 3,  0, 8, 0, 7, 0,  8, 0,  9, 11, 3,  11, 2, 17,
        0,  0,  0, 10, 0, 4, 0, 1, 0,  6, 0,  2, 0,  5,  0,  1, 27,
        27, 26, 0, 7,  0, 7, 0, 8, 11, 3, 17, 0, 1,  16, 17, 7},
@@ -834,7 +834,7 @@ TEST_CASE("(≍1‿1‿0≍∘/⟜≍¨\"bac\")≡⟨0,1‿0‿3⟩⊔\"ab\"") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -843,7 +843,7 @@ TEST_CASE("(⌽˘≡·∾⟨2‿2,1‿0‿1⟩⊸⊔)\"ab\"≍\"cd\"") {
   spdlog::critical("test='{}'", "(⌽˘≡·∾⟨2‿2,1‿0‿1⟩⊸⊔)\"ab\"≍\"cd\"");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{
+  auto rcu =
       {0, 11, 0,  2, 0,  10, 17, 0, 4, 0,  6, 0, 7, 0, 7, 11, 2,  0,  8,  0, 9,
        0, 8,  11, 3, 11, 2,  27, 0, 1, 20, 0, 0, 0, 5, 0, 3,  26, 21, 16, 7},
       {runtime[18], runtime[23], runtime[24], runtime[31], runtime[42],
@@ -861,7 +861,7 @@ TEST_CASE("(⌽˘≡·∾⟨2‿2,1‿0‿1⟩⊸⊔)\"ab\"≍\"cd\"") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -870,7 +870,7 @@ TEST_CASE("2‿0‿4≡\"abcd\"⊐\"cae\"") {
   spdlog::critical("test='{}'", "2‿0‿4≡\"abcd\"⊐\"cae\"");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{
+  auto rcu =
       {0, 6, 0, 1, 0, 5, 17, 0, 0, 0, 2, 0, 3, 0, 4, 11, 3, 17, 7},
       {runtime[18], runtime[38], 2, 0, 4, std::make_shared<Array>(U"abcd"),
        std::make_shared<Array>(U"cae")},
@@ -882,7 +882,7 @@ TEST_CASE("2‿0‿4≡\"abcd\"⊐\"cae\"") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -891,7 +891,7 @@ TEST_CASE("⟨1⟩≡\"abcd\"⊐\"b\"") {
   spdlog::critical("test='{}'", "⟨1⟩≡\"abcd\"⊐\"b\"");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{{0, 4, 0, 1, 0, 3, 17, 0, 0, 0, 2, 11, 1, 17, 7},
+  auto rcu ={0, 4, 0, 1, 0, 3, 17, 0, 0, 0, 2, 11, 1, 17, 7},
                   {runtime[18], runtime[38], 1,
                    std::make_shared<Array>(U"abcd"),
                    std::make_shared<Array>(U"b")},
@@ -903,7 +903,7 @@ TEST_CASE("⟨1⟩≡\"abcd\"⊐\"b\"") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -912,7 +912,7 @@ TEST_CASE("(<2)≡\"cdef\"⊐'e'") {
   spdlog::critical("test='{}'", "(<2)≡\"cdef\"⊐'e'");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{{0, 4, 0, 2, 0, 5, 17, 0, 1, 0, 3, 0, 0, 16, 17, 7},
+  auto rcu ={0, 4, 0, 2, 0, 5, 17, 0, 1, 0, 3, 0, 0, 16, 17, 7},
                   {runtime[12], runtime[18], runtime[38], 2,
                    std::make_shared<Character>(U'e'),
                    std::make_shared<Array>(U"cdef")},
@@ -924,7 +924,7 @@ TEST_CASE("(<2)≡\"cdef\"⊐'e'") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -933,7 +933,7 @@ TEST_CASE("(<3)≡⊐⟜(3⊸⊏)\"abcd\"") {
   spdlog::critical("test='{}'", "(<3)≡⊐⟜(3⊸⊏)\"abcd\"");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{{0, 7,  0,  2, 0, 4, 0, 6, 27, 0,  5,  0,
+  auto rcu ={0, 7,  0,  2, 0, 4, 0, 6, 27, 0,  5,  0,
                    3, 27, 16, 0, 1, 0, 6, 0, 0,  16, 17, 7},
                   {runtime[12], runtime[18], runtime[36], runtime[38],
                    runtime[55], runtime[56], 3,
@@ -948,7 +948,7 @@ TEST_CASE("(<3)≡⊐⟜(3⊸⊏)\"abcd\"") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -957,7 +957,7 @@ TEST_CASE("(5⌊3+↕5)≡⊐⟜(3‿0‿0+⚇1⊢)↕5‿2‿1") {
   spdlog::critical("test='{}'", "(5⌊3+↕5)≡⊐⟜(3‿0‿0+⚇1⊢)↕5‿2‿1");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{
+  auto rcu =
       {0, 8,  0, 12, 0, 11, 11, 3,  0,  4, 16, 0, 3, 0, 11, 0,  7,  0,
        0, 27, 0, 9,  0, 10, 0,  10, 11, 3, 21, 0, 6, 0, 5,  27, 16, 0,
        2, 0,  8, 0,  4, 16, 0,  0,  0,  9, 17, 0, 1, 0, 8,  17, 17, 7},
@@ -975,7 +975,7 @@ TEST_CASE("(5⌊3+↕5)≡⊐⟜(3‿0‿0+⚇1⊢)↕5‿2‿1") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -984,7 +984,7 @@ TEST_CASE("0‿0‿1‿0‿2≡⊐\"ccacb\"") {
   spdlog::critical("test='{}'", "0‿0‿1‿0‿2≡⊐\"ccacb\"");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{
+  auto rcu =
       {0, 5, 0, 1, 16, 0, 0, 0, 2, 0, 2, 0, 3, 0, 2, 0, 4, 11, 5, 17, 7},
       {runtime[18], runtime[38], 0, 1, 2, std::make_shared<Array>(U"ccacb")},
       {{0, 1, 0}},
@@ -995,7 +995,7 @@ TEST_CASE("0‿0‿1‿0‿2≡⊐\"ccacb\"") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -1004,7 +1004,7 @@ TEST_CASE("0‿0‿1‿0‿2≡⊐≍˜˘\"ccacb\"") {
   spdlog::critical("test='{}'", "0‿0‿1‿0‿2≡⊐≍˜˘\"ccacb\"");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{{0, 8, 0, 4, 0, 3, 0, 1, 26, 26, 16, 0,  2, 16, 0,
+  auto rcu ={0, 8, 0, 4, 0, 3, 0, 1, 26, 26, 16, 0,  2, 16, 0,
                    0, 0, 5, 0, 5, 0, 6, 0, 5,  0,  7,  11, 5, 17, 7},
                   {runtime[18], runtime[24], runtime[38], runtime[45],
                    runtime[46], 0, 1, 2, std::make_shared<Array>(U"ccacb")},
@@ -1018,7 +1018,7 @@ TEST_CASE("0‿0‿1‿0‿2≡⊐≍˜˘\"ccacb\"") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -1027,7 +1027,7 @@ TEST_CASE("≡⟜⊐⟨⟩") {
   spdlog::critical("test='{}'", "≡⟜⊐⟨⟩");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{
+  auto rcu =
       {11, 0, 0, 1, 0, 2, 0, 0, 27, 16, 7},
       {runtime[18], runtime[38], runtime[56]},
       {{0, 1, 0}},
@@ -1037,7 +1037,7 @@ TEST_CASE("≡⟜⊐⟨⟩") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -1046,7 +1046,7 @@ TEST_CASE("1‿0‿0‿1≡\"acef\"∊\"adf\"") {
   spdlog::critical("test='{}'", "1‿0‿0‿1≡\"acef\"∊\"adf\"");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{
+  auto rcu =
       {0, 5, 0, 1, 0, 4, 17, 0, 0, 0, 2, 0, 3, 0, 3, 0, 2, 11, 4, 17, 7},
       {runtime[18], runtime[40], 1, 0, std::make_shared<Array>(U"acef"),
        std::make_shared<Array>(U"adf")},
@@ -1058,7 +1058,7 @@ TEST_CASE("1‿0‿0‿1≡\"acef\"∊\"adf\"") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -1067,7 +1067,7 @@ TEST_CASE("(∊⟜(↕2)≡<⟜2)3⋆⌜○↕5") {
   spdlog::critical("test='{}'", "(∊⟜(↕2)≡<⟜2)3⋆⌜○↕5");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{{0, 10, 0,  3, 0, 6, 0, 5,  0,  0,  26, 27, 0,
+  auto rcu ={0, 10, 0,  3, 0, 6, 0, 5,  0,  0,  26, 27, 0,
                    9, 17, 0,  8, 0, 7, 0, 1,  27, 0,  2,  0,  8,
                    0, 3,  16, 0, 7, 0, 4, 27, 21, 16, 7},
                   {runtime[4], runtime[12], runtime[18], runtime[28],
@@ -1084,7 +1084,7 @@ TEST_CASE("(∊⟜(↕2)≡<⟜2)3⋆⌜○↕5") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -1093,7 +1093,7 @@ TEST_CASE("(<1)≡3‿4‿5∊4+⌜○↕3") {
   spdlog::critical("test='{}'", "(<1)≡3‿4‿5∊4+⌜○↕3");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{
+  auto rcu =
       {0, 8, 0, 3, 0,  6,  0, 5,  0, 0, 26, 27, 0, 9, 17, 0,  4, 0,
        8, 0, 9, 0, 10, 11, 3, 17, 0, 2, 0,  7,  0, 1, 16, 17, 7},
       {runtime[0], runtime[12], runtime[18], runtime[28], runtime[40],
@@ -1108,7 +1108,7 @@ TEST_CASE("(<1)≡3‿4‿5∊4+⌜○↕3") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -1117,7 +1117,7 @@ TEST_CASE("('0'≠\"11010001\")≡∊\"abacbacd\"") {
   spdlog::critical("test='{}'", "('0'≠\"11010001\")≡∊\"abacbacd\"");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{
+  auto rcu =
       {0, 5, 0, 2, 16, 0, 1, 0, 4, 0, 0, 0, 3, 17, 17, 7},
       {runtime[14], runtime[18], runtime[40], std::make_shared<Character>(U'0'),
        std::make_shared<Array>(U"11010001"),
@@ -1130,7 +1130,7 @@ TEST_CASE("('0'≠\"11010001\")≡∊\"abacbacd\"") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -1139,7 +1139,7 @@ TEST_CASE("(↑⟜1≡⟜∊⥊⟜∞)9") {
   spdlog::critical("test='{}'", "(↑⟜1≡⟜∊⥊⟜∞)9");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{{0, 7, 0,  6, 0, 4, 0, 1, 27, 0,  3,  0,  4,
+  auto rcu ={0, 7, 0,  6, 0, 4, 0, 1, 27, 0,  3,  0,  4,
                    0, 0, 27, 0, 5, 0, 4, 0, 2,  27, 21, 16, 7},
                   {runtime[18], runtime[22], runtime[26], runtime[40],
                    runtime[56], 1, std::make_shared<Number>(1.0 / 0.0), 9},
@@ -1153,7 +1153,7 @@ TEST_CASE("(↑⟜1≡⟜∊⥊⟜∞)9") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -1162,7 +1162,7 @@ TEST_CASE("(⥊⟜1≡∊∘↕)6") {
   spdlog::critical("test='{}'", "(⥊⟜1≡∊∘↕)6");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{
+  auto rcu =
       {0, 7, 0, 2, 0, 4, 0, 3, 27, 0, 0, 0, 6, 0, 5, 0, 1, 27, 21, 16, 7},
       {runtime[18], runtime[22], runtime[28], runtime[40], runtime[53],
        runtime[56], 1, 6},
@@ -1174,7 +1174,7 @@ TEST_CASE("(⥊⟜1≡∊∘↕)6") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -1183,7 +1183,7 @@ TEST_CASE("≡⟜∊⟨⟩") {
   spdlog::critical("test='{}'", "≡⟜∊⟨⟩");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{
+  auto rcu =
       {11, 0, 0, 1, 0, 2, 0, 0, 27, 16, 7},
       {runtime[18], runtime[40], runtime[56]},
       {{0, 1, 0}},
@@ -1193,7 +1193,7 @@ TEST_CASE("≡⟜∊⟨⟩") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -1202,7 +1202,7 @@ TEST_CASE("≡○∊⟜(≍˜˘)\"abcadbba\"") {
   spdlog::critical("test='{}'", "≡○∊⟜(≍˜˘)\"abcadbba\"");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{
+  auto rcu =
       {0, 7, 0, 4, 0, 3, 0, 1, 26, 26, 0, 6, 0, 2, 0, 5, 0, 0, 27, 27, 16, 7},
       {runtime[18], runtime[24], runtime[40], runtime[45], runtime[46],
        runtime[54], runtime[56], std::make_shared<Array>(U"abcadbba")},
@@ -1214,7 +1214,7 @@ TEST_CASE("≡○∊⟜(≍˜˘)\"abcadbba\"") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -1223,7 +1223,7 @@ TEST_CASE("≡⟜⍷⟨⟩") {
   spdlog::critical("test='{}'", "≡⟜⍷⟨⟩");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{
+  auto rcu =
       {11, 0, 0, 1, 0, 2, 0, 0, 27, 16, 7},
       {runtime[18], runtime[41], runtime[56]},
       {{0, 1, 0}},
@@ -1233,7 +1233,7 @@ TEST_CASE("≡⟜⍷⟨⟩") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -1242,7 +1242,7 @@ TEST_CASE("\"ba\"≡⍷\"baa\"") {
   spdlog::critical("test='{}'", "\"ba\"≡⍷\"baa\"");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{
+  auto rcu =
       {0, 3, 0, 1, 16, 0, 0, 0, 2, 17, 7},
       {runtime[18], runtime[41], std::make_shared<Array>(U"ba"),
        std::make_shared<Array>(U"baa")},
@@ -1253,7 +1253,7 @@ TEST_CASE("\"ba\"≡⍷\"baa\"") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -1262,7 +1262,7 @@ TEST_CASE("0‿1‿0‿0≡\"abc\"⍷\"aabcba\"") {
   spdlog::critical("test='{}'", "0‿1‿0‿0≡\"abc\"⍷\"aabcba\"");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{
+  auto rcu =
       {0, 5, 0, 1, 0, 4, 17, 0, 0, 0, 2, 0, 3, 0, 2, 0, 2, 11, 4, 17, 7},
       {runtime[18], runtime[41], 0, 1, std::make_shared<Array>(U"abc"),
        std::make_shared<Array>(U"aabcba")},
@@ -1274,7 +1274,7 @@ TEST_CASE("0‿1‿0‿0≡\"abc\"⍷\"aabcba\"") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -1283,7 +1283,7 @@ TEST_CASE("(0‿1≍0‿0)≡(1‿2≍4‿5)⍷3‿3⥊↕9") {
   spdlog::critical("test='{}'", "(0‿1≍0‿0)≡(1‿2≍4‿5)⍷3‿3⥊↕9");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{
+  auto rcu =
       {0, 11, 0, 3,  16, 0, 1, 0, 10, 0, 10, 11, 2,  17, 0,  4,  0,
        8, 0,  9, 11, 2,  0, 2, 0, 6,  0, 7,  11, 2,  17, 17, 0,  0,
        0, 5,  0, 5,  11, 2, 0, 2, 0,  5, 0,  6,  11, 2,  17, 17, 7},
@@ -1301,7 +1301,7 @@ TEST_CASE("(0‿1≍0‿0)≡(1‿2≍4‿5)⍷3‿3⥊↕9") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -1310,7 +1310,7 @@ TEST_CASE("(↕3‿0)≡⍷⟜(≍˘)\"abc\"") {
   spdlog::critical("test='{}'", "(↕3‿0)≡⍷⟜(≍˘)\"abc\"");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{{0, 8, 0, 4, 0, 1, 26, 0, 5, 0, 3,  27, 16,
+  auto rcu ={0, 8, 0, 4, 0, 1, 26, 0, 5, 0, 3,  27, 16,
                    0, 0, 0, 6, 0, 7, 11, 2, 0, 2, 16, 17, 7},
                   {runtime[18], runtime[24], runtime[28], runtime[41],
                    runtime[46], runtime[56], 3, 0,
@@ -1325,7 +1325,7 @@ TEST_CASE("(↕3‿0)≡⍷⟜(≍˘)\"abc\"") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -1334,7 +1334,7 @@ TEST_CASE("'a'(=≡⍷)\"abc\"") {
   spdlog::critical("test='{}'", "'a'(=≡⍷)\"abc\"");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{{0, 4, 0, 2, 0, 1, 0, 0, 21, 0, 3, 17, 7},
+  auto rcu ={0, 4, 0, 2, 0, 1, 0, 0, 21, 0, 3, 17, 7},
                   {runtime[15], runtime[18], runtime[41],
                    std::make_shared<Character>(U'a'),
                    std::make_shared<Array>(U"abc")},
@@ -1346,7 +1346,7 @@ TEST_CASE("'a'(=≡⍷)\"abc\"") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -1355,7 +1355,7 @@ TEST_CASE("(⌽¨≡⍉)↕2⥊3") {
   spdlog::critical("test='{}'", "(⌽¨≡⍉)↕2⥊3");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{
+  auto rcu =
       {0, 7, 0, 1, 0, 6, 17, 0, 2, 16, 0, 4, 0, 0, 0, 5, 0, 3, 26, 21, 16, 7},
       {runtime[18], runtime[22], runtime[28], runtime[31], runtime[32],
        runtime[47], 2, 3},
@@ -1367,7 +1367,7 @@ TEST_CASE("(⌽¨≡⍉)↕2⥊3") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -1376,7 +1376,7 @@ TEST_CASE("(⍉≡<)'a'") {
   spdlog::critical("test='{}'", "(⍉≡<)'a'");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{
+  auto rcu =
       {0, 3, 0, 0, 0, 1, 0, 2, 21, 16, 7},
       {runtime[12], runtime[18], runtime[32],
        std::make_shared<Character>(U'a')},
@@ -1387,7 +1387,7 @@ TEST_CASE("(⍉≡<)'a'") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -1396,7 +1396,7 @@ TEST_CASE("∧´⍉⊸≡¨⟨<'a',\"a\",\"abc\",\"\"⟩") {
   spdlog::critical("test='{}'", "∧´⍉⊸≡¨⟨<'a',\"a\",\"abc\",\"\"⟩");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{
+  auto rcu =
       {0, 7, 0, 1, 16, 0,  8,  0,  9, 0, 10, 11, 4,  0,  4, 0,
        2, 0, 6, 0, 3,  27, 26, 16, 0, 5, 0,  0,  26, 16, 7},
       {runtime[10], runtime[12], runtime[18], runtime[32], runtime[47],
@@ -1413,7 +1413,7 @@ TEST_CASE("∧´⍉⊸≡¨⟨<'a',\"a\",\"abc\",\"\"⟩") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -1422,7 +1422,7 @@ TEST_CASE("(↕4)(-˜⌜˜≡·⍉-⌜)↕3‿2") {
   spdlog::critical("test='{}'", "(↕4)(-˜⌜˜≡·⍉-⌜)↕3‿2");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{{0,  7,  0,  8,  11, 2, 0, 2, 16, 0,  5,  0, 0,
+  auto rcu ={0,  7,  0,  8,  11, 2, 0, 2, 16, 0,  5,  0, 0,
                    26, 0,  3,  20, 0,  1, 0, 4, 0,  5,  0,  4, 0,
                    0,  26, 26, 26, 21, 0, 6, 0, 2,  16, 17, 7},
                   {runtime[1], runtime[18], runtime[28], runtime[32],
@@ -1439,7 +1439,7 @@ TEST_CASE("(↕4)(-˜⌜˜≡·⍉-⌜)↕3‿2") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -1448,7 +1448,7 @@ TEST_CASE("(2×↕3)≡0‿0⍉6+⌜○↕3") {
   spdlog::critical("test='{}'", "(2×↕3)≡0‿0⍉6+⌜○↕3");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{{0,  8,  0, 3, 0,  6, 0, 5, 0,  0,  26, 27, 0,
+  auto rcu ={0,  8,  0, 3, 0,  6, 0, 5, 0,  0,  26, 27, 0,
                    10, 17, 0, 4, 0,  9, 0, 9, 11, 2,  17, 0,  2,
                    0,  8,  0, 3, 16, 0, 1, 0, 7,  17, 17, 7},
                   {runtime[0], runtime[2], runtime[18], runtime[28],
@@ -1465,7 +1465,7 @@ TEST_CASE("(2×↕3)≡0‿0⍉6+⌜○↕3") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -1474,7 +1474,7 @@ TEST_CASE("(⟨⟩⊸⍉≡<)4") {
   spdlog::critical("test='{}'", "(⟨⟩⊸⍉≡<)4");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{{0, 4, 0, 0, 0, 1, 0, 2, 0, 3, 11, 0, 27, 21, 16, 7},
+  auto rcu ={0, 4, 0, 0, 0, 1, 0, 2, 0, 3, 11, 0, 27, 21, 16, 7},
                   {runtime[12], runtime[18], runtime[32], runtime[55], 4},
                   {{0, 1, 0}},
                   {{0, 0}},
@@ -1484,7 +1484,7 @@ TEST_CASE("(⟨⟩⊸⍉≡<)4") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -1493,7 +1493,7 @@ TEST_CASE("⟨⟩(⍉≡⊢)<4") {
   spdlog::critical("test='{}'", "⟨⟩(⍉≡⊢)<4");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{{0, 4, 0, 0, 16, 0, 2, 0, 1, 0, 3, 21, 11, 0, 17, 7},
+  auto rcu ={0, 4, 0, 0, 16, 0, 2, 0, 1, 0, 3, 21, 11, 0, 17, 7},
                   {runtime[12], runtime[18], runtime[21], runtime[32], 4},
                   {{0, 1, 0}},
                   {{0, 0}},
@@ -1503,7 +1503,7 @@ TEST_CASE("⟨⟩(⍉≡⊢)<4") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -1512,7 +1512,7 @@ TEST_CASE("(2‿0‿1⥊⟨⟩)≡1‿2‿0‿1⍉↕↕4") {
   spdlog::critical("test='{}'", "(2‿0‿1⥊⟨⟩)≡1‿2‿0‿1⍉↕↕4");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{
+  auto rcu =
       {0, 7,  0, 2, 16, 0, 2, 16, 0, 3, 0, 6, 0, 4, 0,  5, 0,  6,  11,
        4, 17, 0, 0, 11, 0, 0, 1,  0, 4, 0, 5, 0, 6, 11, 3, 17, 17, 7},
       {runtime[18], runtime[22], runtime[28], runtime[32], 2, 0, 1, 4},
@@ -1528,7 +1528,7 @@ TEST_CASE("(2‿0‿1⥊⟨⟩)≡1‿2‿0‿1⍉↕↕4") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -1537,7 +1537,7 @@ TEST_CASE("(↕1‿2‿0‿3)≡2<⊸⍉↕↕4") {
   spdlog::critical("test='{}'", "(↕1‿2‿0‿3)≡2<⊸⍉↕↕4");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{
+  auto rcu =
       {0, 9, 0, 2, 16, 0, 2, 16, 0, 3, 0,  4, 0, 0, 27, 0,  6, 17,
        0, 1, 0, 5, 0,  6, 0, 7,  0, 8, 11, 4, 0, 2, 16, 17, 7},
       {runtime[12], runtime[18], runtime[28], runtime[32], runtime[55], 1, 2, 0,
@@ -1552,7 +1552,7 @@ TEST_CASE("(↕1‿2‿0‿3)≡2<⊸⍉↕↕4") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -1561,7 +1561,7 @@ TEST_CASE("0⊸⍉⊸≡2‿3⥊↕6") {
   spdlog::critical("test='{}'", "0⊸⍉⊸≡2‿3⥊↕6");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{{0, 8, 0, 2, 16, 0, 1, 0, 6, 0, 7,  11, 2,  17,
+  auto rcu ={0, 8, 0, 2, 16, 0, 1, 0, 6, 0, 7,  11, 2,  17,
                    0, 0, 0, 4, 0,  3, 0, 4, 0, 5, 27, 27, 16, 7},
                   {runtime[18], runtime[22], runtime[28], runtime[32],
                    runtime[55], 0, 2, 3, 6},
@@ -1575,7 +1575,7 @@ TEST_CASE("0⊸⍉⊸≡2‿3⥊↕6") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -1584,7 +1584,7 @@ TEST_CASE("2‿0‿3‿1‿4≡⍋\"bdace\"") {
   spdlog::critical("test='{}'", "2‿0‿3‿1‿4≡⍋\"bdace\"");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{
+  auto rcu =
       {0, 7, 0, 1, 16, 0, 0, 0, 2, 0, 3, 0, 4, 0, 5, 0, 6, 11, 5, 17, 7},
       {runtime[18], runtime[34], 2, 0, 3, 1, 4,
        std::make_shared<Array>(U"bdace")},
@@ -1596,7 +1596,7 @@ TEST_CASE("2‿0‿3‿1‿4≡⍋\"bdace\"") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -1605,7 +1605,7 @@ TEST_CASE("5‿2‿4‿3‿0‿1≡⍋↓\"deabb\"") {
   spdlog::critical("test='{}'", "5‿2‿4‿3‿0‿1≡⍋↓\"deabb\"");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{{0, 9, 0, 1, 16, 0, 2, 16, 0, 0,  0, 3,  0,
+  auto rcu ={0, 9, 0, 1, 16, 0, 2, 16, 0, 0,  0, 3,  0,
                    4, 0, 5, 0, 6,  0, 7, 0,  8, 11, 6, 17, 7},
                   {runtime[18], runtime[27], runtime[34], 5, 2, 4, 3, 0, 1,
                    std::make_shared<Array>(U"deabb")},
@@ -1619,7 +1619,7 @@ TEST_CASE("5‿2‿4‿3‿0‿1≡⍋↓\"deabb\"") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -1628,7 +1628,7 @@ TEST_CASE("(⍋≡⍒)⟨\"\",↕0,0↑<\"abc\"⟩") {
   spdlog::critical("test='{}'", "(⍋≡⍒)⟨\"\",↕0,0↑<\"abc\"⟩");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{{0, 7, 0,  6,  0, 3, 16, 0, 8, 0, 0, 16, 0,  2,
+  auto rcu ={0, 7, 0,  6,  0, 3, 16, 0, 8, 0, 0, 16, 0,  2,
                    0, 6, 17, 11, 3, 0, 5,  0, 1, 0, 4, 21, 16, 7},
                   {runtime[12], runtime[18], runtime[26], runtime[28],
                    runtime[34], runtime[35], 0, std::make_shared<Array>(U""),
@@ -1643,7 +1643,7 @@ TEST_CASE("(⍋≡⍒)⟨\"\",↕0,0↑<\"abc\"⟩") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -1652,7 +1652,7 @@ TEST_CASE("(⍋≡↕∘≠)4‿0⥊@") {
   spdlog::critical("test='{}'", "(⍋≡↕∘≠)4‿0⥊@");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{{0, 8, 0, 2, 0,  6, 0, 7, 11, 2,  17, 0, 0,
+  auto rcu ={0, 8, 0, 2, 0,  6, 0, 7, 11, 2,  17, 0, 0,
                    0, 5, 0, 3, 27, 0, 1, 0, 4,  21, 16, 7},
                   {runtime[14], runtime[18], runtime[22], runtime[28],
                    runtime[34], runtime[53], 4, 0,
@@ -1667,7 +1667,7 @@ TEST_CASE("(⍋≡↕∘≠)4‿0⥊@") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -1676,7 +1676,7 @@ TEST_CASE("(⍒≡⌽∘↕∘≠)⟨¯∞,¯1.5,π,∞,'A','a','b'⟩") {
   spdlog::critical("test='{}'", "(⍒≡⌽∘↕∘≠)⟨¯∞,¯1.5,π,∞,'A','a','b'⟩");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{
+  auto rcu =
       {0, 6, 0, 7, 0, 8, 0, 9, 0,  10, 0, 11, 0, 12, 11, 7,  0, 0,
        0, 5, 0, 2, 0, 5, 0, 3, 27, 27, 0, 1,  0, 4,  21, 16, 7},
       {runtime[14], runtime[18], runtime[28], runtime[31], runtime[35],
@@ -1694,7 +1694,7 @@ TEST_CASE("(⍒≡⌽∘↕∘≠)⟨¯∞,¯1.5,π,∞,'A','a','b'⟩") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -1706,7 +1706,7 @@ TEST_CASE(
       "(⍒≡⌽∘↕∘≠)⟨↕0,¯1.1,¯1,¯1‿¯∞,¯1‿0,¯1‿0‿0,¯1‿∞,0,6⥊0,1e¯20,1,1+1e¯15⟩");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{
+  auto rcu =
       {0,  8, 0, 4,  16, 0,  9, 0,  10, 0,  10, 0,  11, 11, 2,  0,  10, 0,  8,
        11, 2, 0, 10, 0,  8,  0, 8,  11, 3,  0,  10, 0,  12, 11, 2,  0,  8,  0,
        8,  0, 3, 0,  13, 17, 0, 14, 0,  15, 0,  16, 0,  0,  0,  15, 17, 11, 12,
@@ -1732,7 +1732,7 @@ TEST_CASE(
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -1742,7 +1742,7 @@ TEST_CASE("(⍒≡⌽∘↕∘≠)(<∾⟨↕0,1,1‿1,2‿1‿1,2‿1,2,1‿2,2
                    "(⍒≡⌽∘↕∘≠)(<∾⟨↕0,1,1‿1,2‿1‿1,2‿1,2,1‿2,2‿2,3⟩⥊¨<)'a'");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{
+  auto rcu =
       {0,  14, 0,  0,  0,  8,  0,  3,  26, 0,  10, 0,  5,  16, 0,  11,
        0,  11, 0,  11, 11, 2,  0,  12, 0,  11, 0,  11, 11, 3,  0,  12,
        0,  11, 11, 2,  0,  12, 0,  11, 0,  12, 11, 2,  0,  12, 0,  12,
@@ -1768,7 +1768,7 @@ TEST_CASE("(⍒≡⌽∘↕∘≠)(<∾⟨↕0,1,1‿1,2‿1‿1,2‿1,2,1‿2,2
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -1777,7 +1777,7 @@ TEST_CASE("(⍋≡↕∘≠)⥊⍉(↕5)⥊⟜1⊸⥊⌜1‿'b'") {
   spdlog::critical("test='{}'", "(⍋≡↕∘≠)⥊⍉(↕5)⥊⟜1⊸⥊⌜1‿'b'");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{
+  auto rcu =
       {0,  11, 0,  12, 11, 2, 0,  6,  0, 2,  0,  8, 0,  11, 0, 9,
        0,  2,  27, 27, 26, 0, 10, 0,  3, 16, 17, 0, 4,  16, 0, 2,
        16, 0,  0,  0,  7,  0, 3,  27, 0, 1,  0,  5, 21, 16, 7},
@@ -1796,7 +1796,7 @@ TEST_CASE("(⍋≡↕∘≠)⥊⍉(↕5)⥊⟜1⊸⥊⌜1‿'b'") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -1805,7 +1805,7 @@ TEST_CASE("(⊢≡○⍋(0‿1+≠)⥊⊢)⟨¯2,'a',1,'f'⟩") {
   spdlog::critical("test='{}'", "(⊢≡○⍋(0‿1+≠)⥊⊢)⟨¯2,'a',1,'f'⟩");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{
+  auto rcu =
       {0, 9, 0, 10, 0, 8,  0,  11, 11, 4, 0, 3, 0, 4,  0, 1, 0,  0,  0,
        7, 0, 8, 11, 2, 21, 21, 0,  5,  0, 6, 0, 2, 27, 0, 3, 21, 16, 7},
       {runtime[0], runtime[14], runtime[18], runtime[21], runtime[22],
@@ -1823,7 +1823,7 @@ TEST_CASE("(⊢≡○⍋(0‿1+≠)⥊⊢)⟨¯2,'a',1,'f'⟩") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -1834,7 +1834,7 @@ TEST_CASE("⟨1,2,3,1‿2,2‿1,1‿3,2‿2,3‿1⟩(⥊⊸(≠∘⊣∾˜¯1⊸
                                 "∾×´⊸⌊)⌜≡○(⍋⥊)⥊⌜⟜(+`∘≠⟜(↕6)¨))↕4");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{
+  auto rcu =
       {0,  25, 0,  8,  16, 0,  12, 0,  24, 0,  8,  16, 0,  19, 0,  3,  0,
        16, 0,  15, 0,  0,  26, 27, 27, 26, 0,  19, 0,  13, 0,  6,  26, 27,
        0,  6,  0,  9,  20, 0,  17, 0,  4,  27, 0,  13, 0,  2,  0,  18, 0,
@@ -1879,7 +1879,7 @@ TEST_CASE("⟨1,2,3,1‿2,2‿1,1‿3,2‿2,3‿1⟩(⥊⊸(≠∘⊣∾˜¯1⊸
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -1888,7 +1888,7 @@ TEST_CASE("((⥊˜-⥊⟜2‿0)∘≠≡⍋+⍒)2/↕5") {
   spdlog::critical("test='{}'", "((⥊˜-⥊⟜2‿0)∘≠≡⍋+⍒)2/↕5");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{
+  auto rcu =
       {0,  14, 0, 5, 16, 0, 6,  0, 12, 17, 0,  8,  0,  0, 0,  7,
        21, 0,  3, 0, 2,  0, 10, 0, 12, 0,  13, 11, 2,  0, 11, 0,
        4,  27, 0, 1, 0,  9, 0,  4, 26, 21, 27, 21, 16, 7},
@@ -1907,7 +1907,7 @@ TEST_CASE("((⥊˜-⥊⟜2‿0)∘≠≡⍋+⍒)2/↕5") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -1916,7 +1916,7 @@ TEST_CASE("\"edcba\"≡∨\"bdace\"") {
   spdlog::critical("test='{}'", "\"edcba\"≡∨\"bdace\"");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{
+  auto rcu =
       {0, 3, 0, 0, 16, 0, 1, 0, 2, 17, 7},
       {runtime[11], runtime[18], std::make_shared<Array>(U"edcba"),
        std::make_shared<Array>(U"bdace")},
@@ -1927,7 +1927,7 @@ TEST_CASE("\"edcba\"≡∨\"bdace\"") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -1936,7 +1936,7 @@ TEST_CASE("(↕7)≡∧⍋|⟜⌽1+↕7") {
   spdlog::critical("test='{}'", "(↕7)≡∧⍋|⟜⌽1+↕7");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{{0,  8, 0, 4,  16, 0, 0,  0, 9, 17, 0, 5, 0, 7,  0,  1, 27,
+  auto rcu ={0,  8, 0, 4,  16, 0, 0,  0, 9, 17, 0, 5, 0, 7,  0,  1, 27,
                    16, 0, 6, 16, 0,  2, 16, 0, 3, 0,  8, 0, 4, 16, 17, 7},
                   {runtime[0], runtime[8], runtime[10], runtime[18],
                    runtime[28], runtime[31], runtime[34], runtime[56], 7, 1},
@@ -1950,7 +1950,7 @@ TEST_CASE("(↕7)≡∧⍋|⟜⌽1+↕7") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -1960,7 +1960,7 @@ TEST_CASE("⟨1,3,∞,'e','i'⟩ (⍋≡≠∘⊣(⊣↓⊢⍋⊸⊏+`∘>)⍋�
                    "⟨1,3,∞,'e','i'⟩ (⍋≡≠∘⊣(⊣↓⊢⍋⊸⊏+`∘>)⍋∘∾) (2÷˜↕8)∾\"aegz\"");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{
+  auto rcu =
       {0,  23, 0,  7, 0,  20, 0,  9,  16, 0,  12, 0,  1,  26, 0,  19,
        17, 17, 0,  7, 0,  14, 0,  10, 27, 0,  2,  0,  14, 0,  13, 0,
        0,  26, 27, 0, 11, 0,  15, 0,  10, 27, 0,  6,  21, 0,  8,  0,
@@ -2007,7 +2007,7 @@ TEST_CASE("⟨1,3,∞,'e','i'⟩ (⍋≡≠∘⊣(⊣↓⊢⍋⊸⊏+`∘>)⍋�
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -2017,7 +2017,7 @@ TEST_CASE("⟨'z','d',1‿0,0⟩ (⍒≡≠∘⊣(⊣↓⊢⍋⊸⊏+`∘>)⍒�
                    "⟨'z','d',1‿0,0⟩ (⍒≡≠∘⊣(⊣↓⊢⍋⊸⊏+`∘>)⍒∘∾) (2÷˜↕8)∾\"aegz\"");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{
+  auto rcu =
       {0,  23, 0,  7, 0,  20, 0,  9,  16, 0,  13, 0,  1,  26, 0,  19,
        17, 17, 0,  7, 0,  15, 0,  11, 27, 0,  2,  0,  15, 0,  14, 0,
        0,  26, 27, 0, 12, 0,  16, 0,  10, 27, 0,  6,  21, 0,  8,  0,
@@ -2064,7 +2064,7 @@ TEST_CASE("⟨'z','d',1‿0,0⟩ (⍒≡≠∘⊣(⊣↓⊢⍋⊸⊏+`∘>)⍒�
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -2073,7 +2073,7 @@ TEST_CASE("(<∘⌈≡(↕6)⊸⍋)2.5") {
   spdlog::critical("test='{}'", "(<∘⌈≡(↕6)⊸⍋)2.5");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{{0, 8, 0, 4, 0, 6, 0, 7, 0,  3,  16, 27,
+  auto rcu ={0, 8, 0, 4, 0, 6, 0, 7, 0,  3,  16, 27,
                    0, 2, 0, 0, 0, 5, 0, 1, 27, 21, 16, 7},
                   {runtime[7], runtime[12], runtime[18], runtime[28],
                    runtime[34], runtime[53], runtime[55], 6, 2.5},
@@ -2087,7 +2087,7 @@ TEST_CASE("(<∘⌈≡(↕6)⊸⍋)2.5") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -2096,7 +2096,7 @@ TEST_CASE("(<1)≡(↕2‿3)⍋1+↕3") {
   spdlog::critical("test='{}'", "(<1)≡(↕2‿3)⍋1+↕3");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{
+  auto rcu =
       {0,  7, 0, 3, 16, 0,  0, 0, 5, 17, 0, 4, 0,  6,  0, 7,
        11, 2, 0, 3, 16, 17, 0, 2, 0, 5,  0, 1, 16, 17, 7},
       {runtime[0], runtime[12], runtime[18], runtime[28], runtime[34], 1, 2, 3},
@@ -2110,7 +2110,7 @@ TEST_CASE("(<1)≡(↕2‿3)⍋1+↕3") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -2119,7 +2119,7 @@ TEST_CASE("(<0)≡\"abc\"⥊⊸⍒○<≍\"acc\"") {
   spdlog::critical("test='{}'", "(<0)≡\"abc\"⥊⊸⍒○<≍\"acc\"");
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
-  CompileParams p{{0,  9,  0, 3, 16, 0, 0, 0, 5, 0, 4, 0,  6,  0, 2,
+  auto rcu ={0,  9,  0, 3, 16, 0, 0, 0, 5, 0, 4, 0,  6,  0, 2,
                    27, 27, 0, 8, 17, 0, 1, 0, 7, 0, 0, 16, 17, 7},
                   {runtime[12], runtime[18], runtime[22], runtime[24],
                    runtime[35], runtime[54], runtime[55], 0,
@@ -2135,7 +2135,7 @@ TEST_CASE("(<0)≡\"abc\"⥊⊸⍒○<≍\"acc\"") {
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }

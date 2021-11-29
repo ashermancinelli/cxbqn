@@ -64,7 +64,7 @@ init_gen_file(${P_SETPRIMS_TEST_SOURCE})
 foreach(test ${P_TESTS})
   execute_process(
     COMMAND ${BASH} -c
-            "${BQN} ${ROOT}/test/ccxx.bqn ${ROOT}/ext/bqn -i \"${test}\""
+            "${BQN} ${ROOT}/test/ccx.bqn ${ROOT}/ext/bqn \"${test}\""
     WORKING_DIRECTORY "${BUILDDIR}"
     OUTPUT_VARIABLE compiled_test
   )
@@ -75,11 +75,11 @@ TEST_CASE(\"${test}\") {
   const auto rt = provides::get_runtime_setprims_cached();
   const auto runtime = rt->values;
   spdlog::critical(\"test='{}'\", \"${test}\");
-  CompileParams p( ${compiled_test} );
-  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
+  auto cu = ${compiled_test};
+  auto ret = vm::run(cu);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }
@@ -92,11 +92,11 @@ TEST_CASE(\"${test}\") {
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
   spdlog::critical(\"test='{}'\", \"${test}\");
-  CompileParams p{ ${compiled_test} };
-  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
+  auto cu = ${compiled_test};
+  auto ret = vm::run(cu);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(1 == doctest::Approx(n->v));
 }

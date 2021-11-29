@@ -43,7 +43,7 @@ int main(int argc, char **argv) {
     auto t_start = std::chrono::high_resolution_clock::now();
     const auto provide = provides::get_provides()->values;
     CompileParams p(
-#include <cxbqn/__/compiled_runtime>
+#include <cxbqn/__/r>
     );
     auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
     auto runtime_ret = dyncast<Array>(ret.v);
@@ -63,7 +63,7 @@ int main(int argc, char **argv) {
 
     auto runtime = bqnruntime->values;
     CompileParams p2(
-#include <cxbqn/__/compiled_compiler>
+#include <cxbqn/__/c>
     );
 
     auto cret = vm::run(p2.bc, p2.consts.to_arr(), p2.blk_defs, p2.bodies);
@@ -74,7 +74,7 @@ int main(int argc, char **argv) {
     // to create the actual formatter by passing it four arguments, •Type,
     // •Decompose, •Glyph, and •FmtNum.
     CompileParams pfmt(
-#include <cxbqn/__/compiled_formatter>
+#include <cxbqn/__/f>
     );
     auto fmtret =
         vm::run(pfmt.bc, pfmt.consts.to_arr(), pfmt.blk_defs, pfmt.bodies);

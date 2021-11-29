@@ -15,7 +15,7 @@ TEST_CASE("'a'+'c'") {
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
   spdlog::critical("test='{}'", "'a'+'c'");
-  CompileParams p{{0, 2, 0, 0, 0, 1, 17, 7},
+  auto rcu ={0, 2, 0, 0, 0, 1, 17, 7},
                   {runtime[0], std::make_shared<Character>(U'a'),
                    std::make_shared<Character>(U'c')},
                   {{0, 1, 0}},
@@ -29,7 +29,7 @@ TEST_CASE("F←-⋄f+2") {
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
   spdlog::critical("test='{}'", "F←-⋄f+2");
-  CompileParams p{{0, 1, 33, 0, 0, 48, 6, 0, 2, 0, 0, 34, 0, 0, 17, 7},
+  auto rcu ={0, 1, 33, 0, 0, 48, 6, 0, 2, 0, 0, 34, 0, 0, 17, 7},
                   {runtime[0], runtime[1], 2},
                   {{0, 1, 0}},
                   {{0, 1}},
@@ -43,7 +43,7 @@ TEST_CASE("97-'a'") {
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
   spdlog::critical("test='{}'", "97-'a'");
-  CompileParams p{{0, 2, 0, 0, 0, 1, 17, 7},
+  auto rcu ={0, 2, 0, 0, 0, 1, 17, 7},
                   {runtime[1], 97, std::make_shared<Character>(U'a')},
                   {{0, 1, 0}},
                   {{0, 0}},
@@ -56,7 +56,7 @@ TEST_CASE("@-1") {
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
   spdlog::critical("test='{}'", "@-1");
-  CompileParams p{{0, 1, 0, 0, 0, 2, 17, 7},
+  auto rcu ={0, 1, 0, 0, 0, 2, 17, 7},
                   {runtime[1], 1, std::make_shared<Character>(U'\0')},
                   {{0, 1, 0}},
                   {{0, 0}},
@@ -69,7 +69,7 @@ TEST_CASE("-'a'") {
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
   spdlog::critical("test='{}'", "-'a'");
-  CompileParams p{{0, 1, 0, 0, 16, 7},
+  auto rcu ={0, 1, 0, 0, 16, 7},
                   {runtime[1], std::make_shared<Character>(U'a')},
                   {{0, 1, 0}},
                   {{0, 0}},
@@ -82,7 +82,7 @@ TEST_CASE("F←÷⋄-f") {
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
   spdlog::critical("test='{}'", "F←÷⋄-f");
-  CompileParams p{{0, 1, 33, 0, 0, 48, 6, 34, 0, 0, 0, 0, 16, 7},
+  auto rcu ={0, 1, 33, 0, 0, 48, 6, 34, 0, 0, 0, 0, 16, 7},
                   {runtime[1], runtime[3]},
                   {{0, 1, 0}},
                   {{0, 1}},
@@ -96,7 +96,7 @@ TEST_CASE("2×'a'") {
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
   spdlog::critical("test='{}'", "2×'a'");
-  CompileParams p{{0, 2, 0, 0, 0, 1, 17, 7},
+  auto rcu ={0, 2, 0, 0, 0, 1, 17, 7},
                   {runtime[2], 2, std::make_shared<Character>(U'a')},
                   {{0, 1, 0}},
                   {{0, 0}},
@@ -109,7 +109,7 @@ TEST_CASE("÷'b'") {
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
   spdlog::critical("test='{}'", "÷'b'");
-  CompileParams p{{0, 1, 0, 0, 16, 7},
+  auto rcu ={0, 1, 0, 0, 16, 7},
                   {runtime[3], std::make_shared<Character>(U'b')},
                   {{0, 1, 0}},
                   {{0, 0}},
@@ -122,7 +122,7 @@ TEST_CASE("F←√-⋄÷f") {
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
   spdlog::critical("test='{}'", "F←√-⋄÷f");
-  CompileParams p{{0, 0, 0, 2, 20, 33, 0, 0, 48, 6, 34, 0, 0, 0, 1, 16, 7},
+  auto rcu ={0, 0, 0, 2, 20, 33, 0, 0, 48, 6, 34, 0, 0, 0, 1, 16, 7},
                   {runtime[1], runtime[3], runtime[5]},
                   {{0, 1, 0}},
                   {{0, 1}},
@@ -136,7 +136,7 @@ TEST_CASE("⋆'π'") {
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
   spdlog::critical("test='{}'", "⋆'π'");
-  CompileParams p{{0, 1, 0, 0, 16, 7},
+  auto rcu ={0, 1, 0, 0, 16, 7},
                   {runtime[4], std::make_shared<Character>(U'π')},
                   {{0, 1, 0}},
                   {{0, 0}},
@@ -149,7 +149,7 @@ TEST_CASE("'e'⋆'π'") {
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
   spdlog::critical("test='{}'", "'e'⋆'π'");
-  CompileParams p{{0, 2, 0, 0, 0, 1, 17, 7},
+  auto rcu ={0, 2, 0, 0, 0, 1, 17, 7},
                   {runtime[4], std::make_shared<Character>(U'e'),
                    std::make_shared<Character>(U'π')},
                   {{0, 1, 0}},
@@ -163,7 +163,7 @@ TEST_CASE("F←⌈⋄⌊f") {
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
   spdlog::critical("test='{}'", "F←⌈⋄⌊f");
-  CompileParams p{{0, 1, 33, 0, 0, 48, 6, 34, 0, 0, 0, 0, 16, 7},
+  auto rcu ={0, 1, 33, 0, 0, 48, 6, 34, 0, 0, 0, 0, 16, 7},
                   {runtime[6], runtime[7]},
                   {{0, 1, 0}},
                   {{0, 1}},
@@ -177,7 +177,7 @@ TEST_CASE("F←+⋄G←-⋄f≤g") {
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
   spdlog::critical("test='{}'", "F←+⋄G←-⋄f≤g");
-  CompileParams p{{0,  0, 33, 0, 0, 48, 6, 0,  1, 33, 0,  1,
+  auto rcu ={0,  0, 33, 0, 0, 48, 6, 0,  1, 33, 0,  1,
                    48, 6, 34, 0, 1, 0,  2, 34, 0, 0,  17, 7},
                   {runtime[0], runtime[1], runtime[16]},
                   {{0, 1, 0}},
@@ -194,7 +194,7 @@ TEST_CASE("!0") {
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
   spdlog::critical("test='{}'", "!0");
-  CompileParams p{{0, 1, 0, 0, 16, 7},
+  auto rcu ={0, 1, 0, 0, 16, 7},
                   {runtime[43], 0},
                   {{0, 1, 0}},
                   {{0, 0}},
@@ -207,7 +207,7 @@ TEST_CASE("\"error\"!\"abc\"") {
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
   spdlog::critical("test='{}'", "\"error\"!\"abc\"");
-  CompileParams p{{0, 2, 0, 0, 0, 1, 17, 7},
+  auto rcu ={0, 2, 0, 0, 0, 1, 17, 7},
                   {runtime[43], std::make_shared<Array>(U"error"),
                    std::make_shared<Array>(U"abc")},
                   {{0, 1, 0}},
@@ -221,7 +221,7 @@ TEST_CASE("√'x'") {
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
   spdlog::critical("test='{}'", "√'x'");
-  CompileParams p{{0, 1, 0, 0, 16, 7},
+  auto rcu ={0, 1, 0, 0, 16, 7},
                   {runtime[5], std::make_shared<Character>(U'x')},
                   {{0, 1, 0}},
                   {{0, 0}},
@@ -234,7 +234,7 @@ TEST_CASE("'a'∧¯1") {
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
   spdlog::critical("test='{}'", "'a'∧¯1");
-  CompileParams p{{0, 1, 0, 0, 0, 2, 17, 7},
+  auto rcu ={0, 1, 0, 0, 0, 2, 17, 7},
                   {runtime[10], -1, std::make_shared<Character>(U'a')},
                   {{0, 1, 0}},
                   {{0, 0}},
@@ -247,7 +247,7 @@ TEST_CASE("F←-⋄2∨f") {
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
   spdlog::critical("test='{}'", "F←-⋄2∨f");
-  CompileParams p{{0, 0, 33, 0, 0, 48, 6, 34, 0, 0, 0, 1, 0, 2, 17, 7},
+  auto rcu ={0, 0, 33, 0, 0, 48, 6, 34, 0, 0, 0, 1, 0, 2, 17, 7},
                   {runtime[1], runtime[11], 2},
                   {{0, 1, 0}},
                   {{0, 1}},
@@ -261,7 +261,7 @@ TEST_CASE("¬'a'") {
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
   spdlog::critical("test='{}'", "¬'a'");
-  CompileParams p{{0, 1, 0, 0, 16, 7},
+  auto rcu ={0, 1, 0, 0, 16, 7},
                   {runtime[9], std::make_shared<Character>(U'a')},
                   {{0, 1, 0}},
                   {{0, 0}},
@@ -274,7 +274,7 @@ TEST_CASE("2¬'c'") {
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
   spdlog::critical("test='{}'", "2¬'c'");
-  CompileParams p{{0, 2, 0, 0, 0, 1, 17, 7},
+  auto rcu ={0, 2, 0, 0, 0, 1, 17, 7},
                   {runtime[9], 2, std::make_shared<Character>(U'c')},
                   {{0, 1, 0}},
                   {{0, 0}},
@@ -287,7 +287,7 @@ TEST_CASE("F←{𝕩}⋄0¬f") {
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
   spdlog::critical("test='{}'", "F←{𝕩}⋄0¬f");
-  CompileParams p{
+  auto rcu =
       {1, 1, 33, 0, 0, 48, 6, 34, 0, 0, 0, 0, 0, 1, 17, 7, 34, 0, 1, 7},
       {runtime[9], 0},
       {{0, 1, 0}, {0, 0, 1}},
@@ -302,7 +302,7 @@ TEST_CASE("F←+-⋄|f") {
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
   spdlog::critical("test='{}'", "F←+-⋄|f");
-  CompileParams p{{0, 1, 0, 0, 20, 33, 0, 0, 48, 6, 34, 0, 0, 0, 2, 16, 7},
+  auto rcu ={0, 1, 0, 0, 20, 33, 0, 0, 48, 6, 34, 0, 0, 0, 2, 16, 7},
                   {runtime[0], runtime[1], runtime[8]},
                   {{0, 1, 0}},
                   {{0, 1}},
@@ -316,7 +316,7 @@ TEST_CASE("26|'A'") {
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
   spdlog::critical("test='{}'", "26|'A'");
-  CompileParams p{{0, 2, 0, 0, 0, 1, 17, 7},
+  auto rcu ={0, 2, 0, 0, 0, 1, 17, 7},
                   {runtime[8], 26, std::make_shared<Character>(U'A')},
                   {{0, 1, 0}},
                   {{0, 0}},
@@ -329,7 +329,7 @@ TEST_CASE("⊑\"\"") {
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
   spdlog::critical("test='{}'", "⊑\"\"");
-  CompileParams p{{0, 1, 0, 0, 16, 7},
+  auto rcu ={0, 1, 0, 0, 16, 7},
                   {runtime[37], std::make_shared<Array>(U"")},
                   {{0, 1, 0}},
                   {{0, 0}},
@@ -342,7 +342,7 @@ TEST_CASE("⊑2‿0⥊⟨⟩") {
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
   spdlog::critical("test='{}'", "⊑2‿0⥊⟨⟩");
-  CompileParams p{{11, 0, 0, 0, 0, 2, 0, 3, 11, 2, 17, 0, 1, 16, 7},
+  auto rcu ={11, 0, 0, 0, 0, 2, 0, 3, 11, 2, 17, 0, 1, 16, 7},
                   {runtime[22], runtime[37], 2, 0},
                   {{0, 1, 0}},
                   {{0, 0}},
@@ -356,7 +356,7 @@ TEST_CASE("+´11") {
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
   spdlog::critical("test='{}'", "+´11");
-  CompileParams p{{0, 2, 0, 1, 0, 0, 26, 16, 7},
+  auto rcu ={0, 2, 0, 1, 0, 0, 26, 16, 7},
                   {runtime[0], runtime[50], 11},
                   {{0, 1, 0}},
                   {{0, 0}},
@@ -369,7 +369,7 @@ TEST_CASE("-´<'a'") {
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
   spdlog::critical("test='{}'", "-´<'a'");
-  CompileParams p{
+  auto rcu =
       {0, 3, 0, 1, 16, 0, 2, 0, 0, 26, 16, 7},
       {runtime[1], runtime[12], runtime[50], std::make_shared<Character>(U'a')},
       {{0, 1, 0}},
@@ -384,7 +384,7 @@ TEST_CASE("×´3‿1⥊\"abc\"") {
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
   spdlog::critical("test='{}'", "×´3‿1⥊\"abc\"");
-  CompileParams p{{0, 5, 0, 1, 0, 3, 0, 4, 11, 2, 17, 0, 2, 0, 0, 26, 16, 7},
+  auto rcu ={0, 5, 0, 1, 0, 3, 0, 4, 11, 2, 17, 0, 2, 0, 0, 26, 16, 7},
                   {runtime[2], runtime[22], runtime[50], 3, 1,
                    std::make_shared<Array>(U"abc")},
                   {{0, 1, 0}},
@@ -399,7 +399,7 @@ TEST_CASE("2‿3⊢¨4‿5‿6") {
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
   spdlog::critical("test='{}'", "2‿3⊢¨4‿5‿6");
-  CompileParams p{
+  auto rcu =
       {0, 4, 0, 5, 0, 6, 11, 3, 0, 1, 0, 0, 26, 0, 2, 0, 3, 11, 2, 17, 7},
       {runtime[21], runtime[47], 2, 3, 4, 5, 6},
       {{0, 1, 0}},
@@ -414,7 +414,7 @@ TEST_CASE("\"abcd\"-\"a\"") {
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
   spdlog::critical("test='{}'", "\"abcd\"-\"a\"");
-  CompileParams p{{0, 2, 0, 0, 0, 1, 17, 7},
+  auto rcu ={0, 2, 0, 0, 0, 1, 17, 7},
                   {runtime[1], std::make_shared<Array>(U"abcd"),
                    std::make_shared<Array>(U"a")},
                   {{0, 1, 0}},
@@ -428,7 +428,7 @@ TEST_CASE("(↕4)×(↕3)⊢⌜↕2") {
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
   spdlog::critical("test='{}'", "(↕4)×(↕3)⊢⌜↕2");
-  CompileParams p{{0, 6,  0,  2, 16, 0, 3, 0, 1, 26, 0,  5, 0,
+  auto rcu ={0, 6,  0,  2, 16, 0, 3, 0, 1, 26, 0,  5, 0,
                    2, 16, 17, 0, 0,  0, 4, 0, 2, 16, 17, 7},
                   {runtime[2], runtime[21], runtime[28], runtime[48], 4, 3, 2},
                   {{0, 1, 0}},
@@ -445,7 +445,7 @@ TEST_CASE("10⊑↕10") {
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
   spdlog::critical("test='{}'", "10⊑↕10");
-  CompileParams p{
+  auto rcu =
       {0, 2, 0, 0, 16, 0, 1, 0, 2, 17, 7},
       {runtime[28], runtime[37], 10},
       {{0, 1, 0}},
@@ -459,7 +459,7 @@ TEST_CASE("¯11⊑↕10") {
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
   spdlog::critical("test='{}'", "¯11⊑↕10");
-  CompileParams p{
+  auto rcu =
       {0, 3, 0, 0, 16, 0, 1, 0, 2, 17, 7},
       {runtime[28], runtime[37], -11, 10},
       {{0, 1, 0}},
@@ -473,7 +473,7 @@ TEST_CASE("0.5⊑↕10") {
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
   spdlog::critical("test='{}'", "0.5⊑↕10");
-  CompileParams p{
+  auto rcu =
       {0, 3, 0, 0, 16, 0, 1, 0, 2, 17, 7},
       {runtime[28], runtime[37], 0.5, 10},
       {{0, 1, 0}},
@@ -487,7 +487,7 @@ TEST_CASE("'x'⊑↕10") {
   const auto rt = provides::get_runtime_cached();
   const auto runtime = rt->values;
   spdlog::critical("test='{}'", "'x'⊑↕10");
-  CompileParams p{
+  auto rcu =
       {0, 2, 0, 0, 16, 0, 1, 0, 3, 17, 7},
       {runtime[28], runtime[37], 10, std::make_shared<Character>(U'x')},
       {{0, 1, 0}},

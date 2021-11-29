@@ -10,11 +10,11 @@ using namespace cxbqn::provides;
 TEST_CASE("Evaluate Compiler After SetPrims") {
   auto runtime = provides::get_runtime_setprims()->values;
 
-  CompileParams p(
-#include <cxbqn/__/compiled_compiler>
-  );
+  auto cu =
+#include <cxbqn/__/c>
+    ;
 
-  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
+  auto ret = vm::run(cu);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
 }

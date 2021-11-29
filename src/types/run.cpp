@@ -9,10 +9,10 @@ using namespace types;
 #define ARR(x) dyncast<Array>(x)
 #define NUM(x) dyncast<Number>(x)
 
-shared_ptr<CompUnit> deconstruct(O<Value> compiled) {
+observer_ptr<CompUnit> deconstruct(O<Value> compiled) {
   auto comparr = ARR(compiled);
 
-  auto cu = make_shared<CompUnit>();
+  auto cu = make_observer(new CompUnit());
 
   auto bqnbc = ARR(comparr->values[0])->values;
   for (auto v : bqnbc)
@@ -76,10 +76,10 @@ shared_ptr<CompUnit> deconstruct(O<Value> compiled) {
   return cu;
 }
 
-RunResult run(std::shared_ptr<CompUnit> cu) {
+RunResult run(observer_ptr<CompUnit> cu) {
   RunResult ret;
 
-  ret.scp = make_shared<Scope>(cu);
+  ret.scp = make_observer(new Scope(cu));
   auto body = cu->_bodies[cu->_blocks[0].body_idx(0)];
   ret.scp->vars.resize(body.var_count);
   ret.scp->names = cu->_namelist;
@@ -126,14 +126,14 @@ RunResult run(std::vector<i32> bc, O<Array> consts,
 
   RunResult ret;
 
-  auto cu = make_shared<CompUnit>();
+  auto cu = make_observer(new CompUnit());
   cu->_bc= bc;
   cu->_blocks = blks;
   cu->_bodies = bodies;
   cu->_consts = consts;
   cu->_exported = exported;
 
-  ret.scp = make_shared<Scope>(cu);
+  ret.scp = make_observer(new Scope(cu));
   auto body = bodies[blks[0].body_idx(0)];
   ret.scp->vars.resize(body.var_count);
 

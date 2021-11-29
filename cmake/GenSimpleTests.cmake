@@ -7,7 +7,6 @@ set(S_TESTS
     "-2⌊1"
     "(÷2)+(÷3)+(÷6)"
     "⊢4⊣5"
-    "sq←√5,⌊9×|5-sq×sq"
     "((-3)+√(3×3)-4×2×1)÷2×2"
     "a←2,b←3,c←1⋄((-b)+√(b×b)-4×a×c)÷2×a"
     "b←1+a←1+c←1⋄((-b)+√(b×b)-4×a×c)÷2×a"
@@ -30,7 +29,6 @@ set(S_ANS
     "-1"
     "1"
     "4"
-    "0"
     "-0.5"
     "-0.5"
     "-0.5"
@@ -53,7 +51,7 @@ init_gen_file(${S_TEST_SOURCE})
 foreach(test ans IN ZIP_LISTS S_TESTS S_ANS)
   execute_process(
     COMMAND ${BASH} -c
-            "${BQN} ${ROOT}/test/ccxx.bqn ${ROOT}/ext//bqn \"${test}\""
+            "${BQN} ${ROOT}/test/ccx.bqn ${ROOT}/ext//bqn \"${test}\""
     WORKING_DIRECTORY "${ROOT}/ext//cbqn"
     OUTPUT_VARIABLE compiled_test
   )
@@ -64,13 +62,13 @@ TEST_CASE(\"${test}\") {
   spdlog::critical(\"test='{}', ans='{}'\", \"${test}\", \"${ans}\");
   const auto rt = provides::get_runtime_bionly();
   const auto runtime = rt->values;
-  CompileParams p{
+  auto cu =
     ${compiled_test}
-  };
-  auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
+    ;
+  auto ret = vm::run(cu);
   REQUIRE(nullptr != ret.v);
   REQUIRE(nullptr != ret.scp);
-  auto n = dynamic_pointer_cast<Number>(ret.v);
+  auto n = dyncast<Number>(ret.v);
   REQUIRE(nullptr != n);
   CHECK(${ans} == doctest::Approx(n->v));
 }

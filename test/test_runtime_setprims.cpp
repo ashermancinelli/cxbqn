@@ -11,14 +11,14 @@ using namespace cxbqn::provides;
 TEST_CASE("Evaluate Runtime and call SetPrims") {
   const auto provide = provides::get_provides()->values;
 
-  static CompileParams p{
-#include <cxbqn/__/compiled_runtime>
+  static auto rcu =
+#include <cxbqn/__/r>
   };
 
   auto ret = vm::run(p.bc, p.consts.to_arr(), p.blk_defs, p.bodies);
 
-  auto runtime_ret = std::dynamic_pointer_cast<Array>(ret.v);
-  auto runtime = std::dynamic_pointer_cast<Array>(runtime_ret->values[0]);
+  auto runtime_ret = std::dyncast<Array>(ret.v);
+  auto runtime = std::dyncast<Array>(runtime_ret->values[0]);
 
   auto setprims = runtime_ret->values[1];
 

@@ -1,10 +1,11 @@
 #pragma once
 #include <cxbqn/comp_utils.hpp>
 #include <cxbqn/types.hpp>
+#include <cxbqn/mem.hpp>
 
 namespace cxbqn::types {
 
-struct CompUnit {
+struct CompUnit : public Marked {
   ByteCode _bc;
   O<Array> _consts;
   std::vector<Block> _blocks;
