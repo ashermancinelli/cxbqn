@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 project(
   cxbqn
   LANGUAGES CXX
-  VERSION 0.8.0
+  VERSION 0.8.1
 )
 
 set(CXBQN_INIT_STACK_SIZE
@@ -38,7 +38,7 @@ set(CXBQN_REGEN_TESTS
     CACHE BOOL "Regenerate bytecode, simple, and primitive tests"
 )
 set(CXBQN_MEM_STRATEGY
-  "shared_ptr"
+  "leak"
   CACHE STRING "Select memory management strategy from 'shared_ptr', 'gc', 'leak'"
   )
 set(CXBQN_STACKTRACE
