@@ -94,12 +94,28 @@ var consts = R({
 
 var bc = R({
   id: 'bc', c: '#ed7164', t: `Bytecode: [${compUnit.bc}]`,
+  bc_offset: 11,
   h: 75,  w: 600,  x: VP.w-(900),  y: 300,
 });
+bc.make_content = (pc,count) => {
+  var c = `Bytecode: [`;
+  var i=0;
+  var cm = () => (i+1<compUnit.bc.length?',':'');
+  for (;i<pc;i++)
+    c += compUnit.bc[i] + '' + cm();
+  c += '<tspan>'
+  for (;i<pc+count;i++)
+    c += compUnit.bc[i] + '' + cm();
+  c += '</tspan>'
+  for (;i<compUnit.bc.length;i++)
+    c += compUnit.bc[i] + '' + cm();
+  c += ']</text>'
+  console.log(c)
+  bc.content = c;
+}
 
 var stack = R({
-  _stack: [], fmt: (s) => {
-  },
+  _stack: [], fmt: (s) => {},
   id: 'stack', c: '#64bbd1', t: `Stack: []`,
   h: 75,  w: 400,  x: 300,  y: 500,
 })
@@ -118,10 +134,12 @@ var instr = R({
 instr.tup = () => instr.getl().text(instr.t);
 instr.fmt = (_bc,pc) => {
   console.log('Instr handling ', _bc[pc])
-  switch(_bc[pc]) { case 0: instr._instr="PUSH "+_bc[pc+1]; break;
-                    case 7: instr._instr="RETN";break;
-                    case 17: instr._instr="FN2O";break;
+  switch(_bc[pc]) { case 0: instr._instr="PUSH "+_bc[pc+1]; bc.make_content(pc,2); break;
+                    case 7: instr._instr="RETN"; bc.make_content(pc,1); break;
+                    case 17: instr._instr="FN2O";bc.make_content(pc,1); break;
                   }
+  console.log(bc.getl().html());
+  bc.getl().html(bc.content);
   instr.t = `Instruction: ${instr._instr}`;
   instr.getl().text(instr.t);
   console.log(instr.t)
@@ -165,9 +183,10 @@ var _transitions = [];
   e=>_transitions.push({transitionForward: () => e.show()}))
 
 // Run the VM
-for(var i=0;i<5;i++)_transitions.push(...[
-  {transitionForward: () => vmnext()},
-  {transitionForward: () => stack.fmt()},
+for(var i=0;i<5;i++)
+  _transitions.push(...[
+    {transitionForward: () => vmnext()},
+    {transitionForward: () => stack.fmt()},
   ]);
 
 </script>
