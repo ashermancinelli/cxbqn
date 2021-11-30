@@ -20,12 +20,6 @@ CXBQN 0.7.0
 compiled on Nov 24 2021
 ```
 
-Disabling memory management will speed up CXBQN by a large factor.
-To do this, select `leak` as the memory management strategy at configure time.
-```console
-cmake .. -DCXBQN_MEM_STRATEGY=leak
-```
-
 ## Using
 
 ```
