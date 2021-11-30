@@ -1,5 +1,4 @@
-add_library(
-  cxbqn
+set(CXBQN_SRC
 
   # Top level definitions for basic types, mostly defined in types.hpp
   types/bi.cpp
@@ -91,6 +90,18 @@ add_library(
   builtin/pick.cpp
   builtin/plus.cpp
   builtin/valence.cpp
+  )
+
+if(CXBQN_CUDA)
+  list(APPEND CXBQN_SRC
+    sys/cudafor.cu
+    builtin-cuda/plus.cu
+    )
+endif()
+
+add_library(
+  cxbqn
+  ${CXBQN_SRC}
 )
 target_link_libraries(cxbqn PUBLIC tpl)
 add_library(cxbqn::cxbqn ALIAS cxbqn)

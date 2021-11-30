@@ -7,12 +7,12 @@ using namespace cxbqn::provides;
 struct SysError : public Function {
   std::string mock = "";
   SysError(std::string m) : mock{m} {}
-  O<Value> call(u8 nargs, Args& args) override {
+  O<Value> call(u8 nargs, Args &args) override {
     const auto s =
         fmt::format("System Error: {} is not current available in CXBQN.\nSee "
                     "•listSys for all available system functions.",
                     mock);
-    return CXBQN_NEW(Array,s);
+    return CXBQN_NEW(Array, s);
   }
   std::ostream &repr(std::ostream &os) const override {
     return os << "•SystemError";
@@ -20,10 +20,14 @@ struct SysError : public Function {
 };
 
 static std::vector<std::string> listsys{
-    "cxbqn",  "sh",  "show", "exit", "timed", "unixtime", "flines", "out",
-    "import", "bqn", "fmt",  "args", "path",  "repr",     "list"};
+    "cxbqn",   "sh",  "show", "exit", "timed", "unixtime", "flines", "out",
+    "import",  "bqn", "fmt",  "args", "path",  "repr",     "list",
+#ifdef CXBQN_CUDA
+    "cudafor",
+#endif
+};
 
-O<Value> SystemFunctionResolver::call(u8 nargs, Args& args) {
+O<Value> SystemFunctionResolver::call(u8 nargs, Args &args) {
   CXBQN_DEBUG("SystemFunctionResolver: nargs={},args={}", nargs, args);
   auto x = dyncast<Array>(args[1]);
   std::vector<O<Value>> ret;
@@ -34,11 +38,11 @@ O<Value> SystemFunctionResolver::call(u8 nargs, Args& args) {
     if ("cxbqn" == s) {
       ret.push_back(CXBQN_NEW(CXBQN));
     } else if ("show" == s) {
-      ret.push_back(CXBQN_NEW(Show,_fmt));
+      ret.push_back(CXBQN_NEW(Show, _fmt));
     } else if ("listsys" == s) {
-      auto ls = CXBQN_NEW(Array,listsys.size());
+      auto ls = CXBQN_NEW(Array, listsys.size());
       for (int i = 0; i < listsys.size(); i++)
-        ls->values[i] = CXBQN_NEW(Array,listsys[i]);
+        ls->values[i] = CXBQN_NEW(Array, listsys[i]);
       ret.push_back(ls);
     } else if ("sh" == s) {
       ret.push_back(CXBQN_NEW(SH));
@@ -61,10 +65,10 @@ O<Value> SystemFunctionResolver::call(u8 nargs, Args& args) {
     } else if ("import" == s) {
       ret.push_back(CXBQN_NEW(Import, _fmt, _repr, _compiler, _runtime, _path));
     } else if ("bqn" == s) {
-      auto args = CXBQN_NEW(Array,2);
+      auto args = CXBQN_NEW(Array, 2);
       args->values[0] = _runtime;
       args->values[1] = CXBQN_SHARED_FROM_THIS();
-      ret.push_back(CXBQN_NEW(BQN,_compiler, args));
+      ret.push_back(CXBQN_NEW(BQN, _compiler, args));
     } else if ("fmt" == s) {
       ret.push_back(_fmt);
     } else if ("args" == s) {
@@ -73,11 +77,15 @@ O<Value> SystemFunctionResolver::call(u8 nargs, Args& args) {
       ret.push_back(_path);
     } else if ("repr" == s) {
       ret.push_back(_repr);
+#ifdef CXBQN_CUDA
+    } else if ("cudafor" == s) {
+      ret.push_back(CXBQN_NEW(CUDAFor, _runtime));
+#endif
     } else {
-      ret.push_back(CXBQN_NEW(SysError,s));
+      ret.push_back(CXBQN_NEW(SysError, s));
     }
   }
-  auto vret = CXBQN_NEW(Array,ret.size());
+  auto vret = CXBQN_NEW(Array, ret.size());
   vret->values = ret;
   return vret;
 }

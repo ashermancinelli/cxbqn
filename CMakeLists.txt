@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.18)
 
 set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CUDA_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 project(
@@ -153,6 +154,8 @@ if(CXBQN_CUDA)
   if("${CMAKE_CUDA_ARCHITECTURES}" STREQUAL "")
     set(CMAKE_CUDA_ARCHITECTURES 60)
   endif()
+
+  set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --extended-lambda")
 
   include(CheckLanguage)
   check_language(CUDA)

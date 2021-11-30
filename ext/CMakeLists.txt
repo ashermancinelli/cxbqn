@@ -16,7 +16,7 @@ int main(int argc, char**argv) { return 0; }" HAS_BUILTIN_SPAN)
 if(NOT HAS_BUILTIN_SPAN)
   message(STATUS "Could not compile std::span test, using tpl std::span")
   file(CREATE_LINK
-    ${CMAKE_CURRENT_SOURCE_DIR}tcbrindle-span.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tcbrindle-span.hpp
     ${PROJECT_BINARY_DIR}/span
     )
 else()

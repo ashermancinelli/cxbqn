@@ -187,10 +187,14 @@ struct SystemFunctionResolver : public Function {
   O<Value> call(u8 nargs, Args &args) override;
 };
 
-struct CUDAFor : public Function {
+#ifdef CXBQN_CUDA
+struct CUDAFor : public Md1 {
   CUDAFor(O<Array> runtime) : _runtime{runtime} {}
+  O<Value> call(u8 nargs, Args &args) override;
+  std::ostream &repr(std::ostream &os) const override { return os << "•_CUDAFor"; }
   O<Array> _runtime;
 };
+#endif
 
 struct BQN : public Function {
 
