@@ -16,7 +16,7 @@ cd build
 CXX=g++-11 cmake ..
 make -j12
 ./BQN -v
-CXBQN 0.7.0
+CXBQN 0.8.1
 compiled on Nov 24 2021
 ```
 
@@ -42,6 +42,8 @@ $ ./BQN -r
    foo←5
 5
 ```
+
+See the values of `•listSys` to see what system functions are available in your build of CXBQN.
 
 The REPL also has Readline support if you enable that option at configure time.
 When you run cmake, pass the argument `-DCXBQN_READLINE=ON` like so:
