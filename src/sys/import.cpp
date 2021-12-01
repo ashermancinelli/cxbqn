@@ -10,9 +10,13 @@ O<Value> Import::call(u8 nargs, Args &args) {
 
   auto w = 2 == nargs ? dyncast<Array>(args[2]) : CXBQN_NEW(Array);
 
-  auto f = fs::path(x->to_string());
-  if (!fs::exists(f))
-    throw std::runtime_error("•Import path does not exist");
+  auto basepath = fs::path(_path->to_string());
+  auto f = basepath.parent_path() / fs::path(x->to_string());
+  if (!fs::exists(f)) {
+    std::stringstream ss;
+    ss << "•Import path " << f.c_str() << " does not exist";
+    throw std::runtime_error(ss.str());
+  }
 
   std::FILE *fp = std::fopen(f.c_str(), "r");
   if (!fp)

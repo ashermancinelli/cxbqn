@@ -1,5 +1,13 @@
+set(BQN_TESTS
+  syntax.bqn
+  )
+
+if(CXBQN_CUDA)
+  list(APPEND BQN_TESTS cuda.bqn)
+endif()
+
 add_test(
-  NAME "BQN-Syntax"
-  COMMAND $<TARGET_FILE:BQN> -f test/bqn/syntax.bqn
+  NAME "BQN-Test-Suite"
+  COMMAND $<TARGET_FILE:BQN> -f test/bqn/syntax.bqn ${BQN_TESTS}
   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
   )

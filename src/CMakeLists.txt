@@ -95,7 +95,6 @@ set(CXBQN_SRC
 if(CXBQN_CUDA)
   list(APPEND CXBQN_SRC
     sys/cudafor.cu
-    builtin-cuda/plus.cu
     )
 endif()
 

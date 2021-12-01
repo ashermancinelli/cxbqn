@@ -93,10 +93,31 @@ foo     foobar
 
 ## Nonstandard Extensions
 
+### GPU Execution
+
+To build with CUDA, enable the CMake option `CXBQN_CUDA` at configure time.
+Support for CUDA execution is limited, but it exists!
+The primary function for CUDA execution is `•_CUDAFor`, which is a 1-modifier
+that performs the primitive `𝕗` on array `𝕩` and optionally `𝕨`.
+If you give this functionality a try, feel free to open an issue for any bugs you encounter (there will be many).
+Here's an example:
+
+```console
+$ cmake .. -DCXBQN_CUDA=ON
+$ make -j 12
+$ ./BQN -r
+   (↕10) × •_CUDAFor ⌽↕10
+⟨ 0 8 14 18 20 20 18 14 8 0 ⟩
+   10 + •_CUDAFor ↕15
+⟨ 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 ⟩
+```
+
 [See the WIP design document for parallel execution here](./doc/GPU.md).
 
+<!--
 |      Extension     | Completion |                                                                     Notes                                                                    |
 |:------------------:|:----------:|:--------------------------------------------------------------------------------------------------------------------------------------------:|
-| GPU Execution      | None       | Plan to add support for primitive operations on data values (chars, numbers, strings, and arrays of any of these) on GPUs in the near future |
+| GPU Execution      | Partial       | Plan to add support for primitive operations on data values (chars, numbers, strings, and arrays of any of these) on GPUs in the near future |
 | Threaded Execution | None       | Same plan as above. Needs more discussion                                                                                                    |
 | Libraries and Packaging | None       | There has been much discussion on this topic in the Matrix server, but little consensus has been reached. The first library-related feature CXBQN will support will likely look like `strings←•Import "←strings.bqn"` where `strings.bqn` is the strings library from Marshall's [bqn-libs repository](https://github.com/mlochbaum/bqn-libs). This will likely become a *standard library* of sorts, once consensus is reached. The first character of the string argument passed to `•Import` will have some special meaning indicating that the BQN VM ought to look in some special location (eg all directories in the environment variable `$BQNPATH`) or perform some operation before importing the specified library. |
+-->
