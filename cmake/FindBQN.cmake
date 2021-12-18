@@ -6,7 +6,8 @@ if("${BQN_EXE}" STREQUAL "BQN_EXE-NOTFOUND")
   endif()
   message(STATUS "Could not find BQN executable. Building CBQN from source.")
   execute_process(
-    COMMAND ${MAKE} -C ${PROJECT_SOURCE_DIR}/ext/cbqn
+    COMMAND ${MAKE} CC=${CMAKE_C_COMPILER}
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/ext/cbqn
     )
   set(BQN_EXE ${PROJECT_SOURCE_DIR}/ext/cbqn/BQN CACHE PATH "")
   message(STATUS "BQN executable: ${BQN_EXE}")

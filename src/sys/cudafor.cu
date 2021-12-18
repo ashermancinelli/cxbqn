@@ -20,6 +20,14 @@ void call_inl(std::size_t rt_idx, f64 *x, f64 *w, std::size_t N) {
   case 3: cxbqn::cuda::div<<<1, N>>>(x, w, N); return;
   case 4: cxbqn::cuda::power<<<1, N>>>(x, w, N); return;
   case 5: cxbqn::cuda::root<<<1, N>>>(x, w, N); return;
+  case 6: cxbqn::cuda::floor<<<1, N>>>(x, w, N); return;
+  case 7: cxbqn::cuda::ceil<<<1, N>>>(x, w, N); return;
+  case 8: cxbqn::cuda::stile<<<1, N>>>(x, w, N); return;
+  case 9: cxbqn::cuda::not_<<<1, N>>>(x, w, N); return;
+
+  // ∧∨<>≠=≤≥≡≢
+  // case 9: cxbqn::cuda::not_<<<1, N>>>(x, w, N); return;
+
   default:
     throw std::runtime_error("•_CUDAFor: 𝕗 unsupported in device code");
   }
