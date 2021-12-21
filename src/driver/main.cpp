@@ -19,7 +19,10 @@ int main(int argc, char **argv) {
 
   try {
 
+#ifdef CXBQN_PROFILE_STARTUP
     auto t_start = std::chrono::high_resolution_clock::now();
+#endif
+
     const auto provide = provides::get_provides()->values;
     auto rt_cu =
 #include <cxbqn/__/r>

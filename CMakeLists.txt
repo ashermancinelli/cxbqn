@@ -155,7 +155,7 @@ if(CXBQN_CUDA)
     set(CMAKE_CUDA_ARCHITECTURES 60)
   endif()
 
-  set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --extended-lambda")
+  set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --extended-lambda --expt-relaxed-constexpr")
 
   include(CheckLanguage)
   check_language(CUDA)

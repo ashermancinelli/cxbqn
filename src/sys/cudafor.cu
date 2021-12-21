@@ -14,19 +14,71 @@ namespace {
 void call_inl(std::size_t rt_idx, f64 *x, f64 *w, std::size_t N) {
   // +-×÷⋆√⌊⌈|¬
   switch (rt_idx) {
-  case 0: cxbqn::cuda::plus<<<1, N>>>(x, w, N); return;
-  case 1: cxbqn::cuda::minus<<<1, N>>>(x, w, N); return;
-  case 2: cxbqn::cuda::mul<<<1, N>>>(x, w, N); return;
-  case 3: cxbqn::cuda::div<<<1, N>>>(x, w, N); return;
-  case 4: cxbqn::cuda::power<<<1, N>>>(x, w, N); return;
-  case 5: cxbqn::cuda::root<<<1, N>>>(x, w, N); return;
-  case 6: cxbqn::cuda::floor<<<1, N>>>(x, w, N); return;
-  case 7: cxbqn::cuda::ceil<<<1, N>>>(x, w, N); return;
-  case 8: cxbqn::cuda::stile<<<1, N>>>(x, w, N); return;
-  case 9: cxbqn::cuda::not_<<<1, N>>>(x, w, N); return;
+  case 0:
+    cxbqn::cuda::plus<<<1, N>>>(x, w, N);
+    return;
+  case 1:
+    cxbqn::cuda::minus<<<1, N>>>(x, w, N);
+    return;
+  case 2:
+    cxbqn::cuda::mul<<<1, N>>>(x, w, N);
+    return;
+  case 3:
+    cxbqn::cuda::div<<<1, N>>>(x, w, N);
+    return;
+  case 4:
+    cxbqn::cuda::power<<<1, N>>>(x, w, N);
+    return;
+  case 5:
+    cxbqn::cuda::root<<<1, N>>>(x, w, N);
+    return;
+  case 6:
+    cxbqn::cuda::floor<<<1, N>>>(x, w, N);
+    return;
+  case 7:
+    cxbqn::cuda::ceil<<<1, N>>>(x, w, N);
+    return;
+  case 8:
+    cxbqn::cuda::stile<<<1, N>>>(x, w, N);
+    return;
+  case 9:
+    cxbqn::cuda::not_<<<1, N>>>(x, w, N);
+    return;
 
-  // ∧∨<>≠=≤≥≡≢
-  // case 9: cxbqn::cuda::not_<<<1, N>>>(x, w, N); return;
+  // ∧∨<>  ≤≥≡≢
+  case 10:
+    cxbqn::cuda::logical_and<<<1, N>>>(x, w, N);
+    return;
+  case 11:
+    cxbqn::cuda::logical_or<<<1, N>>>(x, w, N);
+    return;
+  case 12:
+    cxbqn::cuda::less<<<1, N>>>(x, w, N);
+    return;
+  case 13:
+    cxbqn::cuda::greater<<<1, N>>>(x, w, N);
+    return;
+  // no 14, 15 as these don't make sense on device
+  case 16:
+    cxbqn::cuda::le<<<1, N>>>(x, w, N);
+    return;
+  case 17:
+    cxbqn::cuda::ge<<<1, N>>>(x, w, N);
+    return;
+  case 18:
+    cxbqn::cuda::eq<<<1, N>>>(x, w, N);
+    return;
+  case 19:
+    cxbqn::cuda::neq<<<1, N>>>(x, w, N);
+    return;
+
+  // ⊣⊢⥊∾≍⋈↑↓↕«
+  case 20: {
+    thrust::copy_n(w, N, x);
+    return;
+  }
+  case 21:
+    return;
 
   default:
     throw std::runtime_error("•_CUDAFor: 𝕗 unsupported in device code");
@@ -48,8 +100,8 @@ O<Value> CUDAFor::call(u8 nargs, Args &args) {
   thrust::device_vector<f64> hx;
   thrust::device_vector<f64> hw;
 
-  int N=-1;
-  bool isxar=false,iswar=false;
+  int N = -1;
+  bool isxar = false, iswar = false;
   std::vector<uz> sh;
 
   if (isxar = (t_Array == type_builtin(x))) {
@@ -61,20 +113,19 @@ O<Value> CUDAFor::call(u8 nargs, Args &args) {
     for (int i = 0; i < N; i++)
       hx[i] = dyncast<Number>(xar->values[i])->v;
     N = xar->N();
-  } 
+  }
   if (iswar = (t_Array == type_builtin(w))) {
     auto war = dyncast<Array>(w);
-    if (N<0) {
+    if (N < 0) {
       N = war->N();
       sh = war->shape;
       hx.resize(N);
       hw.resize(N);
-    }
-    else if (N != war->N())
+    } else if (N != war->N())
       throw std::runtime_error("•_CUDAFor: array lengths must be the same");
     for (int i = 0; i < N; i++)
       hw[i] = dyncast<Number>(war->values[i])->v;
-  } 
+  }
 
   if (N < 0) {
     N = 1;

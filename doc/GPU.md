@@ -57,3 +57,23 @@ O<Value> CUDAForAll::call(u8 nargs, std::vector<O<Value>> args) {
 ```
 
 A similar approach may be taken for enabling OMP/threaded execution.
+
+## Examples
+
+For this example, I build with GCC 9.3.1, CUDA 11.1.105, and CMake 3.22.0.
+I also build with readline to get a nicer repl.
+
+```console
+CC=gcc-9 CXX=g++-9 cmake .. -DCXBQN_CUDA=ON -DCXBQN_READLINE=ON
+make -j 12
+./BQN -r
+   3 < •_CUDAFor ↕10
+⟨ 0 0 0 0 1 1 1 1 1 1 ⟩
+   (↕10) ⋆ •_CUDAFor ⌽↕10
+⟨ 0 1 128 729 1024 625 216 49 8 1 ⟩
+   (↕10) ⌊ •_CUDAFor ⌽↕10
+⟨ 0 1 2 3 4 4 3 2 1 0 ⟩
+```
+
+As you can see, only very basic arithmetic functions are supported in CUDA at this time.
+
