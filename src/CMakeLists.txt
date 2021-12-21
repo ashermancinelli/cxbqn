@@ -98,11 +98,18 @@ if(CXBQN_CUDA)
     )
 endif()
 
+if(CXBQN_FFI)
+  list(APPEND CXBQN_SRC
+    sys/ffi.cpp
+    )
+endif()
+
 add_library(
   cxbqn
   ${CXBQN_SRC}
 )
 target_link_libraries(cxbqn PUBLIC tpl)
+install(TARGETS cxbqn DESTINATION lib)
 add_library(cxbqn::cxbqn ALIAS cxbqn)
 
 add_executable(BQN driver/driver.cpp driver/main.cpp)
@@ -127,3 +134,5 @@ add_custom_command(
   COMMAND "${CMAKE_COMMAND}" -E copy "$<TARGET_FILE:BQN>"
           ${PROJECT_BINARY_DIR}
           )
+
+add_subdirectory(tools)

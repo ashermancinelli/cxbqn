@@ -25,6 +25,9 @@ static std::vector<std::string> listsys{
 #ifdef CXBQN_CUDA
     "cudafor",
 #endif
+#ifdef CXBQN_FFI
+    "ffi",
+#endif
 };
 
 O<Value> SystemFunctionResolver::call(u8 nargs, Args &args) {
@@ -39,6 +42,10 @@ O<Value> SystemFunctionResolver::call(u8 nargs, Args &args) {
       ret.push_back(CXBQN_NEW(CXBQN));
     } else if ("show" == s) {
       ret.push_back(CXBQN_NEW(Show, _fmt));
+#ifdef CXBQN_FFI
+    } else if ("ffi" == s) {
+      ret.push_back(CXBQN_NEW(FFI));
+#endif
     } else if ("listsys" == s) {
       auto ls = CXBQN_NEW(Array, listsys.size());
       for (int i = 0; i < listsys.size(); i++)

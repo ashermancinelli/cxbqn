@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.0] 12-22-2021
+
+* Add the cxbqn-config utility and install all targets
+* Update documentation
+* Add FFI as `•_FFI_`
+
 ## [0.8.2] 12-21-2021
 
 * Add swath of CUDA functions under `•_CUDAFor`

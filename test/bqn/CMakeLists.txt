@@ -11,3 +11,6 @@ add_test(
   COMMAND $<TARGET_FILE:BQN> -f test/bqn/syntax.bqn ${BQN_TESTS}
   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
   )
+
+add_library(userfn SHARED ffitest.cpp)
+target_link_libraries(userfn PRIVATE cxbqn::cxbqn)

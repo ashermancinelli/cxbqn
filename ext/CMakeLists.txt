@@ -22,3 +22,6 @@ if(NOT HAS_BUILTIN_SPAN)
 else()
   message(STATUS "Found std::span, using builtin")
 endif()
+
+file(GLOB BQN_LIBS ${CMAKE_CURRENT_SOURCE_DIR}/bqn-libs/*.bqn)
+install(FILES ${BQN_LIBS} DESTINATION share/bqn)

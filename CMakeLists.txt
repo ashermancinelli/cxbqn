@@ -6,8 +6,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 project(
   cxbqn
-  LANGUAGES CXX C CUDA
-  VERSION 0.8.2
+  LANGUAGES CXX C
+  VERSION 0.9.0
 )
 
 set(CXBQN_INIT_STACK_SIZE
@@ -39,9 +39,10 @@ set(CXBQN_REGEN_TESTS
     CACHE BOOL "Regenerate bytecode, simple, and primitive tests"
 )
 set(CXBQN_MEM_STRATEGY
-  "leak"
-  CACHE STRING "Select memory management strategy from 'shared_ptr', 'gc', 'leak'"
-  )
+    "leak"
+    CACHE STRING
+          "Select memory management strategy from 'shared_ptr', 'gc', 'leak'"
+)
 set(CXBQN_STACKTRACE
     OFF
     CACHE
@@ -106,6 +107,10 @@ set(CXBQN_CUDA
     OFF
     CACHE BOOL "Enable CUDA acceleration and non-standard builtins"
 )
+set(CXBQN_FFI
+    OFF
+    CACHE BOOL "Enable foreign function interface"
+)
 
 add_definitions("-DCXBQN_MEM_${CXBQN_MEM_STRATEGY}=1")
 
@@ -144,6 +149,11 @@ if(CXBQN_READLINE)
   target_include_directories(tpl INTERFACE ${Readline_INCLUDE_DIR})
 endif()
 
+if(${CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT})
+  message(STATUS "Found default install prefix, setting to ${PROJECT_BINARY_DIR}/install")
+  set(CMAKE_INSTALL_PREFIX ${PROJECT_BINARY_DIR}/install)
+endif()
+
 find_package(UnixCommands REQUIRED)
 include(cmake/Linters.cmake)
 include(cmake/CheckGitSubmodules.cmake)
@@ -155,11 +165,18 @@ if(CXBQN_CUDA)
     set(CMAKE_CUDA_ARCHITECTURES 60)
   endif()
 
-  set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --extended-lambda --expt-relaxed-constexpr")
+  set(CMAKE_CUDA_FLAGS
+      "${CMAKE_CUDA_FLAGS} --extended-lambda --expt-relaxed-constexpr"
+  )
 
   include(CheckLanguage)
   check_language(CUDA)
   enable_language(CUDA)
+endif()
+
+if(CXBQN_FFI)
+  message(STATUS "Enabling foreign function interface")
+  target_link_libraries(tpl INTERFACE ${CMAKE_DL_LIBS})
 endif()
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
@@ -178,3 +195,6 @@ if(CXBQN_BUILD_TESTS)
   enable_testing()
   add_subdirectory(test)
 endif()
+
+file(GLOB_RECURSE CXBQN_HEADERS include/cxbqn/*.hpp)
+install(FILES ${CXBQN_HEADERS} DESTINATION include/cxbqn)

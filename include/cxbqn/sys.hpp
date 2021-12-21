@@ -154,15 +154,20 @@ CXBQN_BUILTIN_FN_DECL(UnixTime, "•UnixTime");
 CXBQN_BUILTIN_FN_DECL(FLines, "•FLines");
 CXBQN_BUILTIN_FN_DECL(Exit, "•Exit");
 CXBQN_BUILTIN_FN_DECL(List, "•List");
+CXBQN_BUILTIN_FN_DECL(SH, "•SH");
 
 /* NONSTANDARD
  *
- * Run with: `•SH "ls"‿"-lah"‿"~"`, get back list `exitcode‿output`.
- * Note that stdout is merged with stdin.
- *
- * Optionally pass working directory as 𝕨.
+ * Enables loading of dynamic libraries for user-defined functions
  */
-CXBQN_BUILTIN_FN_DECL(SH, "•SH");
+#ifdef CXBQN_FFI
+struct FFI : public Md2 {
+  std::ostream &repr(std::ostream &os) const override {
+    return os << "•FFI";
+  }
+  O<Value> call(u8 nargs, Args &args) override;
+};
+#endif
 
 // System functions that require pointers to objects we need at runtime, for
 // example the runtime itself.
@@ -191,7 +196,9 @@ struct SystemFunctionResolver : public Function {
 struct CUDAFor : public Md1 {
   CUDAFor(O<Array> runtime) : _runtime{runtime} {}
   O<Value> call(u8 nargs, Args &args) override;
-  std::ostream &repr(std::ostream &os) const override { return os << "•_CUDAFor"; }
+  std::ostream &repr(std::ostream &os) const override {
+    return os << "•_CUDAFor";
+  }
   O<Array> _runtime;
 };
 #endif

@@ -1,12 +1,11 @@
 ## Enabling GPU Execution
-
-***NOTE: These are my chicken-scratch notes on what enabling GPU execution would look like. It's not a technical specification.***
+_since 0.8.2_
 
 The API would probably be in the form of a one-modifier that executes a function on the GPU after decomposing it.
 Example use case:
 ```console
-   ⊢ •_CUDAForAll ↕10
-⟨ 0 1 2 3 4 5 6 7 8 9 ⟩
+   1 + •_CUDAForAll ↕10
+⟨ 1 2 3 4 5 6 7 8 9 10 ⟩
 ```
 
 This would take the function and apply it to each element of the array `𝕩`.

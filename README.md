@@ -16,7 +16,7 @@ cd build
 CXX=g++-11 cmake ..
 make -j12
 ./BQN -v
-CXBQN 0.8.2
+CXBQN 0.9.0
 compiled on Nov 24 2021
 ```
 
@@ -24,7 +24,7 @@ compiled on Nov 24 2021
 
 ```
 $ ./BQN -h
-CXBQN 0.8.2
+CXBQN 0.9.0
 compiled on Nov 24 2021
 usage: BQN [options] [arguments]
 	-e <string>: execute BQN expression
@@ -83,6 +83,8 @@ foo     foobar
 | `CXBQN_LOGLEVEL`     | Wrapper around spdlog's log levels. `level::debug` will produce an extremely large amount of data (~10-15gib for executing "2+2").                      |
 | `CXBQN_DEBUG_VM`     | Output VM debugging information, including the opcode being executed, the program counter, and any opcode arguments.                                    |
 | `CXBQN_DEEPCHECKS`   | Enable deeper checks which may produce more helpful errors but will hurt performance.                                                                   |
+| `CXBQN_CUDA`         | Enable CUDA execution via `•_CUDAFor`                                                                                                                   |
+| `CXBQN_FFI`          | Enable loading dynamic libraries and calling user functions from them.                                                                                  |
 
 ## Feature Support
 
@@ -123,3 +125,32 @@ $ ./BQN -r
 | Threaded Execution | None       | Same plan as above. Needs more discussion                                                                                                    |
 | Libraries and Packaging | None       | There has been much discussion on this topic in the Matrix server, but little consensus has been reached. The first library-related feature CXBQN will support will likely look like `strings←•Import "←strings.bqn"` where `strings.bqn` is the strings library from Marshall's [bqn-libs repository](https://github.com/mlochbaum/bqn-libs). This will likely become a *standard library* of sorts, once consensus is reached. The first character of the string argument passed to `•Import` will have some special meaning indicating that the BQN VM ought to look in some special location (eg all directories in the environment variable `$BQNPATH`) or perform some operation before importing the specified library. |
 -->
+
+### FFI
+
+[See the documentation for FFI here.](doc/FFI.md)
+
+## Using a CXBQN Installation
+
+CXBQN provides a config script that will help you set up your CXBQN installation.
+The script `cxbqn-config` is installed alongside your `BQN` executable when you install CXBQN.
+You may directly execute the result of this script like so:
+```console
+$ ./install/bin/cxbqn-config
+export CXBQN_PREFIX=/home/asher/workspace/cxbqn/install
+export CXBQN_VERSION=0.9.0
+export CXBQN_COLOR=OFF
+export CXBQN_READLINE=ON
+export CXBQN_CUDA=OFF
+export CXBQN_FFI=ON
+export PATH=/home/asher/workspace/cxbqn/install/bin:$PATH
+export BQNPATH=/home/asher/workspace/cxbqn/install/share/bqn:$BQNPATH
+$ eval $(./install/bin/cxbqn-config)
+```
+
+This script will add CXBQN's `BQN` to your path, and set up your `BQNPATH` environment variable.
+The `BQNPATH` environment variable is unused, but this may become a standard search path for BQN modules at some point in the future.
+
+This script is a thin wrapper around the CXBQN `vars.bqn` script which contains information about how CXBQN was built and configured.
+This file is installed in `<prefix>/share/bqn/cxbqn`.
+`<prefix>/share/bqn` will likely become the standard prefix for BQN modules in the future, so we plan to store CXBQN-specific installation artifacts under the `cxbqn/` subdirectory so not to conflict with future standard modules.
