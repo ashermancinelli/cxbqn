@@ -16,7 +16,7 @@ cd build
 CXX=g++-11 cmake ..
 make -j12
 ./BQN -v
-CXBQN 0.8.1
+CXBQN 0.8.2
 compiled on Nov 24 2021
 ```
 
@@ -24,7 +24,7 @@ compiled on Nov 24 2021
 
 ```
 $ ./BQN -h
-CXBQN 0.7.0
+CXBQN 0.8.2
 compiled on Nov 24 2021
 usage: BQN [options] [arguments]
 	-e <string>: execute BQN expression
