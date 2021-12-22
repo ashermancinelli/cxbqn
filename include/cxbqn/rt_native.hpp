@@ -30,8 +30,9 @@ void replace_r1_with_native(O<Array> r1);
 namespace r0 {
 
 CXBQN_BUILTIN_FN_DECL(NE, "≠");
-CXBQN_BUILTIN_FN_DECL(Ltack, "⊣");
 CXBQN_BUILTIN_FN_DECL(Rtack, "⊢");
+CXBQN_BUILTIN_FN_DECL(Ltack, "⊣");
+CXBQN_BUILTIN_FN_DECL(JoinTo, "∾");
 CXBQN_BUILTIN_DECL(Md1, SelfSwap, "˜");
 
 } // namespace r0

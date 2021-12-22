@@ -5,6 +5,7 @@ set(RT_NATIVE_SRC
   r0/ltack.cpp
   r0/rtack.cpp
   r0/ne.cpp
+  r0/join_to.cpp
   )
 
 add_library(rt_native STATIC ${RT_NATIVE_SRC})
