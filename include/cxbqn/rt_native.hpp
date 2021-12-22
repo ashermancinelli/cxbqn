@@ -36,6 +36,7 @@ CXBQN_BUILTIN_FN_DECL(Ltack, "⊣");
 CXBQN_BUILTIN_FN_DECL(JoinTo, "∾");
 CXBQN_BUILTIN_FN_DECL(EnlistPair, "⋈");
 CXBQN_BUILTIN_DECL(Md1, SelfSwap, "˜");
+CXBQN_BUILTIN_DECL(Md1, Each, "¨");
 
 } // namespace r0
 
