@@ -15,9 +15,6 @@ using namespace cxbqn::types;
 void replace_r0_with_native(O<Array> r0);
 void replace_r1_with_native(O<Array> r1);
 
-// Declarations of replacements
-namespace r0 {
-
 #define CXBQN_BUILTIN_DECL(PARENT, T, ...)                                     \
   struct T : public PARENT {                                                   \
     std::ostream &repr(std::ostream &os) const override {                      \
@@ -29,6 +26,11 @@ namespace r0 {
 #define CXBQN_BUILTIN_FN_DECL(T, ...)                                          \
   CXBQN_BUILTIN_DECL(Function, T, __VA_ARGS__);
 
+// Declarations of replacements
+namespace r0 {
+
+CXBQN_BUILTIN_FN_DECL(Ltack, "⊣");
+CXBQN_BUILTIN_FN_DECL(Rtack, "⊢");
 CXBQN_BUILTIN_DECL(Md1, SelfSwap, "˜");
 
 } // namespace r0
