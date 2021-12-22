@@ -37,6 +37,7 @@ CXBQN_BUILTIN_FN_DECL(JoinTo, "∾");
 CXBQN_BUILTIN_FN_DECL(EnlistPair, "⋈");
 CXBQN_BUILTIN_FN_DECL(Take, "↑");
 CXBQN_BUILTIN_FN_DECL(Drop, "↓");
+CXBQN_BUILTIN_FN_DECL(Constant, "˙");
 CXBQN_BUILTIN_DECL(Md1, SelfSwap, "˜");
 CXBQN_BUILTIN_DECL(Md1, Each, "¨");
 

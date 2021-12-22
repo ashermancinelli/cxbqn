@@ -12,6 +12,7 @@ set(RT_NATIVE_SRC
     r0/each.cpp
     r0/take.cpp
     r0/drop.cpp
+    r0/constant.cpp
 
     # Currently no replacements for r1
 )

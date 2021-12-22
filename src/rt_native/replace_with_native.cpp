@@ -14,6 +14,7 @@ void replace_r0_with_native(O<Array> r0) {
   r0->values[10] = CXBQN_NEW(r0::EnlistPair); // ⋈
   r0->values[11] = CXBQN_NEW(r0::Take);       // ↑
   r0->values[12] = CXBQN_NEW(r0::Drop);       // ↓
+  r0->values[14] = CXBQN_NEW(r0::Constant);   // ˙
   r0->values[15] = CXBQN_NEW(r0::SelfSwap);   // ˜
   r0->values[16] = CXBQN_NEW(r0::Each);       // ¨
 }
