@@ -112,11 +112,15 @@ target_link_libraries(cxbqn PUBLIC tpl)
 install(TARGETS cxbqn DESTINATION lib)
 add_library(cxbqn::cxbqn ALIAS cxbqn)
 
+# The native runtime library is only needed for the driver
+add_subdirectory(rt_native)
+
 add_executable(BQN driver/driver.cpp driver/main.cpp)
-target_link_libraries(BQN PUBLIC cxbqn::cxbqn cxbqn::tpl)
+target_link_libraries(BQN PUBLIC cxbqn::cxbqn cxbqn::tpl cxbqn::rt_native)
 install(TARGETS BQN DESTINATION bin)
 
 if(CXBQN_BUILD_TOOLS)
+  add_subdirectory(tools)
   add_executable(C driver/C.cpp driver/driver.cpp)
   target_link_libraries(C PUBLIC cxbqn::cxbqn)
   install(TARGETS C DESTINATION bin)

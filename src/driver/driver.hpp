@@ -4,6 +4,7 @@
 #include <cxbqn/cxbqn.hpp>
 #include <cxbqn/debug.hpp>
 #include <cxbqn/fs.hpp>
+#include <cxbqn/rt_native.hpp>
 #include <spdlog/spdlog.h>
 #include <utf8.h>
 

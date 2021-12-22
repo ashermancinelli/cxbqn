@@ -28,8 +28,11 @@ int main(int argc, char **argv) {
     auto rt0_cu =
 #include <cxbqn/__/r0>
         ;
-    auto ret0 = vm::run(rt0_cu);
-    auto runtime_0 = dyncast<Array>(ret0.v)->values;
+    auto ret0 = dyncast<Array>(vm::run(rt0_cu).v);
+
+    rt_native::replace_r0_with_native(ret0);
+
+    auto runtime_0 = ret0->values;
 
     auto rt1_cu =
 #include <cxbqn/__/r1>
@@ -42,6 +45,8 @@ int main(int argc, char **argv) {
 #endif
 
     auto bqnruntime = dyncast<Array>(runtime_ret->values[0]);
+
+    rt_native::replace_r1_with_native(bqnruntime);
 
     auto setprims = runtime_ret->values[1];
 
