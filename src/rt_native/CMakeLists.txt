@@ -4,6 +4,7 @@ set(RT_NATIVE_SRC
   r0/self_swap.cpp
   r0/ltack.cpp
   r0/rtack.cpp
+  r0/ne.cpp
   )
 
 add_library(rt_native STATIC ${RT_NATIVE_SRC})
