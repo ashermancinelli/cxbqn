@@ -7,14 +7,15 @@ using namespace cxbqn::sys;
 
 int main(int argc, char **argv) {
 
-  bool repl=false, pp_res=false, show_cu=false;
-  auto sysargs = CXBQN_NEW(Array,0);
-  auto path = CXBQN_NEW(Array,0);
-  auto src = CXBQN_NEW(Array,"\"CXBQN internal: Empty program\" ! 0");
+  bool repl = false, pp_res = false, show_cu = false;
+  auto sysargs = CXBQN_NEW(Array, 0);
+  auto path = CXBQN_NEW(Array, 0);
+  auto src = CXBQN_NEW(Array, "\"CXBQN internal: Empty program\" ! 0");
 
   std::vector<std::string> args(argv, argv + argc);
 
-  if (auto ec = driver::parse_args(args, path, src, sysargs, repl, pp_res, show_cu))
+  if (auto ec =
+          driver::parse_args(args, path, src, sysargs, repl, pp_res, show_cu))
     return ec;
 
   try {
@@ -24,11 +25,17 @@ int main(int argc, char **argv) {
 #endif
 
     const auto provide = provides::get_provides()->values;
-    auto rt_cu =
-#include <cxbqn/__/r>
-      ;
-    auto ret = vm::run(rt_cu);
-    auto runtime_ret = dyncast<Array>(ret.v);
+    auto rt0_cu =
+#include <cxbqn/__/r0>
+        ;
+    auto ret0 = vm::run(rt0_cu);
+    auto runtime_0 = dyncast<Array>(ret0.v)->values;
+
+    auto rt1_cu =
+#include <cxbqn/__/r1>
+        ;
+    auto ret1 = vm::run(rt1_cu);
+    auto runtime_ret = dyncast<Array>(ret1.v);
 
 #ifdef CXBQN_PROFILE_STARTUP
     auto t_rt = std::chrono::high_resolution_clock::now();
@@ -39,8 +46,8 @@ int main(int argc, char **argv) {
     auto setprims = runtime_ret->values[1];
 
     // Inform the two latter builtins of the runtime so they can refer to it
-    auto decompose = CXBQN_NEW(Decompose,bqnruntime);
-    auto primind = CXBQN_NEW(PrimInd,bqnruntime);
+    auto decompose = CXBQN_NEW(Decompose, bqnruntime);
+    auto primind = CXBQN_NEW(PrimInd, bqnruntime);
 
     {
       Args a{setprims, O<Array>(new Array({decompose, primind})), bi_Nothing()};
@@ -50,7 +57,7 @@ int main(int argc, char **argv) {
     auto runtime = bqnruntime->values;
     auto c_cu =
 #include <cxbqn/__/c>
-      ;
+        ;
 
     auto cret = vm::run(c_cu);
 #ifdef CXBQN_PROFILE_STARTUP
@@ -64,14 +71,14 @@ int main(int argc, char **argv) {
     // •Decompose, •Glyph, and •FmtNum.
     auto f_cu =
 #include <cxbqn/__/f>
-      ;
+        ;
     auto fmtret = vm::run(f_cu);
 #ifdef CXBQN_PROFILE_STARTUP
     auto t_fmt = std::chrono::high_resolution_clock::now();
 #endif
     auto fmt1 = fmtret.v;
 
-    auto glyph = CXBQN_NEW(Glyph,bqnruntime);
+    auto glyph = CXBQN_NEW(Glyph, bqnruntime);
     auto fmtnum = CXBQN_NEW(FmtNum);
     O<Value> _fmtarr;
     {
@@ -88,7 +95,7 @@ int main(int argc, char **argv) {
     // Here, we could just call the compiler with the runtime as 𝕨. To add the
     // system functions, we will pass another value in an array along with the
     // runtime. This funcionality is not documented at the time of writing.
-    auto compw = CXBQN_NEW(Array,2);
+    auto compw = CXBQN_NEW(Array, 2);
     compw->values[0] = bqnruntime;
 
     // It may seem counterintuitive to pass the compiler and compiler arguments
@@ -107,7 +114,7 @@ int main(int argc, char **argv) {
       }
       if (show_cu)
         for (auto v : dyncast<Array>(compiled)->values)
-          fmt::print("{}\n",*v);
+          fmt::print("{}\n", *v);
       auto runret = vm::run(compiled);
       if (pp_res) {
         Args a{fmt, runret.v, bi_Nothing()};
