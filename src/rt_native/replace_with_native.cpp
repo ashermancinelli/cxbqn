@@ -7,6 +7,7 @@ using namespace cxbqn::types;
 
 // ⌊ ⌈ | < > ≠ ≥ ⊢ ⊣ ∾ ⋈ ↑ ↓ ⊏ ˙ ˜ ¨ ´ ∘ ○ ⊸ ⟜ ◶ ⍟
 void replace_r0_with_native(O<Array> r0) {
+  //r0->values[16] = CXBQN_NEW(r0::Each);       // ¨
 #ifdef CXBQN_NATIVE_R0
   r0->values[3] = CXBQN_NEW(r0::Less);        // <
   r0->values[5] = CXBQN_NEW(r0::NE);          // ≠
@@ -19,7 +20,6 @@ void replace_r0_with_native(O<Array> r0) {
   r0->values[13] = CXBQN_NEW(r0::Select);     // ⊏
   r0->values[14] = CXBQN_NEW(r0::Constant);   // ˙
   r0->values[15] = CXBQN_NEW(r0::SelfSwap);   // ˜
-  r0->values[16] = CXBQN_NEW(r0::Each);       // ¨
   r0->values[17] = CXBQN_NEW(r0::Fold);       // ´
   r0->values[18] = CXBQN_NEW(r0::Atop);       // ∘
   r0->values[19] = CXBQN_NEW(r0::Over);       // ○
