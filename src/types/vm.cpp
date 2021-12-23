@@ -13,7 +13,7 @@ O<Value> vm(observer_ptr<CompUnit> cu, observer_ptr<Scope> scope, Body b) {
   uz pc = b.bc_offset;
   auto &bc = cu->_bc;
   auto &consts = cu->_consts;
-  std::vector<O<Value>>stk;
+  std::vector<O<Value>> stk;
 
   O<Value> ret = nullptr;
 

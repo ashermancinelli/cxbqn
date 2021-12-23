@@ -3,4 +3,4 @@ namespace cxbqn::vm::instructions {
 
 void pred(std::vector<O<Value>> &stk) {}
 
-}
+} // namespace cxbqn::vm::instructions

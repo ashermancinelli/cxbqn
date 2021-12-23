@@ -11,7 +11,7 @@ Array::Array(const uz N, std::vector<O<Value>> &stk) {
   stk.resize(stk.size() - N);
 }
 
-Array::Array(const std::string& s) {
+Array::Array(const std::string &s) {
   auto it = s.begin();
   while (it != s.end()) {
     values.push_back(O<Value>(new Character((c32)utf8::next(it, s.end()))));
@@ -35,7 +35,7 @@ std::ostream &Array::repr(std::ostream &os) const {
     auto e = values[i];
     if (e)
       if (t_Character == type_builtin(e)) {
-        std::string s="";
+        std::string s = "";
         utf8::append(dyncast<Character>(e)->c(), std::back_inserter(s));
         os << s;
       } else
@@ -82,7 +82,7 @@ O<Reference> RefArray::getref(uz idx) {
 }
 
 std::string Array::to_string() const {
-  std::string s="";
+  std::string s = "";
   for (auto v : values) {
     // This hack is required to workaround the fake •_fillBy_ function
     if (nullptr == v or t_Character != type_builtin(v))
@@ -93,4 +93,4 @@ std::string Array::to_string() const {
   return s;
 }
 
-}
+} // namespace cxbqn::types

@@ -16,7 +16,7 @@ O<Value> bi_Nothing() {
 #endif
 }
 
-O<Value> Atop::call(u8 nargs, Args& args) {
+O<Value> Atop::call(u8 nargs, Args &args) {
   CXBQN_DEBUG("Atop::call:nargs={},args={}", nargs, args);
   Args l{g, args[1], args[2]};
   auto ret = g->call(nargs, l);
@@ -29,7 +29,7 @@ std::ostream &Atop::repr(std::ostream &os) const {
   return os << "(atop f=" << CXBQN_STR_NC(f) << ",g=" << CXBQN_STR_NC(g) << ")";
 }
 
-O<Value> Fork::call(u8 nargs, Args& args) {
+O<Value> Fork::call(u8 nargs, Args &args) {
   CXBQN_DEBUG("Fork::call:nargs={},args={}", nargs, args);
 
   // Pass 𝕩 and 𝕨 (if exists)
@@ -51,7 +51,7 @@ std::ostream &Fork::repr(std::ostream &os) const {
             << ",h=" << CXBQN_STR_NC(h) << ")";
 }
 
-O<Value> Md1Deferred::call(u8 nargs, Args& args) {
+O<Value> Md1Deferred::call(u8 nargs, Args &args) {
   CXBQN_DEBUG("Md1Deferred::call(after adding 𝕣, 𝕗):nargs={},args={}", nargs,
               args);
 
@@ -63,7 +63,7 @@ std::ostream &Md1Deferred::repr(std::ostream &os) const {
   return os;
 }
 
-O<Value> Md2Deferred::call(u8 nargs, Args& args) {
+O<Value> Md2Deferred::call(u8 nargs, Args &args) {
   CXBQN_DEBUG("Md1Deferred::call(after adding 𝕣, 𝕗, 𝕘):nargs={},args={}", nargs,
               args);
   Args a{m2, args[1], args[2], CXBQN_SHARED_FROM_THIS(), f, g};
@@ -71,7 +71,8 @@ O<Value> Md2Deferred::call(u8 nargs, Args& args) {
 }
 
 std::ostream &Md2Deferred::repr(std::ostream &os) const {
-  fmt::print(os, "( md2D {} {} {})", CXBQN_STR_NC(f), CXBQN_STR_NC(m2), CXBQN_STR_NC(g));
+  fmt::print(os, "( md2D {} {} {})", CXBQN_STR_NC(f), CXBQN_STR_NC(m2),
+             CXBQN_STR_NC(g));
   return os;
 }
 

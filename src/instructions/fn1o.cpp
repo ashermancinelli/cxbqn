@@ -16,4 +16,4 @@ void fn1o(std::vector<O<Value>> &stk) {
   Args a{S, x, bi_Nothing()};
   stk.push_back(S->call(1, a));
 }
-}
+} // namespace cxbqn::vm::instructions

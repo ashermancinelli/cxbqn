@@ -31,4 +31,4 @@ void fn2c(std::vector<O<Value>> &stk) {
   stk.push_back(v);
 }
 
-}
+} // namespace cxbqn::vm::instructions

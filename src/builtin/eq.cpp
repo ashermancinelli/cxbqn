@@ -2,7 +2,7 @@
 
 namespace cxbqn::provides {
 
-O<Value> EQ::call(u8 nargs, Args& args) {
+O<Value> EQ::call(u8 nargs, Args &args) {
   CXBQN_DEBUG("=:nargs={},args={}", nargs, args);
   XNULLCHK("=");
   CXBQN_LOGFLUSH();
@@ -17,4 +17,4 @@ O<Value> EQ::call(u8 nargs, Args& args) {
 
   return NNC(eq_recursive(ox, ow));
 }
-}
+} // namespace cxbqn::provides

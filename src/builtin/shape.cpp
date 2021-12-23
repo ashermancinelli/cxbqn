@@ -2,7 +2,7 @@
 
 namespace cxbqn::provides {
 
-O<Value> Shape::call(u8 nargs, Args& args) {
+O<Value> Shape::call(u8 nargs, Args &args) {
   CXBQN_DEBUG("≢: nargs={},args={}", nargs, args);
   XNULLCHK("≢");
   auto ret = CXBQN_NEW(Array);
@@ -12,4 +12,4 @@ O<Value> Shape::call(u8 nargs, Args& args) {
     ret->values[i] = CXBQN_NEW(Number, sh[i]);
   return ret;
 }
-}
+} // namespace cxbqn::provides

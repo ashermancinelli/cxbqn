@@ -10,7 +10,7 @@ void tr2d(std::vector<O<Value>> &stk) {
 
   CXBQN_DEBUG("tr2d:f={},g={}", CXBQN_STR_NC(f), CXBQN_STR_NC(g));
 
-  stk.push_back(CXBQN_NEW(Atop,f, g));
+  stk.push_back(CXBQN_NEW(Atop, f, g));
 }
 
-}
+} // namespace cxbqn::vm::instructions

@@ -23,8 +23,10 @@ BlockDef::BlockDef(uz ty, uz immediate, std::vector<std::vector<uz>> indices)
               indices);
 
   if (indices[0].size())
-    std::copy(indices[0].begin(), indices[0].end(), std::back_inserter(mon_body_idxs));
+    std::copy(indices[0].begin(), indices[0].end(),
+              std::back_inserter(mon_body_idxs));
   if (indices[1].size())
-    std::copy(indices[1].begin(), indices[1].end(), std::back_inserter(dya_body_idxs));
+    std::copy(indices[1].begin(), indices[1].end(),
+              std::back_inserter(dya_body_idxs));
 }
-}
+} // namespace cxbqn::types

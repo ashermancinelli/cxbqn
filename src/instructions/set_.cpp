@@ -44,8 +44,9 @@ static O<Value> safe_set_refer(O<Value> opaque_refer, O<Value> value,
       auto aval = dyncast<Array>(value);
 #ifdef CXBQN_DEEPCHECKS
       if (nullptr == aval)
-        throw std::runtime_error("setn: Could not cast value to type Array when "
-                                 "assigning to RefArray");
+        throw std::runtime_error(
+            "setn: Could not cast value to type Array when "
+            "assigning to RefArray");
 #endif
       for (int i = 0; i < aval->N(); i++)
         scp->set(ShouldVarBeSet, aref->getref(i), aval->values[i]);
@@ -65,7 +66,8 @@ static O<Value> safe_set_refer(O<Value> opaque_refer, O<Value> value,
 }
 
 template <bool ShouldVarBeSet>
-static O<Value> set_un_helper(std::vector<O<Value>> &stk, observer_ptr<Scope> scp) {
+static O<Value> set_un_helper(std::vector<O<Value>> &stk,
+                              observer_ptr<Scope> scp) {
   // Reference this instruction is assigning to
   auto opaque_refer = stk.back();
   stk.pop_back();
@@ -77,12 +79,13 @@ static O<Value> set_un_helper(std::vector<O<Value>> &stk, observer_ptr<Scope> sc
   CXBQN_DEBUG("set_un_helper:ref={},val={}", CXBQN_STR_NC(opaque_refer),
               CXBQN_STR_NC(value));
   // fmt::print("set_un_helper:ref={},val={}\n", CXBQN_STR_NC(opaque_refer),
-              // CXBQN_STR_NC(value));
+  // CXBQN_STR_NC(value));
 
   return safe_set_refer<ShouldVarBeSet>(opaque_refer, value, scp);
 }
 
-static O<Value> setm_ref(O<Value> F, O<Value> x, O<Value> r, observer_ptr<Scope> scp) {
+static O<Value> setm_ref(O<Value> F, O<Value> x, O<Value> r,
+                         observer_ptr<Scope> scp) {
   auto refer = dyncast<Reference>(r);
   Args a{F, x, scp->get(refer)};
   auto v = F->call(2, a);
@@ -95,7 +98,7 @@ static O<Value> setm_ref(O<Value> F, O<Value> x, O<Value> r, observer_ptr<Scope>
 static O<Value> setm_refarray(O<Value> F, O<Value> x, O<Value> r,
                               observer_ptr<Scope> scp) {
   auto refarr = dyncast<RefArray>(r);
-  auto varr = CXBQN_NEW(Array,refarr->N());
+  auto varr = CXBQN_NEW(Array, refarr->N());
 
   // create an array from the reference array to pass into F
   for (int i = 0; i < refarr->N(); i++)

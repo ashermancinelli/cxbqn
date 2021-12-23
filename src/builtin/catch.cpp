@@ -2,7 +2,7 @@
 
 namespace cxbqn::provides {
 
-O<Value> Catch::call(u8 nargs, Args& args) {
+O<Value> Catch::call(u8 nargs, Args &args) {
   CXBQN_DEBUG("⎊: nargs={},args={}", nargs, args);
   XNULLCHK("⎊");
   try {
@@ -18,4 +18,4 @@ O<Value> Catch::call(u8 nargs, Args& args) {
   }
 }
 
-}
+} // namespace cxbqn::provides

@@ -2,7 +2,7 @@
 
 namespace cxbqn::provides {
 
-O<Value> LE::call(u8 nargs, Args& args) {
+O<Value> LE::call(u8 nargs, Args &args) {
   CXBQN_DEBUG("≤:nargs={},args={}", nargs, args);
   XNULLCHK("≤");
   CXBQN_LOGFLUSH();
@@ -21,4 +21,4 @@ O<Value> LE::call(u8 nargs, Args& args) {
 
   return NNC(tx != tw ? tw <= tx : nw->v <= nx->v);
 }
-}
+} // namespace cxbqn::provides

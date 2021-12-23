@@ -3,12 +3,11 @@
 namespace cxbqn::provides {
 
 #define SYMBOL "GroupLen"
-O<Value> GroupLen::call(u8 nargs, Args& args) {
+O<Value> GroupLen::call(u8 nargs, Args &args) {
   CXBQN_DEBUG(SYMBOL ": nargs={},args={}", nargs, args);
   XNULLCHK(SYMBOL);
   auto x = dyncast<Array>(args[1]);
-  auto w =
-      dyncast<Number>(args[2]); // only use if nargs == 2!
+  auto w = dyncast<Number>(args[2]); // only use if nargs == 2!
   const auto init = (2 == nargs ? w->v : 0) - 1;
   std::vector<f64> xs(x->N(), 0);
   for (int i = 0; i < x->N(); i++)
@@ -26,4 +25,4 @@ O<Value> GroupLen::call(u8 nargs, Args& args) {
   return ret;
 }
 #undef SYMBOL
-}
+} // namespace cxbqn::provides

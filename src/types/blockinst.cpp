@@ -17,7 +17,7 @@ bool BlockInst::imm() const {
   return this->scp->cu->_blocks[this->blk_idx].immediate;
 }
 
-O<Value> BlockInst::call(u8 nargs, Args& args) {
+O<Value> BlockInst::call(u8 nargs, Args &args) {
 
 #ifdef CXBQN_DEEPCHECKS
   if ((1 == nargs) != (args[2]->t()[t_Nothing]))
@@ -29,7 +29,7 @@ O<Value> BlockInst::call(u8 nargs, Args& args) {
 
   auto body = scp->cu->_bodies[blk.body_idx(nargs)];
   auto child = make_observer(new Scope(scp, blk_idx));
-  child->vars.resize(std::max((uz)6, body.var_count+1));
+  child->vars.resize(std::max((uz)6, body.var_count + 1));
   std::copy(args.begin(), args.end(), child->vars.begin());
 
   CXBQN_DEBUG("BlockInst::call:nargs={},childscope={},blk={}", args.size(),

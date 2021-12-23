@@ -60,7 +60,7 @@ observer_ptr<CompUnit> deconstruct(O<Value> compiled) {
       const auto tmp = ARR(tok_info->values[2]);
       const auto _namelist = ARR(tmp->values[0]);
       cu->_namelist.resize(_namelist->N());
-      for(uz i=0; i<_namelist->N(); i++) {
+      for (uz i = 0; i < _namelist->N(); i++) {
         auto s = ARR(_namelist->values[i])->to_string();
         cu->_namelist[i] = s;
         cu->_exported.insert({s, i});
@@ -127,7 +127,7 @@ RunResult run(std::vector<i32> bc, O<Array> consts,
   RunResult ret;
 
   auto cu = make_observer(new CompUnit());
-  cu->_bc= bc;
+  cu->_bc = bc;
   cu->_blocks = blks;
   cu->_bodies = bodies;
   cu->_consts = consts;
@@ -160,6 +160,5 @@ RunResult run(std::vector<i32> bc, O<Array> consts,
 #undef INSTR
 #undef INSTR1
 #undef INSTR2
-
 
 } // namespace cxbqn::vm

@@ -3,7 +3,7 @@
 namespace cxbqn::provides {
 
 #define SYMBOL "GroupOrd"
-O<Value> GroupOrd::call(u8 nargs, Args& args) {
+O<Value> GroupOrd::call(u8 nargs, Args &args) {
   CXBQN_DEBUG(SYMBOL ": nargs={},args={}", nargs, args);
   XNULLCHK(SYMBOL);
   auto w = dyncast<Array>(args[2]);
@@ -20,7 +20,8 @@ O<Value> GroupOrd::call(u8 nargs, Args& args) {
                 CXBQN_STR_NC(w->values[i - 1]));
   }
 
-  const auto retlen = tmp.back() + static_cast<uz>(dyncast<Number>(w->values.back())->v);
+  const auto retlen =
+      tmp.back() + static_cast<uz>(dyncast<Number>(w->values.back())->v);
   CXBQN_DEBUG("return len={}", retlen);
 
   std::vector<f64> retv(retlen, 0);
@@ -39,4 +40,4 @@ O<Value> GroupOrd::call(u8 nargs, Args& args) {
   return ret;
 }
 #undef SYMBOL
-}
+} // namespace cxbqn::provides

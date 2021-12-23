@@ -2,7 +2,7 @@
 
 namespace cxbqn::provides {
 
-O<Value> Assert::call(u8 nargs, Args& args) {
+O<Value> Assert::call(u8 nargs, Args &args) {
   CXBQN_DEBUG("!: nargs={},args={}", nargs, args);
   XNULLCHK("!");
   auto x = args[1], w = args[2];
@@ -19,8 +19,7 @@ O<Value> Assert::call(u8 nargs, Args& args) {
     if (t_Array == type_builtin(args[1])) {
       auto ar = dyncast<Array>(args[1]);
 
-    }
-    else
+    } else
       s += fmt::format("{}", CXBQN_STR_NC(args[1]));
     CXBQN_CRIT("{}", s);
     throw std::runtime_error(s);

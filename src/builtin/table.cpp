@@ -2,7 +2,7 @@
 
 namespace cxbqn::provides {
 
-O<Value> Table::call(u8 nargs, Args& args) {
+O<Value> Table::call(u8 nargs, Args &args) {
   CXBQN_DEBUG("⌜: nargs={},args={}", nargs, args);
   XNULLCHK("⌜");
   auto F = args[4];
@@ -56,4 +56,4 @@ O<Value> Table::call(u8 nargs, Args& args) {
 
   return ret;
 }
-}
+} // namespace cxbqn::provides

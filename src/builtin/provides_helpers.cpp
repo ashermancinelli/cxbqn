@@ -11,8 +11,7 @@ bool eq_recursive(O<Value> ox, O<Value> ow) {
   const auto tbx = type_builtin(ox), tbw = type_builtin(ow);
   if ((t_Number == tbx or t_Character == tbx) and
       (t_Number == tbw or t_Character == tbw))
-    return feq_helper(dyncast<Number>(ox)->v,
-                      dyncast<Number>(ow)->v);
+    return feq_helper(dyncast<Number>(ox)->v, dyncast<Number>(ow)->v);
 
   if (type_builtin(ox) != type_builtin(ow))
     return false;
@@ -20,17 +19,20 @@ bool eq_recursive(O<Value> ox, O<Value> ow) {
   /* Use pointer comparison for blockinst's */
   if (auto xf = dyncast<BlockInst>(ox)) {
     auto wf = dyncast<BlockInst>(ow);
-    if (!wf) return false;
+    if (!wf)
+      return false;
     return xf == wf;
   }
   if (auto x = dyncast<Md1Deferred>(ox)) { // both must be deferred
     auto w = dyncast<Md1Deferred>(ow);
-    if (!w) return false;
+    if (!w)
+      return false;
     return eq_recursive(x->f, w->f) and eq_recursive(x->m1, w->m1);
   }
   if (auto x = dyncast<Md2Deferred>(ox)) { // both must be deferred
     auto w = dyncast<Md2Deferred>(ow);
-    if (!w) return false;
+    if (!w)
+      return false;
     return eq_recursive(x->f, w->f) and eq_recursive(x->m2, w->m2) and
            eq_recursive(x->g, w->g);
   }
@@ -52,13 +54,15 @@ bool eq_recursive(O<Value> ox, O<Value> ow) {
   /* Compare fields for derived types */
   if (auto x = dyncast<Fork>(ox)) {
     auto w = dyncast<Fork>(ow);
-    if (!w) return false;
+    if (!w)
+      return false;
     return eq_recursive(x->f, w->f) and eq_recursive(x->g, w->g) and
            eq_recursive(x->h, w->h);
   }
   if (auto x = dyncast<Atop>(ox)) {
     auto w = dyncast<Atop>(ow);
-    if (!w) return false;
+    if (!w)
+      return false;
     return eq_recursive(x->f, w->f) and eq_recursive(x->g, w->g);
   }
 
@@ -91,8 +95,7 @@ uz array_depth_helper(uz init, O<Value> v) {
 
 bool equivilant_helper(O<Value> a, O<Value> b) {
   if (a->t()[t_DataValue] and b->t()[t_DataValue])
-    return feq_helper(dyncast<Number>(a)->v,
-                      dyncast<Number>(b)->v);
+    return feq_helper(dyncast<Number>(a)->v, dyncast<Number>(b)->v);
   else if (t_Array == type_builtin(a) and t_Array == type_builtin(b)) {
     auto av = dyncast<Array>(a);
     auto bv = dyncast<Array>(b);
@@ -105,4 +108,4 @@ bool equivilant_helper(O<Value> a, O<Value> b) {
   throw std::runtime_error("equivilant_helper: something went wrong");
 }
 
-}
+} // namespace cxbqn::provides

@@ -5,9 +5,7 @@ namespace cxbqn::types {
 
 static std::vector<Marked *> allocations;
 
-void GC::register_ptr(Marked * mem) {
-  allocations.push_back(mem);
-}
+void GC::register_ptr(Marked *mem) { allocations.push_back(mem); }
 
 void GC::gc() {
   // Do nothing for now... have to figure out what is classified as a root
@@ -20,4 +18,4 @@ void GC::force_gc_all() {
       delete e;
 }
 
-}
+} // namespace cxbqn::types

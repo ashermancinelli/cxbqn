@@ -90,8 +90,7 @@ const std::string_view Scope::source_str() const {
   if (!_source_indices.has_value() and nullptr == parent)
     throw std::runtime_error("expected to have source indices or a parent");
 #endif
-  return _source_str.has_value() ? _source_str.value()
-                                 : parent->source_str();
+  return _source_str.has_value() ? _source_str.value() : parent->source_str();
 }
 
 void Scope::set_source_info(std::vector<std::vector<uz>> si, O<Array> s) {
@@ -105,8 +104,7 @@ void Scope::set_source_info(std::vector<std::vector<uz>> si, O<Array> s) {
   // create a standard string of the source text
   std::string _s;
   for (auto v : s->values)
-    utf8::append(dyncast<Character>(v)->c(),
-                 std::back_inserter(_s));
+    utf8::append(dyncast<Character>(v)->c(), std::back_inserter(_s));
   _source_str = _s;
 }
 

@@ -2,7 +2,7 @@
 
 namespace cxbqn::provides {
 
-O<Value> Deshape::call(u8 nargs, Args& args) {
+O<Value> Deshape::call(u8 nargs, Args &args) {
   CXBQN_DEBUG("⥊: nargs={},args={}", nargs, args);
   XNULLCHK("⥊");
 
@@ -26,11 +26,10 @@ O<Value> Deshape::call(u8 nargs, Args& args) {
   if (iswarr) {
     auto warr = dyncast<Array>(args[2]);
     for (int i = 0; i < warr->N(); i++)
-      ret->shape.push_back(static_cast<uz>(
-          dyncast<Number>(warr->values[i])->v));
+      ret->shape.push_back(
+          static_cast<uz>(dyncast<Number>(warr->values[i])->v));
   } else {
-    ret->shape.push_back(
-        static_cast<uz>(dyncast<Number>(args[2])->v));
+    ret->shape.push_back(static_cast<uz>(dyncast<Number>(args[2])->v));
   }
 
   const auto cnt = std::accumulate(ret->shape.begin(), ret->shape.end(), 1,
@@ -50,4 +49,4 @@ O<Value> Deshape::call(u8 nargs, Args& args) {
                        xarr->N()]; // values wrap when 𝕩 has insufficient length
   return ret;
 }
-}
+} // namespace cxbqn::provides

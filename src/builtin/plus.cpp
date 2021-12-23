@@ -2,7 +2,7 @@
 
 namespace cxbqn::provides {
 
-O<Value> Plus::call(u8 nargs, Args& args) {
+O<Value> Plus::call(u8 nargs, Args &args) {
   CXBQN_DEBUG("+:nargs={},args={}", nargs, args);
   XNULLCHK("+");
   auto ox = args[1];
@@ -21,8 +21,8 @@ O<Value> Plus::call(u8 nargs, Args& args) {
     throw std::runtime_error("+: Cannot add non-data values.");
   }
   if (t_Character == type_builtin(ox) || t_Character == type_builtin(ow)) {
-    return check_char(CXBQN_NEW(Character,x->v + w->v));
+    return check_char(CXBQN_NEW(Character, x->v + w->v));
   }
   return NN(x->v + w->v);
 }
-}
+} // namespace cxbqn::provides

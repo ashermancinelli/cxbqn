@@ -22,7 +22,7 @@ O<Value> Select::call(u8 nargs, Args &args) {
   for (const auto e : w->values) {
     const auto i = static_cast<uz>(dyncast<Number>(e)->v);
     for (int k = 0; k < c; k++)
-      ret->values[j++] = x->values[i*c+k];
+      ret->values[j++] = x->values[i * c + k];
   }
 
   return ret;

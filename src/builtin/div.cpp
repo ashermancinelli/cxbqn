@@ -2,7 +2,7 @@
 
 namespace cxbqn::provides {
 
-O<Value> Div::call(u8 nargs, Args& args) {
+O<Value> Div::call(u8 nargs, Args &args) {
   CXBQN_DEBUG("÷:nargs={},args={}", nargs, args);
   XNULLCHK("÷");
   auto ox = args[1];
@@ -14,4 +14,4 @@ O<Value> Div::call(u8 nargs, Args& args) {
   return CXBQN_NEW(Number, 2 == nargs ? w->v / x->v : 1 / x->v);
 }
 
-}
+} // namespace cxbqn::provides

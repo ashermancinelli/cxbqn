@@ -16,11 +16,11 @@ void tr3o(std::vector<O<Value>> &stk) {
 
   if (f->t()[t_Nothing]) {
     CXBQN_DEBUG("tr3o: pushing atop, f was nothing");
-    stk.push_back(CXBQN_NEW(Atop,g, h));
+    stk.push_back(CXBQN_NEW(Atop, g, h));
   } else {
     CXBQN_DEBUG("tr3o: pushing fork, h was not nothing");
-    stk.push_back(CXBQN_NEW(Fork,f, g, h));
+    stk.push_back(CXBQN_NEW(Fork, f, g, h));
   }
 }
 
-}
+} // namespace cxbqn::vm::instructions

@@ -71,7 +71,7 @@ O<Array> get_runtime_setprims() {
   const auto provide = provides::get_provides()->values;
   static auto rcu =
 #include <cxbqn/__/r>
-  ;
+      ;
   auto ret = vm::run(rcu);
 
   // Decompose the result to get the array with just the runtime
@@ -137,7 +137,7 @@ O<Array> get_runtime_bionly() {
 #define BI_DEF(T)                                                              \
   O<Value> bi_##T() {                                                          \
     static T v;                                                                \
-    return &v;                                                             \
+    return &v;                                                                 \
   }
 #endif
 BI_DEF(Plus);

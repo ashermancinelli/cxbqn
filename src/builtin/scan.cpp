@@ -2,7 +2,7 @@
 
 namespace cxbqn::provides {
 
-O<Value> Scan::call(u8 nargs, Args& args) {
+O<Value> Scan::call(u8 nargs, Args &args) {
   CXBQN_DEBUG("`: nargs={},args={}", nargs, args);
   XNULLCHK("`");
   if (t_Array != type_builtin(args[1]))
@@ -27,8 +27,7 @@ O<Value> Scan::call(u8 nargs, Args& args) {
   auto sh = x->shape;
   auto iswarr = (t_Array == type_builtin(w));
   if (2 == nargs) {
-    auto w_rank =
-        iswarr ? dyncast<Array>(w)->shape.size() : 0;
+    auto w_rank = iswarr ? dyncast<Array>(w)->shape.size() : 0;
     if (1 + w_rank != x->shape.size())
       throw std::runtime_error("`: rank of 𝕨 must be cell rank of 𝕩");
     if (iswarr) {
@@ -53,8 +52,7 @@ O<Value> Scan::call(u8 nargs, Args& args) {
   int i = 0;
   auto maybe_ret = CXBQN_NEW(Array, 1);
   maybe_ret->values[0] = w;
-  auto warr = iswarr ? dyncast<Array>(w)
-                     : maybe_ret;
+  auto warr = iswarr ? dyncast<Array>(w) : maybe_ret;
   CXBQN_DEBUG("cnt={},warr={}", cnt, CXBQN_STR_NC((O<Value>)warr));
   if (1 == nargs)
     for (; i < cnt; i++)
@@ -74,4 +72,4 @@ O<Value> Scan::call(u8 nargs, Args& args) {
   }
   return ret;
 }
-}
+} // namespace cxbqn::provides

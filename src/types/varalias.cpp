@@ -7,4 +7,4 @@ O<Value> VarAlias::set(bool should_be_set, O<Value> v) {
   return v;
 }
 
-}
+} // namespace cxbqn::types

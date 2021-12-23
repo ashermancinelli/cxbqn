@@ -16,8 +16,8 @@ void md1c(std::vector<O<Value>> &stk) {
     auto v = r->call(1, a);
     stk.push_back(v);
   } else {
-    stk.push_back(CXBQN_NEW(Md1Deferred,f, opaque_r));
+    stk.push_back(CXBQN_NEW(Md1Deferred, f, opaque_r));
   }
 }
 
-}
+} // namespace cxbqn::vm::instructions

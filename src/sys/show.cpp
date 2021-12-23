@@ -1,7 +1,7 @@
 #include "sys_helper.hpp"
 namespace cxbqn::sys {
 
-O<Value> Show::call(u8 nargs, Args& args) {
+O<Value> Show::call(u8 nargs, Args &args) {
   CXBQN_DEBUG("Show: nargs={},args={}", nargs, args);
   if (2 == nargs)
     throw std::runtime_error("•Show: can only be called with one arg");
@@ -15,5 +15,4 @@ O<Value> Show::call(u8 nargs, Args& args) {
   return formatted;
 }
 
-}
-
+} // namespace cxbqn::sys

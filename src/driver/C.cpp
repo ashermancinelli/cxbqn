@@ -53,8 +53,8 @@ int main(int argc, char **argv) {
     auto setprims = runtime_ret->values[1];
 
     // Inform the two latter builtins of the runtime so they can refer to it
-    auto decompose = CXBQN_NEW(Decompose,bqnruntime);
-    auto primind = CXBQN_NEW(PrimInd,bqnruntime);
+    auto decompose = CXBQN_NEW(Decompose, bqnruntime);
+    auto primind = CXBQN_NEW(PrimInd, bqnruntime);
 
     {
       Args a{setprims, O<Array>(new Array({decompose, primind})), bi_Nothing()};
@@ -80,13 +80,12 @@ int main(int argc, char **argv) {
         vm::run(pfmt.bc, pfmt.consts.to_arr(), pfmt.blk_defs, pfmt.bodies);
     auto fmt1 = fmtret.v;
 
-    auto glyph = CXBQN_NEW(Glyph,bqnruntime);
+    auto glyph = CXBQN_NEW(Glyph, bqnruntime);
     auto fmtnum = CXBQN_NEW(FmtNum);
     {
       Args a{fmt1, O<Value>(new Array({bi_Type(), decompose, glyph, fmtnum})),
-          bi_Nothing()};
-      auto _fmtarr = fmt1->call(
-          1, a);
+             bi_Nothing()};
+      auto _fmtarr = fmt1->call(1, a);
     }
 
     auto fmtarr = dyncast<Array>(_fmtarr);
@@ -101,14 +100,14 @@ int main(int argc, char **argv) {
     // Here, we could just call the compiler with the runtime as 𝕨. To add the
     // system functions, we will pass another value in an array along with the
     // runtime. This funcionality is not documented at the time of writing.
-    auto compw = CXBQN_NEW(Array,2);
+    auto compw = CXBQN_NEW(Array, 2);
     compw->values[0] = bqnruntime;
 
     // It may seem counterintuitive to pass the compiler and compiler arguments
     // to the sys func resolver which is itself part of the compiler arguments,
     // but this is needed for •Import to work without recreating the compiler
     compw->values[1] = O<Value>(new SystemFunctionResolver(
-        CXBQN_NEW(Array,0), fmt, repr, compiler, bqnruntime, path));
+        CXBQN_NEW(Array, 0), fmt, repr, compiler, bqnruntime, path));
 
     {
       Args a{compiler, src, compw};

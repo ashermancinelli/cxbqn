@@ -2,7 +2,7 @@
 
 namespace cxbqn::provides {
 
-O<Value> PrimInd::call(u8 nargs, Args& args) {
+O<Value> PrimInd::call(u8 nargs, Args &args) {
   CXBQN_DEBUG("PrimInd: nargs={},args={}", nargs, args);
   XNULLCHK("•PrimInd");
 
@@ -17,4 +17,4 @@ O<Value> PrimInd::call(u8 nargs, Args& args) {
 
   return NNC(std::distance(runtime.begin(), it));
 }
-}
+} // namespace cxbqn::provides

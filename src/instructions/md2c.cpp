@@ -21,8 +21,8 @@ void md2c(std::vector<O<Value>> &stk) {
     auto v = r->call(2, a);
     stk.push_back(v);
   } else {
-    stk.push_back(CXBQN_NEW(Md2Deferred,f, opaque_r, g));
+    stk.push_back(CXBQN_NEW(Md2Deferred, f, opaque_r, g));
   }
 }
 
-}
+} // namespace cxbqn::vm::instructions
