@@ -21,6 +21,7 @@ set(RT_NATIVE_SRC
     r0/after.cpp
     r0/repeat.cpp
     r0/less.cpp
+    r0/select.cpp
 
     # Currently no replacements for r1
 )
