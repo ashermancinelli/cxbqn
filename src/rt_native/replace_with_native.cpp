@@ -27,6 +27,9 @@ void replace_r0_with_native(O<Array> r0) {
   r0->values[21] = CXBQN_NEW(r0::After);      // ⟜
   r0->values[22] = CXBQN_NEW(r0::Choose);     // ◶
   r0->values[23] = CXBQN_NEW(r0::Repeat);     // ⍟
+#else
+#warning                                                                       \
+    "you probably don't want BQN-only r0. enable CXBQN_NATIVE_R0 to avoid this warning."
 #endif
 }
 

@@ -1,5 +1,6 @@
 #pragma once
 #include <cxbqn/types.hpp>
+#include <cxbqn/config.hpp>
 
 /*
  * After the runtime has been initialized, we can replace parts of r0 and r1
