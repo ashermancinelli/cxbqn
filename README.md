@@ -16,7 +16,7 @@ cd build
 CXX=g++-11 cmake ..
 make -j12
 ./BQN -v
-CXBQN 0.9.0
+CXBQN 0.10.1
 compiled on Nov 24 2021
 ```
 
@@ -24,7 +24,7 @@ compiled on Nov 24 2021
 
 ```
 $ ./BQN -h
-CXBQN 0.9.0
+CXBQN 0.10.1
 compiled on Nov 24 2021
 usage: BQN [options] [arguments]
 	-e <string>: execute BQN expression
@@ -140,7 +140,7 @@ You may directly execute the result of this script like so:
 ```console
 $ ./install/bin/cxbqn-config
 export CXBQN_PREFIX=/home/asher/workspace/cxbqn/install
-export CXBQN_VERSION=0.9.0
+export CXBQN_VERSION=0.10.1
 export CXBQN_COLOR=OFF
 export CXBQN_READLINE=ON
 export CXBQN_CUDA=OFF
