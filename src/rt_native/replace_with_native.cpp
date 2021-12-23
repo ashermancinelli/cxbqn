@@ -9,7 +9,7 @@ using namespace cxbqn::types;
 void replace_r0_with_native(O<Array> r0) {
 #ifdef CXBQN_NATIVE_R0
   r0->values[3] = CXBQN_NEW(r0::Less);        // <
-  //r0->values[5] = CXBQN_NEW(r0::NE);          // ≠
+  r0->values[5] = CXBQN_NEW(r0::NE);          // ≠
   r0->values[7] = CXBQN_NEW(r0::Rtack);       // ⊢
   r0->values[8] = CXBQN_NEW(r0::Ltack);       // ⊣
   r0->values[9] = CXBQN_NEW(r0::JoinTo);      // ∾

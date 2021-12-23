@@ -7,8 +7,6 @@ O<Value> Each::call(u8 nargs, Args &args) {
   auto x = dyncast<Array>(args[1]);
   auto w = dyncast<Array>(args[2]);
 
-   // ,m1(f=>(x,w)=>arr(x.map((e,i)=>call(f,e,w[i])),x.sh))    // ¨
-   //
   const auto l = x->N();
   auto ret = CXBQN_NEW(Array, l);
   ret->shape = x->shape;
