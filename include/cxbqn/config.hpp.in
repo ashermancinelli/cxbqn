@@ -37,6 +37,8 @@ static constexpr std::size_t init_stack_size() {
 #cmakedefine CXBQN_READLINE
 #cmakedefine CXBQN_CUDA
 #cmakedefine CXBQN_FFI
+#cmakedefine CXBQN_NATIVE_R0
+#cmakedefine CXBQN_NATIVE_R1
 
 #ifdef CXBQN_CUDA
 #define CXBQN_CUDA_HOST_DEVICE __host__ __device__

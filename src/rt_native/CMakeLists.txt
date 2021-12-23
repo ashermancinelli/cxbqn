@@ -16,6 +16,9 @@ set(RT_NATIVE_SRC
     r0/choose.cpp
     r0/atop.cpp
     r0/over.cpp
+    r0/fold.cpp
+    r0/before.cpp
+    r0/after.cpp
 
     # Currently no replacements for r1
 )

@@ -111,6 +111,14 @@ set(CXBQN_FFI
     OFF
     CACHE BOOL "Enable foreign function interface"
 )
+set(CXBQN_NATIVE_R0
+  ON
+  CACHE BOOL "Enable native C++ functions for lower-level runtime"
+  )
+set(CXBQN_NATIVE_R1
+  OFF
+  CACHE BOOL "Enable native C++ functions for higher-level runtime"
+  )
 
 add_definitions("-DCXBQN_MEM_${CXBQN_MEM_STRATEGY}=1")
 
