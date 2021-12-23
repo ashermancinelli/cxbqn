@@ -30,6 +30,7 @@ void replace_r1_with_native(O<Array> r1);
 namespace r0 {
 
 // ⌊ ⌈ | < > ≠ ≥ ⊢ ⊣ ∾ ⋈ ↑ ↓ ⊏ ˙ ˜ ¨ ´ ∘ ○ ⊸ ⟜ ◶ ⍟
+CXBQN_BUILTIN_FN_DECL(Less, "<");
 CXBQN_BUILTIN_FN_DECL(NE, "≠");
 CXBQN_BUILTIN_FN_DECL(Rtack, "⊢");
 CXBQN_BUILTIN_FN_DECL(Ltack, "⊣");
