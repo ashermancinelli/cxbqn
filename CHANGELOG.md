@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning v2](https://semver.org/spec/v2.0.0.html).
 
-## [unreleased]
+## [0.10.0] 12-22-2021
 
 * Extreme perf improvements from native modifiers in the runtime
 * The following runtime values have _some_ native support:
@@ -22,6 +22,9 @@ and this project adheres to [Semantic Versioning v2](https://semver.org/spec/v2.
     * Atop (∘)
     * Over (○)
     * Choose (◶)
+    * Before (⊸)
+    * After (⟜)
+    * Repeat (⍟)
 
 ## [0.9.1] 12-22-2021
 

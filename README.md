@@ -85,6 +85,9 @@ foo     foobar
 | `CXBQN_DEEPCHECKS`   | Enable deeper checks which may produce more helpful errors but will hurt performance.                                                                   |
 | `CXBQN_CUDA`         | Enable CUDA execution via `•_CUDAFor`                                                                                                                   |
 | `CXBQN_FFI`          | Enable loading dynamic libraries and calling user functions from them.                                                                                  |
+| `CXBQN_NATIVE_R0`    | Enable native C++ implementation of some runtime functions from r0.                                                                                     |
+
+| `CXBQN_NATIVE_R1`    | Enable native C++ implementation of some runtime functions from r1.                                                                                     |
 
 ## Feature Support
 

@@ -46,6 +46,7 @@ CXBQN_BUILTIN_DECL(Md2, Over, "○");
 CXBQN_BUILTIN_DECL(Md2, Before, "⊸");
 CXBQN_BUILTIN_DECL(Md2, After, "⟜");
 CXBQN_BUILTIN_DECL(Md2, Choose, "◶");
+CXBQN_BUILTIN_DECL(Md2, Repeat, "⍟");
 
 } // namespace r0
 

@@ -24,6 +24,7 @@ void replace_r0_with_native(O<Array> r0) {
   r0->values[20] = CXBQN_NEW(r0::Before);     // ⊸
   r0->values[21] = CXBQN_NEW(r0::After);      // ⟜
   r0->values[22] = CXBQN_NEW(r0::Choose);     // ◶
+  r0->values[23] = CXBQN_NEW(r0::Repeat);     // ⍟
 #endif
 }
 

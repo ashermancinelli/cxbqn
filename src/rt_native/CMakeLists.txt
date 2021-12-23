@@ -19,6 +19,7 @@ set(RT_NATIVE_SRC
     r0/fold.cpp
     r0/before.cpp
     r0/after.cpp
+    r0/repeat.cpp
 
     # Currently no replacements for r1
 )
