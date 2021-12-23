@@ -172,8 +172,9 @@ int parse_args(std::vector<std::string> args, O<Array> &path, O<Array> &src,
   it++; // skip exe name
 
   while (it != args.end()) {
-    if ("-e" == *it) {
+    if ("-e" == *it or "-p" == *it) {
       repl = false;
+      pp_res = "-p" == *it;
       it++;
       auto _src = *it++;
       CXBQN_PTR_RESET(src, new Array(_src));
@@ -182,9 +183,6 @@ int parse_args(std::vector<std::string> args, O<Array> &path, O<Array> &src,
         sysargs->shape[0]++;
       }
       return 0;
-    } else if ("-p" == *it) {
-      pp_res = true;
-      it++;
     } else if ("-x" == *it) {
       show_cu = true;
       it++;
