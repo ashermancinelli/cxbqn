@@ -13,6 +13,9 @@ set(RT_NATIVE_SRC
     r0/take.cpp
     r0/drop.cpp
     r0/constant.cpp
+    r0/choose.cpp
+    r0/atop.cpp
+    r0/over.cpp
 
     # Currently no replacements for r1
 )

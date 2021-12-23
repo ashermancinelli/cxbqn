@@ -17,6 +17,9 @@ void replace_r0_with_native(O<Array> r0) {
   r0->values[14] = CXBQN_NEW(r0::Constant);   // ˙
   r0->values[15] = CXBQN_NEW(r0::SelfSwap);   // ˜
   r0->values[16] = CXBQN_NEW(r0::Each);       // ¨
+  r0->values[18] = CXBQN_NEW(r0::Atop);       // ∘
+  r0->values[19] = CXBQN_NEW(r0::Over);       // ○
+  r0->values[22] = CXBQN_NEW(r0::Choose);     // ◶
 }
 
 void replace_r1_with_native(O<Array> r1) {}

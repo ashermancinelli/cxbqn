@@ -36,7 +36,7 @@ O<Value> Deshape::call(u8 nargs, Args& args) {
   const auto cnt = std::accumulate(ret->shape.begin(), ret->shape.end(), 1,
                                    std::multiplies<uz>());
   if (0 == cnt)
-    CXBQN_DEBUG("⥊: got count of  0, this is suspicious");
+    CXBQN_DEBUG("⥊: got count of 0, this is suspicious");
 
   ret->values.resize(cnt);
 

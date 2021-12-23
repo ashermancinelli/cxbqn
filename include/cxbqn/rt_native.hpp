@@ -40,6 +40,9 @@ CXBQN_BUILTIN_FN_DECL(Drop, "↓");
 CXBQN_BUILTIN_FN_DECL(Constant, "˙");
 CXBQN_BUILTIN_DECL(Md1, SelfSwap, "˜");
 CXBQN_BUILTIN_DECL(Md1, Each, "¨");
+CXBQN_BUILTIN_DECL(Md2, Atop, "∘");
+CXBQN_BUILTIN_DECL(Md2, Over, "○");
+CXBQN_BUILTIN_DECL(Md2, Choose, "◶");
 
 } // namespace r0
 
