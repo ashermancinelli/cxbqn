@@ -1,4 +1,5 @@
 #include "driver.hpp"
+#include <argparse.hpp>
 
 #ifdef CXBQN_READLINE
 namespace rl {
@@ -10,7 +11,7 @@ namespace rl {
 
 namespace cxbqn::driver {
 
-static std::vector<std::string> curr_names = {};
+static std::vector<std::string> curr_names = {"q", "quit"};
 
 #ifdef CXBQN_READLINE
 char *match_names(const char *text, int state) {
@@ -53,6 +54,24 @@ bool getline(std::string &line) {
 #endif
 }
 
+static inline void ltrim(std::string &s) {
+  s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch) {
+            return !std::isspace(ch);
+          }));
+}
+
+static inline void rtrim(std::string &s) {
+  s.erase(std::find_if(s.rbegin(), s.rend(),
+                       [](unsigned char ch) { return !std::isspace(ch); })
+              .base(),
+          s.end());
+}
+
+static inline void chomp(std::string &s) {
+  ltrim(s);
+  rtrim(s);
+}
+
 static inline O<Array> to_arr(std::vector<std::string> n) {
   auto ar = CXBQN_NEW(Array, n.size());
   for (int i = 0; i < n.size(); i++)
@@ -68,8 +87,14 @@ int repl(O<Value> compiler, O<Array> bqnruntime, O<Value> sysfn_handler,
 #endif
 
   std::string line;
+tryagain:
   if (!getline(line))
     return 1;
+  chomp(line);
+  if (!line.size())
+    goto tryagain;
+  if ("q" == line or "quit" == line)
+    std::exit(0);
 
   auto compw = CXBQN_NEW(Array, 4);
   compw->values[0] = bqnruntime;
@@ -105,8 +130,12 @@ int repl(O<Value> compiler, O<Array> bqnruntime, O<Value> sysfn_handler,
 
   while (getline(line)) {
 
+    chomp(line);
+
     if (0 == line.size())
       continue;
+    if ("q" == line or "quit" == line)
+      std::exit(0);
 
     try {
 
@@ -147,85 +176,103 @@ int repl(O<Value> compiler, O<Array> bqnruntime, O<Value> sysfn_handler,
   return 0;
 }
 
-int version() {
-  fmt::print("CXBQN {}\ncompiled on " __DATE__ "\n", cxbqn::config::version());
-  return 1;
-}
-
-int usage() {
-  version();
-  fmt::print("usage: BQN [options] [arguments]\n");
-  fmt::print("\t-e <string>: execute BQN expression\n");
-  fmt::print(
-      "\t-p <string>: execute BQN expression, pretty print the result\n");
-  fmt::print("\t-f <file>: execute <file>\n");
-  fmt::print("\t-r: start repl (WIP)\n");
-  fmt::print("\t-h, --help: print this message\n");
-  fmt::print("\t-v, --version: show full version information\n");
-  fmt::print("\t-x: show compilation unit before executing\n");
-  return 1;
-}
-
-int parse_args(int argc, char** argv, O<Array> &path, O<Array> &src,
+int parse_args(int argc, char **argv, O<Array> &path, O<Array> &src,
                O<Array> sysargs, bool &repl, bool &pp_res, bool &show_cu) {
 
-  std::vector<std::string> args(argv, argv+argc);
-  auto it = args.begin();
-  it++; // skip exe name
+  // If no arguments are passed, just start up the repl
+  repl = true;
 
-  while (it != args.end()) {
-    if ("-e" == *it or "-p" == *it) {
-      repl = false;
-      pp_res = "-p" == *it;
-      it++;
-      auto _src = *it++;
-      CXBQN_PTR_RESET(src, new Array(_src));
-      while (it != args.end()) {
-        sysargs->values.push_back(CXBQN_NEW(Array, *it++));
-        sysargs->shape[0]++;
-      }
-      return 0;
-    } else if ("-x" == *it) {
-      show_cu = true;
-      it++;
-    } else if ("-v" == *it or "--version" == *it) {
-      return version();
-    } else if ("-h" == *it or "--help" == *it) {
-      return usage();
-    } else if ("-r" == *it) {
-      repl = true;
-      it++;
-    } else if ("-f" == *it) {
-      repl = false;
-      it++;
-      auto f = fs::path(*it++);
-      if (!fs::exists(f)) {
-        fmt::print("path {} does not exist\n", f);
-        return 1;
-      }
-      CXBQN_PTR_RESET(path, new Array(fs::absolute(f)));
-      std::string _src = "";
-      std::FILE *fp = std::fopen(f.c_str(), "r");
-      if (!fp) {
-        fmt::print("could not open path {}\n", f);
-        return 1;
-      }
-      int ch;
-      while ((ch = fgetc(fp)) != EOF) {
-        _src += ch;
-      }
-      std::fclose(fp);
-      CXBQN_PTR_RESET(src, new Array(_src));
-      sysargs->values.push_back(path);
-      sysargs->shape[0]++;
-      while (it != args.end()) {
-        sysargs->values.push_back(CXBQN_NEW(Array, *it++));
-        sysargs->shape[0]++;
-      }
-      return 0;
-    } else {
-      throw std::runtime_error("invalid argument combination");
-    }
+  // the main program doesn't care if the source was passed by filename, so
+  // we'll just keep track of this option here.
+  auto file = false;
+
+  argparse::ArgumentParser prog("BQN", config::version(),
+                                argparse::default_arguments::help);
+
+  // clang-format off
+  prog.add_argument("-e", "--execute")
+    .action([&] (const std::string& code) {
+          repl = false;
+          pp_res = false;
+          CXBQN_PTR_RESET(src, new Array(code));
+        })
+    .help("execute a string as BQN code")
+    .nargs(1);
+
+  prog.add_argument("-v", "--version")
+    .action([&] (const auto&) {
+          fmt::print("CXBQN {} compiled on {}\n", config::version(), __DATE__);
+          std::exit(0);
+        })
+    .help("prints version information and exits")
+    .default_value(false)
+    .implicit_value(true);
+
+  prog.add_argument("-p", "--execute-and-print")
+    .action([&] (const std::string& code) {
+          repl = false;
+          pp_res = true;
+          CXBQN_PTR_RESET(src, new Array(code));
+        })
+    .help("execute a string as BQN code, pretty print the result")
+    .nargs(1);
+
+  prog.add_argument("-x", "--dump-cu")
+    .action([&] (const auto&) { show_cu= true; })
+    .help("dump compilation units after compiling")
+    .default_value(false)
+    .implicit_value(true);
+
+  prog.add_argument("-r", "--repl")
+    .action([&] (const auto&) { repl = true; })
+    .help("enter REPL")
+    .default_value(false)
+    .implicit_value(true);
+
+  prog.add_argument("-f", "--file")
+    .action([&] (const std::string& fname) -> std::string {
+          repl = false;
+          auto f = fs::path(fname);
+          if (!fs::exists(f)) {
+            const auto s = fmt::format("path {} does not exist\n", f);
+            throw std::runtime_error(s);
+          }
+          CXBQN_PTR_RESET(path, new Array(fs::absolute(f)));
+          std::string _src = "";
+          std::FILE *fp = std::fopen(f.c_str(), "r");
+          if (!fp) {
+            const auto s = fmt::format("could not open path {}\n", f);
+            throw std::runtime_error(s);
+          }
+          int ch;
+          while ((ch = fgetc(fp)) != EOF) {
+            _src += ch;
+          }
+          std::fclose(fp);
+          CXBQN_PTR_RESET(src, new Array(_src));
+          sysargs->values.push_back(path);
+          sysargs->shape[0]++;
+          return fname;
+        })
+    .help("execute a string as BQN code")
+    .nargs(1);
+
+  prog.add_argument("args")
+    .default_value(std::vector<std::string>())
+    .help("all remaining arguments are passed into the BQN program as •args")
+    .remaining();
+  // clang-format on
+
+  try {
+    prog.parse_args(argc, argv);
+  } catch (const std::exception &e) {
+    fmt::print("{}\n{}", e.what(), prog);
+  }
+
+  const auto args = prog.get<std::vector<std::string>>("args");
+  sysargs->shape[0] += args.size();
+  for (const auto &a : args) {
+    sysargs->values.push_back(CXBQN_NEW(Array, a));
   }
 
   return 0;

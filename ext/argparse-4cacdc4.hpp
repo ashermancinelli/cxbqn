@@ -312,6 +312,17 @@ template <class T> struct parse_number<T, chars_format::fixed> {
 
 } // namespace details
 
+enum class default_arguments : unsigned int {
+  none = 0,
+  help = 1,
+  version = 2,
+  all = help | version,
+};
+
+inline bool operator& (const default_arguments &a, const default_arguments &b) {
+  return static_cast<unsigned int>(a) & static_cast<unsigned int>(b);
+}
+
 class ArgumentParser;
 
 class Argument {
@@ -442,6 +453,7 @@ public:
     mUsedName = usedName;
     if (mNumArgs == 0) {
       mValues.emplace_back(mImplicitValue);
+      std::visit([](auto &aAction) { aAction({}); }, mAction);
       return start;
     } else if (mNumArgs <= std::distance(start, end)) {
       if (auto expected = maybe_nargs()) {
@@ -453,18 +465,18 @@ public:
 
       struct action_apply {
         void operator()(valued_action &f) {
-          std::transform(start, end, std::back_inserter(self.mValues), f);
+          std::transform(first, last, std::back_inserter(self.mValues), f);
         }
 
         void operator()(void_action &f) {
-          std::for_each(start, end, f);
+          std::for_each(first, last, f);
           if (!self.mDefaultValue.has_value()) {
             if (auto expected = self.maybe_nargs())
               self.mValues.resize(*expected);
           }
         }
 
-        Iterator start, end;
+        Iterator first, last;
         Argument &self;
       };
       std::visit(action_apply{start, end, *this}, mAction);
@@ -472,7 +484,8 @@ public:
     } else if (mDefaultValue.has_value()) {
       return start;
     } else {
-      throw std::runtime_error("Too few arguments");
+      throw std::runtime_error("Too few arguments for '" +
+                               std::string(mUsedName) + "'.");
     }
   }
 
@@ -759,7 +772,7 @@ private:
     if (mDefaultValue.has_value()) {
       return std::any_cast<T>(mDefaultValue);
     }
-    throw std::logic_error("No value provided");
+    throw std::logic_error("No value provided for '" + mNames.back() + "'.");
   }
 
   /*
@@ -812,16 +825,31 @@ private:
 class ArgumentParser {
 public:
   explicit ArgumentParser(std::string aProgramName = {},
-                          std::string aVersion = "1.0")
+                          std::string aVersion = "1.0",
+                          default_arguments aArgs = default_arguments::all)
       : mProgramName(std::move(aProgramName)), mVersion(std::move(aVersion)) {
-    add_argument("-h", "--help").help("shows help message and exits").nargs(0);
-#ifndef ARGPARSE_LONG_VERSION_ARG_ONLY
-    add_argument("-v", "--version")
-#else
-	add_argument("--version")
-#endif
-        .help("prints version information and exits")
+    if (aArgs & default_arguments::help) {
+      add_argument("-h", "--help")
+        .action([&](const auto &) {
+          std::cout << help().str();
+          std::exit(0);
+        })
+        .default_value(false)
+        .help("shows help message and exits")
+        .implicit_value(true)
         .nargs(0);
+    }
+    if (aArgs & default_arguments::version) {
+      add_argument("-v", "--version")
+        .action([&](const auto &) {
+          std::cout << mVersion;
+          std::exit(0);
+        })
+        .default_value(false)
+        .help("prints version information and exits")
+        .implicit_value(true)
+        .nargs(0);
+    }
   }
 
   ArgumentParser(ArgumentParser &&) noexcept = default;
@@ -829,6 +857,7 @@ public:
 
   ArgumentParser(const ArgumentParser &other)
       : mProgramName(other.mProgramName),
+        mIsParsed(other.mIsParsed),
         mPositionalArguments(other.mPositionalArguments),
         mOptionalArguments(other.mOptionalArguments) {
     for (auto it = std::begin(mPositionalArguments); it != std::end(mPositionalArguments);
@@ -910,12 +939,16 @@ public:
   }
 
   /* Getter for options with default values.
+   * @throws std::logic_error if parse_args() has not been previously called
    * @throws std::logic_error if there is no such option
    * @throws std::logic_error if the option has no value
    * @throws std::bad_any_cast if the option is not of type T
    */
   template <typename T = std::string>
   T get(std::string_view aArgumentName) const {
+    if (!mIsParsed) {
+      throw std::logic_error("Nothing parsed, no arguments are available.");
+    }
     return (*this)[aArgumentName].get<T>();
   }
 
@@ -945,7 +978,22 @@ public:
     if (tIterator != mArgumentMap.end()) {
       return *(tIterator->second);
     }
-    throw std::logic_error("No such argument");
+    if (aArgumentName.front() != '-') {
+      std::string nameStr(aArgumentName);
+      // "-" + aArgumentName
+      nameStr = "-" + nameStr;
+      tIterator = mArgumentMap.find(nameStr);
+      if (tIterator != mArgumentMap.end()) {
+        return *(tIterator->second);
+      }
+      // "--" + aArgumentName
+      nameStr = "-" + nameStr;
+      tIterator = mArgumentMap.find(nameStr);
+      if (tIterator != mArgumentMap.end()) {
+        return *(tIterator->second);
+      }
+    }
+    throw std::logic_error("No such argument: " + std::string(aArgumentName));
   }
 
   // Print help message
@@ -1029,18 +1077,6 @@ private:
       auto tIterator = mArgumentMap.find(tCurrentArgument);
       if (tIterator != mArgumentMap.end()) {
         auto tArgument = tIterator->second;
-
-        // the first optional argument is --help
-        if (tArgument == mOptionalArguments.begin()) {
-          std::cout << *this;
-          std::exit(0);
-        }
-        // the second optional argument is --version
-        else if (tArgument == std::next(mOptionalArguments.begin(), 1)) {
-          std::cout << mVersion << "\n";
-          std::exit(0);
-        }
-
         it = tArgument->consume(std::next(it), end, tIterator->first);
       } else if (const auto &tCompoundArgument = tCurrentArgument;
                  tCompoundArgument.size() > 1 && tCompoundArgument[0] == '-' &&
@@ -1053,13 +1089,14 @@ private:
             auto tArgument = tIterator2->second;
             it = tArgument->consume(it, end, tIterator2->first);
           } else {
-            throw std::runtime_error("Unknown argument");
+            throw std::runtime_error("Unknown argument: " + tCurrentArgument);
           }
         }
       } else {
-        throw std::runtime_error("Unknown argument");
+        throw std::runtime_error("Unknown argument: " + tCurrentArgument);
       }
     }
+    mIsParsed = true;
   }
 
   /*
@@ -1099,6 +1136,7 @@ private:
   std::string mVersion;
   std::string mDescription;
   std::string mEpilog;
+  bool mIsParsed = false;
   std::list<Argument> mPositionalArguments;
   std::list<Argument> mOptionalArguments;
   std::map<std::string_view, list_iterator, std::less<>> mArgumentMap;

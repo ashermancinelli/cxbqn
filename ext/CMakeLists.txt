@@ -24,7 +24,7 @@ else()
 endif()
 
 file(CREATE_LINK
-  ${CMAKE_CURRENT_SOURCE_DIR}/argparse-v2.2.hpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/argparse-4cacdc4.hpp
   ${PROJECT_BINARY_DIR}/argparse.hpp
   )
 
