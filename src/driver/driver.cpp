@@ -166,8 +166,10 @@ int usage() {
   return 1;
 }
 
-int parse_args(std::vector<std::string> args, O<Array> &path, O<Array> &src,
+int parse_args(int argc, char** argv, O<Array> &path, O<Array> &src,
                O<Array> sysargs, bool &repl, bool &pp_res, bool &show_cu) {
+
+  std::vector<std::string> args(argv, argv+argc);
   auto it = args.begin();
   it++; // skip exe name
 

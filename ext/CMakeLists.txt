@@ -23,5 +23,10 @@ else()
   message(STATUS "Found std::span, using builtin")
 endif()
 
+file(CREATE_LINK
+  ${CMAKE_CURRENT_SOURCE_DIR}/argparse-v2.2.hpp
+  ${PROJECT_BINARY_DIR}/argparse.hpp
+  )
+
 file(GLOB BQN_LIBS ${CMAKE_CURRENT_SOURCE_DIR}/bqn-libs/*.bqn)
 install(FILES ${BQN_LIBS} DESTINATION share/bqn)
