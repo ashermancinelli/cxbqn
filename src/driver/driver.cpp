@@ -177,7 +177,8 @@ tryagain:
 }
 
 int parse_args(int argc, char **argv, O<Array> &path, O<Array> &src,
-               O<Array> sysargs, bool &repl, bool &pp_res, bool &show_cu) {
+               O<Array> sysargs, bool &repl, bool &pp_res, bool &show_cu,
+               std::optional<std::string> &comp_file) {
 
   // If no arguments are passed, just start up the repl
   repl = true;
@@ -218,7 +219,7 @@ int parse_args(int argc, char **argv, O<Array> &path, O<Array> &src,
     .nargs(1);
 
   prog.add_argument("-x", "--dump-cu")
-    .action([&] (const auto&) { show_cu= true; })
+    .action([&] (const auto&) { show_cu = true; })
     .help("dump compilation units after compiling")
     .default_value(false)
     .implicit_value(true);
@@ -228,6 +229,14 @@ int parse_args(int argc, char **argv, O<Array> &path, O<Array> &src,
     .help("enter REPL")
     .default_value(false)
     .implicit_value(true);
+
+  prog.add_argument("-c", "--compile")
+    .action([&] (const std::string& fname) {
+          repl = false;
+          comp_file = fname;
+        })
+    .help("[EXPERIMENTAL] compile BQN source file into executable")
+    .nargs(1);
 
   prog.add_argument("-f", "--file")
     .action([&] (const std::string& fname) -> std::string {
@@ -254,7 +263,7 @@ int parse_args(int argc, char **argv, O<Array> &path, O<Array> &src,
           sysargs->shape[0]++;
           return fname;
         })
-    .help("execute a string as BQN code")
+    .help("execute a BQN file")
     .nargs(1);
 
   prog.add_argument("args")
@@ -276,6 +285,11 @@ int parse_args(int argc, char **argv, O<Array> &path, O<Array> &src,
   }
 
   return 0;
+}
+
+int full_compile(std::string_view fname, std::string_view out,
+                 O<Value> compiler, O<Value> compw, O<Value> fmt) {
+  //
 }
 
 } // namespace cxbqn::driver

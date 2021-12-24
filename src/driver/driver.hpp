@@ -1,10 +1,13 @@
 #pragma once
 #include <chrono>
 #include <cxbqn/comp_utils.hpp>
+#include <cxbqn/config.hpp>
 #include <cxbqn/cxbqn.hpp>
 #include <cxbqn/debug.hpp>
 #include <cxbqn/fs.hpp>
 #include <cxbqn/rt_native.hpp>
+#include <cxbqn/fs.hpp>
+#include <optional>
 #include <spdlog/spdlog.h>
 #include <utf8.h>
 
@@ -20,9 +23,12 @@ namespace cxbqn::driver {
 
 int version();
 int usage();
-int parse_args(int argc, char** argv, O<Array> &path, O<Array> &src,
-               O<Array> sysargs, bool &repl, bool &pp_res, bool& show_cu);
+int parse_args(int argc, char **argv, O<Array> &path, O<Array> &src,
+               O<Array> sysargs, bool &repl, bool &pp_res, bool &show_cu,
+               std::optional<std::string> &comp_file);
 int repl(O<Value> compiler, O<Array> bqnruntime, O<Value> sysfn_handler,
          O<Value> fmt, bool show_cu);
+int full_compile(std::string_view fname, std::string_view out,
+                 fs::path bqn_toolchain);
 
 } // namespace cxbqn::driver

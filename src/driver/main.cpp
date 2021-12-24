@@ -8,6 +8,7 @@ using namespace cxbqn::sys;
 int main(int argc, char **argv) {
 
   bool repl = false, pp_res = false, show_cu = false;
+  std::optional<std::string> comp_file = std::nullopt;
   auto sysargs = CXBQN_NEW(Array, 0);
   auto path = CXBQN_NEW(Array, 0);
   auto src = CXBQN_NEW(Array, "\"CXBQN internal: Empty program\" ! 0");
@@ -15,7 +16,7 @@ int main(int argc, char **argv) {
   std::vector<std::string> args(argv, argv + argc);
 
   if (auto ec =
-          driver::parse_args(argc, argv, path, src, sysargs, repl, pp_res, show_cu))
+          driver::parse_args(argc, argv, path, src, sysargs, repl, pp_res, show_cu, comp_file))
     return ec;
 
   try {
@@ -111,6 +112,8 @@ int main(int argc, char **argv) {
 
     if (repl) {
       return driver::repl(compiler, bqnruntime, compw->values[1], fmt, show_cu);
+    } else if (comp_file.has_value()) {
+      fmt::print("compiling BQN to executable not yet supported.\n");
     } else {
       O<Value> compiled;
       {

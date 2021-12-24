@@ -119,19 +119,6 @@ add_executable(BQN driver/driver.cpp driver/main.cpp)
 target_link_libraries(BQN PUBLIC cxbqn::cxbqn cxbqn::tpl cxbqn::rt_native)
 install(TARGETS BQN DESTINATION bin)
 
-if(CXBQN_BUILD_TOOLS)
-  add_subdirectory(tools)
-  add_executable(C driver/C.cpp driver/driver.cpp)
-  target_link_libraries(C PUBLIC cxbqn::cxbqn)
-  install(TARGETS C DESTINATION bin)
-  add_custom_command(
-    TARGET C
-    POST_BUILD
-    COMMAND "${CMAKE_COMMAND}" -E copy "$<TARGET_FILE:C>"
-            ${PROJECT_BINARY_DIR}
-            )
-endif()
-
 add_custom_command(
   TARGET BQN
   POST_BUILD
