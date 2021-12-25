@@ -22,6 +22,7 @@ static constexpr std::size_t init_stack_size() {
 #cmakedefine CXBQN_PROFILE_VM
 #cmakedefine CXBQN_DEBUG_VM
 #cmakedefine CXBQN_DEBUG_VM_USE_FILE
+#define CXBQN_INSTALL_PREFIX "@CMAKE_INSTALL_PREFIX@"
 #ifdef CXBQN_DEBUG_VM_USE_FILE
 #define CXBQN_DEBUG_VM_FILE "@CXBQN_DEBUG_VM_FILE@"
 #endif

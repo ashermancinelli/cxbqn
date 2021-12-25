@@ -206,3 +206,5 @@ endif()
 
 file(GLOB_RECURSE CXBQN_HEADERS include/cxbqn/*.hpp)
 install(FILES ${CXBQN_HEADERS} DESTINATION include/cxbqn)
+install(DIRECTORY lib DESTINATION share/bqn FILES_MATCHING PATTERN "*.bqn")
+
