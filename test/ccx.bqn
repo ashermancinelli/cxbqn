@@ -11,8 +11,45 @@ Import ← {𝕨•Import path∾𝕩}
 FChars ← {𝕨•FChars path∾𝕩}
 FLines ← {𝕨•FLines path∾𝕩}
 
-strings←•Import path∾"../../bqn-libs/strings.bqn"
+# --- Taken from strings.bqn since importing with cxbqn is still fragile
 
+# Hopefully soon this can be replaced with:
+# ⟨split, replaceall⟩←•Import path∾"../../bqn-libs/strings.bqn"
+
+# Given strings ⥊𝕨 and 𝕩, return ⟨start_mask, keep_mask⟩ for split
+MarkSplit ← (2⌊≠∘⊣)◶{𝕤
+  ! "Split: 𝕨 can't be empty"
+}‿{
+  ≍○<⟜¬ (⟨⟩⥊𝕨)=𝕩
+}‿{
+  c ← (≠𝕨)-1                  # 𝕨⍷𝕩      011000010011    (c←3)
+  i ← 0 (-⟜1⌈c×<)` (≠𝕩)↑𝕨⍷𝕩   # i        032100032103210
+  ⟨c=i,1⊸»⊸∧0=i⟩              # 1⊸»⊸∧0=i 100001100000000
+}
+
+# Return mask of non-overlapping positions in 𝕩 where 𝕨 is found
+# Like 𝕨⍷𝕩 but same length as 𝕩 and suppressing overlaps (leftmost wins)
+Locate ← ⊑ MarkSplit
+
+# Split string 𝕩 on occurrences of separator 𝕨, removing the separators
+Split ← (0<≠∘⊢)◶⟨
+  ≍○<⊢
+  (1+`⊢)⊸((1-˜×)∾¯1⊏⊣)´∘MarkSplit⍟(0<≠∘⊢) ⊔ ⊢
+⟩
+
+# Replace each instance of a string in old with the corresponding
+# string in new.
+# Instances are non-overlapping, and earlier ones take precedence.
+ReplaceAll ← {
+  ⟨old,new⟩←𝕨⋄str←𝕩
+  ! (≠new) ≡ l ← ≠old
+  match ← 1-˜ (l+1)|⌊´ (↕⊸-l) × old Locate¨ <str
+  cont ← (-⟜1⌈≤⟜1×⊢)` match ⊏ (≠¨old)∾0
+  keep ← ≍○<⟜(⊏⟜str) / 0=cont
+  insert ← (new⊏˜⊏⟜match)⊸(≠¨⊸/≍○<∾∘⊣) / (0⊸<∧»⊸≤) cont
+  ⍋⊸⊏´ keep ∾¨ insert
+}
+# ---
 
 F ← •Repr  # Format number
 # Escape the special characters that appear in BQN sources.
@@ -70,13 +107,15 @@ r←(⊑"r"‿"r0"‿"r1"‿"c"‿"cc"‿"f"‿"e"‿"p"⊐⊏)◶⟨
 ⟩ args
 
 # Split into lines
-bc‿consts‿blk‿bod ← (@+10) strings.Split r
+bc‿consts‿blk‿bod ← (@+10) Split r
 
 # Just replace the CXBQN_NEWs in the blocks as we don't need them there
-blk2←⟨")"⟩‿⟨""⟩ strings.ReplaceAll ⟨"CXBQN_NEW(Number,"⟩‿⟨""⟩ strings.ReplaceAll blk
+blk2←⟨")"⟩‿⟨""⟩ ReplaceAll ⟨"CXBQN_NEW(Number,"⟩‿⟨""⟩ ReplaceAll blk
 
 # No comma
-NC ← {1⊸↓⌾⌽𝕩}
+NC ← {1⊸↓⌾⌽""∾𝕩}
+
+•Show ¨consts‿blk2‿bc‿bod
 
 •Out "[=] {
   std::vector<O<Value>> c"∾(NC consts)∾";

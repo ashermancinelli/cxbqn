@@ -11,7 +11,7 @@ O<Value> Import::call(u8 nargs, Args &args) {
   auto w = 2 == nargs ? dyncast<Array>(args[2]) : CXBQN_NEW(Array);
 
   auto basepath = fs::path(_path->to_string());
-  auto f = basepath.parent_path() / fs::path(x->to_string());
+  auto f = basepath / fs::path(x->to_string());
   if (!fs::exists(f)) {
     std::stringstream ss;
     ss << "•Import path " << f.c_str() << " does not exist";

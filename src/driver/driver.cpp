@@ -179,7 +179,7 @@ tryagain:
 int parse_args(int argc, char **argv, O<Array> &path, O<Array> &src,
                O<Array> sysargs, bool &repl, bool &pp_res, bool &show_cu) {
 
-  // If no arguments are passed, just start up the repl
+  // If no appropriate startup flags were passed, just start up the repl
   repl = true;
 
   // the main program doesn't care if the source was passed by filename, so
@@ -237,7 +237,7 @@ int parse_args(int argc, char **argv, O<Array> &path, O<Array> &src,
             const auto s = fmt::format("path {} does not exist\n", f);
             throw std::runtime_error(s);
           }
-          CXBQN_PTR_RESET(path, new Array(fs::absolute(f)));
+          CXBQN_PTR_RESET(path, new Array(fs::absolute(f).parent_path()));
           std::string _src = "";
           std::FILE *fp = std::fopen(f.c_str(), "r");
           if (!fp) {
@@ -250,8 +250,6 @@ int parse_args(int argc, char **argv, O<Array> &path, O<Array> &src,
           }
           std::fclose(fp);
           CXBQN_PTR_RESET(src, new Array(_src));
-          sysargs->values.push_back(path);
-          sysargs->shape[0]++;
           return fname;
         })
     .help("execute a string as BQN code")
