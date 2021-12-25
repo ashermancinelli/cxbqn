@@ -145,7 +145,18 @@ $ ./BQN -r
 There has been discussion on this topic on the Matrix server, but no consensus has been reached.
 CXBQN supports importing from locations defined in the environment variable `BQNPATH`, a `:`-delimited path just like `$PATH`.
 For example, if `/home/asher/bqn/foo.bqn` contains `4` and the environment variable `BQNPATH` contains `/home/asher/bqn`, running `foo←•Import "foo.bqn"` will assign `4` to `foo`.
-The installation prefix used when building/installing CXBQN will always be searched when calling `•Import`.
+
+`<prefix>/share/bqn` under the installation prefix used when building/installing CXBQN will always be searched when calling `•Import`.
+
+The (future) standard BQN library directory `/usr/share/bqn` is also searched when importing.
+
+The order in which `•Import` searches for files is:
+
+1. Current working directory
+1. The `BQNPATH` environment variable (`:` delimited)
+1. `<prefix>/share/bqn` where `<prefix>` is the installation prefix of CXBQN
+1. `/usr/share/bqn`
+
 <!--
 The first character of the string argument passed to `•Import` will have some special meaning indicating that the BQN VM ought to look in some special location (eg all directories in the environment variable `$BQNPATH`) or perform some operation before importing the specified library.
 -->
