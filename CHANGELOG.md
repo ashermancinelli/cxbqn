@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning v2](https://semver.org/spec/v2.0.0.html).
 
+## unreleased
+
+* cxbqn can now drive ccx.bqn, hopefully making way for full compilation
+
 ## [0.10.1] 12-23-2021
 
 * Extreme perf now realized after fixing bug in enabling native runtime
