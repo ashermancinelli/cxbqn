@@ -16,31 +16,39 @@ cd build
 CXX=g++-11 cmake ..
 make -j12
 ./BQN -v
-CXBQN 0.10.1
-compiled on Nov 24 2021
+CXBQN 0.10.1 compiled on Dec 25 2021
 ```
 
 ## Using
 
 ```
 $ ./BQN -h
-CXBQN 0.10.1
-compiled on Nov 24 2021
-usage: BQN [options] [arguments]
-	-e <string>: execute BQN expression
-	-p <string>: execute BQN expression, pretty print the result
-	-f <file>: execute <file>
-	-r: start repl (WIP)
-	-h, --help: print this message
-	-v, --version: show full version information
-	-x: show compilation unit before executing
+Usage: BQN [options] args
 
+Positional arguments:
+args                   	all remaining arguments are passed into the BQN program as •args [default: {}]
+
+Optional arguments:
+-h --help              	shows help message and exits [default: false]
+-e --execute           	execute a string as BQN code
+-v --version           	prints version information and exits [default: false]
+-p --execute-and-print 	execute a string as BQN code, pretty print the result
+-x --dump-cu           	dump compilation units after compiling [default: false]
+-r --repl              	enter REPL [default: false]
+-f --file              	execute a string as BQN code
 $ ./BQN -e '•Show 5+5'
 10
-
-$ ./BQN -r
+$ ./BQN -p ↕10
+⟨ 0 1 2 3 4 5 6 7 8 9 ⟩
+$ ./BQN
    foo←5
 5
+$ echo '•Show 3‿3⥊↕9' > foo.bqn && ./BQN -f foo.bqn
+┌─
+╵ 0 1 2
+  3 4 5
+  6 7 8
+        ┘
 ```
 
 See the values of `•listSys` to see what system functions are available in your build of CXBQN.
@@ -131,6 +139,16 @@ $ ./BQN -r
 ### FFI
 
 [See the documentation for FFI here.](doc/FFI.md)
+
+### Libraries and Packaging
+
+There has been discussion on this topic on the Matrix server, but no consensus has been reached.
+CXBQN supports importing from locations defined in the environment variable `BQNPATH`, a `:`-delimited path just like `$PATH`.
+For example, if `/home/asher/bqn/foo.bqn` contains `4` and the environment variable `BQNPATH` contains `/home/asher/bqn`, running `foo←•Import "foo.bqn"` will assign `4` to `foo`.
+The installation prefix used when building/installing CXBQN will always be searched when calling `•Import`.
+<!--
+The first character of the string argument passed to `•Import` will have some special meaning indicating that the BQN VM ought to look in some special location (eg all directories in the environment variable `$BQNPATH`) or perform some operation before importing the specified library.
+-->
 
 ## Using a CXBQN Installation
 
