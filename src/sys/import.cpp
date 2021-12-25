@@ -16,11 +16,16 @@ static inline auto resolve_bqnpath(const fs::path &p) -> fs::path {
 
   // Try to split by ':' first
   while ((end = bqnpath.find(':', start)) != std::string::npos) {
-    elem = bqnpath.substr(start, end);
+    elem = bqnpath.substr(start, end-start);
     if (fs::exists(pelem = (fs::path(elem) / p)))
       return pelem;
-    start = end;
+    start = end+1;
   }
+
+  // Check the last element of BQNPATH
+  elem = bqnpath.substr(start);
+  if (fs::exists(pelem = (fs::path(elem) / p)))
+    return pelem;
 
   // If no : was found, maybe it's a single path and we can just return that
   if (bqnpath.size() and fs::exists(pelem = (bqnpath / p)))
@@ -30,7 +35,7 @@ static inline auto resolve_bqnpath(const fs::path &p) -> fs::path {
   if (fs::exists(pelem = (fs::path(CXBQN_INSTALL_PREFIX) / p)))
     return pelem;
 
-  // Otherwise, just return the default directory
+  // Otherwise, just resolve to the default directory
   return fs::path("/usr/share/bqn") / p;
 }
 } // namespace

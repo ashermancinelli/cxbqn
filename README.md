@@ -101,7 +101,7 @@ foo     foobar
 | Spec Item          | Compliance      | Notes                                                                                                                                        |
 |--------------------|-----------------|----------------------------------------------------------------------------------------------------------------------------------------------|
 | Bytecode           | Full            |                                                                                                                                              |
-| Runtime            | BQN-native only | Plan to replace elements of r0 then r1 with native functions                                                                                 |
+| Runtime            | BQN-native and r0 | Almost all of r0 has a native implementation. We plan to replace elements of r1 with native functions as well                                                                                 |
 | System Functions   | Partial         | See `•listsys` for the supported system values. Good candidate for first contribution.                                                       |
 | Namespaces         | Partial         | Using fields of a namespace and destructuring without aliasing work, however mutable namespace fields are not supported.                     |
 
@@ -144,11 +144,6 @@ $ ./BQN -r
 
 There has been discussion on this topic on the Matrix server, but no consensus has been reached.
 CXBQN supports importing from locations defined in the environment variable `BQNPATH`, a `:`-delimited path just like `$PATH`.
-For example, if `/home/asher/bqn/foo.bqn` contains `4` and the environment variable `BQNPATH` contains `/home/asher/bqn`, running `foo←•Import "foo.bqn"` will assign `4` to `foo`.
-
-`<prefix>/share/bqn` under the installation prefix used when building/installing CXBQN will always be searched when calling `•Import`.
-
-The (future) standard BQN library directory `/usr/share/bqn` is also searched when importing.
 
 The order in which `•Import` searches for files is:
 
