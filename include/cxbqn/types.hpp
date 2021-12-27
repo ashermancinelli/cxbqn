@@ -98,6 +98,13 @@ enum TypeAnnotations {
   t_DataValue,
   t_String,
   t_Alias,
+
+  // Typed arrays have annotations indicating the type
+  t_TypedArray,
+  t_I64Array,
+  t_F64Array,
+  t_UZArray,
+  t_C32Array,
 };
 
 static constexpr u32 annot(TypeAnnotations ta) { return 1 << ta; }

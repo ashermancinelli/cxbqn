@@ -1,4 +1,4 @@
-#!/usr/bin/env bqn
+#!/usr/bin/env BQN -f
 # Modified version of https://github.com/mlochbaum/BQN/blob/master/src/cjs.bqn, which is under the ISC license (https://github.com/mlochbaum/BQN/blob/master/LICENSE)
 
 args←•args
@@ -11,8 +11,8 @@ Import ← {𝕨•Import path∾𝕩}
 FChars ← {𝕨•FChars path∾𝕩}
 FLines ← {𝕨•FLines path∾𝕩}
 
-split ← •Import "../lib/strings/split.bqn"
-replaceall ← •Import "../lib/strings/replaceall.bqn"
+split ← •Import "../../lib/strings/split.bqn"
+replaceall ← •Import "../../lib/strings/replaceall.bqn"
 
 F ← •Repr  # Format number
 # Escape the special characters that appear in BQN sources.
@@ -77,8 +77,6 @@ blk2←⟨")"⟩‿⟨""⟩ ReplaceAll ⟨"CXBQN_NEW(Number,"⟩‿⟨""⟩ Repl
 
 # No comma
 NC ← {1⊸↓⌾⌽""∾𝕩}
-
-•Show ¨consts‿blk2‿bc‿bod
 
 •Out "[=] {
   std::vector<O<Value>> c"∾(NC consts)∾";
