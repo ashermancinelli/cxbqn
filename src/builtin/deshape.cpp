@@ -12,8 +12,9 @@ O<Value> Deshape::call(u8 nargs, Args &args) {
 
   if (1 == nargs) {
     if (isxarr) {
-      auto ret = CXBQN_NEW(Array, xarr->N());
-      ret->values = xarr->values;
+      auto ret = xarr->copy();
+      ret->shape().clear();
+      ret->shape().push_back(ret->N());
       return ret;
     } else {
       auto r = CXBQN_NEW(Array, 1);
@@ -26,13 +27,13 @@ O<Value> Deshape::call(u8 nargs, Args &args) {
   if (iswarr) {
     auto warr = dyncast<Array>(args[2]);
     for (int i = 0; i < warr->N(); i++)
-      ret->shape.push_back(
+      ret->shape().push_back(
           static_cast<uz>(dyncast<Number>(warr->values[i])->v));
   } else {
-    ret->shape.push_back(static_cast<uz>(dyncast<Number>(args[2])->v));
+    ret->shape().push_back(static_cast<uz>(dyncast<Number>(args[2])->v));
   }
 
-  const auto cnt = std::accumulate(ret->shape.begin(), ret->shape.end(), 1,
+  const auto cnt = std::accumulate(ret->shape().begin(), ret->shape().end(), 1,
                                    std::multiplies<uz>());
   if (0 == cnt)
     CXBQN_DEBUG("⥊: got count of 0, this is suspicious");

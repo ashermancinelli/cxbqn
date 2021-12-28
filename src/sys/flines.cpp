@@ -15,7 +15,7 @@ O<Value> FLines::call(u8 nargs, Args &args) {
   auto ret = CXBQN_NEW(Array, 0);
   for (std::string line; std::getline(f, line);)
     ret->values.push_back(CXBQN_NEW(Array, line));
-  ret->shape[0] = ret->values.size();
+  ret->shape()[0] = ret->values.size();
   return ret;
 }
 

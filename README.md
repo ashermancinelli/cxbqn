@@ -177,30 +177,5 @@ As of v0.10.4, only the value `•cxbqn.config` is available under this namespac
 
 ```console
 $ ./BQN -p '•cxbqn.config'
-⟨ ⟨ "CXBQN_READLINE" 1 ⟩ ⟨ "CXBQN_CUDA" 0 ⟩ ⟨ "CXBQN_FFI" 0 ⟩ ⟩
+⟨ ⟨ "CXBQN_READLINE" 1 ⟩ ⟨ "CXBQN_CUDA" 0 ⟩ ⟨ "CXBQN_FFI" 0 ⟩ ⟨ "CXBQN_PLOT" 0 ⟩ ⟩
 ```
-
-## Using a CXBQN Installation
-
-CXBQN provides a config script that will help you set up your CXBQN installation.
-The script `cxbqn-config` is installed alongside your `BQN` executable when you install CXBQN.
-You may directly execute the result of this script like so:
-```console
-$ ./install/bin/cxbqn-config
-export CXBQN_PREFIX=/home/asher/workspace/cxbqn/install
-export CXBQN_VERSION=0.10.1
-export CXBQN_COLOR=OFF
-export CXBQN_READLINE=ON
-export CXBQN_CUDA=OFF
-export CXBQN_FFI=ON
-export PATH=/home/asher/workspace/cxbqn/install/bin:$PATH
-export BQNPATH=/home/asher/workspace/cxbqn/install/share/bqn:$BQNPATH
-$ eval $(./install/bin/cxbqn-config)
-```
-
-This script will add CXBQN's `BQN` to your path, and set up your `BQNPATH` environment variable.
-The `BQNPATH` environment variable is unused, but this may become a standard search path for BQN modules at some point in the future.
-
-This script is a thin wrapper around the CXBQN `vars.bqn` script which contains information about how CXBQN was built and configured.
-This file is installed in `<prefix>/share/bqn/cxbqn`.
-`<prefix>/share/bqn` will likely become the standard prefix for BQN modules in the future, so we plan to store CXBQN-specific installation artifacts under the `cxbqn/` subdirectory so not to conflict with future standard modules.

@@ -11,10 +11,10 @@ O<Value> JoinTo::call(u8 nargs, Args &args) {
 
   std::copy(w->values.begin(), w->values.end(), std::back_inserter(ret->values));
   std::copy(x->values.begin(), x->values.end(), std::back_inserter(ret->values));
-  ret->shape.push_back(w->shape[0] + x->shape[0]);
+  ret->shape().push_back(w->shape()[0] + x->shape()[0]);
 
   //std::copy(x->values.begin(), x->values.end(), std::back_inserter(w->values));
-  //w->shape.assign({w->values.size()});
+  //w->shape().assign({w->values.size()});
   return ret;
 }
 

@@ -1,9 +1,10 @@
 #pragma once
 #include <bitset>
-#include <cxbqn/scalar_types.hpp>
 #include <cxbqn/mem.hpp>
+#include <cxbqn/scalar_types.hpp>
 #include <functional>
 #include <initializer_list>
+#include <map>
 #include <memory>
 #include <numeric>
 #include <optional>
@@ -15,7 +16,6 @@
 #include <utf8.h>
 #include <variant>
 #include <vector>
-#include <map>
 
 namespace cxbqn {
 
@@ -130,9 +130,7 @@ using Args = std::array<O<Value>, 6>;
 
 struct Value : public std::enable_shared_from_this<Value>, public Marked {
 
-  Value() {
-    GC::register_ptr(this);
-  }
+  Value() { GC::register_ptr(this); }
 
   virtual ~Value() {}
 
@@ -148,7 +146,7 @@ struct Value : public std::enable_shared_from_this<Value>, public Marked {
 
   // If a value type does not define it's own call, we probably just push it
   // back on the stack.
-  virtual O<Value> call(u8 nargs, Args& args) {
+  virtual O<Value> call(u8 nargs, Args &args) {
     return CXBQN_SHARED_FROM_THIS();
   };
 
@@ -168,9 +166,10 @@ struct Number : public Value {
     return TypeType{t_Number | annot(t_DataValue)};
   }
   std::ostream &repr(std::ostream &os) const override {
-    return (v == std::numeric_limits<f64>::infinity()    ? os << "∞"
-            : v == -std::numeric_limits<f64>::infinity() ? os << "¯∞"
-                                                         : os << v);
+    return (v == std::numeric_limits<f64>::infinity()
+                ? os << "∞"
+                : v == -std::numeric_limits<f64>::infinity() ? os << "¯∞"
+                                                             : os << v);
   }
 };
 
@@ -192,31 +191,52 @@ struct Character : public Number {
   }
 };
 
-struct Array : public Value {
+// For when we could be working with either a typed array or a heterogeneous
+// array
+struct ArrayBase : public Value {
+  virtual O<Value> get(uz i) const = 0;
+  virtual const std::vector<uz> &shape() const = 0;
+  virtual std::vector<uz> &shape() = 0;
+  virtual uz N() const = 0;
+  virtual O<ArrayBase> copy() const = 0;
+};
+
+struct Array : public ArrayBase {
   std::vector<O<Value>> values;
-  std::vector<uz> shape;
+  std::vector<uz> _shape;
   Array(const uz N, std::vector<O<Value>> &stk);
-  Array(std::vector<O<Value>> vs) : values{vs}, shape{vs.size()} {}
-  inline uz N() const {
+  Array(std::vector<O<Value>> vs) : values{vs}, _shape{vs.size()} {}
+  Array(std::vector<O<Value>> vs, std::vector<uz> shape) : values{vs}, _shape{shape} {}
+  const std::vector<uz> &shape() const override { return _shape; }
+  std::vector<uz> &shape() override { return _shape; }
+  uz N() const override {
     const auto N = values.size();
 #ifdef CXBQN_DEEPCHECKS
     if (N !=
-        std::accumulate(shape.begin(), shape.end(), 1, std::multiplies<uz>()))
-      throw std::runtime_error("cxbqn internal:shape does not match values");
+        std::accumulate(_shape.begin(), _shape.end(), 1, std::multiplies<uz>()))
+      throw std::runtime_error("cxbqn internal: shape does not match values");
 #endif
     return N;
   }
   Array(uz N) {
-    shape.push_back(N);
+    _shape.push_back(N);
     values.resize(N);
   }
   Array(const std::string &s);
   Array(const std::u32string &s) {
-    shape.push_back(s.size());
+    _shape.push_back(s.size());
     values.reserve(s.size());
     for (const auto &c : s)
       values.push_back(O<Value>(new Character(c)));
     extra_annot |= annot(t_String);
+  }
+
+  // For typed arrays, the BQN value will have to be constructed on the fly.
+  O<Value> get(uz i) const override { return values[i]; }
+
+  // For typed arrays, we want to create a copy of ourselves
+  O<ArrayBase> copy() const override {
+    return CXBQN_NEW(Array, values, _shape);
   }
 
   // Only works on strings, or arrays of chars.
@@ -266,7 +286,7 @@ struct BlockInst : public Function {
 
   BlockInst(observer_ptr<Scope> scp, uz blk_idx);
 
-  O<Value> call(u8 nargs, Args& args) override;
+  O<Value> call(u8 nargs, Args &args) override;
   std::ostream &repr(std::ostream &os) const override {
     return os << "Block{i=" << blk_idx << "}";
   }
@@ -276,14 +296,14 @@ struct Fork : public Function {
   O<Value> f, g, h;
   Fork(O<Value> f, O<Value> g, O<Value> h) : f{f}, g{g}, h{h} {}
   TypeType t() const override { return TypeType{t_Function}; }
-  O<Value> call(u8 nargs, Args& args) override;
+  O<Value> call(u8 nargs, Args &args) override;
   std::ostream &repr(std::ostream &os) const override;
 };
 
 struct Atop : public Function {
   O<Value> g, f;
   Atop(O<Value> f, O<Value> g) : f{f}, g{g} {}
-  O<Value> call(u8 nargs, Args& args) override;
+  O<Value> call(u8 nargs, Args &args) override;
   std::ostream &repr(std::ostream &os) const override;
 };
 
@@ -297,7 +317,7 @@ struct Md1Deferred : public Function {
   }
   O<Value> f, m1;
   Md1Deferred(O<Value> f, O<Value> m1) : f{f}, m1{m1} {}
-  O<Value> call(u8 nargs, Args& args) override;
+  O<Value> call(u8 nargs, Args &args) override;
   std::ostream &repr(std::ostream &os) const override;
 };
 
@@ -314,7 +334,7 @@ struct Md2Deferred : public Function {
   }
   O<Value> f, m2, g;
   Md2Deferred(O<Value> f, O<Value> m2, O<Value> g) : f{f}, m2{m2}, g{g} {}
-  O<Value> call(u8 nargs, Args& args) override;
+  O<Value> call(u8 nargs, Args &args) override;
   std::ostream &repr(std::ostream &os) const override;
 };
 
@@ -330,7 +350,9 @@ struct Namespace : public Value {
   virtual O<Value> get(uz i);
   virtual O<Value> set(bool should_be_set, const std::string &n, O<Value> v);
   virtual O<Value> set(bool should_be_set, uz n, O<Value> v);
-  TypeType t() const override { return TypeType{t_Namespace | annot(t_UserDefined)}; }
+  TypeType t() const override {
+    return TypeType{t_Namespace | annot(t_UserDefined)};
+  }
   std::ostream &repr(std::ostream &os) const override;
 };
 
@@ -338,7 +360,8 @@ struct BuiltinNamespace : public Namespace {
   virtual O<Value> get(const std::string &n) = 0;
   TypeType t() const override { return TypeType{t_Namespace}; }
   O<Value> get(uz i) override {
-    throw std::runtime_error("CXBQN: can only index into builtin namespace with strings");
+    throw std::runtime_error(
+        "CXBQN: can only index into builtin namespace with strings");
   }
   O<Value> set(bool should_be_set, const std::string &n, O<Value> v) override {
     throw std::runtime_error("CXBQN: builtin namespaces are immutable");

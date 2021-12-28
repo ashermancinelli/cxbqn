@@ -4,8 +4,8 @@ namespace cxbqn::rt_native::r0 {
 
 O<Value> Select::call(u8 nargs, Args &args) {
   const auto x = dyncast<Array>(args[1]), w = dyncast<Array>(args[2]);
-  const auto &xsh = x->shape;
-  auto retsh = w->shape;
+  const auto &xsh = x->shape();
+  auto retsh = w->shape();
   const auto xrank = xsh.size();
   uz c = 1;
 
@@ -16,7 +16,7 @@ O<Value> Select::call(u8 nargs, Args &args) {
   }
 
   auto ret = CXBQN_NEW(Array, w->N() * c);
-  ret->shape = std::move(retsh);
+  ret->shape() = std::move(retsh);
 
   uz j = 0;
   for (const auto e : w->values) {

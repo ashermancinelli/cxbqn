@@ -14,41 +14,41 @@ O<Value> Scan::call(u8 nargs, Args &args) {
   auto x = dyncast<Array>(args[1]);
 
   if (x->N() == 0) {
-    if (1 == x->shape.size() and 0 == x->shape.back())
+    if (1 == x->shape().size() and 0 == x->shape().back())
       return CXBQN_NEW(Array, 0);
     auto ret = CXBQN_NEW(Array, 0);
     ret->values.clear();
-    ret->shape = x->shape;
+    ret->shape() = x->shape();
   }
 
   auto w = args[2];
   auto F = args[4];
 
-  auto sh = x->shape;
+  auto sh = x->shape();
   auto iswarr = (t_Array == type_builtin(w));
   if (2 == nargs) {
-    auto w_rank = iswarr ? dyncast<Array>(w)->shape.size() : 0;
-    if (1 + w_rank != x->shape.size())
+    auto w_rank = iswarr ? dyncast<Array>(w)->shape().size() : 0;
+    if (1 + w_rank != x->shape().size())
       throw std::runtime_error("`: rank of 𝕨 must be cell rank of 𝕩");
     if (iswarr) {
-      const auto &wsh = dyncast<Array>(w)->shape;
-      for (int i = 0; i < x->shape.size() - 1; i++)
-        if (wsh[i] != x->shape[i + 1])
+      const auto &wsh = dyncast<Array>(w)->shape();
+      for (int i = 0; i < x->shape().size() - 1; i++)
+        if (wsh[i] != x->shape()[i + 1])
           throw std::runtime_error("`: shape of 𝕨 must be cell shape of 𝕩");
     }
   }
 
   auto ret = CXBQN_NEW(Array);
   ret->values.resize(x->N());
-  ret->shape.resize(x->shape.size());
-  std::copy(x->shape.begin(), x->shape.end(), ret->shape.begin());
+  ret->shape().resize(x->shape().size());
+  std::copy(x->shape().begin(), x->shape().end(), ret->shape().begin());
 
   // product reduction of shape of cells of 𝕩
-  // const auto cnt = std::accumulate(x->shape.begin() + 1, x->shape.end(), 1,
+  // const auto cnt = std::accumulate(x->shape().begin() + 1, x->shape().end(), 1,
   // std::multiplies<uz>());
   int cnt = 1;
-  for (int i = 1; i < x->shape.size(); i++)
-    cnt *= x->shape[i];
+  for (int i = 1; i < x->shape().size(); i++)
+    cnt *= x->shape()[i];
   int i = 0;
   auto maybe_ret = CXBQN_NEW(Array, 1);
   maybe_ret->values[0] = w;

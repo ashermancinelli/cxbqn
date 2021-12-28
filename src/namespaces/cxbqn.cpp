@@ -62,7 +62,7 @@ CXBQN::CXBQN() {
     config->values.push_back(plot);
   }
 
-  config->shape.push_back(config->values.size());
+  config->shape().push_back(config->values.size());
 
   _exported.insert({"config", config});
 #ifdef CXBQN_PLOT

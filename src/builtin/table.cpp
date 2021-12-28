@@ -24,7 +24,7 @@ O<Value> Table::call(u8 nargs, Args &args) {
       Args a{F, x->values[i], bi_Nothing()};
       ret->values[i] = F->call(1, a);
     }
-    ret->shape = x->shape;
+    ret->shape() = x->shape();
     return ret;
   }
 
@@ -48,11 +48,11 @@ O<Value> Table::call(u8 nargs, Args &args) {
     throw ss.str();
   }
 #endif
-  ret->shape.clear();
-  for (const auto i : w->shape)
-    ret->shape.push_back(i);
-  for (const auto i : x->shape)
-    ret->shape.push_back(i);
+  ret->shape().clear();
+  for (const auto i : w->shape())
+    ret->shape().push_back(i);
+  for (const auto i : x->shape())
+    ret->shape().push_back(i);
 
   return ret;
 }

@@ -6,7 +6,7 @@
 namespace cxbqn::types {
 
 Array::Array(const uz N, std::vector<O<Value>> &stk) {
-  shape.push_back(N);
+  _shape.push_back(N);
   values.assign(stk.begin() + (stk.size() - N), stk.end());
   stk.resize(stk.size() - N);
 }
@@ -16,7 +16,7 @@ Array::Array(const std::string &s) {
   while (it != s.end()) {
     values.push_back(O<Value>(new Character((c32)utf8::next(it, s.end()))));
   }
-  shape.push_back(values.size());
+  _shape.push_back(values.size());
   extra_annot |= annot(t_String);
 }
 
@@ -25,9 +25,9 @@ std::ostream &Array::repr(std::ostream &os) const {
     return os << to_string();
   }
   os << "⟨sh=⟨";
-  for (int i = 0; i < shape.size(); i++) {
-    os << shape[i];
-    if (i + 1 < shape.size())
+  for (int i = 0; i < _shape.size(); i++) {
+    os << _shape[i];
+    if (i + 1 < _shape.size())
       os << ",";
   }
   os << "⟩";

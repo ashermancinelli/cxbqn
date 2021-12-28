@@ -24,44 +24,48 @@ template <> static constexpr TypeType typed_array_annot<c32>() {
 
 namespace cxbqn::types {
 
-template <typename T> struct TypedArray : public Value {
-  using array_type = T;
+template <typename T> struct TypedArray : public ArrayBase {
+  using value_type = T;
   std::vector<T> values;
-  std::vector<uz> shape;
+  std::vector<uz> _shape;
   TypedArray(uz N) {
-    shape.push_back(N);
+    _shape.push_back(N);
     values.resize(N);
+  }
+  TypedArray(std::vector<T> vals, std::vector<uz> shape)
+      : values{vals}, _shape{shape} {}
+  TypedArray(std::vector<T> vals) : values{vals} {
+    _shape.push_back(vals.size());
   }
 
   Array() {}
   ~Array() {}
 
-  static constexpr TypeType extra_annot = TypedArrayAnnot<T>::value;
+  O<Value> get(uz i) const override {
+    return CXBQN_NEW(Number, values[i]);
+  }
+
+  uz N() const override {
+    return values.size();
+  }
+
+  std::vector<uz> &shape() const override {
+    return _shape;
+  }
+
+  O<ArrayBase> copy() const override {
+    return CXBQN_NEW(TypedArray<T>, values, _shape);
+  }
+
+  static constexpr TypeType extra_annot = typed_array_annot<T>();
 
   inline TypeType t() const override {
-    return TypeType{t_Array} | annot(t_TypedArray) | extra_annot;
+    return TypeType{t_Array | annot(t_TypedArray) | extra_annot};
   }
 
   std::ostream &repr(std::ostream &os) const override;
 };
 
-inline O<Array> to_untyped(O<Array> arr) {
-  // If it's not a typed array, don't do anything!
-  if (!arr->t()[t_TypedArray])
-    return arr;
-
-  // Else, construct a heterogeneous array with the same shape
-  auto* ret = CXBQN_NEW(Array, arr->N());
-  ret->shape = arr->shape;
-
-  // For now, just make a new number each time. Might have to revisit chars down
-  // the line.
-  auto rit = ret->values.begin();
-  auto arrit = arr->values.begin();
-  while (arrit != arr->values.end())
-    *rit = CXBQN_NEW(Number, *arrit++);
-
-  return ret;
-}
+using String = TypedArray<c32>;
 
 } // namespace cxbqn::types

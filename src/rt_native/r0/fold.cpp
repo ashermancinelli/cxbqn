@@ -7,7 +7,7 @@ O<Value> Fold::call(u8 nargs, Args &args) {
   const auto x = dyncast<Array>(args[1]);
   const auto w = args[2];
 
-  auto l = x->shape[0];
+  auto l = x->shape()[0];
   auto r = 2 == nargs ? w : x->values[--l]; // must be a right-fold
 
   for (int i = l; i--;) {

@@ -42,7 +42,7 @@ O<Value> FileLines::call(u8 nargs, Args &args) {
     while (std::getline(ifs, line)) {
       ret->values.push_back(CXBQN_NEW(Array, line));
     }
-    ret->shape.push_back(ret->values.size());
+    ret->shape().push_back(ret->values.size());
   }
 
   return ret;
@@ -57,7 +57,7 @@ O<Value> FileList::call(u8 nargs, Args &args) {
   for (const auto &de : fs::directory_iterator{x})
     ret->values.push_back(CXBQN_NEW(Array, de.path().filename()));
 
-  ret->shape.push_back(ret->values.size());
+  ret->shape().push_back(ret->values.size());
   return ret;
 }
 

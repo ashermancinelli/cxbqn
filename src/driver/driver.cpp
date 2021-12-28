@@ -271,7 +271,7 @@ int parse_args(int argc, char **argv, O<Array> &path, O<Array> &src,
   }
 
   const auto args = prog.get<std::vector<std::string>>("args");
-  sysargs->shape[0] += args.size();
+  sysargs->shape()[0] += args.size();
   for (const auto &a : args) {
     sysargs->values.push_back(CXBQN_NEW(Array, a));
   }

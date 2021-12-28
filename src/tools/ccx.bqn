@@ -90,7 +90,7 @@ NC ← {1⊸↓⌾⌽""∾𝕩}
   for (auto& bd : bds)
     cu->_blocks.emplace_back(bd);
   cu->_consts->values = std::move(c);
-  cu->_consts->shape.push_back(c.size());
+  cu->_consts->shape().push_back(c.size());
   GC::register_ptr(cu.get());
   return cu;
 }()"
