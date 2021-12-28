@@ -1,5 +1,0 @@
-#!@CMAKE_INSTALL_PREFIX@/bin/BQN -f
-#vi: ft=bqn
-prefix ← "@CMAKE_INSTALL_PREFIX@"
-vars ← •Import prefix∾"/share/bqn/cxbqn/vars.bqn"
-{ l‿r←𝕩⋄•Out "export "∾l∾"="∾r }¨vars
