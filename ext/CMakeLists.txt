@@ -39,16 +39,14 @@ if(CXBQN_PLOT)
     COMPONENTS Interpreter Development
     REQUIRED
   )
-  target_link_libraries(
-    tpl INTERFACE Python3::Python Python3::Module
-  )
+  target_link_libraries(tpl INTERFACE Python3::Python Python3::Module)
   find_package(Python3 COMPONENTS NumPy)
   if(Python3_NumPy_FOUND)
     target_link_libraries(tpl INTERFACE Python3::NumPy)
   else()
     target_compile_definitions(tpl INTERFACE WITHOUT_NUMPY)
   endif()
-  target_include_directories(
-    tpl INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/matplotlib-cpp
+  file(CREATE_LINK ${CMAKE_CURRENT_SOURCE_DIR}/matplotlibcpp-ef0383f.h
+       ${PROJECT_BINARY_DIR}/matplotlibcpp.h
   )
 endif()

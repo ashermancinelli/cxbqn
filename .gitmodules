@@ -25,6 +25,3 @@
 [submodule "ext/cpp-subprocess"]
 	path = ext/cpp-subprocess
 	url = https://github.com/tsaarni/cpp-subprocess.git
-[submodule "ext/matplotlib-cpp"]
-	path = ext/matplotlib-cpp
-	url = https://github.com/lava/matplotlib-cpp.git
