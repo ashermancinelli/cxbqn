@@ -22,4 +22,13 @@ struct FileLines : public Function {
   }
 };
 
+struct FileList : public Function {
+  FileList() {}
+  TypeType t() const override { return TypeType{t_Function}; }
+  O<Value> call(u8 nargs, Args& args) override;
+  std::ostream &repr(std::ostream &os) const override {
+    return os << "•file.List";
+  }
+};
+
 }

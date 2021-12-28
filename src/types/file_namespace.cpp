@@ -7,6 +7,7 @@ namespace cxbqn::types {
 
 FileNamespace::FileNamespace() {
   _exported.insert_or_assign("lines", CXBQN_NEW(FileLines));
+  _exported.insert_or_assign("list", CXBQN_NEW(FileList));
 }
 
 O<Value> FileNamespace::get(const std::string &n) {
@@ -42,6 +43,19 @@ O<Value> FileLines::call(u8 nargs, Args &args) {
     ret->shape.push_back(ret->values.size());
   }
 
+  return ret;
+}
+
+O<Value> FileList::call(u8 nargs, Args &args) {
+  if (2 == nargs) [[unlikely]]
+    throw std::runtime_error("•file.List: only accepts one argument");
+  const auto x = fs::path(dyncast<Array>(args[1])->to_string());
+  auto ret = CXBQN_NEW(Array);
+
+  for (const auto &de : fs::directory_iterator{x})
+    ret->values.push_back(CXBQN_NEW(Array, de.path().filename()));
+
+  ret->shape.push_back(ret->values.size());
   return ret;
 }
 
