@@ -1,16 +1,18 @@
-#include <cxbqn/file_namespace.hpp>
+#include <cxbqn/namespaces/file.hpp>
 #include <cxbqn/fs.hpp>
 #include <cxbqn/types.hpp>
 #include <fstream>
 
-namespace cxbqn::types {
+namespace cxbqn::namespaces {
 
-FileNamespace::FileNamespace() {
+using namespace cxbqn::types;
+
+File::File() {
   _exported.insert_or_assign("lines", CXBQN_NEW(FileLines));
   _exported.insert_or_assign("list", CXBQN_NEW(FileList));
 }
 
-O<Value> FileNamespace::get(const std::string &n) {
+O<Value> File::get(const std::string &n) {
   if (_exported.contains(n))
     return _exported.at(n);
   throw std::runtime_error(fmt::format("file: could not find name {}", n));

@@ -112,13 +112,17 @@ set(CXBQN_FFI
     CACHE BOOL "Enable foreign function interface"
 )
 set(CXBQN_NATIVE_R0
-  ON
-  CACHE BOOL "Enable native C++ functions for lower-level runtime"
-  )
+    ON
+    CACHE BOOL "Enable native C++ functions for lower-level runtime"
+)
 set(CXBQN_NATIVE_R1
-  OFF
-  CACHE BOOL "Enable native C++ functions for higher-level runtime"
-  )
+    OFF
+    CACHE BOOL "Enable native C++ functions for higher-level runtime"
+)
+set(CXBQN_PLOT
+    OFF
+    CACHE BOOL "Enable plotting library (requires python)"
+)
 
 add_definitions("-DCXBQN_MEM_${CXBQN_MEM_STRATEGY}=1")
 
@@ -158,7 +162,10 @@ if(CXBQN_READLINE)
 endif()
 
 if(${CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT})
-  message(STATUS "Found default install prefix, setting to ${PROJECT_BINARY_DIR}/install")
+  message(
+    STATUS
+      "Found default install prefix, setting to ${PROJECT_BINARY_DIR}/install"
+  )
   set(CMAKE_INSTALL_PREFIX ${PROJECT_BINARY_DIR}/install)
 endif()
 
@@ -206,5 +213,9 @@ endif()
 
 file(GLOB_RECURSE CXBQN_HEADERS include/cxbqn/*.hpp)
 install(FILES ${CXBQN_HEADERS} DESTINATION include/cxbqn)
-install(DIRECTORY lib DESTINATION share/bqn FILES_MATCHING PATTERN "*.bqn")
-
+install(
+  DIRECTORY lib
+  DESTINATION share/bqn
+  FILES_MATCHING
+  PATTERN "*.bqn"
+)

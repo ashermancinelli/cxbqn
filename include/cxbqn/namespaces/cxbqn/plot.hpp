@@ -2,33 +2,37 @@
 #include <cxbqn/types.hpp>
 #include <map>
 
-namespace cxbqn::types {
+namespace cxbqn::namespaces::cxbqn {
 
-struct FileNamespace : public BuiltinNamespace {
+struct Plot : public BuiltinNamespace {
   std::unordered_map<std::string, O<Value>> _exported;
-  FileNamespace();
+  Plot();
   O<Value> get(const std::string &n) override;
   std::ostream &repr(std::ostream &os) const override {
-    return os << "•file";
+    return os << "•cxbqn.plot";
   }
 };
 
-struct FileLines : public Function {
-  FileLines() {}
+namespace detail {
+
+struct Plot : public Function {
+  Plot() {}
   TypeType t() const override { return TypeType{t_Function}; }
-  O<Value> call(u8 nargs, Args& args) override;
+  O<Value> call(u8 nargs, Args &args) override;
   std::ostream &repr(std::ostream &os) const override {
-    return os << "•file.Lines";
+    return os << "•cxbqn.plot.Plot";
   }
 };
 
-struct FileList : public Function {
-  FileList() {}
+struct Show : public Function {
+  Show() {}
   TypeType t() const override { return TypeType{t_Function}; }
-  O<Value> call(u8 nargs, Args& args) override;
+  O<Value> call(u8 nargs, Args &args) override;
   std::ostream &repr(std::ostream &os) const override {
-    return os << "•file.List";
+    return os << "•cxbqn.plot.Show";
   }
 };
 
-}
+} // namespace detail
+
+} // namespace cxbqn::namespaces::cxbqn::plot

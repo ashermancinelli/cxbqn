@@ -1,6 +1,6 @@
 #include "sys_helper.hpp"
-#include <cxbqn/file_namespace.hpp>
-#include <cxbqn/cxbqn_namespace.hpp>
+#include <cxbqn/namespaces/file.hpp>
+#include <cxbqn/namespaces/cxbqn.hpp>
 
 namespace cxbqn::sys {
 
@@ -41,9 +41,9 @@ O<Value> SystemFunctionResolver::call(u8 nargs, Args &args) {
     auto foo = dyncast<Array>(x->values[i]);
     auto s = foo->to_string();
     if ("cxbqn" == s) {
-      ret.push_back(CXBQN_NEW(CXBQNNamespace));
+      ret.push_back(CXBQN_NEW(namespaces::CXBQN));
     } else if ("file" == s) {
-      ret.push_back(CXBQN_NEW(FileNamespace));
+      ret.push_back(CXBQN_NEW(namespaces::File));
     } else if ("show" == s) {
       ret.push_back(CXBQN_NEW(Show, _fmt));
 #ifdef CXBQN_FFI

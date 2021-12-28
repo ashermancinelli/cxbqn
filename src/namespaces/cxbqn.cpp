@@ -1,17 +1,17 @@
-#include <cxbqn/cxbqn_namespace.hpp>
-#include <cxbqn/fs.hpp>
 #include <cxbqn/types.hpp>
-#include <fstream>
+#include <cxbqn/namespaces/cxbqn.hpp>
+#include <cxbqn/namespaces/cxbqn/plot.hpp>
+#include <cxbqn/config.hpp>
 
-namespace cxbqn::types {
+namespace cxbqn::namespaces {
 
-O<Value> CXBQNNamespace::get(const std::string &n) {
+O<Value> CXBQN::get(const std::string &n) {
   if (_exported.contains(n))
     return _exported.at(n);
   throw std::runtime_error(fmt::format("•cxbqn: could not find name {}", n));
 }
 
-CXBQNNamespace::CXBQNNamespace() {
+CXBQN::CXBQN() {
   auto config = CXBQN_NEW(Array);
 
   {
@@ -50,8 +50,24 @@ CXBQNNamespace::CXBQNNamespace() {
     config->values.push_back(ffi);
   }
 
+  {
+    auto plot = CXBQN_NEW(Array, 2);
+    plot->values[0] = CXBQN_NEW(Array, "CXBQN_PLOT");
+    plot->values[1] =
+#ifdef CXBQN_PLOT
+      CXBQN_NEW(Number, 1);
+#else
+      CXBQN_NEW(Number, 0);
+#endif
+    config->values.push_back(plot);
+  }
+
   config->shape.push_back(config->values.size());
 
-  _exported.insert_or_assign("config", config);
+  _exported.insert({"config", config});
+#ifdef CXBQN_PLOT
+  _exported.insert({"plot", CXBQN_NEW(namespaces::cxbqn::Plot)});
+#endif
 }
+
 }

@@ -14,9 +14,6 @@ set(CXBQN_SRC
   types/scope.cpp
   types/op.cpp
   types/run.cpp
-  # types/comp_unit.cpp
-  types/file_namespace.cpp
-  types/cxbqn_namespace.cpp
 
   # Implementation of instructions
   instructions/set_.cpp
@@ -91,7 +88,16 @@ set(CXBQN_SRC
   builtin/pick.cpp
   builtin/plus.cpp
   builtin/valence.cpp
+
+  namespaces/file.cpp
+  namespaces/cxbqn.cpp
+  namespaces/std.cpp
+  $<$<BOOL:${CXBQN_PLOT}>:namespaces/cxbqn/plot.cpp>
   )
+#
+#if(CXBQN_PLOT)
+#  list(APPEND CXBQN_SRC namespaces/cxbqn/plot.cpp)
+#endif()
 
 if(CXBQN_CUDA)
   list(APPEND CXBQN_SRC

@@ -12,7 +12,7 @@ void fldo(const ByteCodeRef bc, uz &pc, std::vector<O<Value>> &stk,
                          [i](auto e) { return e.second == i; });
 
   if (it == cu->_exported.end())
-    throw std::runtime_error("fldo:could not find exported var");
+    throw std::runtime_error("fldo: could not find exported var");
 
   stk.push_back(ns->get((*it).first));
 }
