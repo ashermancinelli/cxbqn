@@ -147,9 +147,12 @@ tryagain:
         compiled = compiler->call(2, a);
       }
       if (show_cu) {
-        auto cu = dyncast<Array>(compiled);
-        for (auto e : cu->values)
-          fmt::print("{}\n", *e);
+        // auto cu = dyncast<Array>(compiled);
+        //for (auto e : cu->values)
+        //  fmt::print("{}\n", *e);
+        Args a{fmt, compiled, bi_Nothing()};
+        auto formatted = fmt->call(1, a);
+        fmt::print("{}\n", dyncast<Array>(formatted)->to_string());
       }
       auto cu = vm::deconstruct(compiled);
 

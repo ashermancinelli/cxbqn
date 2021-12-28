@@ -21,12 +21,28 @@ O<Value> Plot::get(const std::string &n) {
 namespace detail {
 
 O<Value> Plot::call(u8 nargs, Args &args) {
-  std::vector<double> vals;
-  auto x = dyncast<Array>(args[1]);
-  for (const auto e : x->values)
-    vals.push_back(dyncast<Number>(e)->v);
-  plt::plot(vals);
-  return CXBQN_NEW(Number, vals.size());
+  if (2 == nargs) {
+    std::vector<double> vals;
+    auto x = dyncast<Array>(args[1]);
+    for (const auto e : x->values)
+      vals.push_back(dyncast<Number>(e)->v);
+    plt::plot(vals);
+    return CXBQN_NEW(Number, vals.size());
+  } else {
+    // "x" as in the x axis, not in the BQN 𝕩 sense
+    auto x = dyncast<Array>(args[2]);
+    std::vector<double> xv(x->N(), 0);
+    for (int i=0; i < xv.size(); i++)
+      xv[i] = dyncast<Number>(x->values[i])->v;
+
+    auto y = dyncast<Array>(args[1]);
+    std::vector<double> yv(y->N(), 0);
+    for (int i=0; i < yv.size(); i++)
+      yv[i] = dyncast<Number>(y->values[i])->v;
+
+    plt::plot(xv, yv);
+    return CXBQN_NEW(Number, yv.size());
+  }
 }
 
 O<Value> Show::call(u8 nargs, Args &args) {
