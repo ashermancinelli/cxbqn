@@ -103,7 +103,7 @@ foo     foobar
 | Bytecode           | Full            |                                                                                                                                              |
 | Runtime            | BQN-native and r0 | Almost all of r0 has a native implementation. We plan to replace elements of r1 with native functions as well                                                                                 |
 | System Functions   | Partial         | See `•listsys` for the supported system values. Good candidate for first contribution.                                                       |
-| Namespaces         | Partial         | Using fields of a namespace and destructuring without aliasing work, however mutable namespace fields are not supported.                     |
+| Namespaces         | Partial         | Using fields of a namespace and destructuring without aliasing work, however mutable namespace fields are not supported. System-provided namespace `•file` has support for `•file.List` and `•file.Lines`.                    |
 
 ## Nonstandard Extensions
 
@@ -155,6 +155,16 @@ The order in which `•Import` searches for files is:
 <!--
 The first character of the string argument passed to `•Import` will have some special meaning indicating that the BQN VM ought to look in some special location (eg all directories in the environment variable `$BQNPATH`) or perform some operation before importing the specified library.
 -->
+
+### Custom Namespace `•cxbqn`
+
+Everything under the namespace `•cxbqn` is specific to the CXBQN implementation of BQN.
+As of v0.10.4, only the value `•cxbqn.config` is available under this namespace:
+
+```console
+$ ./BQN -p '•cxbqn.config'
+⟨ ⟨ "CXBQN_READLINE" 1 ⟩ ⟨ "CXBQN_CUDA" 0 ⟩ ⟨ "CXBQN_FFI" 0 ⟩ ⟩
+```
 
 ## Using a CXBQN Installation
 

@@ -16,6 +16,7 @@ set(CXBQN_SRC
   types/run.cpp
   # types/comp_unit.cpp
   types/file_namespace.cpp
+  types/cxbqn_namespace.cpp
 
   # Implementation of instructions
   instructions/set_.cpp
@@ -51,7 +52,6 @@ set(CXBQN_SRC
   sys/flines.cpp
   sys/unixtime.cpp
   sys/timed.cpp
-  sys/cxbqn.cpp
   sys/show.cpp
   sys/rename.cpp
   sys/repr.cpp

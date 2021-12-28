@@ -1,5 +1,6 @@
 #include "sys_helper.hpp"
 #include <cxbqn/file_namespace.hpp>
+#include <cxbqn/cxbqn_namespace.hpp>
 
 namespace cxbqn::sys {
 
@@ -40,7 +41,7 @@ O<Value> SystemFunctionResolver::call(u8 nargs, Args &args) {
     auto foo = dyncast<Array>(x->values[i]);
     auto s = foo->to_string();
     if ("cxbqn" == s) {
-      ret.push_back(CXBQN_NEW(CXBQN));
+      ret.push_back(CXBQN_NEW(CXBQNNamespace));
     } else if ("file" == s) {
       ret.push_back(CXBQN_NEW(FileNamespace));
     } else if ("show" == s) {
