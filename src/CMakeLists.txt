@@ -14,7 +14,8 @@ set(CXBQN_SRC
   types/scope.cpp
   types/op.cpp
   types/run.cpp
-  types/comp_unit.cpp
+  # types/comp_unit.cpp
+  types/file_namespace.cpp
 
   # Implementation of instructions
   instructions/set_.cpp

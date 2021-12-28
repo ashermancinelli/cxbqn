@@ -10,11 +10,11 @@ void fldo(const ByteCodeRef bc, uz &pc, std::vector<O<Value>> &stk,
 
   auto it = std::find_if(cu->_exported.begin(), cu->_exported.end(),
                          [i](auto e) { return e.second == i; });
+
   if (it == cu->_exported.end())
     throw std::runtime_error("fldo:could not find exported var");
 
-  auto ret = ns->get((*it).first);
-  stk.push_back(ret);
+  stk.push_back(ns->get((*it).first));
 }
 
 } // namespace cxbqn::vm::instructions

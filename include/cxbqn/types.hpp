@@ -15,6 +15,7 @@
 #include <utf8.h>
 #include <variant>
 #include <vector>
+#include <map>
 
 namespace cxbqn {
 
@@ -324,13 +325,28 @@ struct Md2 : public Function {
 struct Namespace : public Value {
   observer_ptr<Scope> _scp;
   Namespace(observer_ptr<Scope> scp) : _scp{scp} {}
-  O<Value> get(const std::string &n);
-  O<Value> get(uz i);
-  O<Value> set(bool should_be_set, const std::string &n, O<Value> v);
-  O<Value> set(bool should_be_set, uz n, O<Value> v);
-  TypeType t() const override { return TypeType{t_Namespace}; }
+  Namespace() : _scp{nullptr} {}
+  virtual O<Value> get(const std::string &n);
+  virtual O<Value> get(uz i);
+  virtual O<Value> set(bool should_be_set, const std::string &n, O<Value> v);
+  virtual O<Value> set(bool should_be_set, uz n, O<Value> v);
+  TypeType t() const override { return TypeType{t_Namespace | annot(t_UserDefined)}; }
   std::ostream &repr(std::ostream &os) const override {
     return os << "( namespace )";
+  }
+};
+
+struct BuiltinNamespace : public Namespace {
+  virtual O<Value> get(const std::string &n) = 0;
+  TypeType t() const override { return TypeType{t_Namespace}; }
+  O<Value> get(uz i) override {
+    throw std::runtime_error("CXBQN: can only index into builtin namespace with strings");
+  }
+  O<Value> set(bool should_be_set, const std::string &n, O<Value> v) override {
+    throw std::runtime_error("CXBQN: builtin namespaces are immutable");
+  }
+  O<Value> set(bool should_be_set, uz n, O<Value> v) override {
+    throw std::runtime_error("CXBQN: builtin namespaces are immutable");
   }
 };
 

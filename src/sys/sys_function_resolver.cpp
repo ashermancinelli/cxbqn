@@ -1,4 +1,5 @@
 #include "sys_helper.hpp"
+#include <cxbqn/file_namespace.hpp>
 
 namespace cxbqn::sys {
 
@@ -21,7 +22,7 @@ struct SysError : public Function {
 
 static std::vector<std::string> listsys{
     "cxbqn",   "sh",  "show", "exit", "timed", "unixtime", "flines", "out",
-    "import",  "bqn", "fmt",  "args", "path",  "repr",     "list",
+    "import",  "bqn", "fmt",  "args", "path",  "repr",     "list", "file",
 #ifdef CXBQN_CUDA
     "cudafor",
 #endif
@@ -40,6 +41,8 @@ O<Value> SystemFunctionResolver::call(u8 nargs, Args &args) {
     auto s = foo->to_string();
     if ("cxbqn" == s) {
       ret.push_back(CXBQN_NEW(CXBQN));
+    } else if ("file" == s) {
+      ret.push_back(CXBQN_NEW(FileNamespace));
     } else if ("show" == s) {
       ret.push_back(CXBQN_NEW(Show, _fmt));
 #ifdef CXBQN_FFI
