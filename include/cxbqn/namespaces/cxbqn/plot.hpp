@@ -9,7 +9,14 @@ struct Plot : public BuiltinNamespace {
   Plot();
   O<Value> get(const std::string &n) override;
   std::ostream &repr(std::ostream &os) const override {
-    return os << "•cxbqn.plot";
+    os << "{";
+    auto it = _exported.begin();
+    while (it != _exported.end()) {
+      os << (*it).first;
+      if (++it != _exported.end())
+        os << "‿";
+    }
+    return os << "⇐}";
   }
 };
 
@@ -24,12 +31,48 @@ struct Plot : public Function {
   }
 };
 
+struct NamedPlot : public Function {
+  NamedPlot() {}
+  TypeType t() const override { return TypeType{t_Function}; }
+  O<Value> call(u8 nargs, Args &args) override;
+  std::ostream &repr(std::ostream &os) const override {
+    return os << "•cxbqn.plot.NamedPlot";
+  }
+};
+
 struct Show : public Function {
   Show() {}
   TypeType t() const override { return TypeType{t_Function}; }
   O<Value> call(u8 nargs, Args &args) override;
   std::ostream &repr(std::ostream &os) const override {
     return os << "•cxbqn.plot.Show";
+  }
+};
+
+struct Title : public Function {
+  Title() {}
+  TypeType t() const override { return TypeType{t_Function}; }
+  O<Value> call(u8 nargs, Args &args) override;
+  std::ostream &repr(std::ostream &os) const override {
+    return os << "•cxbqn.plot.Title";
+  }
+};
+
+struct Legend : public Function {
+  Legend() {}
+  TypeType t() const override { return TypeType{t_Function}; }
+  O<Value> call(u8 nargs, Args &args) override;
+  std::ostream &repr(std::ostream &os) const override {
+    return os << "•cxbqn.plot.Legend";
+  }
+};
+
+struct Save : public Function {
+  Save() {}
+  TypeType t() const override { return TypeType{t_Function}; }
+  O<Value> call(u8 nargs, Args &args) override;
+  std::ostream &repr(std::ostream &os) const override {
+    return os << "•cxbqn.plot.Save";
   }
 };
 

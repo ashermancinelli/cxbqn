@@ -11,7 +11,14 @@ struct CXBQN : public BuiltinNamespace {
   CXBQN();
   O<Value> get(const std::string &n) override;
   std::ostream &repr(std::ostream &os) const override {
-    return os << "•cxbqn";
+    os << "{";
+    auto it = _exported.begin();
+    while (it != _exported.end()) {
+      os << (*it).first;
+      if (++it != _exported.end())
+        os << "‿";
+    }
+    return os << "⇐}";
   }
 };
 

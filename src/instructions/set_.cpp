@@ -28,6 +28,7 @@ static O<Value> safe_set_refer(O<Value> opaque_refer, O<Value> value,
 #endif
 
     if (t_Namespace == type_builtin(value)) {
+      // fmt::print("got ns\n");
       for (int i = 0; i < aref->N(); i++) {
         auto r = aref->getref(i);
         auto tmp_scp = scp->get_nth_parent(r->depth);

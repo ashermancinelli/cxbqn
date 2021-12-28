@@ -1,8 +1,21 @@
 #include <cxbqn/debug.hpp>
 #include <cxbqn/scope.hpp>
 #include <cxbqn/types.hpp>
+#include <cxbqn/scope.hpp>
 
 namespace cxbqn::types {
+
+std::ostream &Namespace::repr(std::ostream &os) const {
+  const auto exp = _scp->cu->_exported;
+  os << "{";
+  auto it = exp.begin();
+  while (it != exp.end()) {
+    os << (*it).first;
+    if (++it != exp.end())
+      os << "‿";
+  }
+  return os << "⇐}";
+}
 
 O<Value> Namespace::get(const std::string &n) {
   if (_scp->cu->_exported.contains(n))

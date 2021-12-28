@@ -331,9 +331,7 @@ struct Namespace : public Value {
   virtual O<Value> set(bool should_be_set, const std::string &n, O<Value> v);
   virtual O<Value> set(bool should_be_set, uz n, O<Value> v);
   TypeType t() const override { return TypeType{t_Namespace | annot(t_UserDefined)}; }
-  std::ostream &repr(std::ostream &os) const override {
-    return os << "( namespace )";
-  }
+  std::ostream &repr(std::ostream &os) const override;
 };
 
 struct BuiltinNamespace : public Namespace {

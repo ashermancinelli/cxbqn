@@ -8,6 +8,9 @@ void fldo(const ByteCodeRef bc, uz &pc, std::vector<O<Value>> &stk,
   auto ns = dyncast<Namespace>(stk.back());
   stk.pop_back();
 
+//  for (auto it = cu->_exported.begin(); it != cu->_exported.end(); it++)
+//    fmt::print("k={}\n",(*it).first);
+
   auto it = std::find_if(cu->_exported.begin(), cu->_exported.end(),
                          [i](auto e) { return e.second == i; });
 

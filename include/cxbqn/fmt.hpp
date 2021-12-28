@@ -81,6 +81,30 @@ template <> struct fmt::formatter<Array> {
   }
 };
 
+template <> struct fmt::formatter<BuiltinNamespace> {
+  constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin()) {
+    return ctx.end();
+  }
+  template <typename FormatContext>
+  auto format(Value const &v, FormatContext &ctx) -> decltype(ctx.out()) {
+    std::stringstream ss;
+    v.repr(ss);
+    return format_to(ctx.out(), "{}", ss.str());
+  }
+};
+
+template <> struct fmt::formatter<Namespace> {
+  constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin()) {
+    return ctx.end();
+  }
+  template <typename FormatContext>
+  auto format(Value const &v, FormatContext &ctx) -> decltype(ctx.out()) {
+    std::stringstream ss;
+    v.repr(ss);
+    return format_to(ctx.out(), "{}", ss.str());
+  }
+};
+
 template <> struct fmt::formatter<Value> {
   constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin()) {
     return ctx.end();
