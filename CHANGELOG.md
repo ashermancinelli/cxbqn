@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning v2](https://semver.org/spec/v2.0.0.html).
 
+## unreleased
+
+* formatting of namespaces and other types •Fmt doesn't know about
+* plotting utilities under namespace •cxbqn.plot
+* update current documentation, add plotting document
+
 ## [0.10.4] 12-27-2021
 
 * add native `•file.List`

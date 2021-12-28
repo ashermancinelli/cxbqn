@@ -9,6 +9,7 @@ namespace cxbqn::namespaces::cxbqn {
 
 Plot::Plot() {
   _exported.insert({"plot", CXBQN_NEW(detail::Plot)});
+  _exported.insert({"namedplot", CXBQN_NEW(detail::NamedPlot)});
   _exported.insert({"show", CXBQN_NEW(detail::Show)});
   _exported.insert({"save", CXBQN_NEW(detail::Save)});
   _exported.insert({"title", CXBQN_NEW(detail::Title)});
@@ -25,7 +26,7 @@ O<Value> Plot::get(const std::string &n) {
 namespace detail {
 
 O<Value> Plot::call(u8 nargs, Args &args) {
-  if (2 == nargs) {
+  if (1 == nargs) {
     std::vector<double> vals;
     auto x = dyncast<Array>(args[1]);
     for (const auto e : x->values)
@@ -111,7 +112,8 @@ O<Value> Legend::call(u8 nargs, Args &args) {
 O<Value> Save::call(u8 nargs, Args &args) {
   if (2 == nargs)
     throw std::runtime_error("•cxbqn.plot.Save: only one argument");
-  plt::legend();
+  auto n = dyncast<Array>(args[1])->to_string();
+  plt::save(n);
   return CXBQN_NEW(Number, 1);
 }
 

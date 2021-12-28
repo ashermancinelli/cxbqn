@@ -95,8 +95,9 @@ foo     foobar
 | `CXBQN_FFI`          | Enable loading dynamic libraries and calling user functions from them.                                                                                  |
 | `CXBQN_NATIVE_R0`    | Enable native C++ implementation of some runtime functions from r0.                                                                                     |
 | `CXBQN_NATIVE_R1`    | Enable native C++ implementation of some runtime functions from r1.                                                                                     |
+| `CXBQN_PLOT`    | Enable matplotlib bindings and the namespace `•cxbqn.plot`. See [`doc/plot.md`](doc/plot.md) for more information.                                                                                     |
 
-## Feature Support
+## Specification Feature Support
 
 | Spec Item          | Compliance      | Notes                                                                                                                                        |
 |--------------------|-----------------|----------------------------------------------------------------------------------------------------------------------------------------------|
@@ -135,6 +136,19 @@ $ ./BQN -r
 | Threaded Execution | None       | Same plan as above. Needs more discussion                                                                                                    |
 | Libraries and Packaging | None       | There has been much discussion on this topic in the Matrix server, but little consensus has been reached. The first library-related feature CXBQN will support will likely look like `strings←•Import "←strings.bqn"` where `strings.bqn` is the strings library from Marshall's [bqn-libs repository](https://github.com/mlochbaum/bqn-libs). This will likely become a *standard library* of sorts, once consensus is reached. The first character of the string argument passed to `•Import` will have some special meaning indicating that the BQN VM ought to look in some special location (eg all directories in the environment variable `$BQNPATH`) or perform some operation before importing the specified library. |
 -->
+
+### Plotting
+
+CXBQN supports bindings to matplotlib via [the matplotlib-cpp](https://github.com/lava/matplotlib-cpp) library.
+To enable plotting, enable the CMake option `CXBQN_PLOT`.
+You must have Python, matplotlib, and numpy installed.
+
+[See `doc/plot.md` for more information.](doc/plot.md)
+
+```console
+BQN -e '•cxbqn.plot.Plot ↕10⋄•cxbqn.plot.Show@'
+```
+![Simple Plotting Example](doc/img/simple_line_graphs.png)
 
 ### FFI
 
