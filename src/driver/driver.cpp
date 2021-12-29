@@ -109,16 +109,22 @@ tryagain:
     compiled = compiler->call(2, a);
   }
   if (show_cu) {
-    auto cu = dyncast<Array>(compiled);
-    for (auto e : cu->values)
-      fmt::print("{}\n", *e);
+    Args a{fmt, compiled, bi_Nothing()};
+    auto formatted = fmt->call(1, a);
+    fmt::print("{}\n", to_string(formatted));
   }
-  auto runret = vm::run(compiled);
+  cxbqn::vm::RunResult runret;
+  try {
+    runret = vm::run(compiled);
+  } catch (std::exception& e) {
+    fmt::print("{}\n", e.what());
+    goto tryagain;
+  }
 
   {
     Args a{fmt, runret.v, bi_Nothing()};
     auto formatted = fmt->call(1, a);
-    fmt::print("{}\n", dyncast<Array>(formatted)->to_string());
+    fmt::print("{}\n", to_string(formatted));
   }
 
   // Now that we've gotten the repl started with the first execution, we pass
@@ -147,12 +153,9 @@ tryagain:
         compiled = compiler->call(2, a);
       }
       if (show_cu) {
-        // auto cu = dyncast<Array>(compiled);
-        //for (auto e : cu->values)
-        //  fmt::print("{}\n", *e);
         Args a{fmt, compiled, bi_Nothing()};
         auto formatted = fmt->call(1, a);
-        fmt::print("{}\n", dyncast<Array>(formatted)->to_string());
+        fmt::print("{}\n", to_string(formatted));
       }
       auto cu = vm::deconstruct(compiled);
 
@@ -169,7 +172,7 @@ tryagain:
       {
         Args a{fmt, ret, bi_Nothing()};
         auto formatted = fmt->call(1, a);
-        fmt::print("{}\n", dyncast<Array>(formatted)->to_string());
+        fmt::print("{}\n", to_string(formatted));
       }
     } catch (std::exception &e) {
       fmt::print("{}\n", e.what());

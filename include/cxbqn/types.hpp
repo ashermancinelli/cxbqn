@@ -201,6 +201,8 @@ struct ArrayBase : public Value {
   virtual O<ArrayBase> copy() const = 0;
 };
 
+std::string to_string(O<Value> arr);
+
 struct Array : public ArrayBase {
   std::vector<O<Value>> values;
   std::vector<uz> _shape;
@@ -238,9 +240,6 @@ struct Array : public ArrayBase {
   O<ArrayBase> copy() const override {
     return CXBQN_NEW(Array, values, _shape);
   }
-
-  // Only works on strings, or arrays of chars.
-  std::string to_string() const;
 
   Array() {}
   ~Array() {}

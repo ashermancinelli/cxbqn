@@ -34,16 +34,16 @@ static std::vector<std::string> listsys{
 
 O<Value> SystemFunctionResolver::call(u8 nargs, Args &args) {
   CXBQN_DEBUG("SystemFunctionResolver: nargs={},args={}", nargs, args);
-  auto x = dyncast<Array>(args[1]);
+  auto x = dyncast<ArrayBase>(args[1]);
   std::vector<O<Value>> ret;
 
   for (int i = 0; i < x->N(); i++) {
-    auto foo = dyncast<Array>(x->values[i]);
-    auto s = foo->to_string();
+    auto foo = dyncast<Array>(x->get(i));
+    auto s = to_string(foo);
     if ("cxbqn" == s) {
       ret.push_back(CXBQN_NEW(namespaces::CXBQN));
     } else if ("file" == s) {
-      ret.push_back(CXBQN_NEW(namespaces::File));
+      ret.push_back(CXBQN_NEW(namespaces::File, to_string(_path)));
     } else if ("show" == s) {
       ret.push_back(CXBQN_NEW(Show, _fmt));
 #ifdef CXBQN_FFI

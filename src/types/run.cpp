@@ -61,7 +61,8 @@ observer_ptr<CompUnit> deconstruct(O<Value> compiled) {
       const auto _namelist = ARR(tmp->get(0));
       cu->_namelist.resize(_namelist->N());
       for (uz i = 0; i < _namelist->N(); i++) {
-        auto s = dyncast<Array>(_namelist->get(i))->to_string();
+        auto n = _namelist->get(i);
+        auto s = to_string(n);
         cu->_namelist[i] = s;
         cu->_exported.insert({s, i});
       }

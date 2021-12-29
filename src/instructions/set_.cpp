@@ -42,7 +42,7 @@ static O<Value> safe_set_refer(O<Value> opaque_refer, O<Value> value,
       return value;
     } else {
 
-      auto aval = dyncast<Array>(value);
+      auto aval = dyncast<ArrayBase>(value);
 #ifdef CXBQN_DEEPCHECKS
       if (nullptr == aval)
         throw std::runtime_error(
@@ -50,7 +50,7 @@ static O<Value> safe_set_refer(O<Value> opaque_refer, O<Value> value,
             "assigning to RefArray");
 #endif
       for (int i = 0; i < aval->N(); i++)
-        scp->set(ShouldVarBeSet, aref->getref(i), aval->values[i]);
+        scp->set(ShouldVarBeSet, aref->getref(i), aval->get(i));
       return aval;
     }
   } else {

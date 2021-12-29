@@ -124,7 +124,7 @@ int main(int argc, char **argv) {
       if (pp_res) {
         Args a{fmt, runret.v, bi_Nothing()};
         auto formatted = fmt->call(1, a);
-        fmt::print("{}\n", dyncast<Array>(formatted)->to_string());
+        fmt::print("{}\n", to_string(formatted));
       }
     }
 

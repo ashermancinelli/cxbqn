@@ -7,8 +7,8 @@ O<Value> FFI::call(u8 nargs, Args &args) {
   CXBQN_DEBUG("•FFI: nargs={},args={}", nargs, args);
   fmt::print("here\n");
 
-  auto libname = dyncast<Array>(args[4])->to_string();
-  auto funcname = dyncast<Array>(args[5])->to_string();
+  auto libname = to_string(args[4]);
+  auto funcname = to_string(args[5]);
 
   auto *handle = dlopen(libname.c_str(), RTLD_LAZY);
   if (!handle) {

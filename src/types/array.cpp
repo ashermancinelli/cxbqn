@@ -1,5 +1,7 @@
 #include <cxbqn/cxbqn.hpp>
 #include <cxbqn/debug.hpp>
+#include <cxbqn/array_types.hpp>
+#include <cxbqn/mem.hpp>
 #include <unistd.h>
 #include <utf8.h>
 
@@ -22,7 +24,7 @@ Array::Array(const std::string &s) {
 
 std::ostream &Array::repr(std::ostream &os) const {
   if (t()[t_String]) {
-    return os << to_string();
+    return os << to_string(O<Value>(this));
   }
   os << "⟨sh=⟨";
   for (int i = 0; i < _shape.size(); i++) {
@@ -81,16 +83,23 @@ O<Reference> RefArray::getref(uz idx) {
   return r;
 }
 
-std::string Array::to_string() const {
-  std::string s = "";
-  for (auto v : values) {
-    // This hack is required to workaround the fake •_fillBy_ function
-    if (nullptr == v or t_Character != type_builtin(v))
-      s += " ";
-    else
-      utf8::append(dyncast<Character>(v)->c(), std::back_inserter(s));
+std::string to_string(O<Value> arr) {
+  if (arr->t()[t_TypedArray]) {
+    return utf8::utf32to8(dyncast<TypedArray<c32>>(arr)->values);
+  } else if (t_Array == type_builtin(arr)) {
+    std::string s;
+    auto harr = dyncast<Array>(arr);
+    for (auto v : harr->values) {
+      // This hack is required to workaround the fake •_fillBy_ function
+      if (nullptr == v or t_Character != type_builtin(v))
+        s += " ";
+      else
+        utf8::append(dyncast<Character>(v)->c(), std::back_inserter(s));
+    }
+    return s;
+  } else {
+    throw std::runtime_error("cxbqn internal: tried to create string from non-stringy type");
   }
-  return s;
 }
 
 } // namespace cxbqn::types

@@ -10,7 +10,7 @@ O<Value> FLines::call(u8 nargs, Args &args) {
     throw std::runtime_error("•FLines can only accept one arg");
 #endif
   auto x = args[1];
-  auto pth = fs::path(dyncast<Array>(x)->to_string());
+  auto pth = fs::path(to_string(x));
   std::ifstream f(pth.c_str());
   auto ret = CXBQN_NEW(Array, 0);
   for (std::string line; std::getline(f, line);)

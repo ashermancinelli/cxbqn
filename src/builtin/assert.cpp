@@ -11,7 +11,7 @@ O<Value> Assert::call(u8 nargs, Args &args) {
     std::string s = "";
     if (nargs == 2) {
       if (type_builtin(w) == t_Array)
-        s += dyncast<Array>(w)->to_string();
+        s += to_string(w);
       else
         s += fmt::format("{}", CXBQN_STR_NC(w));
     }
