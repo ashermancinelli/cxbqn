@@ -9,7 +9,7 @@ O<Value> Take::call(u8 nargs, Args &args) {
 
   auto ret = CXBQN_NEW(Array);
   ret->values.assign(x->values.begin(), x->values.begin() + l);
-  ret->shape().push_back(l);
+  ret->shape.push_back(l);
   return ret;
 }
 

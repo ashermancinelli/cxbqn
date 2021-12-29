@@ -28,24 +28,21 @@ template <> constexpr TypeType typed_array_annot<c32>() {
 template <typename T> struct TypedArray : public ArrayBase {
   using value_type = T;
   std::vector<T> values;
-  std::vector<uz> _shape;
   TypedArray(uz N) {
-    _shape.push_back(N);
+    shape.push_back(N);
     values.resize(N);
   }
   TypedArray(std::vector<T> vals, std::vector<uz> shape)
-      : values{vals}, _shape{shape} {}
+      : values{vals}, ArrayBase(shape) {}
   TypedArray(std::vector<T> vals) : values{vals} {
-    _shape.push_back(vals.size());
+    shape.push_back(vals.size());
   }
 
   O<Value> get(uz i) const override { return CXBQN_NEW(Number, values[i]); }
   uz N() const override { return values.size(); }
-  const std::vector<uz> &shape() const override { return _shape; }
-  std::vector<uz> &shape() override { return _shape; }
 
   O<ArrayBase> copy() const override {
-    return CXBQN_NEW(TypedArray<T>, values, _shape);
+    return CXBQN_NEW(TypedArray<T>, values, shape);
   }
 
   inline TypeType t() const override {
@@ -59,18 +56,15 @@ template <typename T> struct TypedArray : public ArrayBase {
 
 template <> struct TypedArray<c32> : public ArrayBase {
   std::u32string values;
-  std::vector<uz> _shape;
   TypedArray(const std::u32string &s) : values{s} {
-    _shape.push_back(s.size());
+    shape.push_back(s.size());
   }
   TypedArray(const std::string &s) : values{s.begin(), s.end()} {
-    _shape.push_back(s.size());
+    shape.push_back(s.size());
   }
 
   O<Value> get(uz i) const override { return CXBQN_NEW(Character, values[i]); }
   uz N() const override { return values.size(); }
-  const std::vector<uz> &shape() const override { return _shape; }
-  std::vector<uz> &shape() override { return _shape; }
   O<ArrayBase> copy() const override {
     return CXBQN_NEW(TypedArray<c32>, values);
   }

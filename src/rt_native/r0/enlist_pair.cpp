@@ -7,7 +7,7 @@ O<Value> EnlistPair::call(u8 nargs, Args &args) {
   if (2 == nargs)
     ret->values.push_back(args[2]);
   ret->values.push_back(args[1]);
-  ret->shape().push_back(ret->values.size());
+  ret->shape.assign({ret->N()});
   return ret;
 }
 

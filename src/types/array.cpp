@@ -11,7 +11,7 @@ uz Array::N() const {
   const auto N = values.size();
 #ifdef CXBQN_DEEPCHECKS
   if (N !=
-      std::accumulate(_shape.begin(), _shape.end(), 1, std::multiplies<uz>())) {
+      std::accumulate(shape.begin(), shape.end(), 1, std::multiplies<uz>())) {
     std::stringstream ss;
     this->repr(ss);
     // for (const auto v : values)
@@ -32,7 +32,7 @@ uz Array::N() const {
 }
 
 Array::Array(const uz N, std::vector<O<Value>> &stk) {
-  _shape.push_back(N);
+  shape.push_back(N);
   values.assign(stk.begin() + (stk.size() - N), stk.end());
   stk.resize(stk.size() - N);
 }
@@ -42,7 +42,7 @@ Array::Array(const std::string &s) {
   while (it != s.end()) {
     values.push_back(O<Value>(new Character((c32)utf8::next(it, s.end()))));
   }
-  _shape.push_back(values.size());
+  shape.push_back(values.size());
   extra_annot |= annot(t_String);
 }
 
@@ -51,7 +51,7 @@ Array::Array(const std::u32string &s) {
 //    fmt::print("sz={}\n",s.size());
 //    throw std::runtime_error("gotcha");
 //  }
-  _shape.push_back(s.size());
+  shape.push_back(s.size());
   values.reserve(s.size());
   for (const auto &c : s)
     values.push_back(O<Value>(new Character(c)));
@@ -63,9 +63,9 @@ std::ostream &Array::repr(std::ostream &os) const {
     return os << to_string(O<Value>(this));
   }
   os << "⟨sh=⟨";
-  for (int i = 0; i < _shape.size(); i++) {
-    os << _shape[i];
-    if (i + 1 < _shape.size())
+  for (int i = 0; i < shape.size(); i++) {
+    os << shape[i];
+    if (i + 1 < shape.size())
       os << ",";
   }
   os << "⟩";

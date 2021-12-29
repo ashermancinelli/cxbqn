@@ -17,7 +17,7 @@ O<Value> FmtNum::call(u8 nargs, Args &args) {
   auto ret = CXBQN_NEW(Array);
   for (auto it = s.begin(); it != s.end();)
     ret->values.push_back(CXBQN_NEW(Character, utf8::next(it, s.end())));
-  ret->shape().push_back(ret->values.size());
+  ret->shape.push_back(ret->values.size());
   return ret;
 }
 

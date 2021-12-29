@@ -9,15 +9,12 @@ O<Value> Fold::call(u8 nargs, Args &args) {
   const auto w = args[2];
 
   {
-    auto const& sh = x->shape();
+    auto const sh = x->shape;
     if (0 == sh.size() or (1 == sh.size() and 0 == sh[0]))
       return CXBQN_NEW(Array);
   }
 
-  std::stringstream ss;
-  x->repr(ss);
-  fmt::print("fold:{}\n",ss.str());
-  auto l = x->shape()[0];
+  auto l = x->shape[0];
 
   auto r = 2 == nargs ? w : x->values[--l]; // must be a right-fold
 

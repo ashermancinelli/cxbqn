@@ -9,7 +9,7 @@ O<Value> Drop::call(u8 nargs, Args &args) {
   auto ret = CXBQN_NEW(Array);
   ret->values.assign(x->values.begin() + static_cast<uz>(w->v),
                      x->values.end());
-  ret->shape().push_back(ret->values.size());
+  ret->shape.push_back(ret->values.size());
   return ret;
 }
 

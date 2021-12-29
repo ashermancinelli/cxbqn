@@ -194,9 +194,10 @@ struct Character : public Number {
 // For when we could be working with either a typed array or a heterogeneous
 // array
 struct ArrayBase : public Value {
+  ArrayBase(std::vector<uz> sh) : shape{sh} {}
+  ArrayBase() {}
+  std::vector<uz> shape;
   virtual O<Value> get(uz i) const = 0;
-  virtual const std::vector<uz> &shape() const = 0;
-  virtual std::vector<uz> &shape() = 0;
   virtual uz N() const = 0;
   virtual O<ArrayBase> copy() const = 0;
 };
@@ -205,17 +206,14 @@ std::string to_string(O<Value> arr);
 
 struct Array : public ArrayBase {
   std::vector<O<Value>> values;
-  std::vector<uz> _shape;
   Array(const uz N, std::vector<O<Value>> &stk);
   Array(std::vector<O<Value>> vs) : values{vs} {
-    _shape.push_back(vs.size());
+    shape.push_back(vs.size());
   }
-  Array(std::vector<O<Value>> vs, std::vector<uz> shape) : values{vs}, _shape{shape} {}
-  const std::vector<uz> &shape() const override { return _shape; }
-  std::vector<uz> &shape() override { return _shape; }
+  Array(std::vector<O<Value>> vs, std::vector<uz> shape) : values{vs}, ArrayBase(shape) {}
   uz N() const override;
   Array(uz N) {
-    _shape.push_back(N);
+    shape.push_back(N);
     values.resize(N);
   }
   Array(const std::string &s);
@@ -226,7 +224,7 @@ struct Array : public ArrayBase {
 
   // For typed arrays, we want to create a copy of ourselves
   O<ArrayBase> copy() const override {
-    return CXBQN_NEW(Array, values, _shape);
+    return CXBQN_NEW(Array, values, shape);
   }
 
   Array() {}

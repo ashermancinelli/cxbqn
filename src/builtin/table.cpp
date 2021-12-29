@@ -24,8 +24,8 @@ O<Value> Table::call(u8 nargs, Args &args) {
       Args a{F, x->get(i), bi_Nothing()};
       ret->values[i] = F->call(1, a);
     }
-    ret->shape().clear();
-    std::copy(x->shape().begin(), x->shape().end(), std::back_inserter(ret->shape()));
+    std::vector<uz> sh(x->shape.begin(), x->shape.end());
+    ret->shape = sh;
     return ret;
   }
 
@@ -48,11 +48,11 @@ O<Value> Table::call(u8 nargs, Args &args) {
     throw ss.str();
   }
 #endif
-  ret->shape().clear();
-  for (const auto i : w->shape())
-    ret->shape().push_back(i);
-  for (const auto i : x->shape())
-    ret->shape().push_back(i);
+  ret->shape.clear();
+  for (const auto i : w->shape)
+    ret->shape.push_back(i);
+  for (const auto i : x->shape)
+    ret->shape.push_back(i);
 
   return ret;
 }
