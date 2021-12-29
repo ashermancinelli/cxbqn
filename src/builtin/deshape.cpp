@@ -15,12 +15,14 @@ O<Value> Deshape::call(u8 nargs, Args &args) {
 
   if (1 == nargs) {
     if (isxarr) {
-      auto ret = xarr->copy();
-      ret->shape().clear();
-      ret->shape().push_back(ret->N());
+      auto ret = CXBQN_NEW(Array, xarr->N());
+      for(int i=0;i<xarr->N();i++)
+        ret->values[i]=xarr->get(i);
       return ret;
     } else {
-      return CXBQN_NEW(Array, std::vector<O<Value>>{args[1]});
+      auto r = CXBQN_NEW(Array, 1);
+      r->values[0] = args[1];
+      return r;
     }
   }
 

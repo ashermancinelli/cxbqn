@@ -83,11 +83,17 @@ O<Value> check_char(O<Value> v) {
 uz array_depth_helper(uz init, O<Value> v) {
   CXBQN_DEBUG("array_depth_helper:init={},value={}", init, CXBQN_STR_NC(v));
   if (t_Array == type_builtin(v)) {
-    auto ar = dyncast<ArrayBase>(v);
-    uz acc = 1;
-    for (int i=0; i<ar->N(); i++)
-      acc = std::max(acc, array_depth_helper(0, ar->get(i)));
-    return init + acc;
+    auto ar = dyncast<Array>(v);
+    return init +
+           std::accumulate(ar->values.begin(), ar->values.end(), 1,
+                           [](uz acc, auto b) {
+                             return std::max(acc, array_depth_helper(0, b));
+                           });
+//    auto ar = dyncast<ArrayBase>(v);
+//    uz acc = 1;
+//    for (int i=0; i<ar->N(); i++)
+//      acc = std::max(acc, array_depth_helper(0, ar->get(i)));
+//    return init + acc;
   } else
     return 1 + init;
 }

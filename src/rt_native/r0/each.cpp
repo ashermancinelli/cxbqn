@@ -9,7 +9,10 @@ O<Value> Each::call(u8 nargs, Args &args) {
 
   const auto l = x->N();
   auto ret = CXBQN_NEW(Array, l);
-  ret->shape() = x->shape();
+  {
+    auto const& sh = x->shape();
+    std::copy(sh.begin(), sh.end(), std::back_inserter(ret->shape()));
+  }
   for (int i = 0; i < l; i++) {
     Args a{f, x->values[i], w->values[i]};
     ret->values[i] = f->call(2, a);

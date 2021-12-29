@@ -83,7 +83,7 @@ NC ← {1⊸↓⌾⌽""∾𝕩}
   std::vector<BlockDef> bds"∾(NC blk2)∾";
   auto cu = make_observer(new CompUnit{
       ._bc"∾(NC bc)∾",
-      ._consts{CXBQN_NEW(Array,c,{c.size()})},
+      ._consts{CXBQN_NEW(Array,c)},
       ._blocks{},
       ._bodies"∾(NC bod)∾"},
       });

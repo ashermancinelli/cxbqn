@@ -4,7 +4,7 @@ namespace cxbqn::sys {
 O<Value> List::call(u8 nargs, Args &args) {
   CXBQN_DEBUG("•List: nargs={},args={}", nargs, args);
   auto d = to_string(args[1]);
-  auto ret = CXBQN_NEW(Array, 0);
+  auto ret = CXBQN_NEW(Array);
   for (const auto &dd : fs::directory_iterator{d}) {
     auto fn = fs::path(dd).filename();
     if ("." == fn or ".." == fn)

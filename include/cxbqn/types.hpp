@@ -207,7 +207,9 @@ struct Array : public ArrayBase {
   std::vector<O<Value>> values;
   std::vector<uz> _shape;
   Array(const uz N, std::vector<O<Value>> &stk);
-  Array(std::vector<O<Value>> vs) : values{vs}, _shape{vs.size()} {}
+  Array(std::vector<O<Value>> vs) : values{vs} {
+    _shape.push_back(vs.size());
+  }
   Array(std::vector<O<Value>> vs, std::vector<uz> shape) : values{vs}, _shape{shape} {}
   const std::vector<uz> &shape() const override { return _shape; }
   std::vector<uz> &shape() override { return _shape; }
@@ -217,13 +219,7 @@ struct Array : public ArrayBase {
     values.resize(N);
   }
   Array(const std::string &s);
-  Array(const std::u32string &s) {
-    _shape.push_back(s.size());
-    values.reserve(s.size());
-    for (const auto &c : s)
-      values.push_back(O<Value>(new Character(c)));
-    extra_annot |= annot(t_String);
-  }
+  Array(const std::u32string &s);
 
   // For typed arrays, the BQN value will have to be constructed on the fly.
   O<Value> get(uz i) const override { return values[i]; }

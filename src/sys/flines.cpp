@@ -12,7 +12,7 @@ O<Value> FLines::call(u8 nargs, Args &args) {
   auto x = args[1];
   auto pth = fs::path(to_string(x));
   std::ifstream f(pth.c_str());
-  auto ret = CXBQN_NEW(Array, 0);
+  auto ret = CXBQN_NEW(Array);
   for (std::string line; std::getline(f, line);)
     ret->values.push_back(CXBQN_NEW(Array, line));
   ret->shape().push_back(ret->values.size());

@@ -24,5 +24,4 @@ O<Value> GroupLen::call(u8 nargs, Args &args) {
     ret->values[i] = NN(retv[i]);
   return ret;
 }
-#undef SYMBOL
 } // namespace cxbqn::provides

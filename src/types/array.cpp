@@ -12,9 +12,19 @@ uz Array::N() const {
 #ifdef CXBQN_DEEPCHECKS
   if (N !=
       std::accumulate(_shape.begin(), _shape.end(), 1, std::multiplies<uz>())) {
-    //fmt::print("pid={}\n", getpid());
-    //int i=1;
-    //while (i) {}
+    std::stringstream ss;
+    this->repr(ss);
+    // for (const auto v : values)
+    //{
+    //  v->repr(ss);
+    //  ss << ",\n";
+    //}
+    fmt::print("{}", ss.str());
+    fmt::print("pid={}\n", getpid());
+    *((int*)0);
+    int i = 1;
+    while (i) {
+    }
     throw std::runtime_error("cxbqn internal: shape does not match values");
   }
 #endif
@@ -33,6 +43,18 @@ Array::Array(const std::string &s) {
     values.push_back(O<Value>(new Character((c32)utf8::next(it, s.end()))));
   }
   _shape.push_back(values.size());
+  extra_annot |= annot(t_String);
+}
+
+Array::Array(const std::u32string &s) {
+//  if (U"⊢⊣˜∘○⊸⟜⊘◶"==s) {
+//    fmt::print("sz={}\n",s.size());
+//    throw std::runtime_error("gotcha");
+//  }
+  _shape.push_back(s.size());
+  values.reserve(s.size());
+  for (const auto &c : s)
+    values.push_back(O<Value>(new Character(c)));
   extra_annot |= annot(t_String);
 }
 
