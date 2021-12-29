@@ -11,7 +11,7 @@ O<Value> Scan::call(u8 nargs, Args &args) {
   // if ((1 == nargs) != (args[2]->t()[t_Nothing])) throw std::runtime_error("`:
   // got · for 𝕨 with 2 args, or non-· with 1 arg");
 
-  auto x = dyncast<Array>(args[1]);
+  auto x = dyncast<ArrayBase>(args[1]);
 
   if (x->N() == 0) {
     if (1 == x->shape.size() and 0 == x->shape.back())
@@ -26,11 +26,11 @@ O<Value> Scan::call(u8 nargs, Args &args) {
   auto sh = x->shape;
   auto iswarr = (t_Array == type_builtin(w));
   if (2 == nargs) {
-    auto w_rank = iswarr ? dyncast<Array>(w)->shape.size() : 0;
+    auto w_rank = iswarr ? dyncast<ArrayBase>(w)->shape.size() : 0;
     if (1 + w_rank != sh.size())
       throw std::runtime_error("`: rank of 𝕨 must be cell rank of 𝕩");
     if (iswarr) {
-      const auto &wsh = dyncast<Array>(w)->shape;
+      const auto &wsh = dyncast<ArrayBase>(w)->shape;
       for (int i = 0; i < sh.size() - 1; i++)
         if (wsh[i] != sh[i + 1])
           throw std::runtime_error("`: shape of 𝕨 must be cell shape of 𝕩");
@@ -50,7 +50,7 @@ O<Value> Scan::call(u8 nargs, Args &args) {
   int i = 0;
   auto maybe_ret = CXBQN_NEW(Array, 1);
   maybe_ret->values[0] = w;
-  auto warr = iswarr ? dyncast<Array>(w) : maybe_ret;
+  auto warr = iswarr ? dyncast<ArrayBase>(w) : maybe_ret;
   CXBQN_DEBUG("cnt={},warr={}", cnt, CXBQN_STR_NC((O<Value>)warr));
   if (1 == nargs)
     for (; i < cnt; i++)
