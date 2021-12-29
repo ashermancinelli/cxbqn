@@ -1,7 +1,17 @@
-suites ← •args
+
+d ← "suites/always/"
+always ← d⊸∾¨•file.List d
+
+hascuda ← +´⟨"CXBQN_CUDA"⟩⊸⍷⊑¨•cxbqn.config
+
+d ↩ "suites/cuda/"
+cuda ← d⊸∾¨•file.List d
+
+suites←always∾(hascuda⊑⟨⟩‿cuda)
 
 •Out "Suites: "
 •Show suites
+•Exit 1
 
 # Index of test
 i←0
