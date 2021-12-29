@@ -83,13 +83,13 @@ NC ← {1⊸↓⌾⌽""∾𝕩}
   std::vector<BlockDef> bds"∾(NC blk2)∾";
   auto cu = make_observer(new CompUnit{
       ._bc"∾(NC bc)∾",
-      ._consts{CXBQN_NEW(Array,c.size())},
+      ._consts{CXBQN_NEW(Array,c)},
       ._blocks{},
       ._bodies"∾(NC bod)∾"},
       });
   for (auto& bd : bds)
     cu->_blocks.emplace_back(bd);
-  cu->_consts->values = std::move(c);
+  //cu->_consts->values = std::move(c);
   cu->_consts->shape().push_back(c.size());
   GC::register_ptr(cu.get());
   return cu;

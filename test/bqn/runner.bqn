@@ -1,4 +1,7 @@
-suites ← 1↓•args
+suites ← •args
+
+•Out "Suites: "
+•Show suites
 
 # Index of test
 i←0
@@ -22,7 +25,7 @@ T ← {
 }
 
 # Run all test cases in each test suite
-{T ¨ •Import 𝕩} ¨ suites
+{ •Out "Running suite "∾𝕩⋄T ¨ •Import 𝕩} ¨ suites
 
 •Out ""
 

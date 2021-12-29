@@ -42,7 +42,7 @@ struct Scope : Marked {
   // are provided.
   const std::pair<std::vector<uz>, std::vector<uz>> &source_indices() const;
   void source_for_program_counter(uz pc, std::stringstream &ss) const;
-  void set_source_info(std::vector<std::vector<uz>> si, O<Array> s);
+  void set_source_info(std::vector<std::vector<uz>> si, O<ArrayBase> s);
   bool has_source_info() const {
     return _source_indices.has_value() and _source_str.has_value();
   }

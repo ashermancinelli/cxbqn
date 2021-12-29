@@ -1,6 +1,7 @@
 #include <cxbqn/namespaces/file.hpp>
 #include <cxbqn/fs.hpp>
 #include <cxbqn/types.hpp>
+#include <cxbqn/array_types.hpp>
 #include <fstream>
 
 namespace cxbqn::namespaces {
@@ -22,8 +23,6 @@ O<Value> FileLines::call(u8 nargs, Args &args) {
   auto x = args[1];
   auto w = args[2];
 
-  O<Array> ret;
-
   if (2 == nargs) {
     const auto fn = fs::path(dyncast<Array>(w)->to_string());
     const auto lines = dyncast<Array>(x);
@@ -33,9 +32,9 @@ O<Value> FileLines::call(u8 nargs, Args &args) {
       fmt::print(ofs, "{}\n", linestr);
     }
     ofs.close();
-    ret = CXBQN_NEW(Array, fs::absolute(fn));
+    return CXBQN_NEW(Array, fs::absolute(fn));
   } else {
-    ret = CXBQN_NEW(Array);
+    auto ret = CXBQN_NEW(Array);
     const auto fn = fs::path(dyncast<Array>(x)->to_string());
     std::string line;
     std::ifstream ifs(fn);
@@ -43,9 +42,8 @@ O<Value> FileLines::call(u8 nargs, Args &args) {
       ret->values.push_back(CXBQN_NEW(Array, line));
     }
     ret->shape().push_back(ret->values.size());
+    return ret;
   }
-
-  return ret;
 }
 
 O<Value> FileList::call(u8 nargs, Args &args) {

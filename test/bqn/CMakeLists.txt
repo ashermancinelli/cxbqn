@@ -8,7 +8,7 @@ endif()
 
 add_test(
   NAME "BQN-Test-Suite"
-  COMMAND $<TARGET_FILE:BQN> -f test/bqn/syntax.bqn ${BQN_TESTS}
+  COMMAND $<TARGET_FILE:BQN> -f test/bqn/runner.bqn ${BQN_TESTS}
   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
   )
 

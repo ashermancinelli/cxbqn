@@ -83,12 +83,11 @@ O<Value> check_char(O<Value> v) {
 uz array_depth_helper(uz init, O<Value> v) {
   CXBQN_DEBUG("array_depth_helper:init={},value={}", init, CXBQN_STR_NC(v));
   if (t_Array == type_builtin(v)) {
-    auto ar = dyncast<Array>(v);
-    return init +
-           std::accumulate(ar->values.begin(), ar->values.end(), 1,
-                           [](uz acc, auto b) {
-                             return std::max(acc, array_depth_helper(0, b));
-                           });
+    auto ar = dyncast<ArrayBase>(v);
+    uz acc = 1;
+    for (int i=0; i<ar->N(); i++)
+      acc = std::max(acc, array_depth_helper(0, ar->get(i)));
+    return init + acc;
   } else
     return 1 + init;
 }
@@ -97,12 +96,12 @@ bool equivilant_helper(O<Value> a, O<Value> b) {
   if (a->t()[t_DataValue] and b->t()[t_DataValue])
     return feq_helper(dyncast<Number>(a)->v, dyncast<Number>(b)->v);
   else if (t_Array == type_builtin(a) and t_Array == type_builtin(b)) {
-    auto av = dyncast<Array>(a);
-    auto bv = dyncast<Array>(b);
+    auto av = dyncast<ArrayBase>(a);
+    auto bv = dyncast<ArrayBase>(b);
     if (av->N() != bv->N())
       return false;
     for (int i = 0; i < av->N(); i++)
-      if (!equivilant_helper(av->values[i], bv->values[i]))
+      if (!equivilant_helper(av->get(i), bv->get(i)))
         return false;
   }
   throw std::runtime_error("equivilant_helper: something went wrong");

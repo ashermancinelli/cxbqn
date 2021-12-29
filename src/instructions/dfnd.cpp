@@ -2,7 +2,7 @@
 namespace cxbqn::vm::instructions {
 
 void dfnd(const ByteCodeRef bc, uz &pc, std::vector<O<Value>> &stk,
-          observer_ptr<Scope> scp, O<Array> consts) {
+          observer_ptr<Scope> scp, O<ArrayBase> consts) {
   auto blk_idx = bc[++pc];
 
   const auto blk = scp->cu->_blocks[blk_idx];

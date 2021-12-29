@@ -93,7 +93,7 @@ const std::string_view Scope::source_str() const {
   return _source_str.has_value() ? _source_str.value() : parent->source_str();
 }
 
-void Scope::set_source_info(std::vector<std::vector<uz>> si, O<Array> s) {
+void Scope::set_source_info(std::vector<std::vector<uz>> si, O<ArrayBase> s) {
   CXBQN_DEBUG("Scope::set_source_info");
   if (si.size() != 2)
     throw std::runtime_error("source indices can only have two values");
@@ -103,8 +103,10 @@ void Scope::set_source_info(std::vector<std::vector<uz>> si, O<Array> s) {
 
   // create a standard string of the source text
   std::string _s;
-  for (auto v : s->values)
+  for (int i=0; i < s->N(); i++) {
+    auto v = s->get(i);
     utf8::append(dyncast<Character>(v)->c(), std::back_inserter(_s));
+  }
   _source_str = _s;
 }
 

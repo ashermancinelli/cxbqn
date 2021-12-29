@@ -6,7 +6,7 @@ namespace cxbqn::vm {
 
 using namespace types;
 
-#define ARR(x) dyncast<Array>(x)
+#define ARR(x) dyncast<ArrayBase>(x)
 #define NUM(x) dyncast<Number>(x)
 
 O<Value> vm(observer_ptr<CompUnit> cu, observer_ptr<Scope> scope, Body b) {
@@ -51,7 +51,7 @@ O<Value> vm(observer_ptr<CompUnit> cu, observer_ptr<Scope> scope, Body b) {
       }
       case op::PUSH: {
         INSTR1("PUSH");
-        stk.push_back(consts->values[bc[++pc]]);
+        stk.push_back(consts->get(bc[++pc]));
         INSTR("PUSH");
         break;
       }

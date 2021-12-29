@@ -10,7 +10,7 @@ O<Value> EQ::call(u8 nargs, Args &args) {
   auto ow = args[2];
 
   if (1 == nargs)
-    if (auto x = dyncast<Array>(ox))
+    if (auto x = dyncast<ArrayBase>(ox))
       return NNC(x->shape().size());
     else
       return NNC(0);

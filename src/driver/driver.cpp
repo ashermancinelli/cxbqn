@@ -72,7 +72,7 @@ static inline void chomp(std::string &s) {
   rtrim(s);
 }
 
-static inline O<Array> to_arr(std::vector<std::string> n) {
+static inline O<ArrayBase> to_arr(std::vector<std::string> n) {
   auto ar = CXBQN_NEW(Array, n.size());
   for (int i = 0; i < n.size(); i++)
     ar->values[i] = CXBQN_NEW(Array, n[i]);

@@ -6,12 +6,12 @@ namespace cxbqn::provides {
 O<Value> GroupLen::call(u8 nargs, Args &args) {
   CXBQN_DEBUG(SYMBOL ": nargs={},args={}", nargs, args);
   XNULLCHK(SYMBOL);
-  auto x = dyncast<Array>(args[1]);
+  auto x = dyncast<ArrayBase>(args[1]);
   auto w = dyncast<Number>(args[2]); // only use if nargs == 2!
   const auto init = (2 == nargs ? w->v : 0) - 1;
   std::vector<f64> xs(x->N(), 0);
   for (int i = 0; i < x->N(); i++)
-    xs[i] = dyncast<Number>(x->values[i])->v;
+    xs[i] = dyncast<Number>(x->get(i))->v;
   const auto l = std::accumulate(xs.begin(), xs.end(), init,
                                  [](auto a, auto b) { return std::max(a, b); });
   std::vector<f64> retv(static_cast<uz>(l + 1), 0);
