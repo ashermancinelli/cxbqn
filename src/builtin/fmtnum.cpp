@@ -14,10 +14,10 @@ O<Value> FmtNum::call(u8 nargs, Args &args) {
   else
     ss << x->v;
   auto s = ss.str();
-  auto ret = CXBQN_NEW(Array, 0);
+  auto ret = CXBQN_NEW(Array);
   for (auto it = s.begin(); it != s.end();)
     ret->values.push_back(CXBQN_NEW(Character, utf8::next(it, s.end())));
-  ret->shape()[0] = ret->values.size();
+  ret->shape().push_back(ret->values.size());
   return ret;
 }
 

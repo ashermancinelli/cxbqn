@@ -211,15 +211,7 @@ struct Array : public ArrayBase {
   Array(std::vector<O<Value>> vs, std::vector<uz> shape) : values{vs}, _shape{shape} {}
   const std::vector<uz> &shape() const override { return _shape; }
   std::vector<uz> &shape() override { return _shape; }
-  uz N() const override {
-    const auto N = values.size();
-#ifdef CXBQN_DEEPCHECKS
-    if (N !=
-        std::accumulate(_shape.begin(), _shape.end(), 1, std::multiplies<uz>()))
-      throw std::runtime_error("cxbqn internal: shape does not match values");
-#endif
-    return N;
-  }
+  uz N() const override;
   Array(uz N) {
     _shape.push_back(N);
     values.resize(N);

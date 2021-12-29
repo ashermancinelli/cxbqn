@@ -1,17 +1,24 @@
 
-d ← "suites/always/"
-always ← d⊸∾¨•file.List d
+•Show "foo"
+#•Show •args
+•Exit 1
 
-hascuda ← +´⟨"CXBQN_CUDA"⟩⊸⍷⊑¨•cxbqn.config
+DefaultSuites ← {
+  d ← "suites/always/"
+  always ← d⊸∾¨•file.List d
 
-d ↩ "suites/cuda/"
-cuda ← d⊸∾¨•file.List d
+  hascuda ← +´⟨"CXBQN_CUDA"⟩⊸⍷⊑¨•cxbqn.config
 
-suites←always∾(hascuda⊑⟨⟩‿cuda)
+  d ↩ "suites/cuda/"
+  cuda ← d⊸∾¨•file.List d
+
+  always∾(hascuda⊑⟨⟩‿cuda)
+}
+
+suites←1
 
 •Out "Suites: "
 •Show suites
-•Exit 1
 
 # Index of test
 i←0

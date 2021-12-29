@@ -14,8 +14,8 @@ int main(int argc, char **argv) {
 
   std::vector<std::string> args(argv, argv + argc);
 
-  if (auto ec =
-          driver::parse_args(argc, argv, path, src, sysargs, repl, pp_res, show_cu))
+  if (auto ec = driver::parse_args(argc, argv, path, src, sysargs, repl, pp_res,
+                                   show_cu))
     return ec;
 
   try {

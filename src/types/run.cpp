@@ -18,7 +18,7 @@ observer_ptr<CompUnit> deconstruct(O<Value> compiled) {
   for (int i=0; i<bqnbc->N(); i++)
     cu->_bc.push_back(NUM(bqnbc->get(i))->v);
 
-  cu->_consts = ARR(comparr->get(1));
+  cu->_consts = dyncast<Array>(comparr->get(1));
 
   std::vector<BlockDef> blk_defs;
   auto bqnblks = dyncast<Array>(comparr->get(2));
@@ -131,7 +131,7 @@ RunResult run(std::vector<i32> bc, O<ArrayBase> consts,
   cu->_bc = bc;
   cu->_blocks = blks;
   cu->_bodies = bodies;
-  cu->_consts = consts;
+  cu->_consts = dyncast<Array>(consts);
   cu->_exported = exported;
 
   ret.scp = make_observer(new Scope(cu));

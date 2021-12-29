@@ -7,7 +7,7 @@ namespace cxbqn::types {
 
 struct CompUnit : public Marked {
   ByteCode _bc;
-  O<ArrayBase> _consts;
+  O<Array> _consts;
   std::vector<Block> _blocks;
   std::vector<Body> _bodies;
   std::vector<std::string> _namelist;

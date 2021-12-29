@@ -1,11 +1,25 @@
+#include <cxbqn/array_types.hpp>
 #include <cxbqn/cxbqn.hpp>
 #include <cxbqn/debug.hpp>
-#include <cxbqn/array_types.hpp>
 #include <cxbqn/mem.hpp>
 #include <unistd.h>
 #include <utf8.h>
 
 namespace cxbqn::types {
+
+uz Array::N() const {
+  const auto N = values.size();
+#ifdef CXBQN_DEEPCHECKS
+  if (N !=
+      std::accumulate(_shape.begin(), _shape.end(), 1, std::multiplies<uz>())) {
+    //fmt::print("pid={}\n", getpid());
+    //int i=1;
+    //while (i) {}
+    throw std::runtime_error("cxbqn internal: shape does not match values");
+  }
+#endif
+  return N;
+}
 
 Array::Array(const uz N, std::vector<O<Value>> &stk) {
   _shape.push_back(N);
@@ -98,7 +112,8 @@ std::string to_string(O<Value> arr) {
     }
     return s;
   } else {
-    throw std::runtime_error("cxbqn internal: tried to create string from non-stringy type");
+    throw std::runtime_error(
+        "cxbqn internal: tried to create string from non-stringy type");
   }
 }
 

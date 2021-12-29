@@ -11,7 +11,7 @@ O<Value> List::call(u8 nargs, Args &args) {
       continue;
     ret->values.push_back(CXBQN_NEW(Array, fn.string()));
   }
-  ret->shape()[0] = ret->values.size();
+  ret->shape().push_back(ret->values.size());
   return ret;
 }
 } // namespace cxbqn::sys

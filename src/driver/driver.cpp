@@ -274,10 +274,14 @@ int parse_args(int argc, char **argv, O<Array> &path, O<Array> &src,
   }
 
   const auto args = prog.get<std::vector<std::string>>("args");
-  sysargs->shape()[0] += args.size();
+  sysargs->shape().clear();
+  sysargs->shape().push_back(args.size());
   for (const auto &a : args) {
     sysargs->values.push_back(CXBQN_NEW(Array, a));
   }
+
+  if (repl)
+    CXBQN_PTR_RESET(path, CXBQN_NEW(Array,fs::current_path()));
 
   return 0;
 }
