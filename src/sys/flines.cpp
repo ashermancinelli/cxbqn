@@ -1,5 +1,6 @@
 #include "sys_helper.hpp"
 #include <fstream>
+#include <cxbqn/array_utils.hpp>
 
 namespace cxbqn::sys {
 

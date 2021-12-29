@@ -2,6 +2,7 @@
 #include <cxbqn/fs.hpp>
 #include <cxbqn/types.hpp>
 #include <cxbqn/array_types.hpp>
+#include <cxbqn/array_utils.hpp>
 #include <fstream>
 
 namespace cxbqn::namespaces {

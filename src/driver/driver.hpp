@@ -1,6 +1,7 @@
 #pragma once
 #include <chrono>
 #include <cxbqn/comp_utils.hpp>
+#include <cxbqn/array_utils.hpp>
 #include <cxbqn/cxbqn.hpp>
 #include <cxbqn/debug.hpp>
 #include <cxbqn/fs.hpp>

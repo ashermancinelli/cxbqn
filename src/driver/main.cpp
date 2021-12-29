@@ -93,9 +93,9 @@ int main(int argc, char **argv) {
       _fmtarr = fmt1->call(1, a);
     }
 
-    auto fmtarr = dyncast<Array>(_fmtarr);
-    auto fmt = fmtarr->values[0];
-    auto repr = fmtarr->values[1];
+    auto fmtarr = dyncast<ArrayBase>(_fmtarr);
+    auto fmt = values(fmtarr)[0];
+    auto repr = values(fmtarr)[1];
 
     // Here, we could just call the compiler with the runtime as 𝕨. To add the
     // system functions, we will pass another value in an array along with the
@@ -118,7 +118,7 @@ int main(int argc, char **argv) {
         compiled = compiler->call(2, a);
       }
       if (show_cu)
-        for (auto v : dyncast<Array>(compiled)->values)
+        for (auto v : values(dyncast<ArrayBase>(compiled)))
           fmt::print("{}\n", *v);
       auto runret = vm::run(compiled);
       if (pp_res) {

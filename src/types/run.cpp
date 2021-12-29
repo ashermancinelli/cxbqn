@@ -1,5 +1,6 @@
 #include "vm_macros.hpp"
 #include <cxbqn/cxbqn.hpp>
+#include <cxbqn/array_utils.hpp>
 #include <sstream>
 
 namespace cxbqn::vm {

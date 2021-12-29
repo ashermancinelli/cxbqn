@@ -1,6 +1,7 @@
 #include "sys_helper.hpp"
 #include <cxbqn/namespaces/file.hpp>
 #include <cxbqn/namespaces/cxbqn.hpp>
+#include <cxbqn/array_utils.hpp>
 
 namespace cxbqn::sys {
 

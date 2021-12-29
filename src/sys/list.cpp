@@ -1,4 +1,5 @@
 #include "sys_helper.hpp"
+#include <cxbqn/array_utils.hpp>
 
 namespace cxbqn::sys {
 O<Value> List::call(u8 nargs, Args &args) {

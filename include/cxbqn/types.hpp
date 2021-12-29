@@ -202,8 +202,6 @@ struct ArrayBase : public Value {
   virtual O<ArrayBase> copy() const = 0;
 };
 
-std::string to_string(O<Value> arr);
-
 struct Array : public ArrayBase {
   std::vector<O<Value>> values;
   Array(const uz N, std::vector<O<Value>> &stk);

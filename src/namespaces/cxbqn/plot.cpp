@@ -2,6 +2,7 @@
 #include <cxbqn/namespaces/cxbqn.hpp>
 #include <cxbqn/namespaces/cxbqn/plot.hpp>
 #include <cxbqn/types.hpp>
+#include <cxbqn/array_utils.hpp>
 #include <matplotlibcpp.h>
 namespace plt = matplotlibcpp;
 

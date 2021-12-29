@@ -1,6 +1,8 @@
 set(CXBQN_SRC
 
   # Top level definitions for basic types, mostly defined in types.hpp
+  types/array_utils.cpp
+  types/ref_array.cpp
   types/bi.cpp
   types/mem.cpp
   types/varalias.cpp
@@ -54,6 +56,8 @@ set(CXBQN_SRC
   sys/repr.cpp
   sys/sys_helper.cpp
   sys/sys_function_resolver.cpp
+  $<$<BOOL:${CXBQN_CUDA}>:sys/cudafor.cu>
+  $<$<BOOL:${CXBQN_FFI}>:sys/ffi.cpp>
 
   # Builtin functions/modifiers
   builtin/stile.cpp
@@ -94,22 +98,6 @@ set(CXBQN_SRC
   namespaces/std.cpp
   $<$<BOOL:${CXBQN_PLOT}>:namespaces/cxbqn/plot.cpp>
   )
-#
-#if(CXBQN_PLOT)
-#  list(APPEND CXBQN_SRC namespaces/cxbqn/plot.cpp)
-#endif()
-
-if(CXBQN_CUDA)
-  list(APPEND CXBQN_SRC
-    sys/cudafor.cu
-    )
-endif()
-
-if(CXBQN_FFI)
-  list(APPEND CXBQN_SRC
-    sys/ffi.cpp
-    )
-endif()
 
 add_library(
   cxbqn

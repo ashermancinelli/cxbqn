@@ -1,4 +1,5 @@
 #include "sys_helper.hpp"
+#include <cxbqn/array_utils.hpp>
 #include <subprocess.hpp>
 
 namespace cxbqn::sys {
