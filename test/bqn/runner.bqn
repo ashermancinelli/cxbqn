@@ -1,9 +1,5 @@
 
-•Show "foo"
-#•Show •args
-•Exit 1
-
-DefaultSuites ← {
+defaultSuites ← {
   d ← "suites/always/"
   always ← d⊸∾¨•file.List d
 
@@ -15,7 +11,9 @@ DefaultSuites ← {
   always∾(hascuda⊑⟨⟩‿cuda)
 }
 
-suites←1
+# If args are passed to the runner, use that to determine what suites to run.
+# Otherwise, try to discover all available test suites
+suites←(×≠•args)⊑defaultSuites‿•args
 
 •Out "Suites: "
 •Show suites
