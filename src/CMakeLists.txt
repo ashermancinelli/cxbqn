@@ -27,6 +27,7 @@ set(CXBQN_SRC
   instructions/pred.cpp
   instructions/seth.cpp
   instructions/vfym.cpp
+  instructions/notm.cpp
   instructions/fldo.cpp
   instructions/fldm.cpp
   instructions/fn2c.cpp

@@ -59,6 +59,7 @@ void md2c(std::vector<O<Value>> &stk);
 void tr2d(std::vector<O<Value>> &stk);
 void tr3d(std::vector<O<Value>> &stk);
 void tr3o(std::vector<O<Value>> &stk);
+void notm(std::vector<O<Value>> &stk);
 
 // Namespaces
 void alim(const ByteCodeRef bc, uz &pc, std::vector<O<Value>> &stk, observer_ptr<CompUnit> cu);

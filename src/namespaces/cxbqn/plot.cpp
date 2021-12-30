@@ -58,7 +58,7 @@ O<Value> NamedPlot::call(u8 nargs, Args &args) {
         "vals`, or `\"My Name\" •cxbqn.plot.NamedPlot x‿y`");
 
   auto name = to_string(args[2]);
-  auto plot = dyncast<Array>(args[1]);
+  auto plot = dyncast<ArrayBase>(args[1]);
 
   if (!plot->N())
     throw std::runtime_error("•cxbqn.plot.NamedPlot: empty 𝕩 not allowed");

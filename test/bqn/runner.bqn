@@ -31,16 +31,16 @@ fs←""
 # This would use headers if CXBQN supported them.
 T ← {
   i↩i+1
+  •Show 𝕩
   a‿tt←𝕩
   c←a≡r←•BQN tt
   f↩f+¬c
   fs↩fs∾c⊑⟨(10+@)∾"test '"∾tt∾"' failed: expected: '"∾(•Fmt a)∾"', got: '"∾(•Fmt r)∾"'", ""⟩
-  "" •Out ""∾c⊑"F."
   f
 }
 
 # Run all test cases in each test suite
-{ •Out "Running suite "∾𝕩⋄T ¨ •Import 𝕩} ¨ suites
+{ •Out (10+@)∾"Running suite "∾𝕩⋄T ¨ •Import 𝕩} ¨ suites
 
 •Out ""
 

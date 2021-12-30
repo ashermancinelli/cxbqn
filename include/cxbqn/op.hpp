@@ -36,9 +36,10 @@ enum {
   PRED = 0x2A, // pop item, go to next body if 0, continue if 1
   VFYM = 0x2B, // push a mutable version of ToS that fails if set to a non-equal
                // value (for header assignment)
-  SETH =
-      0x2F, // set header; acts like SETN, but it doesn't push to stack, and,
-            // instead of erroring in cases it would, it skips to the next body
+  NOTM = 0x2C, // push null reference that always matches
+  SETH = 0x2F, // set header; acts like SETN, but it doesn't push to stack,
+               // and, instead of erroring in cases it would, it skips to the
+               // next body
   SETN = 0x30, // set new; _  ←_; ⟨…,x,  mut⟩ → mut←x
   SETU = 0x31, // set upd; _  ↩_; ⟨…,x,  mut⟩ → mut↩x
   SETM = 0x32, // set mod; _ F↩_; ⟨…,x,F,mut⟩ → mut F↩x

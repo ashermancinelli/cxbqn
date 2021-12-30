@@ -106,6 +106,9 @@ enum TypeAnnotations {
   t_F64Array,
   t_UZArray,
   t_C32Array,
+
+  // For NOTM. Indicates assigning to this reference should do nothing
+  t_NullReference,
 };
 
 static constexpr u32 annot(TypeAnnotations ta) { return 1 << ta; }
@@ -205,10 +208,9 @@ struct ArrayBase : public Value {
 struct Array : public ArrayBase {
   std::vector<O<Value>> values;
   Array(const uz N, std::vector<O<Value>> &stk);
-  Array(std::vector<O<Value>> vs) : values{vs} {
-    shape.push_back(vs.size());
-  }
-  Array(std::vector<O<Value>> vs, std::vector<uz> shape) : values{vs}, ArrayBase(shape) {}
+  Array(std::vector<O<Value>> vs) : values{vs} { shape.push_back(vs.size()); }
+  Array(std::vector<O<Value>> vs, std::vector<uz> shape)
+      : values{vs}, ArrayBase(shape) {}
   uz N() const override;
   Array(uz N) {
     shape.push_back(N);
@@ -221,9 +223,7 @@ struct Array : public ArrayBase {
   O<Value> get(uz i) const override { return values[i]; }
 
   // For typed arrays, we want to create a copy of ourselves
-  O<ArrayBase> copy() const override {
-    return CXBQN_NEW(Array, values, shape);
-  }
+  O<ArrayBase> copy() const override { return CXBQN_NEW(Array, values, shape); }
 
   Array() {}
   ~Array() {}
@@ -237,7 +237,10 @@ struct Reference : public Value {
   uz position_in_parent;
   std::optional<std::string> tag = nullopt;
   Reference(uz d, uz p) : depth{d}, position_in_parent{p} {}
-  TypeType t() const override { return TypeType{annot(t_Reference)}; }
+  TypeType extra_annot;
+  TypeType t() const override {
+    return TypeType{annot(t_Reference)} | extra_annot;
+  }
   std::ostream &repr(std::ostream &os) const override {
     return os << "(d=" << depth << ",p=" << position_in_parent << ")";
   }

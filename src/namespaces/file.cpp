@@ -33,9 +33,9 @@ O<Value> FileLines::call(u8 nargs, Args &args) {
         return n;
       return r / n;
     }();
-    const auto lines = dyncast<Array>(x);
+    const auto lines = dyncast<ArrayBase>(x);
     std::ofstream ofs(fn);
-    for (const auto line : lines->values) {
+    for (const auto line : values(lines)) {
       const auto linestr = to_string(line);
       fmt::print(ofs, "{}\n", linestr);
     }

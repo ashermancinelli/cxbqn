@@ -4,7 +4,7 @@ namespace cxbqn::sys {
 O<Value> BQN::call(u8 nargs, Args &args) {
   CXBQN_DEBUG("•BQN: nargs={},args={}", nargs, args);
 
-  auto x = dyncast<Array>(args[1]);
+  auto x = dyncast<ArrayBase>(args[1]);
   if (!x)
     throw std::runtime_error("•BQN: 𝕩 must be a string");
 

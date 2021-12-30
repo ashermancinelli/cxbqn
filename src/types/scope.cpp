@@ -20,6 +20,10 @@ O<Value> Scope::get(O<Reference> r) {
 
 void Scope::set(bool should_var_be_set, O<Reference> r, O<Value> _v) {
 
+  // NOTM
+  if (r->t()[t_NullReference])
+    return;
+
 #ifdef CXBQN_DEEPCHECKS
   if (nullptr == r)
     throw std::runtime_error("assign: got nullptr reference");

@@ -118,8 +118,12 @@ int main(int argc, char **argv) {
         compiled = compiler->call(2, a);
       }
       if (show_cu)
-        for (auto v : values(dyncast<ArrayBase>(compiled)))
+        for (auto v : values(dyncast<ArrayBase>(compiled))) {
+          //Args a{fmt, v, bi_Nothing()};
+          //auto formatted = fmt->call(1, a);
+          //fmt::print("{}\n", to_string(formatted));
           fmt::print("{}\n", *v);
+        }
       auto runret = vm::run(compiled);
       if (pp_res) {
         Args a{fmt, runret.v, bi_Nothing()};

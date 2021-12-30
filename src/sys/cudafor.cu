@@ -105,17 +105,19 @@ O<Value> CUDAFor::call(u8 nargs, Args &args) {
   std::vector<uz> sh;
 
   if (isxar = (t_Array == type_builtin(x))) {
-    auto xar = dyncast<Array>(x);
+    auto xar = dyncast<ArrayBase>(x);
+    auto xv = values(xar);
     N = xar->N();
     sh = xar->shape;
     hx.resize(N);
     hw.resize(N);
     for (int i = 0; i < N; i++)
-      hx[i] = dyncast<Number>(xar->values[i])->v;
+      hx[i] = dyncast<Number>(xv[i])->v;
     N = xar->N();
   }
   if (iswar = (t_Array == type_builtin(w))) {
-    auto war = dyncast<Array>(w);
+    auto war = dyncast<ArrayBase>(w);
+    auto wv = values(war);
     if (N < 0) {
       N = war->N();
       sh = war->shape;
@@ -124,7 +126,7 @@ O<Value> CUDAFor::call(u8 nargs, Args &args) {
     } else if (N != war->N())
       throw std::runtime_error("•_CUDAFor: array lengths must be the same");
     for (int i = 0; i < N; i++)
-      hw[i] = dyncast<Number>(war->values[i])->v;
+      hw[i] = dyncast<Number>(wv[i])->v;
   }
 
   if (N < 0) {

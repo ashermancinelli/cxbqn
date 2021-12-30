@@ -39,7 +39,7 @@ observer_ptr<CompUnit> deconstruct(O<Value> compiled) {
       for (int i=0; i<mon->N(); i++)
         moni.push_back(static_cast<uz>(NUM(mon->get(i))->v));
       for (int i=0; i<dya->N(); i++)
-        moni.push_back(static_cast<uz>(NUM(dya->get(i))->v));
+        dyai.push_back(static_cast<uz>(NUM(dya->get(i))->v));
 
       const auto bods = std::vector<std::vector<uz>>{moni, dyai};
       blk_defs.push_back(BlockDef{type, imm, bods});

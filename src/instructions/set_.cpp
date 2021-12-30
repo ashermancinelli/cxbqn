@@ -10,6 +10,10 @@ template <bool ShouldVarBeSet>
 static O<Value> safe_set_refer(O<Value> opaque_refer, O<Value> value,
                                observer_ptr<Scope> scp) {
 
+  // NOTM
+  if (opaque_refer->t()[t_NullReference])
+    return value;
+
 #ifdef CXBQN_DEEPCHECKS
   if (not opaque_refer->t()[t_Reference]) {
     CXBQN_CRIT("set_: trying to set reference without t_Reference bit set.");

@@ -47,7 +47,7 @@ O<Value> Import::call(u8 nargs, Args &args) {
   CXBQN_DEBUG("•Import: nargs={},args={}", nargs, args);
 
   const auto x = [=] {
-    const auto xx = dyncast<Array>(args[1]);
+    const auto xx = dyncast<ArrayBase>(args[1]);
     if (!xx)
       throw std::runtime_error("•Import: 𝕩 must be a string");
     const auto s = to_string(xx);
@@ -56,7 +56,12 @@ O<Value> Import::call(u8 nargs, Args &args) {
     return s;
   }();
 
-  auto w = 2 == nargs ? dyncast<Array>(args[2]) : CXBQN_NEW(Array);
+  auto w = [=] () -> O<Array> {
+    if (1 == nargs)
+      return CXBQN_NEW(Array);
+    auto war = dyncast<ArrayBase>(args[2]);
+    return CXBQN_NEW(Array, values(war), war->shape);
+  }();
 
   const auto f = [=, path = fs::path(to_string(_path)), &x]() -> fs::path {
     // We got an absolute path

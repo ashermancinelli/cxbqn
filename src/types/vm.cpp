@@ -192,6 +192,12 @@ O<Value> vm(observer_ptr<CompUnit> cu, observer_ptr<Scope> scope, Body b) {
         INSTR("CHKV");
         break;
       }
+      case op::NOTM: {
+        INSTR("NOTM");
+        instructions::notm(stk);
+        INSTR("NOTM");
+        break;
+      }
       default: {
         std::stringstream ss;
         ss << "vm::vm: unreachable code " << bc[pc];

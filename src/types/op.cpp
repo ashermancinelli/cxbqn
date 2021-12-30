@@ -4,6 +4,7 @@ namespace cxbqn::op {
 
 u8 bc_len(u8 op) {
   static cxbqn::u8 bc_lens[BC_SIZE];
+  bc_lens[NOTM] = 0;
   bc_lens[FN1C] = 1;
   bc_lens[FN2C] = 1;
   bc_lens[MD1C] = 1;
