@@ -13,19 +13,15 @@ uz Array::N() const {
 #ifdef CXBQN_DEEPCHECKS
   if (N !=
       std::accumulate(shape.begin(), shape.end(), 1, std::multiplies<uz>())) {
-    std::stringstream ss;
-    this->repr(ss);
+    //std::stringstream ss;
+    //this->repr(ss);
     // for (const auto v : values)
     //{
     //  v->repr(ss);
     //  ss << ",\n";
     //}
-    fmt::print("{}", ss.str());
-    fmt::print("pid={}\n", getpid());
-    *((int*)0);
-    int i = 1;
-    while (i) {
-    }
+    //fmt::print("{}", ss.str());
+    //fmt::print("pid={}\n", getpid()); int i = 1; while (i) { }
     throw std::runtime_error("cxbqn internal: shape does not match values");
   }
 #endif

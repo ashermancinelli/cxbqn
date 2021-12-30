@@ -75,7 +75,7 @@ O<Value> FileList::call(u8 nargs, Args &args) {
   auto ret = CXBQN_NEW(Array);
 
   for (const auto &de : fs::directory_iterator{x})
-    ret->values.push_back(CXBQN_NEW(Array, de.path().filename()));
+    ret->values.push_back(CXBQN_NEW(String, de.path().filename()));
 
   ret->shape.push_back(ret->values.size());
   return ret;

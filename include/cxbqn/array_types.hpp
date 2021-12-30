@@ -76,8 +76,9 @@ template <> struct TypedArray<c32> : public ArrayBase {
   TypedArray(const std::u32string &s) : values{s} {
     shape.push_back(s.size());
   }
-  TypedArray(const std::string &s) : values{s.begin(), s.end()} {
-    shape.push_back(s.size());
+  TypedArray(const std::string &s) {
+    values = utf8::utf8to32(s);
+    shape.push_back(values.size());
   }
 
   O<Value> get(uz i) const override { return CXBQN_NEW(Character, values[i]); }
