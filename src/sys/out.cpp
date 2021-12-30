@@ -6,7 +6,7 @@ namespace cxbqn::sys {
 O<Value> Out::call(u8 nargs, Args &args) {
   CXBQN_DEBUG("Out: nargs={},args={}", nargs, args);
   std::string end = 2 == nargs ? to_string(args[2]) : "\n";
-  auto x = dyncast<Array>(args[1]);
+  auto x = dyncast<ArrayBase>(args[1]);
   if (nullptr == x)
     throw std::runtime_error("•Out: can only be called with strings");
 

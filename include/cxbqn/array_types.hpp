@@ -51,7 +51,24 @@ template <typename T> struct TypedArray : public ArrayBase {
 
   // Not sure how best to format this. Should probably just rely on •Fmt pulling
   // each value out sequentially.
-  std::ostream &repr(std::ostream &os) const override { return os; }
+  std::ostream &repr(std::ostream &os) const override {
+    os << "⟨sh=⟨";
+    int i=0;
+    while (i < shape.size()) {
+      os << shape[i];
+      if (++i != shape.size())
+        os << ",";
+    }
+    os << "⟩";
+    i=0;
+    while (i < values.size()) {
+      os << values[i];
+      if (++i!=values.size())
+        os << ",";
+    }
+    os << "⟩";
+    return os; 
+  }
 };
 
 template <> struct TypedArray<c32> : public ArrayBase {

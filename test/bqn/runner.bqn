@@ -3,12 +3,11 @@ defaultSuites ← {
   d ← "suites/always/"
   always ← d⊸∾¨•file.List d
 
-  hascuda ← +´⟨"CXBQN_CUDA"⟩⊸⍷⊑¨•cxbqn.config
+  #hascuda ← +´⟨"CXBQN_CUDA"⟩⊸⍷⊑¨•cxbqn.config
+  #d ↩ "suites/cuda/"
+  #cuda ← d⊸∾¨•file.List d
 
-  d ↩ "suites/cuda/"
-  cuda ← d⊸∾¨•file.List d
-
-  always∾(hascuda⊑⟨⟩‿cuda)
+  always#∾(hascuda⊑⟨⟩‿cuda)
 }
 
 # If args are passed to the runner, use that to determine what suites to run.

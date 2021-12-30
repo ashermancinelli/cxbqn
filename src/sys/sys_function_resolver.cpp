@@ -39,7 +39,7 @@ O<Value> SystemFunctionResolver::call(u8 nargs, Args &args) {
   std::vector<O<Value>> ret;
 
   for (int i = 0; i < x->N(); i++) {
-    auto foo = dyncast<Array>(x->get(i));
+    auto foo = dyncast<ArrayBase>(x->get(i));
     auto s = to_string(foo);
     if ("cxbqn" == s) {
       ret.push_back(CXBQN_NEW(namespaces::CXBQN));

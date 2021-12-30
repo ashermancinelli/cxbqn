@@ -10,8 +10,9 @@ O<Value> Assert::call(u8 nargs, Args &args) {
       !feq_helper(1., dyncast<Number>(args[1])->v)) {
     std::stringstream ss;
     if (nargs == 2) {
-      w->repr(ss);
-      ss << " ";
+      ss << "? ";
+      //w->repr(ss);
+      //ss << " ";
     }
     ss << "! ";
     x->repr(ss);

@@ -4,10 +4,9 @@ namespace cxbqn::rt_native::r0 {
 
 O<Value> Select::call(u8 nargs, Args &args) {
   const auto x = dyncast<ArrayBase>(args[1]), w = dyncast<ArrayBase>(args[2]);
-  const auto &xsh = x->shape;
-  const auto &wsh = w->shape;
+  const auto xsh = x->shape;
+  auto retsh = w->shape;
   const auto xrank = xsh.size();
-  std::vector<uz> retsh(wsh.begin(), wsh.end());
   uz c = 1;
 
   if (1 != xrank) {
