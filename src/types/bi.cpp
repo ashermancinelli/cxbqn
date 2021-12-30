@@ -2,6 +2,7 @@
 #include <cxbqn/comp_utils.hpp>
 #include <cxbqn/debug.hpp>
 #include <cxbqn/sys.hpp>
+#include <cxbqn/array_types.hpp>
 
 namespace cxbqn::provides {
 O<types::Array> get_provides() {

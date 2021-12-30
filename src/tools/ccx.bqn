@@ -24,7 +24,7 @@ Esc←{
   ∾(i<≠in) /⟜"\"⊸∾¨ 𝕩        # Insert \
 }
 
-OStr ← "CXBQN_NEW(Array,U"""∾Esc∾""")"˙  # A BQN string
+OStr ← "CXBQN_NEW(String,U"""∾Esc∾""")"˙  # A BQN string
 OChr ← {"CXBQN_NEW(Character,U'"∾(Esc⥊𝕩)∾"')"} # A BQN character
 ONum ← {s←"-"/˜𝕩<0 ⋄ ∞⊸=∘|◶⟨"CXBQN_NEW(Number,"∾")"∾˜s∾F∘| ⋄ "CXBQN_NEW(Number,"∾s∾"1.0/0.0)"⟩𝕩} # Format number
 OAny ← ≡◶⟨@⊸≤◶ONum‿OChr, OStr, ⊑⟩
