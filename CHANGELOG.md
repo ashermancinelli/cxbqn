@@ -4,8 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning v2](https://semver.org/spec/v2.0.0.html).
 
-## unreleased
+## [0.11.0] 12-29-2021
 
+* Add typed arrays
+    * This is a very significant development effort and will be a work in progress for a long time, but this puts the infrastructure in place to maintain homogenous arrays which can be worked on directly, which should have a very significant impact on performance when it's in full use.
 * formatting of namespaces and other types •Fmt doesn't know about
 * plotting utilities under namespace •cxbqn.plot
 * update current documentation, add plotting document

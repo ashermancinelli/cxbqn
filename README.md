@@ -16,7 +16,7 @@ cd build
 CXX=g++-11 cmake ..
 make -j12
 ./BQN -v
-CXBQN 0.10.1 compiled on Dec 25 2021
+CXBQN 0.11.0 compiled on Dec 25 2021
 ```
 
 ## Using

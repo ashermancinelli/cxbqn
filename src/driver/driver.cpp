@@ -258,7 +258,7 @@ int parse_args(int argc, char **argv, O<Array> &path, O<Array> &src,
           CXBQN_PTR_RESET(src, new Array(_src));
           return fname;
         })
-    .help("execute a string as BQN code")
+    .help("execute file contents as BQN code")
     .nargs(1);
 
   prog.add_argument("args")
