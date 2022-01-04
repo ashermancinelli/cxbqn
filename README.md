@@ -19,6 +19,13 @@ make -j12
 CXBQN 0.11.0 compiled on Dec 25 2021
 ```
 
+Or if you want to use nix:
+```
+nix build
+./result/bin/BQN --version
+CXBQN 0.11.0 compiled on Jan  1 1980
+```
+
 ## Using
 
 ```
