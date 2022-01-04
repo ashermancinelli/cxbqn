@@ -19,10 +19,10 @@ make -j12
 CXBQN 0.11.0 compiled on Dec 25 2021
 ```
 
-Or if you want to use nix:
+Or if you want to use nix, CXBQN has a flake:
 ```
-nix build
-./result/bin/BQN --version
+$ nix shell github:ashermancinelli/cxbqn
+$ BQN -v
 CXBQN 0.11.0 compiled on Jan  1 1980
 ```
 
