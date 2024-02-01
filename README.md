@@ -1,5 +1,7 @@
 # CXBQN
 
+***NOTE: I haven't updated this in a while, so the bytecode for the BQN compiler is out of date.***
+
 VM for [BQN](https://mlochbaum.github.io/BQN/).
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md) for information on contributing.
