@@ -1,4 +1,5 @@
 #include "provides_helpers.hpp"
+#include <stdexcept>
 
 namespace cxbqn::provides {
 
@@ -13,6 +14,7 @@ namespace cxbqn::provides {
     auto ow = args[2];                                                         \
     auto x = dyncast<Number>(args[1]);                                         \
     auto w = dyncast<Number>(args[2]);                                         \
+    if (!x or (2 == nargs && !w)) throw std::runtime_error(SYMBOL ": type error"); \
     auto ret = (RETURN);                                                       \
     return ret;                                                                \
   }
